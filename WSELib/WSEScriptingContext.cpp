@@ -82,12 +82,13 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt)
 	{
 	case ModuleLoad:
 		m_allow_unset_script_params = WSE->ModuleSettingsIni.Bool("", "allow_unset_script_params", false);
-		WSE->SendContextEvent(this, LoadOperations);
+		//WSE->SendContextEvent(this, LoadOperations);
 		DumpOperationsHeader();
 		break;
 	}
 }
 
+/*
 bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation_manager, int context_flags, int depth, int &num_parameters, __int64 *parameters)
 {
 	m_cur_statement_block = operation_manager;
@@ -98,7 +99,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		memset(parameters + num_parameters, 0, (16 - num_parameters) * sizeof(__int64));
 		num_parameters = 16;
 	}
-	
+
 	WSEScriptingLoopManager loop_manager;
 	int cur_block = -1;
 	__int64 local_variables[1024];
@@ -131,7 +132,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		wb::operation *operation = &operation_manager->operations[operation_no];
 		warband->cur_statement_no = operation_no;
 		warband->cur_opcode = operation->opcode & 0xFFFFFFF;
-		
+
 		if (warband->cur_opcode == wb::call_script || warband->cur_opcode >= wb::store_script_param_1)
 		{
 			if (warband->cur_opcode >= wb::ge)
@@ -163,7 +164,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 					{
 						script_params[i - 1] = operation->get_operand_value(local_variables, i, operand_type);
 					}
-					
+
 					statement_success = warband->script_manager.scripts[script_no].operations.execute(context_flags, depth + 1, operation->num_operands - 1, script_params);
 
 					if (statement_success)
@@ -218,7 +219,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 			for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
 			{
 				wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
-				
+
 				if (loop_operation->opcode != wb::try_begin)
 				{
 					operation_no = loop_operation->end_statement;
@@ -226,7 +227,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 					found = true;
 				}
 			}
-			
+
 			operation_no++;
 		}
 		else if (operation->opcode == wb::continue_loop)
@@ -278,7 +279,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 
 		if (!loop_manager.Size())
 			success = statement_success;
-		
+
 		if (warband->script_error_occurred > 0)
 		{
 			char buf[512];
@@ -570,6 +571,490 @@ bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __in
 	}
 }
 
+*/
+
+bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation_manager, int context_flags, int depth, int &num_parameters, __int64 *parameters)
+{
+	m_cur_statement_block = operation_manager;
+	WSE->Profiling.StartProfilingBlock(operation_manager);
+
+	if (m_allow_unset_script_params && num_parameters < 16)
+	{
+		memset(parameters + num_parameters, 0, (16 - num_parameters) * sizeof(__int64));
+		num_parameters = 16;
+	}
+	
+	WSEScriptingLoopManager loop_manager;
+	int cur_block = -1;
+	__int64 local_variables[1024];
+	int num_operations = operation_manager->num_operations;
+	int operation_no = 0;
+	bool success = true;
+	bool block_success = true;
+
+	loop_manager.Clear();
+	cur_visitor_site_no->skip_next_operation = 0;
+	cur_visitor_site_no->script_error_occurred = 0;
+	operation_manager->analyze();
+
+	if (cur_visitor_site_no->script_error_occurred > 0)
+	{
+		char buf[512];
+
+		sprintf_s(buf, "At %s.", operation_manager->id.c_str());
+#if defined WARBAND
+		//warband->window_manager.display_message(buf, 0xFFFF5555, 0);
+#endif
+		warband->log_stream.write_c_str(buf);
+		warband->log_stream.write_c_str("\n");
+		cur_visitor_site_no->script_error_occurred = 0;
+	}
+
+	while (operation_no < num_operations)
+	{
+		bool statement_success = true;
+		wb::operation *operation = &operation_manager->operations[operation_no];
+		cur_visitor_site_no->cur_statement_no = operation_no;
+		cur_visitor_site_no->cur_opcode = operation->opcode & 0xFFFFFFF;
+		
+		if (cur_visitor_site_no->cur_opcode == wb::call_script || cur_visitor_site_no->cur_opcode >= wb::store_script_param_1)
+		{
+			if (cur_visitor_site_no->cur_opcode >= wb::ge)
+			{
+				int error = 0;
+
+				statement_success = operation->execute(local_variables, context_flags, error);
+
+				if (statement_success)
+				{
+					operation_no++;
+				}
+				else
+				{
+					operation_no = operation->end_statement;
+					block_success = false;
+				}
+			}
+			else if (cur_visitor_site_no->cur_opcode == wb::call_script)
+			{
+				int operand_type;
+				int script_no = (int)operation->get_operand_value(local_variables, 0, operand_type);
+
+				if (script_no >= 0 && script_no < data_string_manager->script_manager.num_scripts && depth < 256)
+				{
+					__int64 script_params[16];
+
+					for (int i = 1; i < operation->num_operands; ++i)
+					{
+						script_params[i - 1] = operation->get_operand_value(local_variables, i, operand_type);
+					}
+					
+					statement_success = data_string_manager->script_manager.scripts[script_no].operations.execute(context_flags, depth + 1, operation->num_operands - 1, script_params);
+
+					if (statement_success)
+					{
+						operation_no++;
+					}
+					else
+					{
+						operation_no = operation->end_statement;
+						block_success = false;
+					}
+				}
+				else
+				{
+					statement_success = false;
+					operation_no = operation->end_statement;
+				}
+			}
+			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param_1)
+			{
+				if (wb::operation::is_valid_script_parameter(0, num_parameters))
+					operation->set_return_value(local_variables, parameters[0]);
+
+				operation_no++;
+			}
+			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param_2)
+			{
+				if (wb::operation::is_valid_script_parameter(1, num_parameters))
+					operation->set_return_value(local_variables, parameters[1]);
+
+				operation_no++;
+			}
+			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param)
+			{
+				int operand_type;
+				int parameter_no = (int)operation->get_operand_value(local_variables, 1, operand_type);
+
+				if (wb::operation::is_valid_script_parameter(parameter_no - 1, num_parameters))
+					operation->set_return_value(local_variables, parameters[parameter_no - 1]);
+
+				operation_no++;
+			}
+			else
+			{
+				operation_no++;
+			}
+		}
+		else if (operation->opcode == wb::break_loop)
+		{
+			bool found = false;
+
+			for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
+			{
+				wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
+				
+				if (loop_operation->opcode != wb::try_begin)
+				{
+					operation_no = loop_operation->end_statement;
+					loop_manager.EndLoop(i);
+					found = true;
+				}
+			}
+			
+			operation_no++;
+		}
+		else if (operation->opcode == wb::continue_loop)
+		{
+			bool found = false;
+
+			for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
+			{
+				wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
+
+				if (loop_operation->opcode != wb::try_begin)
+				{
+					operation_no = loop_operation->end_statement;
+					found = true;
+				}
+			}
+
+			if (!found)
+				operation_no++;
+		}
+		else if (operation->opcode == wb::try_end)
+		{
+			block_success = true;
+			EndLoop(operation_manager, local_variables, loop_manager, operation_no);
+		}
+		else if (operation->opcode == wb::try_begin)
+		{
+			block_success = true;
+			loop_manager.AddLoop(operation_no, 0);
+			operation_no++;
+		}
+		else if (operation->opcode == wb::else_try)
+		{
+			if (block_success)
+			{
+				operation_no = operation->end_statement;
+			}
+			else
+			{
+				block_success = true;
+				operation_no++;
+			}
+		}
+		else
+		{
+			block_success = true;
+			StartLoop(operation_manager, local_variables, loop_manager, operation_no);
+		}
+
+		if (!loop_manager.Size())
+			success = statement_success;
+		
+		if (cur_visitor_site_no->script_error_occurred > 0)
+		{
+			char buf[512];
+
+			sprintf_s(buf, "At %s.", operation_manager->id.c_str());
+#if defined WARBAND
+			//warband->window_manager.display_message(buf, 0xFFFF5555, 0);
+#endif
+			warband->log_stream.write_c_str(buf);
+			warband->log_stream.write_c_str("\n");
+		}
+
+		if (!success)
+			break;
+	}
+
+	WSE->Profiling.StopProfilingBlock();
+	m_cur_statement_block = nullptr;
+	return success;
+}
+
+void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __int64 *local_variables, WSEScriptingLoopManager &loop_manager, int &statement_no)
+{
+	wb::operation *statement = &operation_manager->operations[statement_no];
+	int start_value;
+	int operand_type;
+	wb::mission_grid_iterator grid_iterator;
+
+	switch (statement->opcode)
+	{
+	case wb::try_for_range:
+		start_value = (int)statement->get_operand_value(local_variables, 1, operand_type);
+		break;
+	case wb::try_for_range_backwards:
+		start_value = (int)statement->get_operand_value(local_variables, 2, operand_type) - 1;
+		break;
+	case wb::try_for_agents:
+		{
+			if (statement->num_operands > 1)
+			{
+				int position_register_no = (int)statement->get_operand_value(local_variables, 1, operand_type);
+				float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / data_basic_game->basic_game.fixed_point_multiplier;
+
+				if (cur_visitor_site_no->cur_mission->grid.initialize_iterator(grid_iterator, data_basic_game->basic_game.position_registers[position_register_no].o, radius))
+					start_value = grid_iterator.agent_obj->agent->no;
+				else
+					start_value = -1;
+			}
+			else
+			{
+				start_value = cur_visitor_site_no->cur_mission->agents.get_first_valid_index();
+			}
+		}
+
+		break;
+	case wb::try_for_parties:
+		start_value = cur_visitor_site_no->cur_game->parties.get_first_valid_index();
+		break;
+	case wb::try_for_active_players:
+		{
+			start_value = (statement->num_operands > 1 && statement->get_operand_value(local_variables, 1, operand_type)) ? 1 : 0;
+
+			for (; start_value < NUM_NETWORK_PLAYERS; ++start_value)
+			{
+				wb::network_player *player = &data_string_manager->multiplayer_data.players[start_value];
+
+				if (player->is_active() && player->ready)
+					break;
+			}
+		}
+
+		break;
+	case wb::try_for_prop_instances:
+		{
+			int subKindNo = -1;
+
+			if (statement->num_operands < 2)
+				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
+
+			for (int start_value = cur_visitor_site_no->cur_mission->mission_objects.get_first_valid_index(); start_value < cur_visitor_site_no->cur_mission->mission_objects.size(); start_value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(start_value))
+			{
+				wb::mission_object *mission_object = &cur_visitor_site_no->cur_mission->mission_objects[start_value];
+
+				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
+					break;
+			}
+		}
+
+		break;
+	case wb::try_for_dict_keys:
+		{
+			WSEDictionary *dict = (WSEDictionary *)WSE->Objects.FetchObject(WSE->DictionaryOperations.m_type, (int)statement->get_operand_value(local_variables, 1, operand_type));
+			std::map<std::string, std::string>::const_iterator it = dict->m_values.begin();
+			std::map<std::string, std::string>::const_iterator end_it = dict->m_values.end();
+			int start_value = it == end_it ? -1 : 1;
+
+			loop_manager.AddLoop(statement_no, start_value);
+			loop_manager.GetLoop()->dict_it = it;
+			loop_manager.GetLoop()->dict_end_it = end_it;
+
+			if (CanLoop(operation_manager, local_variables, loop_manager))
+			{
+				int register_no = (int)statement->get_operand_value(local_variables, 0, operand_type);
+
+				if (wb::operation::is_valid_register(register_no))
+					data_basic_game->basic_game.string_registers[register_no] = it->first;
+
+				statement_no++;
+			}
+			else
+			{
+				statement_no = statement->end_statement;
+			}
+			
+			return;
+		}
+
+		break;
+	default:
+		{
+			char buf[512];
+
+			sprintf_s(buf, "Unrecognized loop opcode %d", statement->opcode);
+			wb::script::error(buf);
+		}
+
+		break;
+	}
+
+	loop_manager.AddLoop(statement_no, start_value);
+	loop_manager.GetLoop()->mission_grid_iterator = grid_iterator;
+	statement->set_return_value(local_variables, start_value);
+
+	if (CanLoop(operation_manager, local_variables, loop_manager))
+		statement_no++;
+	else
+		statement_no = statement->end_statement;
+}
+
+void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __int64 *local_variables, WSEScriptingLoopManager &loop_manager, int &statement_no)
+{
+	statement_no++;
+
+	if (!loop_manager.Size())
+		return;
+	
+	WSEScriptingLoop *loop = loop_manager.GetLoop();
+	int value = loop->value;
+	int operand_type;
+	wb::operation *statement = &operation_manager->operations[loop->statement_no];
+	
+	switch (statement->opcode)
+	{
+	case wb::try_begin:
+	case wb::else_try:
+		loop_manager.EndLoop();
+		return;
+	case wb::try_for_range:
+		value++;
+		break;
+	case wb::try_for_range_backwards:
+		value--;
+		break;
+	case wb::try_for_agents:
+		{
+			if (statement->num_operands > 1)
+			{
+				if (cur_visitor_site_no->cur_mission->grid.advance_iterator(loop->mission_grid_iterator))
+					value = loop->mission_grid_iterator.agent_obj->agent->no;
+				else
+					value = -1;
+			}
+			else
+			{
+				value = cur_visitor_site_no->cur_mission->agents.get_next_valid_index(value);
+			}
+		}
+		
+		break;
+	case wb::try_for_parties:
+		value = cur_visitor_site_no->cur_game->parties.get_next_valid_index(value);
+		break;
+	case wb::try_for_active_players:
+		{
+			++value;
+
+			for (; value < NUM_NETWORK_PLAYERS; ++value)
+			{
+				wb::network_player *player = &data_string_manager->multiplayer_data.players[value];
+
+				if (player->is_active() && player->ready)
+					break;
+			}
+		}
+
+		break;
+	case wb::try_for_prop_instances:
+		{
+			int subKindNo = -1;
+
+			if (statement->num_operands < 2)
+				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
+
+			value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(value);
+
+			for (; value < cur_visitor_site_no->cur_mission->mission_objects.size(); value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(value))
+			{
+				wb::mission_object *mission_object = &cur_visitor_site_no->cur_mission->mission_objects[value];
+
+				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
+					break;
+			}
+		}
+
+		break;
+	case wb::try_for_dict_keys:
+		{
+			if (loop->dict_it != loop->dict_end_it)
+				loop->dict_it++;
+
+			loop->value = loop->dict_it == loop->dict_end_it ? -1 : 1;
+
+			if (CanLoop(operation_manager, local_variables, loop_manager))
+			{
+				int register_no = (int)statement->get_operand_value(local_variables, 0, operand_type);
+
+				if (wb::operation::is_valid_register(register_no))
+					data_basic_game->basic_game.string_registers[register_no] = loop->dict_it->first;
+
+				statement_no = loop->statement_no + 1;
+			}
+			else
+			{
+				loop_manager.EndLoop();
+			}
+
+			return;
+		}
+		
+		break;
+	default:
+		return;
+	}
+
+	loop->value = value;
+
+	if (CanLoop(operation_manager, local_variables, loop_manager))
+	{
+		statement->set_return_value(local_variables, value);
+		statement_no = loop->statement_no + 1;
+	}
+	else
+	{
+		loop_manager.EndLoop();
+	}
+}
+
+bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __int64 *local_variables, WSEScriptingLoopManager &loop_manager)
+{
+	if (!loop_manager.Size())
+		return false;
+
+	WSEScriptingLoop *loop = loop_manager.GetLoop();
+	int value = loop->value;
+	int operand_type;
+	wb::operation *statement = &operation_manager->operations[loop->statement_no];
+
+	switch (statement->opcode)
+	{
+	case wb::try_for_range:
+		return value < statement->get_operand_value(local_variables, 2, operand_type);
+	case wb::try_for_range_backwards:
+		return value >= statement->get_operand_value(local_variables, 1, operand_type);
+	case wb::try_for_agents:
+		if (statement->num_operands > 1)
+			return value != -1;
+		else
+			return value < cur_visitor_site_no->cur_mission->agents.size();
+	case wb::try_for_parties:
+		return value < cur_visitor_site_no->cur_game->parties.num_created;
+	case wb::try_for_active_players:
+		return value < NUM_NETWORK_PLAYERS;
+	case wb::try_for_dict_keys:
+		return value != -1;
+	case wb::try_for_prop_instances:
+		return value < cur_visitor_site_no->cur_mission->mission_objects.size();
+	default:
+		return value < statement->get_operand_value(local_variables, 1, operand_type);
+	}
+}
+
 void WSEScriptingContext::AddOperation(WSEContext *context, void *callback, WSEOperationTarget target, unsigned short flags, short min_operands, short max_operands, unsigned int opcode, const std::string &name, const std::string &description, std::string *operands)
 {
 
@@ -823,7 +1308,7 @@ void WSEScriptingContext::DumpOperationsHeader()
 	
 	stream << "]" << std::endl;
 }
-
+/*
 int WSEScriptingContext::GetTriggerParam(int index) const
 {
 	if (index == 1)
@@ -846,6 +1331,32 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 		warband->basic_game.trigger_param_2 = value;
 	else if (index == 3)
 		warband->basic_game.trigger_param_3 = value;
+	else if (index > 0 && index <= 16)
+		m_trigger_params[index - 1] = value;
+}
+*/
+int WSEScriptingContext::GetTriggerParam(int index) const
+{
+	if (index == 1)
+		return (int)data_basic_game->basic_game.trigger_param_1;
+	else if (index == 2)
+		return (int)data_basic_game->basic_game.trigger_param_2;
+	else if (index == 3)
+		return (int)data_basic_game->basic_game.trigger_param_3;
+	else if (index > 0 && index <= 16)
+		return m_trigger_params[index - 1];
+	else
+		return 0;
+}
+
+void WSEScriptingContext::SetTriggerParam(int index, int value)
+{
+	if (index == 1)
+		data_basic_game->basic_game.trigger_param_1 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_2 = value;
+	else if (index == 3)
+		data_basic_game->basic_game.trigger_param_3 = value;
 	else if (index > 0 && index <= 16)
 		m_trigger_params[index - 1] = value;
 }

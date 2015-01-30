@@ -128,25 +128,29 @@ namespace wb
 		int cur_opcode;
 		int skip_next_operation;
 #if defined WARBAND
+		/*
 		int uu0[3]; // align
 		bool main_window_focused;
 		bool dof_enabled;
 		bool hdr_enabled;
 		bool uu1;
 		int uu2[133];
-		DWORD update_check_thread_id;
+		*/
+		int uu2[144];
+		//DWORD update_check_thread_id;
 		HANDLE rendering_event_1;
 		HANDLE rendering_event_2;
 		HANDLE rendering_event_3;
-		CRITICAL_SECTION rendering_critical_section;
+		//CRITICAL_SECTION rendering_critical_section;
 		int uu6;
 		int uu7;
 		HANDLE multithreaded_texture_loader_event;
-		CRITICAL_SECTION multithreaded_texture_creator_critical_section;
-		CRITICAL_SECTION multithreaded_texture_loader_critical_section;
+		//CRITICAL_SECTION multithreaded_texture_creator_critical_section;
+		//CRITICAL_SECTION multithreaded_texture_loader_critical_section;
 		int hlsl_mode;
 #elif defined WARBAND_DEDICATED
-		int uu0[128];
+		//int uu0[128];
+		int uu0[114];
 #endif
 		int display_wp[7];
 #if defined WARBAND
@@ -155,8 +159,8 @@ namespace wb
 		mission *cur_mission;
 		game *cur_game;
 #if defined WARBAND
-		CRITICAL_SECTION multithreading_critical_section;
-		CRITICAL_SECTION directx_critical_section;
+		//CRITICAL_SECTION multithreading_critical_section;
+		//CRITICAL_SECTION directx_critical_section;
 		rgl::font *default_font;
 #endif
 		bool reset_3d_env;
@@ -289,8 +293,64 @@ namespace wb
 		rgl::string cur_module_name;
 		rgl::string cur_module_args;
 		stl::vector<directx_call> directx_calls;
-		core_game core_game;
+		//core_game core_game;
 	};
+
+	struct cur_module_data
+	{
+		conversation_manager conversation_manager;
+		int u15; // align
+		skill skills[NUM_SKILLS];
+		rgl::string cur_module_path;
+		rgl::string cur_module_name;
+		rgl::string cur_module_args;
+	};
+
+	struct string_manager_data
+	{
+		string_manager string_manager;
+		script_manager script_manager;
+		int u[2];
+		multiplayer_data multiplayer_data;
+	};
+
+	struct basic_game_data
+	{
+		basic_game basic_game;
+	};
+
+	struct network_manager_data
+	{
+		network_manager network_manager;
+	};
+
+	struct cur_visitor_site_no_data
+	{
+		int cur_visitor_site_no;
+		int cur_statement_no;
+		int script_error_occurred;
+		int cur_opcode;
+		int skip_next_operation;
+#if defined WARBAND
+		int uu2[143];
+		HANDLE rendering_event_1;
+		HANDLE rendering_event_2;
+		HANDLE rendering_event_3;
+		int uu6;
+		int uu7;
+		HANDLE multithreaded_texture_loader_event;
+		int hlsl_mode;
+#elif defined WARBAND_DEDICATED
+		int uu0[113];
+#endif
+		int display_wp[7];
+#if defined WARBAND
+		meeting_redirector meeting_redirector;
+#endif
+		mission *cur_mission;
+		game *cur_game;
+	};
+
 }
 
 #pragma pack(pop)

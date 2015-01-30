@@ -4,3 +4,5 @@ BuildFiles/
 WarbandScriptEnhancer.opensdf
 WarbandScriptEnhancer.sdf
 WarbandScriptEnhancer.v12.suo
+WSEProfiler/obj
+WSEProfiler/bin

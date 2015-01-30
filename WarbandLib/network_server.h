@@ -8,10 +8,10 @@ namespace wb
 	struct network_server
 	{
 		int upload_limit;
-		int u1;
-		__int64 packet_total_size_in_bits;
-		rgl::static_deque<int> packet_sizes_in_bits;
-		rgl::static_deque<double> packet_send_times;
+		//int u1;
+		//__int64 packet_total_size_in_bits;
+		//rgl::static_deque<int> packet_sizes_in_bits;
+		//rgl::static_deque<double> packet_send_times;
 		int port;
 		int steam_port;
 		double last_announcement_time;

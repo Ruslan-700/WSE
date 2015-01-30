@@ -150,7 +150,8 @@ void __declspec(naked) GameReadModuleFilesHook()
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Game, OnReadGameFiles)
 		RESTORE_REGS
-		add esp, 2980
+		//add esp, 2980
+		add esp, 2836
 		retn 4
 	}
 }

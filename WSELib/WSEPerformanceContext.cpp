@@ -91,6 +91,7 @@ void WSEPerformanceContext::OnEvent(WSEContext *sender, WSEEvent evt)
 	switch (evt)
 	{
 	case ModuleLoad:
+		/*
 		SetCriticalSectionSpinCount(&warband->network_manager.network_critical_section, 4000);
 		SetCriticalSectionSpinCount(&warband->network_manager.url_reply_critical_section, 1000);
 #if defined WARBAND
@@ -107,6 +108,7 @@ void WSEPerformanceContext::OnEvent(WSEContext *sender, WSEEvent evt)
 			}
 		}
 #endif
+		*/
 		break;
 	}
 }

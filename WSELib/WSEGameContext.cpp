@@ -5,15 +5,15 @@
 void WSEGameContext::OnLoad()
 {
 #if defined WARBAND_VANILLA
-	WSE->Hooks.HookFunction(this, wb::addresses::activate_entry, NewSerialKeyCheckHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::activate_entry, NewSerialKeyCheckHook);
 #endif
 	WSE->Hooks.HookFunction(this, wb::addresses::game_ReadModuleFiles_entry, GameReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ReadModuleFiles_entry, ReadModuleFilesHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
 #if defined WARBAND
-	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::game_screen_OpenWindow_entry, OpenWindowHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::game_screen_OpenWindow_entry, OpenWindowHook);
 #endif
 }
 
@@ -39,14 +39,22 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 
 void WSEGameContext::OnReadModuleFiles()
 {
+	/*
 	if (warband->basic_game.website.length() != 34 || warband->basic_game.domain.length() != 26) // INFO: using cracked master server
 		WSE->Hooks.UnhookAll();
-
+	*/
+	
 	WSE->SettingsIni.Open(WSE->GetPath() + "wse_settings.ini");
+	/*
 	WSE->SettingsIni.Open(std::string(warband->cur_module_path) + "\\wse_settings.ini", false);
 	WSE->ModuleSettingsIni.Open(std::string(warband->cur_module_path) + "\\module.ini");
 	WSE->GameVariablesIni.Open(std::string(warband->cur_module_path) + "\\game_variables.txt");
+	*/
+	WSE->SettingsIni.Open(std::string(cur_module->cur_module_path) + "\\wse_settings.ini", false);
+	WSE->ModuleSettingsIni.Open(std::string(cur_module->cur_module_path) + "\\module.ini");
+	WSE->GameVariablesIni.Open(std::string(cur_module->cur_module_path) + "\\game_variables.txt");
 
+	/*
 #if defined WARBAND
 	if (!warband->full_version)
 	{
@@ -55,9 +63,23 @@ void WSEGameContext::OnReadModuleFiles()
 		return;
 	}
 #endif
+	*/
 	
+	//WSE->Log.Warning(std::string(cur_module->cur_module_path));
+	//WSE->Log.Warning(std::string(cur_module->conversation_manager.sentences[0].id));
+	//WSE->Log.Warning("Option: %s", cur_module->conversation_manager.sentences[0].id.c_str());
+	//WSE->Log.Warning("Port: %d", network_manager->network_manager.server.port);
+	//WSE->Log.Warning("Test: %d", cur_visitor_site_no->cur_mission->cur_mission_template_no);
+	
+	
+	//for (int i = 0; i < string_manager->script_manager.num_scripts; ++i)
+	//{
+		//WSE->Log.Warning("Script [%d] %s", i, string_manager->script_manager.scripts[i].id.c_str());
+	//}
+
+	/*
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];
-	
+
 	mapped_script_ids[WSE_SCRIPT_CHAT_MESSAGE_RECEIVED] = "wse_chat_message_received";
 	mapped_script_ids[WSE_SCRIPT_CONSOLE_COMMAND_RECEIVED] = "wse_console_command_received";
 	mapped_script_ids[WSE_SCRIPT_GAME_SAVED] = "wse_game_saved";
@@ -81,7 +103,7 @@ void WSEGameContext::OnReadModuleFiles()
 		if (m_mapped_script_nos[i] < 0)
 			WSE->Log.Warning("Unable to map WSE script code: %s", mapped_script_ids[i]);
 	}
-
+	
 	for (int i = 0; i < warband->num_item_kinds; ++i)
 	{
 		for (int j = 0; j < warband->item_kinds[i].simple_triggers.num_simple_triggers; ++j)
@@ -89,7 +111,7 @@ void WSEGameContext::OnReadModuleFiles()
 			warband->item_kinds[i].simple_triggers.simple_triggers[j].operations.id.format("Item Kind [%d] %s Trigger [%d]", i, warband->item_kinds[i].id.c_str(), j);
 		}
 	}
-
+	
 	for (int i = 0; i < warband->num_scene_props; ++i)
 	{
 		for (int j = 0; j < warband->scene_props[i].simple_triggers.num_simple_triggers; ++j)
@@ -99,13 +121,13 @@ void WSEGameContext::OnReadModuleFiles()
 			warband->scene_props[i].body_part = NULL;
 		}
 	}
-
+	
 	for (int i = 0; i < warband->conversation_manager.num_sentences; ++i)
 	{
 		warband->conversation_manager.sentences[i].conditions.id.format("Sentence [%d] %s Conditions", i, warband->conversation_manager.sentences[i].id.c_str());
 		warband->conversation_manager.sentences[i].consequences.id.format("Sentence [%d] %s Consequences", i, warband->conversation_manager.sentences[i].id.c_str());
 	}
-
+	
 	for (int i = 0; i < warband->num_map_icons; ++i)
 	{
 		for (int j = 0; j < warband->map_icons[i].simple_triggers.num_simple_triggers; ++j)
@@ -113,12 +135,12 @@ void WSEGameContext::OnReadModuleFiles()
 			warband->map_icons[i].simple_triggers.simple_triggers[j].operations.id.format("Map Icon [%d] %s Trigger [%d]", i, warband->map_icons[i].id.c_str(), j);
 		}
 	}
-
+	
 	for (int i = 0; i < warband->script_manager.num_scripts; ++i)
 	{
 		warband->script_manager.scripts[i].operations.id.format("Script [%d] %s", i, warband->script_manager.scripts[i].id.c_str());
 	}
-
+	
 	for (int i = 0; i < warband->num_mission_templates; ++i)
 	{
 		for (int j = 0; j < warband->mission_templates[i].triggers.num_triggers; ++j)
@@ -127,7 +149,7 @@ void WSEGameContext::OnReadModuleFiles()
 			warband->mission_templates[i].triggers.triggers[j].consequences.id.format("Mission Template [%d] %s Trigger [%d] Consequences", i, warband->mission_templates[i].id.c_str(), j);
 		}
 	}
-
+	
 #if defined WARBAND
 	for (int i = 0; i < warband->num_menus; ++i)
 	{
@@ -153,23 +175,25 @@ void WSEGameContext::OnReadModuleFiles()
 		warband->tableau_manager.tableau_materials[i].operations.id.format("Tableau Material [%d] %s", i, warband->tableau_manager.tableau_materials[i].id.c_str());
 	}
 #endif
+	*/
 
 	WSE->SendContextEvent(this, ModuleLoad);
 }
 
 void WSEGameContext::OnReadGameFiles()
 {
+	/*
 	for (int i = 0; i < warband->cur_game->simple_triggers.num_simple_triggers; ++i)
 	{
 		warband->cur_game->simple_triggers.simple_triggers[i].operations.id.format("Simple Trigger [%d]", i);
 	}
-
+	
 	for (int i = 0; i < warband->cur_game->triggers.num_triggers; ++i)
 	{
 		warband->cur_game->triggers.triggers[i].conditions.id.format("Trigger [%d] Conditions", i);
 		warband->cur_game->triggers.triggers[i].consequences.id.format("Trigger [%d] Consequences", i);
 	}
-
+	*/
 	WSE->SendContextEvent(this, GameLoad);
 }
 

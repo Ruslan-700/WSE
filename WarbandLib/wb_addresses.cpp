@@ -3,9 +3,13 @@
 using namespace wb;
 
 #if defined WARBAND_VANILLA
-unsigned int addresses::operation_Execute_jumptable = 0x0057A510;
-unsigned int addresses::operation_Execute_entry = 0x0057A47C;
-unsigned int addresses::operation_Execute_exit_1 = 0x0057A4A9;
+//unsigned int addresses::operation_Execute_jumptable = 0x0057A510;
+//unsigned int addresses::operation_Execute_entry = 0x0057A47C;
+//unsigned int addresses::operation_Execute_exit_1 = 0x0057A4A9;
+//unsigned int addresses::operation_Execute_exit_2 = operation_Execute_entry + 8;
+unsigned int addresses::operation_Execute_jumptable = 0x0053642C;
+unsigned int addresses::operation_Execute_entry = 0x00536398;
+unsigned int addresses::operation_Execute_exit_1 = 0x005363C5;
 unsigned int addresses::operation_Execute_exit_2 = operation_Execute_entry + 8;
 
 unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x004C3910;
@@ -16,9 +20,11 @@ unsigned int addresses::network_server_ReceiveChatEvent_exit = network_server_Re
 
 unsigned int addresses::activate_entry = 0x005A68F2;
 
-unsigned int addresses::ReadModuleFiles_entry = 0x006669E1;
+//unsigned int addresses::ReadModuleFiles_entry = 0x006669E1;
+unsigned int addresses::ReadModuleFiles_entry = 0x00614241;
 
-unsigned int addresses::game_ReadModuleFiles_entry = 0x006688CE;
+//unsigned int addresses::game_ReadModuleFiles_entry = 0x006688CE;
+unsigned int addresses::game_ReadModuleFiles_entry = 0x0061615E;
 
 unsigned int addresses::ParseConsoleCommand_entry = 0;
 unsigned int addresses::ParseConsoleCommand_exit_1 = 0;
@@ -29,12 +35,18 @@ unsigned int addresses::Save_entry = 0x00606612;
 unsigned int addresses::CheckUrlReplies_entry = 0x005B293C;
 unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
 
-unsigned int addresses::network_client_ReceiveMessage_entry = 0x0049F8A3;
-unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0x004A38F9;
+//unsigned int addresses::network_client_ReceiveMessage_entry = 0x0049F8A3;
+//unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0x004A38F9;
+//unsigned int addresses::network_client_ReceiveMessage_exit_2 = network_client_ReceiveMessage_entry + 6;
+unsigned int addresses::network_client_ReceiveMessage_entry = 0x0046E163;
+unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0x004721A9;
 unsigned int addresses::network_client_ReceiveMessage_exit_2 = network_client_ReceiveMessage_entry + 6;
 
-unsigned int addresses::network_server_ReceiveMessage_entry = 0x004C4B41;
-unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x004C61D8;
+//unsigned int addresses::network_server_ReceiveMessage_entry = 0x004C4B41;
+//unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x004C61D8;
+//unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
+unsigned int addresses::network_server_ReceiveMessage_entry = 0x0048CB31;
+unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0048E1C8;
 unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
 
 unsigned int addresses::agent_ApplyAttackRecord_entry = 0x004F8850;
@@ -117,9 +129,11 @@ unsigned int addresses::agent_StartReloading_entry = 0x0050AC78;
 unsigned int addresses::agent_EndReloading_entry_1 = 0x0050B83E;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x0050B7DA;
 
-unsigned int addresses::operation_Execute = 0x0055FF90;
+//unsigned int addresses::operation_Execute = 0x0055FF90;
+unsigned int addresses::operation_Execute = 0x00518F50;
 
-unsigned int addresses::operation_manager_Execute = 0x0057CA40;
+//unsigned int addresses::operation_manager_Execute = 0x0057CA40;
+unsigned int addresses::operation_manager_Execute = 0x00538F30;
 
 unsigned int addresses::basic_game_ParseString = 0x00517150;
 
@@ -129,7 +143,15 @@ unsigned int addresses::DXUtil_Timer = 0x0040F660;
 
 unsigned int addresses::agent_SetAiBehavior = 0x0050EFC0;
 
-unsigned int addresses::game_data_ptr = 0x0094F118;
+//unsigned int addresses::game_data_ptr = 0x0094F118;
+unsigned int addresses::game_data_ptr = 0x00867198;
+
+unsigned int addresses::cur_module_data_ptr = 0x02D87328;
+unsigned int addresses::string_manager_data_ptr = 0x00E0BBD8;
+unsigned int addresses::basic_game_data_ptr = 0x00E02938;
+unsigned int addresses::network_manager_data_ptr = 0x008AE318;
+unsigned int addresses::cur_visitor_site_no_data_ptr = 0x008EA038;
+
 #elif defined WARBAND_STEAM
 unsigned int addresses::operation_Execute_jumptable = 0x0057E410;
 unsigned int addresses::operation_Execute_entry = 0x0057E37C;
@@ -259,9 +281,13 @@ unsigned int addresses::agent_SetAiBehavior = 0x00512D60;
 
 unsigned int addresses::game_data_ptr = 0x009463D0;
 #elif defined WARBAND_DEDICATED
-unsigned int addresses::operation_Execute_jumptable = 0x004C2FC8;
-unsigned int addresses::operation_Execute_entry = 0x004C2F36;
-unsigned int addresses::operation_Execute_exit_1 = 0x004C2F63;
+//unsigned int addresses::operation_Execute_jumptable = 0x004C2FC8;
+//unsigned int addresses::operation_Execute_entry = 0x004C2F36;
+//unsigned int addresses::operation_Execute_exit_1 = 0x004C2F63;
+//unsigned int addresses::operation_Execute_exit_2 = operation_Execute_entry + 8;
+unsigned int addresses::operation_Execute_jumptable = 0x004C5ED8;
+unsigned int addresses::operation_Execute_entry = 0x004C5E45;
+unsigned int addresses::operation_Execute_exit_1 = 0x004C5E72;
 unsigned int addresses::operation_Execute_exit_2 = operation_Execute_entry + 8;
 
 unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x00438340;
@@ -272,9 +298,11 @@ unsigned int addresses::network_server_ReceiveChatEvent_exit = network_server_Re
 
 unsigned int addresses::activate_entry = 0;
 
-unsigned int addresses::ReadModuleFiles_entry = 0x004EDF33;
+//unsigned int addresses::ReadModuleFiles_entry = 0x004EDF33;
+unsigned int addresses::ReadModuleFiles_entry = 0x004F4DC3;
 
-unsigned int addresses::game_ReadModuleFiles_entry = 0x004EF38E;
+//unsigned int addresses::game_ReadModuleFiles_entry = 0x004EF38E;
+unsigned int addresses::game_ReadModuleFiles_entry = 0x004F627E;
 
 unsigned int addresses::ParseConsoleCommand_entry = 0x004E1A4F;
 unsigned int addresses::ParseConsoleCommand_exit_1 = 0x004E61B6;
@@ -289,9 +317,13 @@ unsigned int addresses::network_client_ReceiveMessage_entry = 0;
 unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0;
 unsigned int addresses::network_client_ReceiveMessage_exit_2 = 0;
 
-unsigned int addresses::network_server_ReceiveMessage_entry = 0x00439561;
-unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0043AC51;
+//unsigned int addresses::network_server_ReceiveMessage_entry = 0x00439561;
+//unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0043AC51;
+//unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
+unsigned int addresses::network_server_ReceiveMessage_entry = 0x0043A071;
+unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0043B761;
 unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
+
 
 unsigned int addresses::agent_ApplyAttackRecord_entry = 0x0046D5B5;
 unsigned int addresses::agent_ApplyAttackRecord_exit = 0x0046D5D5;
@@ -373,9 +405,11 @@ unsigned int addresses::agent_StartReloading_entry = 0x00465F55;
 unsigned int addresses::agent_EndReloading_entry_1 = 0x004669C2;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x00466A03;
 
-unsigned int addresses::operation_Execute = 0x004AD270;
+//unsigned int addresses::operation_Execute = 0x004AD270;
+unsigned int addresses::operation_Execute = 0x004AE3C0;
 
-unsigned int addresses::operation_manager_Execute = 0x004C54E0;
+//unsigned int addresses::operation_manager_Execute = 0x004C54E0;
+unsigned int addresses::operation_manager_Execute = 0x004C89C0;
 
 unsigned int addresses::basic_game_ParseString = 0x00481800;
 
@@ -385,5 +419,13 @@ unsigned int addresses::DXUtil_Timer = 0x00401040;
 
 unsigned int addresses::agent_SetAiBehavior = 0x0046F3C0;
 
-unsigned int addresses::game_data_ptr = 0x006D8428;
+//unsigned int addresses::game_data_ptr = 0x006D8428;
+unsigned int addresses::game_data_ptr = 0x006E2420;
+
+unsigned int addresses::cur_module_data_ptr = 0x02A163E8;
+unsigned int addresses::string_manager_data_ptr = 0x00ABCFF0;
+unsigned int addresses::basic_game_data_ptr = 0x00AB4BF8;
+unsigned int addresses::network_manager_data_ptr = 0x006E2420;
+unsigned int addresses::cur_visitor_site_no_data_ptr = 0x007286E0;
+
 #endif

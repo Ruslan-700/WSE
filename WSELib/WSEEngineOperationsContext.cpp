@@ -131,14 +131,14 @@ void UpdateMaterial(WSECoreOperationsContext *context)
 
 	if (!m2)
 		context->ScriptError("Invalid material %s", m2n.c_str());
-	
+	/*
 	if (warband->rendering_event_1)
 	{
 		LeaveCriticalSection(&warband->multithreading_critical_section);
 		EnterCriticalSection(&warband->directx_critical_section);
 		EnterCriticalSection(&warband->multithreading_critical_section);
 	}
-		
+	*/	
 	m1->shader = m2->shader;
 	m1->shader_name = m2->shader_name;
 	m1->specular_coefficient = m2->specular_coefficient;
@@ -148,9 +148,10 @@ void UpdateMaterial(WSECoreOperationsContext *context)
 	m1->textures[2] = m2->textures[2];
 	m1->textures[3] = m2->textures[3];
 	m1->textures[4] = m2->textures[4];
-
+	/*
 	if (warband->rendering_event_1)
 		LeaveCriticalSection(&warband->directx_critical_section);
+	*/
 #endif
 }
 

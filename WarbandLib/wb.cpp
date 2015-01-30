@@ -104,9 +104,11 @@ void wb::check_types()
 	assert_size<multiplayer_server>(792, 792);
 	assert_size<network_buffer>(1536, 1536);
 	assert_size<network_client>(344, -1);
-	assert_size<network_manager>(16072, 16040);
+	//assert_size<network_manager>(16072, 16040);
+	assert_size<network_manager>(3760, 3728);
 	assert_size<network_player>(66064, 66064);
-	assert_size<network_server>(12416, 12728);
+	//assert_size<network_server>(12416, 12728);
+	assert_size<network_server>(104, 416);
 
 	assert_size<game_window>(316, -1);
 	assert_size<initial_window>(424, -1);
