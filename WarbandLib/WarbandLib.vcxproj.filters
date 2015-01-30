@@ -1,0 +1,758 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\wb">
+      <UniqueIdentifier>{42c5140b-d84e-4ed5-8e78-27149ee02693}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rgl">
+      <UniqueIdentifier>{fbc4d0d6-f182-4618-a64b-4ffac61efbf7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\wb">
+      <UniqueIdentifier>{38905562-37dc-47c3-bbe8-f316ba2653ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\rgl">
+      <UniqueIdentifier>{5eb5c7f7-f8b3-43a6-b651-d45b0c125657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\stl">
+      <UniqueIdentifier>{9c5322d9-5ae4-48d9-87b3-8ea5af4ded01}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rgl_ai_mesh.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_board_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_body.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_body_part.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_bone.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_button_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_camera.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_capsule.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_channel.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_check_box_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_combo_button_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_combo_label_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_common.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_composite_body.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_container_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_effect_state_manager.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_entity.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_font.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_game_button_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_graphics_context.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_hash_vector.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_hlsl_technique.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_hyperlink_text_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_image_button_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_ini_file.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_input_binary_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_input_text_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_binary_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_input_binary_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_input_text_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_output_binary_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_output_text_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_io_text_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_light.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_list_box_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_manifold.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_manifold_body.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_material.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_matrix.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_memory.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_mesh.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_mesh_entity.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_meta_mesh.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_number_box_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_output_binary_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_output_binary_file_stream_auto_flush.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_output_text_file_stream.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_particle_system.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_physics.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_pool.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_popup_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_postfx_node.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_priority_selector.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_progress_bar_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_quad.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_render_context.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_render_mesh.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_render_params.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_renderer.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_resource.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_resource_manager.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_scene.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_scene_grid.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_scene_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_scrollable_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_scrollbar_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_shader.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_shadowmap.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_simple_button_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_simple_text_box_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_skeleton.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_skeleton_anim.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_skeleton_model.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_slider_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_sphere.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_stable_vector.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_static_deque.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_static_entity.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_strategic_entity.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_string.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_terrain.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_text_box_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_texture.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_timer.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_vector2.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_vector4.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_widget.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_window_manager.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="action.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="agent.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="agent_ai.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="banner_selection_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="basic_game.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="basics.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="config_manager.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="conversation.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="core_game.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="face_gen_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="face_generator.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="faction.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="fading_out_entity.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="flora_kind.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_data.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_keys.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_log_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_object.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_string.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="game_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="graphics_options_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="ground.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="info_page.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="initial_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="input_manager.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="inventory_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="item.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="item_kind.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="item_modifier.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="language_manager.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="map_event.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="map_icon.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="map_track.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="map_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mbnet_host.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mbnet_peer.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="meeting_redirector.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="meta_mission.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="missile.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mission.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mission_grid.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mission_object.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="mission_template.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="module_settings.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="multiplayer_data.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="multiplayer_event.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="multiplayer_profile.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="multiplayer_server.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="music.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="network.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="network_buffer.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="network_client.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="network_player.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="network_server.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="notes_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="operation.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="particle_system.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="party.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="party_template.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="postfx.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="presentation.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="presentation_container.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="presentation_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="quest.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="registry_manager.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="scene_prop.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="script.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_game_object.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="simple_trigger.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="site.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="skeleton.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="skill.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="skybox.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="steam.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="tableau.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="tactical_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain_generator.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="trigger.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="troop.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="yes_no_window.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_addresses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wb_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wb_addresses.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="warband.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stl_deque.h">
+      <Filter>Header Files\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="stl_vector_bool.h">
+      <Filter>Header Files\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="stl_list.h">
+      <Filter>Header Files\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="stl_vector.h">
+      <Filter>Header Files\stl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_bounding_box.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_ipo.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_quaternion.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="mbnet.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_recycled_vector.h">
+      <Filter>Header Files\rgl</Filter>
+    </ClInclude>
+    <ClInclude Include="multiplayer_replication.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="rgl_functions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>Header Files\wb</Filter>
+    </ClInclude>
+    <ClInclude Include="stl_priority_queue.h">
+      <Filter>Header Files\stl</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="agent.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="basic_game.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="face_generator.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="game_keys.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="game_string.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="input_manager.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="item.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="item_kind.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="language_manager.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="mission_grid.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="multiplayer_event.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="multiplayer_server.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="network_buffer.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="network_player.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="network_server.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="operation.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="particle_system.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="script.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="simple_trigger.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="trigger.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_bone.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_common.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_light.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_matrix.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_memory.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_mesh.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_meta_mesh.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_resource_manager.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_scene.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_skeleton.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_strategic_entity.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_string.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_timer.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_vector2.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_vector4.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_window_manager.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_addresses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wb_addresses.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wb_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="warband.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="troop.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_bounding_box.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_functions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_capsule.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_body_part.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="rgl_quaternion.cpp">
+      <Filter>Source Files\rgl</Filter>
+    </ClCompile>
+    <ClCompile Include="missile.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

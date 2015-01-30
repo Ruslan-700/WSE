@@ -1,0 +1,97 @@
+#pragma once
+
+#include "rgl.h"
+
+namespace wb
+{
+	struct config_manager
+	{
+		int number_of_corpses;
+		int number_of_ragdolls;
+		int auto_gfx_quality;
+		float music_volume;
+		float sound_volume;
+		float mouse_sensitivity;
+		int invert_mouse;
+		int blood_stains;
+		int enable_lighting;
+		int enable_particles;
+		int enable_character_shadows;
+		int enable_environment_shadows;
+		int enable_accurate_shadows;
+		int grass_density;
+		int anisotropic_filtering;
+		int number_of_corpses_effective;
+		int number_of_ragdolls_effective;
+		int reduce_combat_ai;
+		int reduce_campaign_ai;
+		int combat_speed;
+		int combat_difficulty;
+		int friend_combat_difficulty;
+		int display_labels;
+		int verbose_damage;
+		int verbose_shot_difficulty;
+		int verbose_casualties;
+		int display_targeting_reticule;
+		int display_attack_direction;
+		int turn_camera_with_horse_in_first_person;
+		int attack_direction_control;
+		int defend_direction_control;
+		int lance_control;
+		float battle_size;
+		int verbose_experience;
+		int realistic_shadows_on_plants;
+		float gamma;
+		float character_detail;
+		float character_shadow_detail;
+		float control_mouse_movement_y_scale;
+		int adapter_format;
+		int first_time;
+		int texture_detail;
+		int use_ondemand_textures;
+		int use_ondemand_textures_mt;
+		int show_framerate;
+		int max_framerate;
+		int start_windowed;
+		int skip_tutorial;
+		int enable_edit_mode;
+		int force_single_threading;
+		int debug_mode;
+		int cheat_mode;
+		int enable_blood;
+		int fake_reflections;
+		int disable_frequency_variation;
+		int use_vertex_shaders;
+		int use_pixel_shaders;
+		int disable_music;
+		int disable_sound;
+		int enable_w_buffering;
+		int render_buffer_size;
+		int display_width;
+		int display_height;
+		int display_bits;
+		int antialiasing;
+		int sample_quality;
+		int alpha2coverage;
+		int force_vsync;
+		int u1;
+		int shadowmap_quality;
+		int u2;
+		int u3;
+		int shader_quality;
+		int postfx_dof;
+		int postfx_hdr;
+		int postfx_autoexp;
+		float flora_degrade_distance;
+		int flora_lod_detail;
+		int use_instancing;
+		int use_secure_connection;
+		int max_number_of_connections;
+		int look_for_server_on_this_machine;
+		int use_winmm_audio;
+		int enable_version_check;
+		int enable_aspect_ratio_control;
+		int realistic_headshots;
+		int enable_gamepad_vibration;
+	};
+}

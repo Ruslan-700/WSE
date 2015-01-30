@@ -1,0 +1,82 @@
+#pragma once
+
+#include "rgl.h"
+#include "game_window.h"
+
+namespace wb
+{
+	struct graphics_options_window : game_window
+	{
+		rgl::popup_widget *popup_widget;
+		rgl::game_button_widget *done_button_widget;
+		void *tab_widget;
+		rgl::widget *game_logo_widget;
+		rgl::slider_widget *gamma_slider_widget;
+		rgl::slider_widget *character_detail_slider_widget;
+		rgl::slider_widget *character_shadow_detail_slider_widget;
+		rgl::slider_widget *texture_quality_slider_widget;
+		rgl::slider_widget *grass_density_slider_widget;
+		rgl::combo_button_widget *number_of_corpses_combo_button_widget;
+		rgl::combo_button_widget *number_of_ragdolls_combo_button_widget;
+		rgl::combo_label_widget *blood_stains_combo_label_widget;
+		rgl::combo_label_widget *realistic_shadows_on_plants_combo_label_widget;
+		rgl::combo_button_widget *screen_resolution_combo_button_widget;
+		rgl::combo_label_widget *shadow_quality_combo_label_widget;
+		rgl::widget *shader_quality_text_widget;
+		rgl::combo_label_widget *shader_quality_combo_label_widget;
+		rgl::widget *antialiasing_text_widget;
+		rgl::widget *hdr_mode_text_widget;
+		rgl::combo_label_widget *antialiasing_combo_label_widget;
+		rgl::combo_label_widget *hdr_mode_combo_label_widget;
+		rgl::check_box_widget *dof_mode_check_box_widget;
+		rgl::check_box_widget *autoexp_check_box_widget;
+		rgl::combo_label_widget *flora_lod_detail_combo_label_widget;
+		rgl::widget *flora_lod_detail_text_widget;
+		rgl::slider_widget *flora_degrade_distance_slider_widget;
+		rgl::widget *flora_degrade_distance_text_widget;
+		rgl::widget *flora_degrade_distance_value_text_widget;
+		rgl::check_box_widget *instancing_check_box_widget;
+		rgl::widget *overall_quality_text_widget;
+		rgl::combo_button_widget *overall_quality_combo_button_widget;
+		rgl::game_button_widget *render_method_button;
+		rgl::widget *texture_detail_text_widget;
+		rgl::widget *texture_detail_value_text_widget;
+		rgl::widget *shadow_quality_text_widget;
+		rgl::widget *render_method_text_widget;
+		rgl::widget *render_method_value_text_widget;
+		rgl::widget *screen_resolution_text_widget;
+		rgl::widget *gamma_text_widget;
+		rgl::widget *gamma_value_text_widget;
+		rgl::widget *grass_density_text_widget;
+		rgl::widget *grass_density_value_text_widget;
+		rgl::widget *character_detail_text_widget;
+		rgl::widget *character_detail_low_text_widget;
+		rgl::widget *character_detail_high_text_widget;
+		rgl::widget *character_shadow_detail_text_widget;
+		rgl::widget *character_shadow_detail_low_text_widget;
+		rgl::widget *character_shadow_detail_high_text_widget;
+		rgl::widget *blood_stains_text_widget;
+		rgl::check_box_widget *dynamic_lighting_check_box_widget;
+		rgl::check_box_widget *character_shadows_check_box_widget;
+		rgl::check_box_widget *environment_shadows_check_box_widget;
+		rgl::widget *realistic_shadows_on_plants_text_widget;
+		rgl::check_box_widget *particles_check_box_widget;
+		rgl::check_box_widget *anisotropy_check_box_widget;
+		rgl::check_box_widget *fast_water_reflection_check_box_widget;
+		rgl::widget *number_of_corpses_text_widget;
+		rgl::widget *number_of_ragdolls_text_widget;
+		rgl::widget *performance_meter_text_widget;
+		rgl::scrollable_widget *scrollable_widget;
+		int texture_detail;
+		int blood_stains;
+		int enable_particles;
+		int postfx_hdr;
+		int shader_quality;
+		bool dof_enabled;
+		int use_instancing;
+		int anisotropic_filtering;
+		int flora_lod_detail;
+		bool require_reload;
+		bool done;
+	};
+}

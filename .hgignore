@@ -1,0 +1,6 @@
+syntax: glob
+WSEBuild/
+BuildFiles/
+WarbandScriptEnhancer.opensdf
+WarbandScriptEnhancer.sdf
+WarbandScriptEnhancer.v12.suo

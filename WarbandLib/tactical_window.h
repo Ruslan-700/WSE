@@ -1,0 +1,114 @@
+#pragma once
+
+#include "rgl.h"
+#include "game_window.h"
+#include "presentation_container.h"
+
+namespace wb
+{
+	struct tactical_window : game_window
+	{
+		rgl::popup_widget *popup_widget;
+		stl::vector<presentation_container *> presentations;
+		rgl::scene_widget *scene_widget;
+		int u1;
+		rgl::text_box_widget *console_text_box_widget;
+		rgl::widget *console_label_widget;
+		rgl::widget *notification_widget_1;
+		rgl::widget *notification_widget_2;
+		float last_round_start_time_left;
+		rgl::widget *watching_widget_1;
+		rgl::widget *watching_widget_2;
+		int last_watching_agent_no;
+		rgl::progress_bar_widget *mission_object_use_time_progress_bar_widget;
+		rgl::progress_bar_widget *mission_object_health_progress_bar_widget;
+		float crosshair_transparencies[3];
+		float attack_arrow_transparencies[4];
+		rgl::widget *ammo_widget_1;
+		rgl::widget *ammo_widget_2;
+		rgl::container_widget *status_container_widget;
+		rgl::widget *player_status_widget;
+		rgl::widget *horse_status_widget;
+		rgl::widget *shield_status_widget;
+		rgl::widget *ammo_status_widget;
+		rgl::widget *player_health_widget_1;
+		rgl::widget *horse_health_widget_1;
+		rgl::widget *player_health_widget_2;
+		rgl::widget *horse_health_widget_2;
+		rgl::mesh *item_image_mesh;
+		rgl::mesh *item_image_shadow_mesh;
+		rgl::widget *item_ready_status_widget;
+		rgl::mesh *item_ready_status_mesh;
+		rgl::widget *gold_widget_1;
+		rgl::widget *gold_widget_2;
+		rgl::widget *gold_image_widget;
+		int last_gold;
+		int u2;
+		int u3;
+		rgl::mesh *health_bar_mesh;
+		rgl::mesh *horse_health_bar_mesh;
+		rgl::mesh *full_health_bar_mesh;
+		rgl::container_widget *orders_container_widget;
+		rgl::widget *order_label_widgets[8];
+		float last_hit_points_float;
+		float last_horse_hit_points_float;
+		int last_ammo_count;
+		item last_item;
+		float last_shield_health;
+		int last_shield_status;
+		rgl::camera cam;
+		rgl::vector4 camera_origin;
+		rgl::matrix camera_position;
+		float camera_horizontal_rotation;
+		float camera_vertical_rotation;
+		float camera_horizontal_rotation_diff;
+		float camera_vertical_rotation_diff;
+		float camera_prev_horizontal_rotation;
+		float camera_prev_vertical_rotation;
+		bool viewing_agent;
+		float camera_zoom;
+		float camera_height;
+		float camera_fov;
+		rgl::vector4 u4;
+		int camera_ghost_mode;
+		int camera_agent_no;
+		int camera_prev_agent_no;
+		int camera_ghost_agent_no;
+		int u5;
+		rgl::timer use_timer;
+		int use_object_type;
+		int use_object_no;
+		int u6;
+		int use_object_in_range;
+		int u7;
+		int leave_area;
+		bool stop_time;
+		int u8[2];
+		float camera_obstruction_zoom;
+		bool edit_mode_terrain_structure_changed;
+		bool update_player_agent_health;
+		int player_agent_old_health;
+		bool u9;
+		bool edit_mode_selection_changed;
+		rgl::vector4 camera_velocity;
+		rgl::vector4 u10;
+		int u11;
+		int u12;
+		int u13;
+		int u14;
+		bool camera_smooth_mode;
+		rgl::string console_text;
+		rgl::timer order_timer;
+		bool order_flag_being_moved;
+		rgl::strategic_entity *order_flag_entity;
+		int order_type;
+		int order_subtype;
+		bool update_order_menu;
+		int u15;
+		rgl::timer order_menu_timer;
+		int u16;
+		rgl::timer cur_move_forward_timer;
+		rgl::timer prev_move_forward_timer;
+		float u17;
+	};
+}

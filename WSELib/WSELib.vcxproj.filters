@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Source Files\contexts">
+      <UniqueIdentifier>{4954a1d0-43df-4eba-a1f9-b20d085a044c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\operations">
+      <UniqueIdentifier>{6bc5129d-3a97-4a0a-b84d-4682a4778009}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\contexts">
+      <UniqueIdentifier>{e054c3e2-9a5f-48f4-9f30-caa286e11cd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\operations">
+      <UniqueIdentifier>{5ad7763e-3e87-4674-ad40-d84200ac88c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ogp">
+      <UniqueIdentifier>{cdea4665-7f17-431b-8b02-4ff28c0ede36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\ogp">
+      <UniqueIdentifier>{44825d19-0423-4d2e-99b3-fa25e77075eb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mup">
+      <UniqueIdentifier>{fe5028f6-cec0-48c6-a7c0-660734205ab9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mup">
+      <UniqueIdentifier>{d798bc00-b08a-4c43-af30-a70d28fcaf91}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="WSEMissionContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSENetworkContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEProfilingContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEGameContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEScreenContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEScriptingContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEStringOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEOperationContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSECoreOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSESkinOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEItemOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDictionaryOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDebugOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEAgentOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEMultiplayerOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSENetworkOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPartyOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPlayerOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSETroopOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPresentationOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEMissionOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEMathOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDebugContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEMenuOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPositionOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEOptionsOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPerformanceContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEInputOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPluginWrapperContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEUtils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSE.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEBitStream.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEContext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDictionary.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEHookManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEHooks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEIniFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEOGPServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEPlugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ogp\ogp.h">
+      <Filter>Header Files\ogp</Filter>
+    </ClInclude>
+    <ClInclude Include="ogp\ogp_basictypes.h">
+      <Filter>Header Files\ogp</Filter>
+    </ClInclude>
+    <ClInclude Include="ogp\ogp_intern.h">
+      <Filter>Header Files\ogp</Filter>
+    </ClInclude>
+    <ClInclude Include="ogp\ogp_server.h">
+      <Filter>Header Files\ogp</Filter>
+    </ClInclude>
+    <ClInclude Include="ogp\ogp_settings.h">
+      <Filter>Header Files\ogp</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEFloatingPointOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEObjectManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSESiteOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEEditModeOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEEngineOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParser.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserBase.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserBytecode.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserCallback.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserDef.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserError.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserFixes.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserInt.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserStack.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserTemplateMagic.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserToken.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+    <ClInclude Include="mup\muParserTokenReader.h">
+      <Filter>Header Files\mup</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="WSEMissionContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSENetworkContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEProfilingContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEGameContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEScreenContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEScriptingContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEStringOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEOperationContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSECoreOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEAgentOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEDebugOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEDictionaryOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEItemOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEMultiplayerOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSENetworkOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPartyOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPlayerOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPresentationOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSETroopOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSESkinOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEMissionOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEMathOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEDebugContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEMenuOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPositionOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEOptionsOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPerformanceContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEInputOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEPluginWrapperContext.cpp">
+      <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEOGPServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSE.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEBitStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEContext.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEDictionary.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEHookManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEHooks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEIniFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELib.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ogp\ogp_intern.c">
+      <Filter>Source Files\ogp</Filter>
+    </ClCompile>
+    <ClCompile Include="ogp\ogp_server.c">
+      <Filter>Source Files\ogp</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEFloatingPointOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEObjectManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSESiteOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEEditModeOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEEngineOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParser.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserBase.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserBytecode.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserCallback.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserError.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserInt.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="mup\muParserTokenReader.cpp">
+      <Filter>Source Files\mup</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

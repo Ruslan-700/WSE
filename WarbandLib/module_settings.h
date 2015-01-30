@@ -1,0 +1,97 @@
+#pragma once
+
+#include "rgl.h"
+
+namespace wb
+{
+	struct module_settings
+	{
+		rgl::string name;
+		int compatible_with_warband;
+		int scan_module_textures;
+		int scan_module_sounds;
+		float time_multiplier;
+		float seeing_range;
+		float track_spotting_multiplier;
+		float blood_multiplier;
+		int leadership_skill_bonus;
+		int prisoner_management_skill_bonus;
+		int base_companion_limit;
+		float player_xp_multiplier;
+		float hero_xp_multiplier;
+		float regulars_xp_multiplier;
+		float hero_wounded_threshold;
+		float player_wounded_threshold;
+		int num_hints;
+		float map_sea_direction;
+		float map_sea_wave_rotation;
+		float map_sea_speed_x;
+		float map_sea_speed_y;
+		float map_river_direction;
+		float map_river_speed_x;
+		float map_river_speed_y;
+		float map_max_distance;
+		int map_tree_types;
+		int map_snow_tree_types;
+		int map_steppe_tree_types;
+		int map_desert_tree_types;
+		int starting_year;
+		int starting_month;
+		int starting_day;
+		float damage_interrupt_attack_threshold;
+		float damage_interrupt_attack_threshold_mp;
+		float armor_soak_factor_against_cut;
+		float armor_soak_factor_against_pierce;
+		float armor_soak_factor_against_blunt;
+		float armor_reduction_factor_against_cut;
+		float armor_reduction_factor_against_pierce;
+		float armor_reduction_factor_against_blunt;
+		float missile_damage_speed_power;
+		float melee_damage_speed_power;
+		int multiplayer_walk_enabled;
+		int mission_object_prune_time;
+		float horse_charge_damage_multiplier;
+		float couched_lance_damage_multiplier;
+		float fall_damage_multiplier;
+		float shield_penetration_offset;
+		float shield_penetration_factor;
+		int disable_food_slot;
+		int limit_hair_colors;
+		int show_faction_color;
+		int show_quest_notes;
+		int show_multiplayer_gold;
+		int can_crouch;
+		int use_advanced_formation;
+		int use_crossbow_as_firearm;
+		int can_reload_while_moving;
+		int can_run_faster_with_skills;
+		int use_phased_reload;
+		int horses_try_running_away;
+		int lance_pike_effect_speed;
+		int no_friendly_fire_for_bots;
+		int sync_ragdoll_effects;
+		int can_adjust_camera_distance;
+		int has_forced_particles;
+		int can_objects_make_sound;
+		int disable_zoom;
+		int has_tutorial;
+		int has_single_player;
+		int has_multiplayer;
+		int can_use_scene_props_in_single_player;
+		int disable_attack_while_jumping;
+		int disable_high_hdr;
+		int has_accessories_for_female;
+		int dont_load_regular_troop_inventories;
+		bool show_party_ids_instead_of_names;
+		int auto_create_note_indices;
+		int works_with_version_min;
+		int works_with_version_max;
+		int u1[10];
+		float air_friction_arrow;
+		float air_friction_bullet;
+		float extra_penetration_factor_soak;
+		float extra_penetration_factor_reduction;
+		float crush_through_threshold;
+		int screenshot_format;
+	};
+}
