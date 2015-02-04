@@ -142,7 +142,7 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		}
 		*/
 		//warband->network_manager.anti_cheat = 0;
-		network_manager->network_manager.anti_cheat = 0;
+		data_network_manager->network_manager.anti_cheat = 0;
 		m_horse_ff = false;
 		m_show_xhair = true;
 		m_break_compat = !WSE->ModuleSettingsIni.Bool("", "network_compatible", true);

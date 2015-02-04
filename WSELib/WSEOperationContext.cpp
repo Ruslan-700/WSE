@@ -104,7 +104,7 @@ void WSEOperationContext::ExtractFixedPoint(float &value, float def)
 
 	value = GetNextOperand() / (float)warband->basic_game.fixed_point_multiplier;
 }
-
+/*
 void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 {
 	if (!HasMoreOperands())
@@ -141,6 +141,44 @@ void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 
 	warband->string_manager.get_operand_string(temp, index, type);
 	warband->basic_game.parse_string(value, temp);
+}
+*/
+void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
+{
+	if (!HasMoreOperands())
+	{
+		value = def;
+		return;
+	}
+
+	int type = GetOperandType();
+	int index = GetNextOperand();
+
+	switch (type)
+	{
+	case 0:
+		if (index < 0 || index >= 128)
+			ScriptError("invalid string register index %d", index);
+
+		break;
+	case 3:
+		if (index < 0 || index >= data_string_manager->string_manager.num_strings)
+			ScriptError("invalid string index %d", index);
+
+		break;
+	case 22:
+		if (index < 0 || index >= data_string_manager->string_manager.num_quick_strings)
+			ScriptError("invalid quick string index %d", index);
+
+		break;
+	default:
+		ScriptError("operand type %d is not a string", type);
+	}
+
+	rgl::string temp;
+
+	data_string_manager->string_manager.get_operand_string(temp, index, type);
+	data_basic_game->basic_game.parse_string(value, temp);
 }
 
 void WSEOperationContext::ExtractString(std::string &value, const std::string &def)
@@ -184,7 +222,7 @@ void WSEOperationContext::ExtractRegister(int &value)
 	if (value < 0 || value >= 128)
 		ScriptError("invalid register %d", value);
 }
-
+/*
 void WSEOperationContext::ExtractScriptNo(int &value)
 {
 	value = GetNextOperand();
@@ -317,7 +355,7 @@ void WSEOperationContext::ExtractSoundNo(int &value)
 void WSEOperationContext::ExtractPartyNo(int &value)
 {
 	value = GetNextOperand();
-	
+
 	if (!warband->cur_game || !warband->cur_game->parties.is_valid_index(value))
 		ScriptError("invalid party no %d", value);
 }
@@ -367,6 +405,202 @@ void WSEOperationContext::ExtractMissionObjectNo(int &value)
 	value = GetNextOperand();
 
 	if (!warband->cur_mission || !warband->cur_mission->mission_objects.is_valid_index(value))
+		ScriptError("invalid scene prop instance no %d", value);
+}
+
+void WSEOperationContext::ExtractOverlayNo(int &value)
+{
+#if defined WARBAND
+	value = GetNextOperand();
+
+	if (!warband->cur_presentation || value < 0 || value >= warband->cur_presentation->overlays.size())
+		ScriptError("invalid overlay no %d", value);
+#endif
+}
+*/
+
+void WSEOperationContext::ExtractScriptNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= data_string_manager->script_manager.num_scripts)
+		ScriptError("invalid script no %d", value);
+}
+
+void WSEOperationContext::ExtractMenuNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->num_menus)
+		ScriptError("invalid menu no %d", value);
+}
+
+void WSEOperationContext::ExtractItemKindNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->num_item_kinds)
+		ScriptError("invalid item kind no %d", value);
+}
+
+void WSEOperationContext::ExtractScenePropNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->num_scene_props)
+		ScriptError("invalid scene prop no %d", value);
+}
+
+void WSEOperationContext::ExtractItemModifierNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= NUM_ITEM_MODIFIERS)
+		ScriptError("invalid item modifier no %d", value);
+}
+
+void WSEOperationContext::ExtractPartyTemplateNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->num_party_templates)
+		ScriptError("invalid party template no %d", value);
+}
+
+void WSEOperationContext::ExtractParticleSystemNo(int &value)
+{
+#if defined WARBAND
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->particle_system_manager.num_particle_systems)
+		ScriptError("invalid particle system no %d", value);
+#endif
+}
+
+void WSEOperationContext::ExtractTroopNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_troops)
+		ScriptError("invalid troop no %d", value);
+}
+
+void WSEOperationContext::ExtractFactionNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_factions)
+		ScriptError("invalid faction no %d", value);
+}
+
+void WSEOperationContext::ExtractSkinNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->face_generator.num_skins)
+		ScriptError("invalid skin no %d", value);
+}
+
+void WSEOperationContext::ExtractSkillNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= NUM_SKILLS)
+		ScriptError("invalid skill no %d", value);
+}
+
+void WSEOperationContext::ExtractQuestNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_quests)
+		ScriptError("invalid quest no %d", value);
+}
+
+void WSEOperationContext::ExtractSiteNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_sites)
+		ScriptError("invalid scene no %d", value);
+}
+
+void WSEOperationContext::ExtractPresentationNo(int &value)
+{
+#if defined WARBAND
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->presentation_manager.num_presentations)
+		ScriptError("invalid presentation no %d", value);
+#endif
+}
+
+void WSEOperationContext::ExtractSoundNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->sound_manager.num_sounds)
+	{
+		if (!warband->config.disable_sound)
+			ScriptError("invalid sound no %d", value);
+		else
+			throw 0;
+	}
+}
+
+void WSEOperationContext::ExtractPartyNo(int &value)
+{
+	value = GetNextOperand();
+	
+	if (!cur_visitor_site_no->cur_game || !cur_visitor_site_no->cur_game->parties.is_valid_index(value))
+		ScriptError("invalid party no %d", value);
+}
+
+void WSEOperationContext::ExtractPartyStackNo(int &value, int party_id)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= cur_visitor_site_no->cur_game->parties[party_id].num_stacks)
+		ScriptError("invalid party stack no %d", value);
+}
+
+void WSEOperationContext::ExtractPlayerNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!data_basic_game->basic_game.game_type || value < 0 || value >= NUM_NETWORK_PLAYERS || data_string_manager->multiplayer_data.players[value].status != wb::nps_active)
+		ScriptError("invalid player no %d", value);
+}
+
+void WSEOperationContext::ExtractProfileNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!data_basic_game->basic_game.game_type || value < 0 || value >= data_string_manager->multiplayer_data.profile_manager.profiles.size())
+		ScriptError("invalid profile no %d", value);
+}
+
+void WSEOperationContext::ExtractTeamNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!data_basic_game->basic_game.game_type || value < 0 || value >= 4)
+		ScriptError("invalid team no %d", value);
+}
+
+void WSEOperationContext::ExtractAgentNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_mission || !cur_visitor_site_no->cur_mission->agents.is_valid_index(value))
+		ScriptError("invalid agent no %d", value);
+}
+
+void WSEOperationContext::ExtractMissionObjectNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!cur_visitor_site_no->cur_mission || !cur_visitor_site_no->cur_mission->mission_objects.is_valid_index(value))
 		ScriptError("invalid scene prop instance no %d", value);
 }
 
@@ -429,7 +663,7 @@ void WSEOperationContext::WindowsAPIError(std::string format, ...) const
 	wb::script::error(buffer);
 	throw 0;
 }
-
+/*
 std::string WSEOperationContext::CreateFile(const std::string &file, const std::string &extension)
 {
 	std::string path = WSE->SettingsIni.String("wse", "storage_path");
@@ -452,11 +686,47 @@ std::string WSEOperationContext::CreateFile(const std::string &file, const std::
 
 	if (path[path.length() - 1] != '\\')
 		path.append("\\");
-	
+
 	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
 		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
 
 	path += warband->cur_module_name.c_str();
+
+	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
+		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
+
+	path += "\\" + file + "." + extension;
+
+	return path;
+}
+*/
+std::string WSEOperationContext::CreateFile(const std::string &file, const std::string &extension)
+{
+	std::string path = WSE->SettingsIni.String("wse", "storage_path");
+
+	path.reserve(MAX_PATH);
+
+	if (path == "")
+	{
+#if defined WARBAND
+		char buffer[MAX_PATH];
+
+		if (SHGetFolderPath(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, buffer) != S_OK)
+			WindowsAPIError("SHGetFolderPath failed for CSIDL_MYDOCUMENTS");
+
+		path = std::string(buffer) + "\\" + data_basic_game->basic_game.name.c_str() + "\\WSE";
+#elif defined WARBAND_DEDICATED
+		path = "WSE";
+#endif
+	}
+
+	if (path[path.length() - 1] != '\\')
+		path.append("\\");
+	
+	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
+		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
+
+	path += cur_module->cur_module_name.c_str();
 
 	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
 		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());

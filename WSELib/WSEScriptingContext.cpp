@@ -82,7 +82,7 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt)
 	{
 	case ModuleLoad:
 		m_allow_unset_script_params = WSE->ModuleSettingsIni.Bool("", "allow_unset_script_params", false);
-		//WSE->SendContextEvent(this, LoadOperations);
+		WSE->SendContextEvent(this, LoadOperations);
 		DumpOperationsHeader();
 		break;
 	}
@@ -822,7 +822,8 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 	case wb::try_for_parties:
 		start_value = cur_visitor_site_no->cur_game->parties.get_first_valid_index();
 		break;
-	case wb::try_for_active_players:
+	//case wb::try_for_active_players:
+	case wb::try_for_players:
 		{
 			start_value = (statement->num_operands > 1 && statement->get_operand_value(local_variables, 1, operand_type)) ? 1 : 0;
 
@@ -830,7 +831,8 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 			{
 				wb::network_player *player = &data_string_manager->multiplayer_data.players[start_value];
 
-				if (player->is_active() && player->ready)
+				//if (player->is_active() && player->ready)
+				if (player->ready)
 					break;
 			}
 		}
@@ -946,7 +948,8 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 	case wb::try_for_parties:
 		value = cur_visitor_site_no->cur_game->parties.get_next_valid_index(value);
 		break;
-	case wb::try_for_active_players:
+	//case wb::try_for_active_players:
+	case wb::try_for_players:
 		{
 			++value;
 
@@ -954,7 +957,8 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			{
 				wb::network_player *player = &data_string_manager->multiplayer_data.players[value];
 
-				if (player->is_active() && player->ready)
+				//if (player->is_active() && player->ready)
+				if (player->ready)
 					break;
 			}
 		}
@@ -1044,7 +1048,8 @@ bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __in
 			return value < cur_visitor_site_no->cur_mission->agents.size();
 	case wb::try_for_parties:
 		return value < cur_visitor_site_no->cur_game->parties.num_created;
-	case wb::try_for_active_players:
+	//case wb::try_for_active_players:
+	case wb::try_for_players:
 		return value < NUM_NETWORK_PLAYERS;
 	case wb::try_for_dict_keys:
 		return value != -1;
@@ -1343,6 +1348,16 @@ int WSEScriptingContext::GetTriggerParam(int index) const
 		return (int)data_basic_game->basic_game.trigger_param_2;
 	else if (index == 3)
 		return (int)data_basic_game->basic_game.trigger_param_3;
+	else if (index == 4)
+		return (int)data_basic_game->basic_game.trigger_param_4;
+	else if (index == 5)
+		return (int)data_basic_game->basic_game.trigger_param_5;
+	else if (index == 6)
+		return (int)data_basic_game->basic_game.trigger_param_6;
+	else if (index == 7)
+		return (int)data_basic_game->basic_game.trigger_param_7;
+	else if (index == 8)
+		return (int)data_basic_game->basic_game.trigger_param_8;
 	else if (index > 0 && index <= 16)
 		return m_trigger_params[index - 1];
 	else
@@ -1357,6 +1372,16 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 		data_basic_game->basic_game.trigger_param_2 = value;
 	else if (index == 3)
 		data_basic_game->basic_game.trigger_param_3 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_4 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_5 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_6 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_7 = value;
+	else if (index == 2)
+		data_basic_game->basic_game.trigger_param_8 = value;
 	else if (index > 0 && index <= 16)
 		m_trigger_params[index - 1] = value;
 }

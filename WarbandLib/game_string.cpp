@@ -18,7 +18,8 @@ const rgl::string &string_manager::get_operand_string(rgl::string &str, int stri
 		if (string_no < 0 || string_no > NUM_REGISTERS)
 			str = "Invalid string register!";
 		else
-			str = warband->basic_game.string_registers[string_no];
+			//str = warband->basic_game.string_registers[string_no];
+			str = data_basic_game->basic_game.string_registers[string_no];
 	}
 	else
 	{

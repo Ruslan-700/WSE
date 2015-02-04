@@ -276,7 +276,8 @@ namespace wb
 		bool touched;
 		int hit_bone_no;
 		rgl::vector4 hit_force;
-		float modifiers[5];
+		//float modifiers[5];
+		float modifiers[6];
 		rgl::vector4 acceleration;
 		rgl::vector4 velocity;
 		rgl::vector4 direction;
@@ -365,6 +366,10 @@ namespace wb
 		agent_control control;
 		float u26;
 		float u27;
+		int u28; //1166
+		rgl::timer u29; //1166
+		float u30; //1166
+		int u31; //1166
 
 		rgl::string get_name() const;
 		item &get_wielded_item(item &item, int hand);

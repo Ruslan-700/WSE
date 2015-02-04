@@ -437,6 +437,7 @@ WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core
 
 void WSECoreOperationsContext::OnLoad()
 {
+	/*
 	DefineOperation(0, "go_to", Control, 1, 1,
 		"Jump to <0>",
 		"statement_no");
@@ -446,11 +447,11 @@ void WSECoreOperationsContext::OnLoad()
 
 	DefineOperation(9, "continue_loop", Control, 0, 0,
 		"Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks");
-
+	*/
 	DefineOperation(12, "try_for_agents", Control | Lhs, 1, 3,
 		"Loops through agents in the scene. If <1> and <2> are defined, it will only loop through agents in the chosen area",
 		"cur_agent_no", "position_no", "radius_fixed_point");
-
+	/*
 	DefineOperation(15, "try_for_attached_parties", Control | Lhs, 2, 2,
 		"Loops through parties attached to <1>.",
 		"cur_party_no", "party_no");
@@ -590,4 +591,5 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("timer_get_elapsed_time", TimerGetElapsedTime, Both, Lhs, 2, 2,
 		"Stores <1>'s elapsed time into <0>",
 		"destination", "timer_register_no");
+	*/
 }

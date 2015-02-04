@@ -8,12 +8,15 @@ void wb::check_types()
 {
 	assert_size<action>(308, 308);
 	assert_size<action_set>(8, 8);
-	assert_size<agent_ai>(21864, 21864);
-	assert_size<agent>(25136, 25008);
+	//assert_size<agent_ai>(21864, 21864);
+	assert_size<agent_ai>(21856, 21856);
+	//assert_size<agent>(25136, 25008);
+	assert_size<agent>(25152, 25024);
 	assert_size<agent_blow>(132, 132);
 	assert_size<animation>(316, 316);
 	assert_size<attack>(160, 160);
-	assert_size<basic_game>(31480, 32192);
+	//assert_size<basic_game>(31480, 32192);
+	assert_size<basic_game>(31520, 32232);
 	assert_size<bone>(268, 268);
 	assert_size<config_manager>(348, -1);
 	assert_size<conversation_manager>(319676, 319676);

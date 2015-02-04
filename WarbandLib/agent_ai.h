@@ -88,8 +88,8 @@ namespace wb
 		rgl::vector4 look_dir;
 		float u4;
 		int u5;
-		int u6;
-		int u7;
+		//int u6;
+		//int u7;
 		rgl::timer weapon_usage_order_change_timer;
 		rgl::timer behavior_update_timer;
 		float behavior_update_time;

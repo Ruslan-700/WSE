@@ -25,8 +25,9 @@ void simple_trigger_manager::execute(int context)
 	for (int i = 0; i < this->num_simple_triggers; ++i)
 	{
 		this->simple_triggers[i].execute(context);
-
-		if (context > 0 && context & 0x1 && warband->cur_game->window_redirects.size() && warband->cur_game->window_redirects.back().redirect_no == 18)
+		
+		//if (context > 0 && context & 0x1 && warband->cur_game->window_redirects.size() && warband->cur_game->window_redirects.back().redirect_no == 18)
+		if (context > 0 && context & 0x1 && cur_visitor_site_no->cur_game->window_redirects.size() && cur_visitor_site_no->cur_game->window_redirects.back().redirect_no == 18)
 			break;
 	}
 }

@@ -267,7 +267,7 @@ bool is_valid_string(int type, int string_no)
 
 bool operation::is_valid_party(int party_no)
 {
-	if (warband->cur_game->parties.is_valid_index(party_no))
+	if (cur_visitor_site_no->cur_game->parties.is_valid_index(party_no))
 		return true;
 
 	char buf[512];
@@ -351,7 +351,8 @@ void operation_manager::analyze()
 		case try_for_range_backwards:
 		case try_for_parties:
 		case try_for_agents:
-		case try_for_active_players:
+		//case try_for_active_players:
+		case try_for_players:
 		case try_for_prop_instances:
 		case try_for_dict_keys:
 			else_statements[depth + 1] = i;

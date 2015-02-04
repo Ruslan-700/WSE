@@ -13,12 +13,14 @@ multiplayer_event::multiplayer_event()
 	cur_packet_id = 0;
 	guaranteed = 0;
 	priority = 0;
-	id = warband->network_manager.cur_event_id++;
+	//id = warband->network_manager.cur_event_id++;
+	id = data_network_manager->network_manager.cur_event_id++;
 	u1 = 0;
 };
 
 void multiplayer_event::add_buffer(const network_buffer &nbuf)
 {
-	warband->basic_game.put_data(this->buffer, this->cursor_in_bits, nbuf.buffer, nbuf.size_in_bits);
+	//warband->basic_game.put_data(this->buffer, this->cursor_in_bits, nbuf.buffer, nbuf.size_in_bits);
+	data_basic_game->basic_game.put_data(this->buffer, this->cursor_in_bits, nbuf.buffer, nbuf.size_in_bits);
 	this->size_in_bits += nbuf.size_in_bits;
 }

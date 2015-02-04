@@ -247,7 +247,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	AddContext(&Scripting, true);
 
 	//AddContext(&AgentOperations, false);
-	//AddContext(&CoreOperations, false);
+	AddContext(&CoreOperations, false);
 #if defined DEBUG
 	AddContext(&DebugOperations, false);
 #endif

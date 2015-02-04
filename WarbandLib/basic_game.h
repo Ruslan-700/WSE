@@ -33,6 +33,13 @@ namespace wb
 		__int64 trigger_param_1;
 		__int64 trigger_param_2;
 		__int64 trigger_param_3;
+		//1166 start
+		__int64 trigger_param_4;
+		__int64 trigger_param_5;
+		__int64 trigger_param_6;
+		__int64 trigger_param_7;
+		__int64 trigger_param_8;
+		//1166 end
 		__int64 trigger_result;
 		int fixed_point_multiplier;
 		rgl::string result_string;

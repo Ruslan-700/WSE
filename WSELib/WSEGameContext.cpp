@@ -34,7 +34,8 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	params[2] = param_3;
 	params[3] = param_4;
 
-	return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
+	//return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
+	return data_string_manager->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
 }
 
 void WSEGameContext::OnReadModuleFiles()
