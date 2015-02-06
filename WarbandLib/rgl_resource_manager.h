@@ -56,6 +56,7 @@ namespace rgl
 		void *u5;
 		mesh *def_troop_label_banner_mesh;
 		mesh *def_troop_label_banner_mesh_hl;
+		bool u6; //1166
 		string resource_path;
 		string resource_path_copy;
 		bool edit_mode;
@@ -65,6 +66,8 @@ namespace rgl
 		stl::vector<resource *> ondemand_textures_1;
 		stl::vector<resource *> ondemand_textures_2;
 		stl::vector<resource *> ondemand_textures_3;
+#elif defined WARBAND_DEDICATED //1166
+		int u7[8]; //1166
 #endif
 
 		mesh *get_mesh(const string &name);

@@ -61,7 +61,8 @@ namespace wb
 	{
 #if defined WARBAND_DEDICATED
 		network_manager network_manager;
-		int junk[554];
+		//int junk[554];
+		int junk[550];
 #endif
 		rgl::io_text_stream debug_text_stream;
 		int uuuuu1; // align
@@ -73,11 +74,13 @@ namespace wb
 		int uuuuu4;
 		config_manager options_config;
 #if defined WARBAND_VANILLA
-		int uuuuu5[56529];
+		//int uuuuu5[56529];
+		int uuuuu5[55563];
 #elif defined WARBAND_STEAM
 		int uuuuu5[10331];
 #elif defined WARBAND_DEDICATED
-		int uuuuu5[9147];
+		//int uuuuu5[9147];
+		int uuuuu5[9199];
 #endif
 		rgl::resource_manager resource_manager;
 		bool error;
@@ -86,7 +89,8 @@ namespace wb
 #if defined WARBAND
 		rgl::window_manager window_manager;
 #endif
-		int uuuu1[48];
+		//int uuuu1[48];
+		int uuuu1[41];
 #if defined WARBAND
 		int uuuu2;
 		int uuuu3;

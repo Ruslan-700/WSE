@@ -43,8 +43,10 @@ void __declspec(naked) OperationExecuteHook()
 		mov edx, eax
 		add edx, 376
 		push edx
-		push edi
+		//push edi
+		push ebx
 #elif defined WARBAND_DEDICATED
+		/*
 		add edx, 31
 		push edx
 		mov edx, eax
@@ -52,6 +54,14 @@ void __declspec(naked) OperationExecuteHook()
 		push edx
 		mov edx, eax
 		add edx, 400
+		*/
+		add edx, 15
+		push edx
+		mov edx, eax
+		add edx, 48
+		push edx
+		mov edx, eax
+		add edx, 376
 		push edx
 		push ebx
 #endif
@@ -63,9 +73,11 @@ void __declspec(naked) OperationExecuteHook()
 continue_exec:
 		RESTORE_REGS
 #if defined WARBAND_VANILLA
-		mov ecx, [edi]
+		//mov ecx, [edi]
+		mov ecx, [ebx]
 		push ecx
-		push 0x008FB428
+		//push 0x008FB428
+		push 0x00819818
 #elif defined WARBAND_STEAM
 		mov ecx, [edi]
 		push ecx
@@ -73,7 +85,8 @@ continue_exec:
 #elif defined WARBAND_DEDICATED
 		mov ecx, [ebx]
 		push ecx
-		push 0x00697958
+		//push 0x00697958
+		push 0x006A0B90
 #endif
 		jmp [wb::addresses::operation_Execute_exit_2]
 	}

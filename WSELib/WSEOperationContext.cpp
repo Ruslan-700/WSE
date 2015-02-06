@@ -96,7 +96,7 @@ void WSEOperationContext::ExtractBoolean(bool &value, bool def)
 {
 	value = GetNextOperand(def) != 0;
 }
-
+/*
 void WSEOperationContext::ExtractFixedPoint(float &value, float def)
 {
 	if (!HasMoreOperands())
@@ -104,7 +104,7 @@ void WSEOperationContext::ExtractFixedPoint(float &value, float def)
 
 	value = GetNextOperand() / (float)warband->basic_game.fixed_point_multiplier;
 }
-/*
+
 void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 {
 	if (!HasMoreOperands())
@@ -143,6 +143,15 @@ void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 	warband->basic_game.parse_string(value, temp);
 }
 */
+void WSEOperationContext::ExtractFixedPoint(float &value, float def)
+{
+	if (!HasMoreOperands())
+		value = def;
+
+	value = GetNextOperand() / (float)data_basic_game->basic_game.fixed_point_multiplier;
+}
+
+
 void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 {
 	if (!HasMoreOperands())

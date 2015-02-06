@@ -31,7 +31,8 @@ void rgl::check_types()
 	assert_size<render_context>(684, -1);
 	assert_size<render_mesh>(2368, -1);
 	assert_size<render_params>(556, -1);
-	assert_size<resource_manager>(1700, 1636);
+	//assert_size<resource_manager>(1700, 1636);
+	assert_size<resource_manager>(1704, 1672);
 	assert_size<scene>(884, 276);
 	assert_size<shadowmap_renderer>(708, -1);
 	assert_size<terrain>(32, 32);

@@ -72,7 +72,6 @@ void WSEGameContext::OnReadModuleFiles()
 	//WSE->Log.Warning("Port: %d", network_manager->network_manager.server.port);
 	//WSE->Log.Warning("Test: %d", cur_visitor_site_no->cur_mission->cur_mission_template_no);
 	
-	
 	//for (int i = 0; i < string_manager->script_manager.num_scripts; ++i)
 	//{
 		//WSE->Log.Warning("Script [%d] %s", i, string_manager->script_manager.scripts[i].id.c_str());

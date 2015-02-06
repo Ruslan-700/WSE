@@ -135,7 +135,8 @@ unsigned int addresses::operation_Execute = 0x00518F50;
 //unsigned int addresses::operation_manager_Execute = 0x0057CA40;
 unsigned int addresses::operation_manager_Execute = 0x00538F30;
 
-unsigned int addresses::basic_game_ParseString = 0x00517150;
+//unsigned int addresses::basic_game_ParseString = 0x00517150;
+unsigned int addresses::basic_game_ParseString = 0x004D8CE0;
 
 unsigned int addresses::particle_system_manager_Create = 0x00550EE0;
 
@@ -411,7 +412,8 @@ unsigned int addresses::operation_Execute = 0x004AE3C0;
 //unsigned int addresses::operation_manager_Execute = 0x004C54E0;
 unsigned int addresses::operation_manager_Execute = 0x004C89C0;
 
-unsigned int addresses::basic_game_ParseString = 0x00481800;
+//unsigned int addresses::basic_game_ParseString = 0x00481800;
+unsigned int addresses::basic_game_ParseString = 0x00483350;
 
 unsigned int addresses::particle_system_manager_Create = 0;
 
