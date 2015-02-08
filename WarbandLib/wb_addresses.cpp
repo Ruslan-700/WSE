@@ -55,7 +55,8 @@ unsigned int addresses::agent_ApplyAttackRecord_exit = 0x004F8870;
 unsigned int addresses::CreateMbnetHost_entry = 0x004CE215;
 unsigned int addresses::DestroyMbnetHost_entry = 0x004CE243;
 		
-unsigned int addresses::mission_CheckCollision_entry = 0x005206F1;
+//unsigned int addresses::mission_CheckCollision_entry = 0x005206F1;
+unsigned int addresses::mission_CheckCollision_entry = 0x004E28F1;
 unsigned int addresses::mission_CheckCollision_exit = mission_CheckCollision_entry + 15;
 		
 unsigned int addresses::agent_SetGroundQuad_entry = 0x004F5D5E;
@@ -150,7 +151,6 @@ unsigned int addresses::game_data_ptr = 0x00867198;
 unsigned int addresses::cur_module_data_ptr = 0x02D87328;
 unsigned int addresses::string_manager_data_ptr = 0x00E0BBD8;
 unsigned int addresses::basic_game_data_ptr = 0x00E02938;
-unsigned int addresses::network_manager_data_ptr = 0x008AE318;
 unsigned int addresses::cur_visitor_site_no_data_ptr = 0x008EA038;
 
 #elif defined WARBAND_STEAM
@@ -332,7 +332,8 @@ unsigned int addresses::agent_ApplyAttackRecord_exit = 0x0046D5D5;
 unsigned int addresses::CreateMbnetHost_entry = 0x00443835;
 unsigned int addresses::DestroyMbnetHost_entry = 0x00443863;
 		
-unsigned int addresses::mission_CheckCollision_entry = 0x00489FA1;
+//unsigned int addresses::mission_CheckCollision_entry = 0x00489FA1;
+unsigned int addresses::mission_CheckCollision_entry = 0x0048C301;
 unsigned int addresses::mission_CheckCollision_exit = mission_CheckCollision_entry + 15;
 		
 unsigned int addresses::agent_SetGroundQuad_entry = 0x0046A12B;
@@ -427,7 +428,6 @@ unsigned int addresses::game_data_ptr = 0x006E2420;
 unsigned int addresses::cur_module_data_ptr = 0x02A163E8;
 unsigned int addresses::string_manager_data_ptr = 0x00ABCFF0;
 unsigned int addresses::basic_game_data_ptr = 0x00AB4BF8;
-unsigned int addresses::network_manager_data_ptr = 0x006E2420;
 unsigned int addresses::cur_visitor_site_no_data_ptr = 0x007286E0;
 
 #endif

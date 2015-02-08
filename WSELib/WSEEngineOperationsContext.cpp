@@ -2,7 +2,7 @@
 
 #include "WSE.h"
 #include "warband.h"
-
+/*
 void SetShaderParamInt(WSEEngineOperationsContext *context)
 {
 #if defined WARBAND
@@ -104,7 +104,7 @@ void SetShaderParamMatrix(WSEEngineOperationsContext *context)
 	warband->effect->SetMatrixTranspose(handle, &matrix);
 #endif
 }
-	
+
 void UpdateMaterial(WSECoreOperationsContext *context)
 {
 #if defined WARBAND
@@ -131,14 +131,64 @@ void UpdateMaterial(WSECoreOperationsContext *context)
 
 	if (!m2)
 		context->ScriptError("Invalid material %s", m2n.c_str());
-	/*
+	
 	if (warband->rendering_event_1)
 	{
 		LeaveCriticalSection(&warband->multithreading_critical_section);
 		EnterCriticalSection(&warband->directx_critical_section);
 		EnterCriticalSection(&warband->multithreading_critical_section);
 	}
-	*/	
+	
+	m1->shader = m2->shader;
+	m1->shader_name = m2->shader_name;
+	m1->specular_coefficient = m2->specular_coefficient;
+	m1->specular_color = m2->specular_color;
+	m1->textures[0] = m2->textures[0];
+	m1->textures[1] = m2->textures[1];
+	m1->textures[2] = m2->textures[2];
+	m1->textures[3] = m2->textures[3];
+	m1->textures[4] = m2->textures[4];
+	
+	if (warband->rendering_event_1)
+		LeaveCriticalSection(&warband->directx_critical_section);
+	
+#endif
+}
+*/
+void UpdateMaterial(WSECoreOperationsContext *context)
+{
+#if defined WARBAND
+	rgl::string m1n, m2n;
+
+	context->ExtractString(m1n);
+	context->ExtractString(m2n);
+
+	m1n.spaces_to_underscores();
+	m2n.spaces_to_underscores();
+	rgl::material *m1 = NULL;
+	rgl::material *m2 = NULL;
+
+	for (int i = 0; i < warband->resource_manager.materials.size() && (!m1 || !m2); ++i)
+	{
+		if (warband->resource_manager.materials[i]->name == m1n)
+			m1 = warband->resource_manager.materials[i];
+		else if (warband->resource_manager.materials[i]->name == m2n)
+			m2 = warband->resource_manager.materials[i];
+	}
+
+	if (!m1)
+		context->ScriptError("Invalid material %s", m1n.c_str());
+
+	if (!m2)
+		context->ScriptError("Invalid material %s", m2n.c_str());
+	/*
+	if (warband->rendering_event_1)
+	{
+	LeaveCriticalSection(&warband->multithreading_critical_section);
+	EnterCriticalSection(&warband->directx_critical_section);
+	EnterCriticalSection(&warband->multithreading_critical_section);
+	}
+	*/
 	m1->shader = m2->shader;
 	m1->shader_name = m2->shader_name;
 	m1->specular_coefficient = m2->specular_coefficient;
@@ -150,7 +200,7 @@ void UpdateMaterial(WSECoreOperationsContext *context)
 	m1->textures[4] = m2->textures[4];
 	/*
 	if (warband->rendering_event_1)
-		LeaveCriticalSection(&warband->directx_critical_section);
+	LeaveCriticalSection(&warband->directx_critical_section);
 	*/
 #endif
 }
@@ -161,6 +211,7 @@ WSEEngineOperationsContext::WSEEngineOperationsContext() : WSEOperationContext("
 
 void WSEEngineOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("set_shader_param_int", SetShaderParamInt, Client, None, 2, 2,
 		"Sets the int shader parameter <0> to <1>",
 		"parameter_name", "value");
@@ -176,7 +227,7 @@ void WSEEngineOperationsContext::OnLoad()
 	RegisterOperation("set_shader_param_matrix", SetShaderParamMatrix, Client, None, 2, 2,
 		"Sets the float4x4 shader parameter <0> to <1>",
 		"parameter_name", "position_register");
-	
+	*/
 	RegisterOperation("update_material", UpdateMaterial, Client, None, 2, 2,
 		"Updates <0> with <1>",
 		"material_name", "new_material_name");

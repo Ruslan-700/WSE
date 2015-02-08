@@ -82,14 +82,20 @@ namespace rgl
 	{
 		int vertex_declaration_no;
 		int registered_vertex_declaration_no;
-		int vertex_buffer_index;
+		//int vertex_buffer_index;
 		int policy;
-		int prev_vertex_buffer_index;
+		//int prev_vertex_buffer_index;
 		char registered_policy;
-		int num_uses;
+		//int num_uses;
 		bool update;
 		bool added;
-		int pos;
+		int u1;
+		//int pos;
+		int u2;
+		int u3;
+		int u4;
+		int u5;
+		int u6;
 	};
 
 	struct mesh : resource

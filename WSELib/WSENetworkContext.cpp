@@ -107,7 +107,7 @@ void WSENetworkContext::OnLoad()
 {
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
 #if defined WARBAND
-	//WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
 #endif
 	/*
 	if (WSE->SettingsIni.Bool("ogp_server", "enabled", false))
@@ -141,8 +141,7 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
 			WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
 		}
 		*/
-		//warband->network_manager.anti_cheat = 0;
-		data_network_manager->network_manager.anti_cheat = 0;
+		warband->network_manager.anti_cheat = 0;
 		m_horse_ff = false;
 		m_show_xhair = true;
 		m_break_compat = !WSE->ModuleSettingsIni.Bool("", "network_compatible", true);
@@ -661,13 +660,6 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 	case wb::mse_server_info_request_steam:
 	case wb::mse_server_info_request:
 		{
-			unsigned short player_slot_no = nbuf->extract_uint16(16);
-			wb::basic_game &basic_game = data_basic_game->basic_game;
-			wb::multiplayer_data &mpdata = data_string_manager->multiplayer_data;
-			wb::network_player &player = mpdata.players[player_no];
-			wb::multiplayer_event evt;
-			wb::network_buffer nbuf;
-
 			/*
 			unsigned short player_slot_no = nbuf->extract_uint16(16);
 			wb::basic_game &basic_game = warband->basic_game;

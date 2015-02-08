@@ -35,7 +35,8 @@ void __declspec(naked) OperationExecuteHook()
 		push [ebp+8]
 		mov edx, eax
 #if defined WARBAND
-		add edx, 15
+		//add edx, 15
+		add edx, 39
 		push edx
 		mov edx, eax
 		add edx, 48
@@ -55,7 +56,7 @@ void __declspec(naked) OperationExecuteHook()
 		mov edx, eax
 		add edx, 400
 		*/
-		add edx, 15
+		add edx, 23
 		push edx
 		mov edx, eax
 		add edx, 48
@@ -226,12 +227,14 @@ void __declspec(naked) ClientNetworkMessageReceivedHook()
 		FREEZE_REGS
 		mov edx, esp
 		mov ebx, esp
-		mov edx, [ebx+7092]
+		//mov edx, [ebx+7092]
+		mov edx, [ebx + 7052]
 		mov edx, [edx]
 		push edx
 		push edi
 		push esi
-		mov ebx, [ebx+7084]
+		//mov ebx, [ebx+7084]
+		mov ebx, [ebx + 7044]
 		mov ebx, [ebx]
 		push ebx
 		push eax

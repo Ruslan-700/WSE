@@ -87,10 +87,15 @@ namespace wb
 		int cur_frame_no;
 		int rand_seed;
 #if defined WARBAND
+		int uuuuu6;
 		rgl::window_manager window_manager;
 #endif
 		//int uuuu1[48];
+#if defined WARBAND
+		int uuuu1[40];
+#elif defined WARBAND_DEDICATED
 		int uuuu1[41];
+#endif
 #if defined WARBAND
 		int uuuu2;
 		int uuuu3;
@@ -271,6 +276,7 @@ namespace wb
 #endif
 		string_manager string_manager;
 		script_manager script_manager;
+		int u[2];//1166
 		multiplayer_data multiplayer_data;
 		item_modifier item_modifiers[NUM_ITEM_MODIFIERS];
 		action_set action_manager;
@@ -321,11 +327,6 @@ namespace wb
 	struct basic_game_data
 	{
 		basic_game basic_game;
-	};
-
-	struct network_manager_data
-	{
-		network_manager network_manager;
 	};
 
 	struct cur_visitor_site_no_data

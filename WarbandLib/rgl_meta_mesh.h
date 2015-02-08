@@ -21,6 +21,7 @@ namespace rgl
 
 	struct meta_mesh
 	{
+		int u[NUM_LODS];//1166
 		bounding_box bounding_box;
 		meta_mesh_lod lods[NUM_LODS];
 		int num_lods;

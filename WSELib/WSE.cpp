@@ -245,34 +245,34 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	AddContext(&Profiling, true);
 	AddContext(&Screen, true);
 	//AddContext(&Network, true);
-	//AddContext(&Mission, true);
+	AddContext(&Mission, true);
 	AddContext(&Scripting, true);
 
-	//AddContext(&AgentOperations, false);
+	AddContext(&AgentOperations, false);
 	AddContext(&CoreOperations, false);
 #if defined DEBUG
 	AddContext(&DebugOperations, false);
 #endif
 	AddContext(&DictionaryOperations, false);
-	//AddContext(&EditModeOperations, false);
+	AddContext(&EditModeOperations, false);
 	//AddContext(&EngineOperations, false);
-	//AddContext(&FloatingPointOperations, false);
+	AddContext(&FloatingPointOperations, false);
 	//AddContext(&InputOperations, false);
 	//AddContext(&ItemOperations, false);
-	//AddContext(&MathOperations, false);
+	AddContext(&MathOperations, false);
 	//AddContext(&MenuOperations, false);
 	//AddContext(&MissionOperations, false);
 	//AddContext(&MultiplayerOperations, false);
-	//AddContext(&NetworkOperations, false);
-	//AddContext(&OptionsOperations, false);
-	//AddContext(&PartyOperations, false);
-	//AddContext(&PlayerOperations, false);
-	//AddContext(&PositionOperations, false);
+	AddContext(&NetworkOperations, false);
+	AddContext(&OptionsOperations, false);
+	AddContext(&PartyOperations, false);
+	AddContext(&PlayerOperations, false);
+	AddContext(&PositionOperations, false);
 	//AddContext(&PresentationOperations, false);
-	//AddContext(&SiteOperations, false);
+	AddContext(&SiteOperations, false);
 	//AddContext(&SkinOperations, false);
-	//AddContext(&StringOperations, false);
-	//AddContext(&TroopOperations, false);
+	AddContext(&StringOperations, false);
+	AddContext(&TroopOperations, false);
 	
 	WIN32_FIND_DATA data;
 	HANDLE handle = FindFirstFile((m_path + "\\*WSE*Plugin*.dll").c_str(), &data);

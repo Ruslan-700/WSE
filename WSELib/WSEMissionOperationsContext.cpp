@@ -667,11 +667,11 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("get_water_level", GetWaterLevel, Both, Lhs, 1, 1,
 		"Stores the water level into <0>",
 		"destination_fixed_point");
-	
+	/*
 	RegisterOperation("cast_ray", CastRay, Both, Lhs|Cf, 3, 4,
 		"Casts a ray of length <3> starting from <2> and stores the closest hit position into <1> (fails if no hits). If the body hit is a prop instance, its id will be stored into <0>",
 		"destination", "hit_position_register", "ray_position_register", "ray_length_fixed_point");
-
+	*/
 	RegisterOperation("prop_instance_set_vertex_keys_time_point", MissionObjectSetVertexKeysTimePoint, Client, None, 2, 2,
 		"Sets <0>'s mesh vertex keys time point to <1>",
 		"prop_instance_no", "time_point");

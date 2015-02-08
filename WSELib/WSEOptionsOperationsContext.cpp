@@ -71,6 +71,7 @@ void OptionsSetRealisticHeadshots(WSECoreOperationsContext *context)
 
 void WSEOptionsOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("options_get_battle_size", OptionsGetBattleSize, Client, Lhs, 1, 1,
 		"Stores battle size into <0>",
 		"destination");
@@ -78,7 +79,7 @@ void WSEOptionsOperationsContext::OnLoad()
 	RegisterOperation("options_set_battle_size", OptionsSetBattleSize, Client, None, 1, 1,
 		"Sets batte size to <0> (must be between 30 and 2000)",
 		"value");
-
+	*/
 	RegisterOperation("options_get_verbose_casualties", OptionsGetVerboseCasualties, Client, Lhs, 1, 1,
 		"Stores verbose casualties enabled/disabled into <0>",
 		"destination");

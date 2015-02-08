@@ -14,6 +14,7 @@ WSEMissionContext::WSEMissionContext()
 
 void WSEMissionContext::OnLoad()
 {
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Human_entry, AgentAttackCollidesWithAllyHumanHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Horse_entry, AgentAttackCollidesWithAllyHorseHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Prop_entry, AgentAttackCollidesWithPropHook);
@@ -40,6 +41,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
 #endif
+	*/
 }
 
 void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
@@ -58,7 +60,7 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		m_prop_collision_threshold_high[2] = 0.80f;
 		m_prop_collision_threshold_high[3] = 0.75f;
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "ground_weapon_collision", false), wb::addresses::mission_CheckCollision_entry, MissionCheckCollisionHook);
-		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
+		//WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
 		break;
 	}
 }

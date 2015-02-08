@@ -6,7 +6,8 @@ using namespace rgl;
 unsigned int addresses::New = 0x00682814;
 unsigned int addresses::Delete = 0x00682194;
 
-unsigned int addresses::window_manager_DisplayMessage = 0x00490700;
+//unsigned int addresses::window_manager_DisplayMessage = 0x00490700;
+unsigned int addresses::window_manager_DisplayMessage = 0x00461320;
 
 unsigned int addresses::mesh_CreateVertexAnimMorph = 0x00556420;
 unsigned int addresses::mesh_CreateCopy = 0x00422B30;

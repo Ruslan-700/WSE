@@ -112,6 +112,7 @@ namespace rgl
 		int cur_ping_sample;
 		bool show_ping_samples;
 		mesh ping_samples_mesh;
+		int u6;//1166
 		string tutorial_message_cur_text;
 		unsigned int tutorial_message_cur_color;
 		vector2 tutorial_message_cur_size;

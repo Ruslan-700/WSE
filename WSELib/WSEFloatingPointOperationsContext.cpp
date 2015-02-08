@@ -35,6 +35,48 @@ void FLdPosX(WSEFloatingPointOperationsContext *context)
 	context->ExtractRegister(freg);
 	context->ExtractRegister(preg);
 
+	context->m_float_registers[freg] = data_basic_game->basic_game.position_registers[preg].o.x;
+}
+
+void FLdPosY(WSEFloatingPointOperationsContext *context)
+{
+	int freg, preg;
+	rgl::string value;
+
+	context->ExtractRegister(freg);
+	context->ExtractRegister(preg);
+
+	context->m_float_registers[freg] = data_basic_game->basic_game.position_registers[preg].o.y;
+}
+
+void FLdPosZ(WSEFloatingPointOperationsContext *context)
+{
+	int freg, preg;
+	rgl::string value;
+
+	context->ExtractRegister(freg);
+	context->ExtractRegister(preg);
+
+	context->m_float_registers[freg] = data_basic_game->basic_game.position_registers[preg].o.z;
+}
+
+int FSt(WSEFloatingPointOperationsContext *context)
+{
+	int freg;
+
+	context->ExtractRegister(freg);
+
+	return (int)(context->m_float_registers[freg] * data_basic_game->basic_game.fixed_point_multiplier);
+}
+/*
+void FLdPosX(WSEFloatingPointOperationsContext *context)
+{
+	int freg, preg;
+	rgl::string value;
+
+	context->ExtractRegister(freg);
+	context->ExtractRegister(preg);
+
 	context->m_float_registers[freg] = warband->basic_game.position_registers[preg].o.x;
 }
 
@@ -68,7 +110,7 @@ int FSt(WSEFloatingPointOperationsContext *context)
 
 	return (int)(context->m_float_registers[freg] * warband->basic_game.fixed_point_multiplier);
 }
-
+*/
 void FCpy(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
@@ -489,6 +531,86 @@ mu::value_type *muVarFactory(const char *name, void *user_data)
 		if (reg >= 0 && reg < NUM_REGISTERS)
 		{
 			int next = last - name;
+
+			if (strlen(name) - next >= 1 && (name[next + 1] == '\0' || name[next + 2] == '\0'))
+			{
+				if (name[next] == 's')
+				{
+					if (name[next + 1] == 'x')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.s.x;
+					}
+					else if (name[next + 1] == 'y')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.s.y;
+					}
+					else if (name[next + 1] == 'z')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.s.z;
+					}
+				}
+				else if (name[next] == 'f')
+				{
+					if (name[next + 1] == 'x')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.f.x;
+					}
+					else if (name[next + 1] == 'y')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.f.y;
+					}
+					else if (name[next + 1] == 'z')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.f.z;
+					}
+				}
+				else if (name[next] == 'u')
+				{
+					if (name[next + 1] == 'x')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.u.x;
+					}
+					else if (name[next + 1] == 'y')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.u.y;
+					}
+					else if (name[next + 1] == 'z')
+					{
+						return &data_basic_game->basic_game.position_registers[reg].rot.u.z;
+					}
+				}
+				else if (name[next] == 'x')
+				{
+					return &data_basic_game->basic_game.position_registers[reg].o.x;
+				}
+				else if (name[next] == 'y')
+				{
+					return &data_basic_game->basic_game.position_registers[reg].o.y;
+				}
+				else if (name[next] == 'z')
+				{
+					return &data_basic_game->basic_game.position_registers[reg].o.z;
+				}
+			}
+		}
+	}
+
+	char buf[256];
+
+	sprintf_s(buf, "Unrecognized variable: %s", name);
+	throw mu::Parser::exception_type(buf);
+}
+/*
+mu::value_type *muVarFactory(const char *name, void *user_data)
+{
+	if (name[0] == 'p' && name[1] == 'o' && name[2] == 's')
+	{
+		char *last = NULL;
+		int reg = strtol(&name[3], &last, 10);
+
+		if (reg >= 0 && reg < NUM_REGISTERS)
+		{
+			int next = last - name;
 			
 			if (strlen(name) - next >= 1 && (name[next + 1] == '\0' || name[next + 2] == '\0'))
 			{
@@ -558,7 +680,7 @@ mu::value_type *muVarFactory(const char *name, void *user_data)
 	sprintf_s(buf, "Unrecognized variable: %s", name);
 	throw mu::Parser::exception_type(buf);
 }
-
+*/
 void WSEFloatingPointOperationsContext::OnLoad()
 {
 	m_parser.DefineFun("deg2rad", mupDegToRad);

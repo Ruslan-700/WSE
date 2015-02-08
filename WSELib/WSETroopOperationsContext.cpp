@@ -6,6 +6,115 @@
 int TroopGetSkillPoints(WSETroopOperationsContext *context)
 {
 	int troop_no;
+
+	context->ExtractTroopNo(troop_no);
+
+	return cur_visitor_site_no->cur_game->troops[troop_no].skill_points;
+}
+
+void TroopSetSkillPoints(WSETroopOperationsContext *context)
+{
+	int troop_no, points;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractValue(points);
+
+	if (points < 0)
+		return;
+
+	cur_visitor_site_no->cur_game->troops[troop_no].skill_points = points;
+}
+
+int TroopGetAttributePoints(WSETroopOperationsContext *context)
+{
+	int troop_no;
+
+	context->ExtractTroopNo(troop_no);
+
+	return cur_visitor_site_no->cur_game->troops[troop_no].attribute_points;
+}
+
+void TroopSetAttributePoints(WSETroopOperationsContext *context)
+{
+	int troop_no, points;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractValue(points);
+
+	if (points < 0)
+		return;
+
+	cur_visitor_site_no->cur_game->troops[troop_no].attribute_points = points;
+}
+
+int TroopGetProficiencyPoints(WSETroopOperationsContext *context)
+{
+	int troop_no;
+
+	context->ExtractTroopNo(troop_no);
+
+	return cur_visitor_site_no->cur_game->troops[troop_no].proficiency_points;
+}
+
+void TroopSetProficiencyPoints(WSETroopOperationsContext *context)
+{
+	int troop_no, points;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractValue(points);
+
+	if (points < 0)
+		return;
+
+	cur_visitor_site_no->cur_game->troops[troop_no].proficiency_points = points;
+}
+
+bool TroopHasFlag(WSEItemOperationsContext *context)
+{
+	int troop_no, flag;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractValue(flag);
+
+	return (cur_visitor_site_no->cur_game->troops[troop_no].flags & flag) > 0;
+}
+
+void TroopSetSkill(WSETroopOperationsContext *context)
+{
+	int troop_no, skill_no, value;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractSkillNo(skill_no);
+	context->ExtractValue(value);
+
+	cur_visitor_site_no->cur_game->troops[troop_no].set_skill(skill_no, value);
+}
+
+void TroopSetAttribute(WSETroopOperationsContext *context)
+{
+	int troop_no, attribute, value;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractBoundedValue(attribute, 0, NUM_TROOP_ATTRIBUTES);
+	context->ExtractValue(value);
+
+	cur_visitor_site_no->cur_game->troops[troop_no].set_attribute(attribute, value);
+}
+
+void TroopSetProficiency(WSETroopOperationsContext *context)
+{
+	int troop_no, proficiency, value;
+
+	context->ExtractTroopNo(troop_no);
+	context->ExtractBoundedValue(proficiency, 0, NUM_TROOP_PROFICIENCIES);
+	context->ExtractClampedValue(value, 0, 1000);
+
+	cur_visitor_site_no->cur_game->troops[troop_no].proficiencies[proficiency] = (float)value;
+}
+/*
+int TroopGetSkillPoints(WSETroopOperationsContext *context)
+{
+	int troop_no;
 	
 	context->ExtractTroopNo(troop_no);
 
@@ -138,7 +247,7 @@ void TroopSetProficiency(WSETroopOperationsContext *context)
 
 	warband->cur_game->troops[troop_no].proficiencies[proficiency] = (float)value;
 }
-
+*/
 WSETroopOperationsContext::WSETroopOperationsContext() : WSEOperationContext("troop", 3700, 3799)
 {
 }
@@ -168,7 +277,7 @@ void WSETroopOperationsContext::OnLoad()
 	RegisterOperation("troop_set_proficiency_points", TroopSetProficiencyPoints, Both, None, 2, 2,
 		"Sets <0>'s unused proficiency points to <1>",
 		"troop_no", "value");
-	
+	/*
 	RegisterOperation("troop_get_face_keys", TroopGetFaceKeys, Both, None, 2, 3,
 		"Stores <1>'s face keys into <0>. if <2> is non-zero the second pair of face keys is stored",
 		"face_key_register", "troop_no", "alt");
@@ -176,7 +285,7 @@ void WSETroopOperationsContext::OnLoad()
 	RegisterOperation("troop_set_face_keys", TroopSetFaceKeys, Both, None, 2, 3,
 		"Sets <0>'s face keys to <1>. if <2> is non-zero the second pair of face keys is set",
 		"troop_no", "face_key_register", "alt");
-
+	*/
 	RegisterOperation("troop_has_flag", TroopHasFlag, Both, Cf, 2, 2,
 		"Fails if <0> doesn't have <1>",
 		"troop_no", "flag");

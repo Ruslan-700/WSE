@@ -39,6 +39,7 @@ namespace rgl
 		float dof_range;
 		float dof_focus;
 		void *u1;
+		int u2;//1166
 		viewport def_viewport;
 		viewport postfx_viewport;
 		camera camera;

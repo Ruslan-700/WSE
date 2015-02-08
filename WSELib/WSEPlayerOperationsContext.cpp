@@ -3,6 +3,18 @@
 #include "WSE.h"
 #include "warband.h"
 
+void PlayerSetBannerId(WSEPlayerOperationsContext *context)
+{
+	int player_no, banner_no;
+
+	context->ExtractPlayerNo(player_no);
+	context->ExtractValue(banner_no);
+
+	wb::network_player *player = &data_string_manager->multiplayer_data.players[player_no];
+
+	player->banner_no = banner_no;
+}
+/*
 void PlayerGetFaceKeys(WSEPlayerOperationsContext *context)
 {
 	int fkreg, player_no;
@@ -122,6 +134,19 @@ void PlayerSetBannerId(WSEPlayerOperationsContext *context)
 
 	player->banner_no = banner_no;
 }
+*/
+void PlayerSetUsername(WSEPlayerOperationsContext *context)
+{
+	int player_no;
+	std::string name;
+
+	context->ExtractPlayerNo(player_no);
+	context->ExtractString(name);
+
+	wb::network_player *player = &data_string_manager->multiplayer_data.players[player_no];
+
+	player->name = name;
+}
 
 WSEPlayerOperationsContext::WSEPlayerOperationsContext() : WSEOperationContext("player", 2900, 2999)
 {
@@ -129,6 +154,7 @@ WSEPlayerOperationsContext::WSEPlayerOperationsContext() : WSEOperationContext("
 
 void WSEPlayerOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("player_get_face_keys", PlayerGetFaceKeys, Both, None, 2, 2,
 		"Stores <1>'s face keys into <0>",
 		"face_key_register", "player_no");
@@ -136,7 +162,7 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_set_face_keys", PlayerSetFaceKeys, Both, None, 2, 2,
 		"Sets <0>'s face keys to <1>",
 		"player_no", "face_key_register");
-
+	
 	RegisterOperation("player_set_skin", PlayerSetSkin, Both, BreakNetwork, 2, 2,
 		"Sets <0>'s skin (gender) to <1>",
 		"player_no", "skin_no");
@@ -144,8 +170,12 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_stop_controlling_agent", PlayerStopControllingAgent, Both, BreakNetwork, 1, 1,
 		"Gives <0>'s agent back to AI control",
 		"player_no");
-
+	*/
 	RegisterOperation("player_set_banner_id", PlayerSetBannerId, Both, None, 2, 2,
 		"Sets <0>'s banner to <1>",
 		"player_no", "banner_no");
+
+	RegisterOperation("player_set_username", PlayerSetUsername, Both, None, 2, 2,
+		"Sets <0>'s username to <1>",
+		"player_no", "string_no");
 }

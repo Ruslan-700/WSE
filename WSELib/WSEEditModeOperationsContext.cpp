@@ -2,11 +2,11 @@
 
 #include "WSE.h"
 #include "warband.h"
-
+/*
 bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
 {
 	wb::game *game = warband->cur_game;
-	
+
 	return game->edit_mode_active && game->edit_mode_mode == 0;
 }
 
@@ -27,7 +27,7 @@ int EditModeGetSelectedMissionObject(WSEEditModeOperationsContext *context)
 	context->ExtractValue(index);
 
 	wb::game *game = warband->cur_game;
-	
+
 	if (!game->edit_mode_active || index < 0 || index >= game->edit_mode_selected_mission_object_nos.size())
 		return -1;
 
@@ -94,6 +94,105 @@ void EditModeSetHighlightedMissionObject(WSEEditModeOperationsContext *context)
 		mission_object_no = -1;
 
 	wb::game *game = warband->cur_game;
+
+	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no == mission_object_no)
+		return;
+
+	game->edit_mode_highlighted_mission_object_no = mission_object_no;
+	game->edit_mode_selection_changed = true;
+}
+*/
+bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = cur_visitor_site_no->cur_game;
+	
+	return game->edit_mode_active && game->edit_mode_mode == 0;
+}
+
+int EditModeGetNumSelectedMissionObjects(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = cur_visitor_site_no->cur_game;
+
+	if (!game->edit_mode_active)
+		return -1;
+
+	return game->edit_mode_selected_mission_object_nos.size();
+}
+
+int EditModeGetSelectedMissionObject(WSEEditModeOperationsContext *context)
+{
+	int index;
+
+	context->ExtractValue(index);
+
+	wb::game *game = cur_visitor_site_no->cur_game;
+	
+	if (!game->edit_mode_active || index < 0 || index >= game->edit_mode_selected_mission_object_nos.size())
+		return -1;
+
+	return game->edit_mode_selected_mission_object_nos[index];
+}
+
+void EditModeSelectMissionObject(WSEEditModeOperationsContext *context)
+{
+	int mission_object_no;
+
+	context->ExtractMissionObjectNo(mission_object_no);
+
+	wb::game *game = cur_visitor_site_no->cur_game;
+
+	if (!game->edit_mode_active || game->edit_mode_selected_mission_object_nos.contains(mission_object_no))
+		return;
+
+	game->edit_mode_selected_mission_object_nos.push_back(mission_object_no);
+	game->edit_mode_selection_changed = true;
+}
+
+void EditModeDeselectMissionObject(WSEEditModeOperationsContext *context)
+{
+	int mission_object_no;
+
+	context->ExtractMissionObjectNo(mission_object_no);
+
+	wb::game *game = cur_visitor_site_no->cur_game;
+
+	if (!game->edit_mode_active)
+		return;
+
+	int index = game->edit_mode_selected_mission_object_nos.find(mission_object_no);
+
+	if (index < 0)
+		return;
+
+	if (game->edit_mode_highlighted_mission_object_no == index)
+		game->edit_mode_highlighted_mission_object_no = -1;
+	else if (game->edit_mode_highlighted_mission_object_no > index)
+		game->edit_mode_highlighted_mission_object_no--;
+
+	game->edit_mode_selected_mission_object_nos.remove_at(index);
+	game->edit_mode_selection_changed = true;
+}
+
+int EditModeGetHighlightedMissionObject(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = cur_visitor_site_no->cur_game;
+
+	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no < 0 || game->edit_mode_highlighted_mission_object_no >= game->edit_mode_selected_mission_object_nos.size())
+		return -1;
+
+	return game->edit_mode_selected_mission_object_nos[game->edit_mode_highlighted_mission_object_no];
+}
+
+void EditModeSetHighlightedMissionObject(WSEEditModeOperationsContext *context)
+{
+	int mission_object_no;
+
+	if (context->HasMoreOperands())
+		context->ExtractMissionObjectNo(mission_object_no);
+	else
+		mission_object_no = -1;
+
+	wb::game *game = cur_visitor_site_no->cur_game;
 
 	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no == mission_object_no)
 		return;

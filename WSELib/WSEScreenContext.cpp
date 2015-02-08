@@ -15,7 +15,7 @@ void WSEScreenContext::Message(unsigned int color, std::string format, ...)
 	va_end(ap);
 
 #if defined WARBAND
-	//warband->window_manager.display_message(buffer, color, false);
+	warband->window_manager.display_message(buffer, color, false);
 #elif defined WARBAND_DEDICATED
 	buffer[chars_written++] = '\n';
 	buffer[chars_written] = '0';

@@ -603,7 +603,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 
 		sprintf_s(buf, "At %s.", operation_manager->id.c_str());
 #if defined WARBAND
-		//warband->window_manager.display_message(buf, 0xFFFF5555, 0);
+		warband->window_manager.display_message(buf, 0xFFFF5555, 0);
 #endif
 		warband->log_stream.write_c_str(buf);
 		warband->log_stream.write_c_str("\n");
@@ -770,7 +770,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 
 			sprintf_s(buf, "At %s.", operation_manager->id.c_str());
 #if defined WARBAND
-			//warband->window_manager.display_message(buf, 0xFFFF5555, 0);
+			warband->window_manager.display_message(buf, 0xFFFF5555, 0);
 #endif
 			warband->log_stream.write_c_str(buf);
 			warband->log_stream.write_c_str("\n");
@@ -830,9 +830,8 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 			for (; start_value < NUM_NETWORK_PLAYERS; ++start_value)
 			{
 				wb::network_player *player = &data_string_manager->multiplayer_data.players[start_value];
-
-				//if (player->is_active() && player->ready)
-				if (player->ready)
+				
+				if (player->is_active() && player->ready)
 					break;
 			}
 		}
@@ -957,8 +956,7 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			{
 				wb::network_player *player = &data_string_manager->multiplayer_data.players[value];
 
-				//if (player->is_active() && player->ready)
-				if (player->ready)
+				if (player->is_active() && player->ready)
 					break;
 			}
 		}
@@ -1389,7 +1387,7 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 bool WSEScriptingContext::OnOperationExecute(wb::operation *operation, int *operand_types, __int64 *operand_values, bool *continue_loop, __int64 *locals, int context_flags)
 {
 	WSEOperationDescriptor *descriptor = m_descriptors[operation->opcode & 0xFFFFFFF];
-		
+	
 	if (!descriptor)
 		return true;
 

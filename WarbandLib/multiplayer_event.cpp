@@ -13,8 +13,7 @@ multiplayer_event::multiplayer_event()
 	cur_packet_id = 0;
 	guaranteed = 0;
 	priority = 0;
-	//id = warband->network_manager.cur_event_id++;
-	id = data_network_manager->network_manager.cur_event_id++;
+	id = warband->network_manager.cur_event_id++;
 	u1 = 0;
 };
 
