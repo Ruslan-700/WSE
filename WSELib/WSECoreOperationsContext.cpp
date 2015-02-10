@@ -3,6 +3,7 @@
 #include <ctime>
 #include "WSE.h"
 #include "warband.h"
+#include <Shellapi.h>
 
 bool IsVanillaWarband(WSECoreOperationsContext *context)
 {
@@ -97,7 +98,7 @@ bool TroopSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_game->troops[troop_no].slots.get(slot_no) > value;
+	return warband->cur_game->troops[troop_no].slots.get(slot_no) > value;
 }
 
 bool FactionSlotGt(WSECoreOperationsContext *context)
@@ -111,7 +112,7 @@ bool FactionSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_game->factions[faction_no].slots.get(slot_no) > value;
+	return warband->cur_game->factions[faction_no].slots.get(slot_no) > value;
 }
 
 bool QuestSlotGt(WSECoreOperationsContext *context)
@@ -125,7 +126,7 @@ bool QuestSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_game->quests[quest_no].slots.get(slot_no) > value;
+	return warband->cur_game->quests[quest_no].slots.get(slot_no) > value;
 }
 
 bool SceneSlotGt(WSECoreOperationsContext *context)
@@ -139,7 +140,7 @@ bool SceneSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_game->sites[site_no].slots.get(slot_no) > value;
+	return warband->cur_game->sites[site_no].slots.get(slot_no) > value;
 }
 
 bool PartySlotGt(WSECoreOperationsContext *context)
@@ -153,7 +154,7 @@ bool PartySlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_game->parties[party_no].slots.get(slot_no) > value;
+	return warband->cur_game->parties[party_no].slots.get(slot_no) > value;
 }
 
 bool PlayerSlotGt(WSECoreOperationsContext *context)
@@ -181,7 +182,7 @@ bool TeamSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_mission->teams[team_no].slots.get(slot_no) > value;
+	return warband->cur_mission->teams[team_no].slots.get(slot_no) > value;
 }
 
 bool AgentSlotGt(WSECoreOperationsContext *context)
@@ -195,7 +196,7 @@ bool AgentSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].slots.get(slot_no) > value;
+	return warband->cur_mission->agents[agent_no].slots.get(slot_no) > value;
 }
 
 bool ScenePropSlotGt(WSECoreOperationsContext *context)
@@ -209,7 +210,7 @@ bool ScenePropSlotGt(WSECoreOperationsContext *context)
 	if (slot_no < 0 || slot_no > NUM_SLOTS)
 		return 0;
 
-	return cur_visitor_site_no->cur_mission->mission_objects[mission_object_no].slots.get(slot_no) > value;
+	return warband->cur_mission->mission_objects[mission_object_no].slots.get(slot_no) > value;
 }
 /*
 bool ItemSlotGt(WSECoreOperationsContext *context)
@@ -648,6 +649,23 @@ int TimerGetElapsedTime(WSECoreOperationsContext *context)
 	return (int)(context->m_timer_registers[timer_no].get_elapsed_time() * 1000);
 }
 
+void ShellOpenUrl(WSECoreOperationsContext *context)
+{
+#if defined WARBAND
+	CStringW url;
+
+	context->ExtractWideString(url);
+	
+	if (url.Find(L"http://") == 0 || url.Find(L"https://") == 0 || url.Find(L"ftp://") == 0 || url.Find(L"ts3server://") == 0)
+	{
+		ShellExecuteW(NULL, L"open", url, NULL, NULL, SW_SHOWNORMAL);
+	}
+	else
+	{
+		context->ScriptError("Support only http://, https://, ftp:// and ts3server:// urls.");
+	}
+#endif
+}
 
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
@@ -810,5 +828,9 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("timer_get_elapsed_time", TimerGetElapsedTime, Both, Lhs, 2, 2,
 		"Stores <1>'s elapsed time into <0>",
 		"destination", "timer_register_no");
+
+	RegisterOperation("shell_open_url", ShellOpenUrl, Client, None, 1, 1,
+		"Open <0> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.",
+		"url");
 	
 }

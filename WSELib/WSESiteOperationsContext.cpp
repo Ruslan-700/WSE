@@ -10,7 +10,7 @@ void SiteSetFlags(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(flags);
 
-	wb::site *site = &cur_visitor_site_no->cur_game->sites[site_no];
+	wb::site *site = &warband->cur_game->sites[site_no];
 
 	site->flags = flags;
 	site->descriptor_checksum = 0;
@@ -24,7 +24,7 @@ void SiteSetWaterLevel(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractFixedPoint(water_level);
 
-	wb::site *site = &cur_visitor_site_no->cur_game->sites[site_no];
+	wb::site *site = &warband->cur_game->sites[site_no];
 
 	site->water_level = water_level;
 	site->descriptor_checksum = 0;
@@ -41,7 +41,7 @@ void SiteSetBounds(WSESiteOperationsContext *context)
 	context->ExtractFixedPoint(max_x);
 	context->ExtractFixedPoint(max_y);
 
-	wb::site *site = &cur_visitor_site_no->cur_game->sites[site_no];
+	wb::site *site = &warband->cur_game->sites[site_no];
 
 	site->min_x = min_x;
 	site->min_y = min_y;
@@ -58,7 +58,7 @@ void SiteSetOuterTerrain(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractString(outer_terrain);
 
-	wb::site *site = &cur_visitor_site_no->cur_game->sites[site_no];
+	wb::site *site = &warband->cur_game->sites[site_no];
 
 	if (outer_terrain != "0" && !warband->resource_manager.get_mesh(outer_terrain))
 		return;
@@ -74,7 +74,7 @@ void SiteSetTerrainSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 0, 0, 31, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 0, 0, 31, value);
 }
 
 void SiteSetRiverSeed(WSESiteOperationsContext *context)
@@ -84,7 +84,7 @@ void SiteSetRiverSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 1, 0, 31, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 1, 0, 31, value);
 }
 
 void SiteSetFloraSeed(WSESiteOperationsContext *context)
@@ -94,7 +94,7 @@ void SiteSetFloraSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 2, 0, 31, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 2, 0, 31, value);
 }
 
 void SiteSetDeepWater(WSESiteOperationsContext *context)
@@ -105,7 +105,7 @@ void SiteSetDeepWater(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 1, 31, 1, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 1, 31, 1, value);
 }
 
 void SiteSetPlaceRiver(WSESiteOperationsContext *context)
@@ -116,7 +116,7 @@ void SiteSetPlaceRiver(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 3, 31, 1, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 31, 1, value);
 }
 
 void SiteSetDisableGrass(WSESiteOperationsContext *context)
@@ -127,7 +127,7 @@ void SiteSetDisableGrass(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 5, 2, 2, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 5, 2, 2, value);
 }
 
 void SiteSetValleySize(WSESiteOperationsContext *context)
@@ -137,7 +137,7 @@ void SiteSetValleySize(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 4, 0, 7, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 0, 7, value);
 }
 
 void SiteSetHillHeight(WSESiteOperationsContext *context)
@@ -147,7 +147,7 @@ void SiteSetHillHeight(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 4, 7, 7, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 7, 7, value);
 }
 
 void SiteSetRuggedness(WSESiteOperationsContext *context)
@@ -157,7 +157,7 @@ void SiteSetRuggedness(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 4, 14, 7, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 14, 7, value);
 }
 
 void SiteSetVegetation(WSESiteOperationsContext *context)
@@ -167,7 +167,7 @@ void SiteSetVegetation(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 4, 21, 7, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 21, 7, value);
 }
 
 void SiteSetSize(WSESiteOperationsContext *context)
@@ -178,8 +178,8 @@ void SiteSetSize(WSESiteOperationsContext *context)
 	context->ExtractValue(x);
 	context->ExtractValue(y);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 3, 0, 10, x);
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 3, 10, 10, y);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 0, 10, x);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 10, 10, y);
 }
 
 void SiteSetRegionType(WSESiteOperationsContext *context)
@@ -189,7 +189,7 @@ void SiteSetRegionType(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 4, 28, 4, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 28, 4, value);
 }
 
 void SiteSetRegionDetail(WSESiteOperationsContext *context)
@@ -199,7 +199,7 @@ void SiteSetRegionDetail(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&cur_visitor_site_no->cur_game->sites[site_no], 5, 0, 2, value);
+	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 5, 0, 2, value);
 }
 /*
 void SiteSetFlags(WSESiteOperationsContext *context)

@@ -106,8 +106,8 @@ namespace wb
 		int uuu0; // align
 		rgl::priority_selector priority_selector;
 		int uuu1;
-		LPVOID mumble_shared_memory;
-		HANDLE mumble_handle;
+		//LPVOID mumble_shared_memory;
+		//HANDLE mumble_handle;
 		int uuu2; // align
 		rgl::string uuu3[6];
 		int uuu4; // TODO: agent ai related
@@ -123,8 +123,8 @@ namespace wb
 #if defined WARBAND
 		bool in_party_window;
 #endif
-		unsigned int bits_4;
-		unsigned int bits_2;
+		//unsigned int bits_4;
+		//unsigned int bits_2;
 #if defined WARBAND
 		int uuu8; // align
 		rgl::matrix mesh_shading_matrix;
@@ -145,7 +145,13 @@ namespace wb
 		bool uu1;
 		int uu2[133];
 		*/
-		int uu2[144];
+		int uu0[2];// align
+		int uu3[7];
+		bool uu1;
+		bool main_window_focused;
+		bool dof_enabled;
+		bool hdr_enabled;
+		int uu2[133];
 		//DWORD update_check_thread_id;
 		HANDLE rendering_event_1;
 		HANDLE rendering_event_2;
@@ -159,7 +165,7 @@ namespace wb
 		int hlsl_mode;
 #elif defined WARBAND_DEDICATED
 		//int uu0[128];
-		int uu0[114];
+		int uu0[113];
 #endif
 		int display_wp[7];
 #if defined WARBAND
@@ -327,33 +333,6 @@ namespace wb
 	struct basic_game_data
 	{
 		basic_game basic_game;
-	};
-
-	struct cur_visitor_site_no_data
-	{
-		int cur_visitor_site_no;
-		int cur_statement_no;
-		int script_error_occurred;
-		int cur_opcode;
-		int skip_next_operation;
-#if defined WARBAND
-		int uu2[143];
-		HANDLE rendering_event_1;
-		HANDLE rendering_event_2;
-		HANDLE rendering_event_3;
-		int uu6;
-		int uu7;
-		HANDLE multithreaded_texture_loader_event;
-		int hlsl_mode;
-#elif defined WARBAND_DEDICATED
-		int uu0[113];
-#endif
-		int display_wp[7];
-#if defined WARBAND
-		meeting_redirector meeting_redirector;
-#endif
-		mission *cur_mission;
-		game *cur_game;
 	};
 
 }

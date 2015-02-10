@@ -490,7 +490,7 @@ void WSEOperationContext::ExtractTroopNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_troops)
+	if (!warband->cur_game || value < 0 || value >= warband->cur_game->num_troops)
 		ScriptError("invalid troop no %d", value);
 }
 
@@ -498,7 +498,7 @@ void WSEOperationContext::ExtractFactionNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_factions)
+	if (!warband->cur_game || value < 0 || value >= warband->cur_game->num_factions)
 		ScriptError("invalid faction no %d", value);
 }
 
@@ -522,7 +522,7 @@ void WSEOperationContext::ExtractQuestNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_quests)
+	if (!warband->cur_game || value < 0 || value >= warband->cur_game->num_quests)
 		ScriptError("invalid quest no %d", value);
 }
 
@@ -530,7 +530,7 @@ void WSEOperationContext::ExtractSiteNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_game || value < 0 || value >= cur_visitor_site_no->cur_game->num_sites)
+	if (!warband->cur_game || value < 0 || value >= warband->cur_game->num_sites)
 		ScriptError("invalid scene no %d", value);
 }
 
@@ -561,7 +561,7 @@ void WSEOperationContext::ExtractPartyNo(int &value)
 {
 	value = GetNextOperand();
 	
-	if (!cur_visitor_site_no->cur_game || !cur_visitor_site_no->cur_game->parties.is_valid_index(value))
+	if (!warband->cur_game || !warband->cur_game->parties.is_valid_index(value))
 		ScriptError("invalid party no %d", value);
 }
 
@@ -569,7 +569,7 @@ void WSEOperationContext::ExtractPartyStackNo(int &value, int party_id)
 {
 	value = GetNextOperand();
 
-	if (value < 0 || value >= cur_visitor_site_no->cur_game->parties[party_id].num_stacks)
+	if (value < 0 || value >= warband->cur_game->parties[party_id].num_stacks)
 		ScriptError("invalid party stack no %d", value);
 }
 
@@ -601,7 +601,7 @@ void WSEOperationContext::ExtractAgentNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_mission || !cur_visitor_site_no->cur_mission->agents.is_valid_index(value))
+	if (!warband->cur_mission || !warband->cur_mission->agents.is_valid_index(value))
 		ScriptError("invalid agent no %d", value);
 }
 
@@ -609,7 +609,7 @@ void WSEOperationContext::ExtractMissionObjectNo(int &value)
 {
 	value = GetNextOperand();
 
-	if (!cur_visitor_site_no->cur_mission || !cur_visitor_site_no->cur_mission->mission_objects.is_valid_index(value))
+	if (!warband->cur_mission || !warband->cur_mission->mission_objects.is_valid_index(value))
 		ScriptError("invalid scene prop instance no %d", value);
 }
 

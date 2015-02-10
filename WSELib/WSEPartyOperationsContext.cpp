@@ -11,7 +11,7 @@ int PartyStackGetExperience(WSEPartyOperationsContext *context)
 	context->ExtractPartyNo(party_no);
 	context->ExtractPartyStackNo(party_stack_no, party_no);
 
-	return (int)cur_visitor_site_no->cur_game->parties[party_no].stacks[party_stack_no].experience;
+	return (int)warband->cur_game->parties[party_no].stacks[party_stack_no].experience;
 }
 
 int PartyStackGetNumUpgradeable(WSEPartyOperationsContext *context)
@@ -22,7 +22,7 @@ int PartyStackGetNumUpgradeable(WSEPartyOperationsContext *context)
 	context->ExtractPartyNo(party_no);
 	context->ExtractPartyStackNo(party_stack_no, party_no);
 
-	return cur_visitor_site_no->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable;
+	return warband->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable;
 }
 
 bool PartyHasFlag(WSEItemOperationsContext *context)
@@ -32,7 +32,7 @@ bool PartyHasFlag(WSEItemOperationsContext *context)
 	context->ExtractPartyNo(party_no);
 	context->ExtractValue(flag);
 
-	return (cur_visitor_site_no->cur_game->parties[party_no].flags & flag) > 0;
+	return (warband->cur_game->parties[party_no].flags & flag) > 0;
 }
 
 void PartyHealMembers(WSEPartyOperationsContext *context)
@@ -45,7 +45,7 @@ void PartyHealMembers(WSEPartyOperationsContext *context)
 	context->ExtractTroopNo(troop_no);
 	context->ExtractValue(num_to_heal);
 
-	wb::party *party = &cur_visitor_site_no->cur_game->parties[party_no];
+	wb::party *party = &warband->cur_game->parties[party_no];
 
 	for (int i = 0; i < party->num_stacks && num_to_heal > 0; ++i)
 	{

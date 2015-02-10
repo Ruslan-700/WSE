@@ -104,14 +104,14 @@ void EditModeSetHighlightedMissionObject(WSEEditModeOperationsContext *context)
 */
 bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
 {
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 	
 	return game->edit_mode_active && game->edit_mode_mode == 0;
 }
 
 int EditModeGetNumSelectedMissionObjects(WSEEditModeOperationsContext *context)
 {
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 
 	if (!game->edit_mode_active)
 		return -1;
@@ -125,7 +125,7 @@ int EditModeGetSelectedMissionObject(WSEEditModeOperationsContext *context)
 
 	context->ExtractValue(index);
 
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 	
 	if (!game->edit_mode_active || index < 0 || index >= game->edit_mode_selected_mission_object_nos.size())
 		return -1;
@@ -139,7 +139,7 @@ void EditModeSelectMissionObject(WSEEditModeOperationsContext *context)
 
 	context->ExtractMissionObjectNo(mission_object_no);
 
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 
 	if (!game->edit_mode_active || game->edit_mode_selected_mission_object_nos.contains(mission_object_no))
 		return;
@@ -154,7 +154,7 @@ void EditModeDeselectMissionObject(WSEEditModeOperationsContext *context)
 
 	context->ExtractMissionObjectNo(mission_object_no);
 
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 
 	if (!game->edit_mode_active)
 		return;
@@ -175,7 +175,7 @@ void EditModeDeselectMissionObject(WSEEditModeOperationsContext *context)
 
 int EditModeGetHighlightedMissionObject(WSEEditModeOperationsContext *context)
 {
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 
 	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no < 0 || game->edit_mode_highlighted_mission_object_no >= game->edit_mode_selected_mission_object_nos.size())
 		return -1;
@@ -192,7 +192,7 @@ void EditModeSetHighlightedMissionObject(WSEEditModeOperationsContext *context)
 	else
 		mission_object_no = -1;
 
-	wb::game *game = cur_visitor_site_no->cur_game;
+	wb::game *game = warband->cur_game;
 
 	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no == mission_object_no)
 		return;

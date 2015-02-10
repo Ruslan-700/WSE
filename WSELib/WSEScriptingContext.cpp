@@ -593,11 +593,11 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	bool block_success = true;
 
 	loop_manager.Clear();
-	cur_visitor_site_no->skip_next_operation = 0;
-	cur_visitor_site_no->script_error_occurred = 0;
+	warband->skip_next_operation = 0;
+	warband->script_error_occurred = 0;
 	operation_manager->analyze();
 
-	if (cur_visitor_site_no->script_error_occurred > 0)
+	if (warband->script_error_occurred > 0)
 	{
 		char buf[512];
 
@@ -607,19 +607,19 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 #endif
 		warband->log_stream.write_c_str(buf);
 		warband->log_stream.write_c_str("\n");
-		cur_visitor_site_no->script_error_occurred = 0;
+		warband->script_error_occurred = 0;
 	}
 
 	while (operation_no < num_operations)
 	{
 		bool statement_success = true;
 		wb::operation *operation = &operation_manager->operations[operation_no];
-		cur_visitor_site_no->cur_statement_no = operation_no;
-		cur_visitor_site_no->cur_opcode = operation->opcode & 0xFFFFFFF;
+		warband->cur_statement_no = operation_no;
+		warband->cur_opcode = operation->opcode & 0xFFFFFFF;
 		
-		if (cur_visitor_site_no->cur_opcode == wb::call_script || cur_visitor_site_no->cur_opcode >= wb::store_script_param_1)
+		if (warband->cur_opcode == wb::call_script || warband->cur_opcode >= wb::store_script_param_1)
 		{
-			if (cur_visitor_site_no->cur_opcode >= wb::ge)
+			if (warband->cur_opcode >= wb::ge)
 			{
 				int error = 0;
 
@@ -635,7 +635,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 					block_success = false;
 				}
 			}
-			else if (cur_visitor_site_no->cur_opcode == wb::call_script)
+			else if (warband->cur_opcode == wb::call_script)
 			{
 				int operand_type;
 				int script_no = (int)operation->get_operand_value(local_variables, 0, operand_type);
@@ -667,21 +667,21 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 					operation_no = operation->end_statement;
 				}
 			}
-			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param_1)
+			else if (warband->cur_opcode == wb::store_script_param_1)
 			{
 				if (wb::operation::is_valid_script_parameter(0, num_parameters))
 					operation->set_return_value(local_variables, parameters[0]);
 
 				operation_no++;
 			}
-			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param_2)
+			else if (warband->cur_opcode == wb::store_script_param_2)
 			{
 				if (wb::operation::is_valid_script_parameter(1, num_parameters))
 					operation->set_return_value(local_variables, parameters[1]);
 
 				operation_no++;
 			}
-			else if (cur_visitor_site_no->cur_opcode == wb::store_script_param)
+			else if (warband->cur_opcode == wb::store_script_param)
 			{
 				int operand_type;
 				int parameter_no = (int)operation->get_operand_value(local_variables, 1, operand_type);
@@ -764,7 +764,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		if (!loop_manager.Size())
 			success = statement_success;
 		
-		if (cur_visitor_site_no->script_error_occurred > 0)
+		if (warband->script_error_occurred > 0)
 		{
 			char buf[512];
 
@@ -807,20 +807,20 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 				int position_register_no = (int)statement->get_operand_value(local_variables, 1, operand_type);
 				float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / data_basic_game->basic_game.fixed_point_multiplier;
 
-				if (cur_visitor_site_no->cur_mission->grid.initialize_iterator(grid_iterator, data_basic_game->basic_game.position_registers[position_register_no].o, radius))
+				if (warband->cur_mission->grid.initialize_iterator(grid_iterator, data_basic_game->basic_game.position_registers[position_register_no].o, radius))
 					start_value = grid_iterator.agent_obj->agent->no;
 				else
 					start_value = -1;
 			}
 			else
 			{
-				start_value = cur_visitor_site_no->cur_mission->agents.get_first_valid_index();
+				start_value = warband->cur_mission->agents.get_first_valid_index();
 			}
 		}
 
 		break;
 	case wb::try_for_parties:
-		start_value = cur_visitor_site_no->cur_game->parties.get_first_valid_index();
+		start_value = warband->cur_game->parties.get_first_valid_index();
 		break;
 	//case wb::try_for_active_players:
 	case wb::try_for_players:
@@ -841,12 +841,13 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 		{
 			int subKindNo = -1;
 
-			if (statement->num_operands < 2)
+			//if (statement->num_operands < 2)
+			if (statement->num_operands > 1)
 				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
 
-			for (int start_value = cur_visitor_site_no->cur_mission->mission_objects.get_first_valid_index(); start_value < cur_visitor_site_no->cur_mission->mission_objects.size(); start_value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(start_value))
+			for (start_value = warband->cur_mission->mission_objects.get_first_valid_index(); start_value < warband->cur_mission->mission_objects.size(); start_value = warband->cur_mission->mission_objects.get_next_valid_index(start_value))
 			{
-				wb::mission_object *mission_object = &cur_visitor_site_no->cur_mission->mission_objects[start_value];
+				wb::mission_object *mission_object = &warband->cur_mission->mission_objects[start_value];
 
 				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
 					break;
@@ -897,7 +898,7 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 	loop_manager.AddLoop(statement_no, start_value);
 	loop_manager.GetLoop()->mission_grid_iterator = grid_iterator;
 	statement->set_return_value(local_variables, start_value);
-
+	
 	if (CanLoop(operation_manager, local_variables, loop_manager))
 		statement_no++;
 	else
@@ -932,20 +933,20 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 		{
 			if (statement->num_operands > 1)
 			{
-				if (cur_visitor_site_no->cur_mission->grid.advance_iterator(loop->mission_grid_iterator))
+				if (warband->cur_mission->grid.advance_iterator(loop->mission_grid_iterator))
 					value = loop->mission_grid_iterator.agent_obj->agent->no;
 				else
 					value = -1;
 			}
 			else
 			{
-				value = cur_visitor_site_no->cur_mission->agents.get_next_valid_index(value);
+				value = warband->cur_mission->agents.get_next_valid_index(value);
 			}
 		}
 		
 		break;
 	case wb::try_for_parties:
-		value = cur_visitor_site_no->cur_game->parties.get_next_valid_index(value);
+		value = warband->cur_game->parties.get_next_valid_index(value);
 		break;
 	//case wb::try_for_active_players:
 	case wb::try_for_players:
@@ -966,14 +967,15 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 		{
 			int subKindNo = -1;
 
-			if (statement->num_operands < 2)
+			//if (statement->num_operands < 2)
+			if (statement->num_operands > 1)
 				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
 
-			value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(value);
+			value = warband->cur_mission->mission_objects.get_next_valid_index(value);
 
-			for (; value < cur_visitor_site_no->cur_mission->mission_objects.size(); value = cur_visitor_site_no->cur_mission->mission_objects.get_next_valid_index(value))
+			for (; value < warband->cur_mission->mission_objects.size(); value = warband->cur_mission->mission_objects.get_next_valid_index(value))
 			{
-				wb::mission_object *mission_object = &cur_visitor_site_no->cur_mission->mission_objects[value];
+				wb::mission_object *mission_object = &warband->cur_mission->mission_objects[value];
 
 				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
 					break;
@@ -1043,16 +1045,16 @@ bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __in
 		if (statement->num_operands > 1)
 			return value != -1;
 		else
-			return value < cur_visitor_site_no->cur_mission->agents.size();
+			return value < warband->cur_mission->agents.size();
 	case wb::try_for_parties:
-		return value < cur_visitor_site_no->cur_game->parties.num_created;
+		return value < warband->cur_game->parties.num_created;
 	//case wb::try_for_active_players:
 	case wb::try_for_players:
 		return value < NUM_NETWORK_PLAYERS;
 	case wb::try_for_dict_keys:
 		return value != -1;
 	case wb::try_for_prop_instances:
-		return value < cur_visitor_site_no->cur_mission->mission_objects.size();
+		return value < warband->cur_mission->mission_objects.size();
 	default:
 		return value < statement->get_operand_value(local_variables, 1, operand_type);
 	}

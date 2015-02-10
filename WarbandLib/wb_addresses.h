@@ -135,6 +135,5 @@ namespace wb
 		static unsigned int cur_module_data_ptr;
 		static unsigned int string_manager_data_ptr;
 		static unsigned int basic_game_data_ptr;
-		static unsigned int cur_visitor_site_no_data_ptr;
 	};
 }

@@ -169,10 +169,8 @@ void DumpStackTrace(LPEXCEPTION_POINTERS ptrs)
 	{
 		crash_log.Info("> Scripting context");
 		crash_log.Info("Statement block: %s", WSE->Scripting.m_cur_statement_block->id.c_str());
-		//crash_log.Info("Statement: %d", warband->cur_statement_no);
-		//crash_log.Info("Opcode: %d", warband->cur_opcode);
-		crash_log.Info("Statement: %d", cur_visitor_site_no->cur_statement_no);
-		crash_log.Info("Opcode: %d", cur_visitor_site_no->cur_opcode);
+		crash_log.Info("Statement: %d", warband->cur_statement_no);
+		crash_log.Info("Opcode: %d", warband->cur_opcode);
 	}
 
 	crash_log.Info(">");

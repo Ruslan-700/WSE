@@ -9,7 +9,7 @@ int TroopGetSkillPoints(WSETroopOperationsContext *context)
 
 	context->ExtractTroopNo(troop_no);
 
-	return cur_visitor_site_no->cur_game->troops[troop_no].skill_points;
+	return warband->cur_game->troops[troop_no].skill_points;
 }
 
 void TroopSetSkillPoints(WSETroopOperationsContext *context)
@@ -22,7 +22,7 @@ void TroopSetSkillPoints(WSETroopOperationsContext *context)
 	if (points < 0)
 		return;
 
-	cur_visitor_site_no->cur_game->troops[troop_no].skill_points = points;
+	warband->cur_game->troops[troop_no].skill_points = points;
 }
 
 int TroopGetAttributePoints(WSETroopOperationsContext *context)
@@ -31,7 +31,7 @@ int TroopGetAttributePoints(WSETroopOperationsContext *context)
 
 	context->ExtractTroopNo(troop_no);
 
-	return cur_visitor_site_no->cur_game->troops[troop_no].attribute_points;
+	return warband->cur_game->troops[troop_no].attribute_points;
 }
 
 void TroopSetAttributePoints(WSETroopOperationsContext *context)
@@ -44,7 +44,7 @@ void TroopSetAttributePoints(WSETroopOperationsContext *context)
 	if (points < 0)
 		return;
 
-	cur_visitor_site_no->cur_game->troops[troop_no].attribute_points = points;
+	warband->cur_game->troops[troop_no].attribute_points = points;
 }
 
 int TroopGetProficiencyPoints(WSETroopOperationsContext *context)
@@ -53,7 +53,7 @@ int TroopGetProficiencyPoints(WSETroopOperationsContext *context)
 
 	context->ExtractTroopNo(troop_no);
 
-	return cur_visitor_site_no->cur_game->troops[troop_no].proficiency_points;
+	return warband->cur_game->troops[troop_no].proficiency_points;
 }
 
 void TroopSetProficiencyPoints(WSETroopOperationsContext *context)
@@ -66,7 +66,7 @@ void TroopSetProficiencyPoints(WSETroopOperationsContext *context)
 	if (points < 0)
 		return;
 
-	cur_visitor_site_no->cur_game->troops[troop_no].proficiency_points = points;
+	warband->cur_game->troops[troop_no].proficiency_points = points;
 }
 
 bool TroopHasFlag(WSEItemOperationsContext *context)
@@ -76,7 +76,7 @@ bool TroopHasFlag(WSEItemOperationsContext *context)
 	context->ExtractTroopNo(troop_no);
 	context->ExtractValue(flag);
 
-	return (cur_visitor_site_no->cur_game->troops[troop_no].flags & flag) > 0;
+	return (warband->cur_game->troops[troop_no].flags & flag) > 0;
 }
 
 void TroopSetSkill(WSETroopOperationsContext *context)
@@ -87,7 +87,7 @@ void TroopSetSkill(WSETroopOperationsContext *context)
 	context->ExtractSkillNo(skill_no);
 	context->ExtractValue(value);
 
-	cur_visitor_site_no->cur_game->troops[troop_no].set_skill(skill_no, value);
+	warband->cur_game->troops[troop_no].set_skill(skill_no, value);
 }
 
 void TroopSetAttribute(WSETroopOperationsContext *context)
@@ -98,7 +98,7 @@ void TroopSetAttribute(WSETroopOperationsContext *context)
 	context->ExtractBoundedValue(attribute, 0, NUM_TROOP_ATTRIBUTES);
 	context->ExtractValue(value);
 
-	cur_visitor_site_no->cur_game->troops[troop_no].set_attribute(attribute, value);
+	warband->cur_game->troops[troop_no].set_attribute(attribute, value);
 }
 
 void TroopSetProficiency(WSETroopOperationsContext *context)
@@ -109,7 +109,7 @@ void TroopSetProficiency(WSETroopOperationsContext *context)
 	context->ExtractBoundedValue(proficiency, 0, NUM_TROOP_PROFICIENCIES);
 	context->ExtractClampedValue(value, 0, 1000);
 
-	cur_visitor_site_no->cur_game->troops[troop_no].proficiencies[proficiency] = (float)value;
+	warband->cur_game->troops[troop_no].proficiencies[proficiency] = (float)value;
 }
 /*
 int TroopGetSkillPoints(WSETroopOperationsContext *context)

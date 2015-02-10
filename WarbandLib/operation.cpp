@@ -118,7 +118,7 @@ void operation::set_return_value(__int64 *locals, const __int64 &value)
 		{
 			char buf[512];
 
-			sprintf_s(buf, "Illegal lvalue in statement; Opcode = %d", cur_visitor_site_no->cur_opcode);
+			sprintf_s(buf, "Illegal lvalue in statement; Opcode = %d", warband->cur_opcode);
 			script::error(buf);
 		}
 
@@ -218,7 +218,7 @@ bool operation::is_valid_register(int register_no)
 
 	char buf[512];
 	
-	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Register ID: %d", cur_visitor_site_no->cur_opcode, register_no);
+	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Register ID: %d", warband->cur_opcode, register_no);
 	script::error(buf);
 	return false;
 }
@@ -230,7 +230,7 @@ bool operation::is_valid_script_parameter(int parameter_no, int num_parameters)
 
 	char buf[512];
 	
-	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Script Parameter ID: %d", cur_visitor_site_no->cur_opcode, parameter_no);
+	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Script Parameter ID: %d", warband->cur_opcode, parameter_no);
 	script::error(buf);
 	return false;
 }
@@ -245,19 +245,19 @@ bool is_valid_string(int type, int string_no)
 		if (string_no >= 0 && string_no < NUM_REGISTERS)
 			return true;
 
-		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid String Register ID: %d", cur_visitor_site_no->cur_opcode, string_no);
+		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid String Register ID: %d", warband->cur_opcode, string_no);
 		break;
 	case 3:
 		if (string_no >= 0 && string_no < data_string_manager->string_manager.num_strings)
 			return true;
 
-		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid String ID: %d", cur_visitor_site_no->cur_opcode, string_no);
+		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid String ID: %d", warband->cur_opcode, string_no);
 		break;
 	case 22:
 		if (string_no >= 0 && string_no < data_string_manager->string_manager.num_quick_strings)
 			return true;
 
-		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid Quick String ID: %d", cur_visitor_site_no->cur_opcode, string_no);
+		sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid Quick String ID: %d", warband->cur_opcode, string_no);
 		break;
 	}
 
@@ -267,12 +267,12 @@ bool is_valid_string(int type, int string_no)
 
 bool operation::is_valid_party(int party_no)
 {
-	if (cur_visitor_site_no->cur_game->parties.is_valid_index(party_no))
+	if (warband->cur_game->parties.is_valid_index(party_no))
 		return true;
 
 	char buf[512];
 	
-	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Party ID: %d", cur_visitor_site_no->cur_opcode, party_no);
+	sprintf_s(buf, "SCRIPT ERROR ON OPCODE %d: Invalid Party ID: %d", warband->cur_opcode, party_no);
 	script::error(buf);
 	return false;
 }
@@ -284,7 +284,7 @@ bool operation::is_valid_scene_prop_no(int scene_prop_no)
 
 	char buf[512];
 	
-	sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid Scene Prop ID: %d", cur_visitor_site_no->cur_opcode, scene_prop_no);
+	sprintf_s(buf, "SCRIPT WARNING ON OPCODE %d: Invalid Scene Prop ID: %d", warband->cur_opcode, scene_prop_no);
 	script::error(buf);
 	return false;
 }

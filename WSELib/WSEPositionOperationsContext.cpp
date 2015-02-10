@@ -186,7 +186,7 @@ void PositionAlignToGround(WSEPositionOperationsContext *context)
 	float height;
 	rgl::quad *quad;
 
-	cur_visitor_site_no->cur_mission->mission_scene->get_ground_data(dest->o, height, &quad);
+	warband->cur_mission->mission_scene->get_ground_data(dest->o, height, &quad);
 
 	if (pointUp)
 	{

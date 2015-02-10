@@ -9,7 +9,7 @@ int AgentGetItemModifier(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	wb::agent *agent = &cur_visitor_site_no->cur_mission->agents[agent_no];
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 	return agent->type == wb::at_horse ? agent->horse_item.get_modifier() : -1;
 }
@@ -21,7 +21,7 @@ int AgentGetItemSlotModifier(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(slot_no, 0, NUM_ITEM_SLOTS);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].items[slot_no].get_modifier();
+	return warband->cur_mission->agents[agent_no].items[slot_no].get_modifier();
 }
 
 int AgentGetAnimationProgress(WSEAgentOperationsContext *context)
@@ -31,7 +31,7 @@ int AgentGetAnimationProgress(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(channel_no, 0, 2);
 
-	return (int)(cur_visitor_site_no->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f);
+	return (int)(warband->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f);
 }
 
 int AgentGetDna(WSEAgentOperationsContext *context)
@@ -40,7 +40,7 @@ int AgentGetDna(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].dna;
+	return warband->cur_mission->agents[agent_no].dna;
 }
 
 int AgentGetGroundSceneProp(WSEAgentOperationsContext *context)
@@ -49,12 +49,12 @@ int AgentGetGroundSceneProp(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	rgl::entity *entity = cur_visitor_site_no->cur_mission->agents[agent_no].get_ground_entity();
+	rgl::entity *entity = warband->cur_mission->agents[agent_no].get_ground_entity();
 
 	if (!entity || entity->object_type != 12)
 		return -1;
 
-	wb::mission_object *object = &cur_visitor_site_no->cur_mission->mission_objects[entity->object_no];
+	wb::mission_object *object = &warband->cur_mission->mission_objects[entity->object_no];
 
 	if (object->meta_type == wb::mt_scene_prop || object->meta_type == wb::mt_spawned_prop)
 		return object->no;
@@ -69,7 +69,7 @@ int AgentGetItemSlotAmmo(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(item_slot_no, 0, NUM_ITEM_SLOTS);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].items[item_slot_no].get_ammo();
+	return warband->cur_mission->agents[agent_no].items[item_slot_no].get_ammo();
 }
 
 void AgentSetItemSlotAmmo(WSEAgentOperationsContext *context)
@@ -80,7 +80,7 @@ void AgentSetItemSlotAmmo(WSEAgentOperationsContext *context)
 	context->ExtractBoundedValue(item_slot_no, 0, NUM_ITEM_SLOTS);
 	context->ExtractValue(value);
 
-	cur_visitor_site_no->cur_mission->agents[agent_no].items[item_slot_no].set_ammo(value);
+	warband->cur_mission->agents[agent_no].items[item_slot_no].set_ammo(value);
 }
 
 int AgentGetItemSlotHitPoints(WSEAgentOperationsContext *context)
@@ -90,7 +90,7 @@ int AgentGetItemSlotHitPoints(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(item_slot_no, 0, NUM_ITEM_SLOTS);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].items[item_slot_no].get_health();
+	return warband->cur_mission->agents[agent_no].items[item_slot_no].get_health();
 }
 
 void AgentSetItemSlotHitPoints(WSEAgentOperationsContext *context)
@@ -101,7 +101,7 @@ void AgentSetItemSlotHitPoints(WSEAgentOperationsContext *context)
 	context->ExtractBoundedValue(item_slot_no, 0, NUM_ITEM_SLOTS);
 	context->ExtractValue(value);
 
-	cur_visitor_site_no->cur_mission->agents[agent_no].items[item_slot_no].set_health(value);
+	warband->cur_mission->agents[agent_no].items[item_slot_no].set_health(value);
 }
 
 int AgentGetWieldedItemSlotNo(WSEAgentOperationsContext *context)
@@ -111,7 +111,7 @@ int AgentGetWieldedItemSlotNo(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(hand_no, 0, 2);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].wielded_items[hand_no];
+	return warband->cur_mission->agents[agent_no].wielded_items[hand_no];
 }
 
 int AgentGetScale(WSEAgentOperationsContext *context)
@@ -120,7 +120,7 @@ int AgentGetScale(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	return (int)(cur_visitor_site_no->cur_mission->agents[agent_no].scale * data_basic_game->basic_game.fixed_point_multiplier);
+	return (int)(warband->cur_mission->agents[agent_no].scale * data_basic_game->basic_game.fixed_point_multiplier);
 }
 
 void AgentSetForcedLod(WSECoreOperationsContext *context)
@@ -130,7 +130,7 @@ void AgentSetForcedLod(WSECoreOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(level, 0, 6);
 
-	rgl::strategic_entity *entity = cur_visitor_site_no->cur_mission->agents[agent_no].entity;
+	rgl::strategic_entity *entity = warband->cur_mission->agents[agent_no].entity;
 
 	if (entity)
 		entity->flags = (entity->flags & ~0xF0) | (level << 4);
@@ -143,7 +143,7 @@ int AgentGetItemSlotFlags(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(item_slot_no, 0, NUM_ITEM_SLOTS);
 
-	return cur_visitor_site_no->cur_mission->agents[agent_no].items[item_slot_no].item_flags;
+	return warband->cur_mission->agents[agent_no].items[item_slot_no].item_flags;
 }
 
 void AgentAiGetMoveTargetPosition(WSEAgentOperationsContext *context)
@@ -153,7 +153,7 @@ void AgentAiGetMoveTargetPosition(WSEAgentOperationsContext *context)
 	context->ExtractRegister(preg);
 	context->ExtractAgentNo(agent_no);
 
-	wb::agent *agent = &cur_visitor_site_no->cur_mission->agents[agent_no];
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 	data_basic_game->basic_game.position_registers[preg].o = agent->ai.target_position;
 	data_basic_game->basic_game.position_registers[preg].rot.f = agent->ai.target_direction;
@@ -169,24 +169,24 @@ void AgentSetHorse(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractValue(horse_agent_no);
 
-	wb::agent *agent = &cur_visitor_site_no->cur_mission->agents[agent_no];
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	if (cur_visitor_site_no->cur_mission->agents.is_valid_index(agent->horse_agent_no))
+	if (warband->cur_mission->agents.is_valid_index(agent->horse_agent_no))
 	{
-		cur_visitor_site_no->cur_mission->agents[agent->horse_agent_no].rider_agent_no = -1;
-		cur_visitor_site_no->cur_mission->agents[agent->horse_agent_no].ai.behavior = wb::aisb_hold;
-		cur_visitor_site_no->cur_mission->agents[agent->horse_agent_no].ai.behavior_update_time = 10.0f;
-		cur_visitor_site_no->cur_mission->agents[agent->horse_agent_no].ai.control.actions_2 = 0;
-		cur_visitor_site_no->cur_mission->agents[agent->horse_agent_no].ai.behavior_update_timer.update();
+		warband->cur_mission->agents[agent->horse_agent_no].rider_agent_no = -1;
+		warband->cur_mission->agents[agent->horse_agent_no].ai.behavior = wb::aisb_hold;
+		warband->cur_mission->agents[agent->horse_agent_no].ai.behavior_update_time = 10.0f;
+		warband->cur_mission->agents[agent->horse_agent_no].ai.control.actions_2 = 0;
+		warband->cur_mission->agents[agent->horse_agent_no].ai.behavior_update_timer.update();
 	}
 
 	if (horse_agent_no < 0)
 	{
 		agent->horse_agent_no = -1;
 	}
-	else if (cur_visitor_site_no->cur_mission->agents.is_valid_index(horse_agent_no))
+	else if (warband->cur_mission->agents.is_valid_index(horse_agent_no))
 	{
-		cur_visitor_site_no->cur_mission->agents[horse_agent_no].rider_agent_no = agent_no;
+		warband->cur_mission->agents[horse_agent_no].rider_agent_no = agent_no;
 		agent->horse_agent_no = horse_agent_no;
 	}
 }
@@ -202,7 +202,7 @@ void AgentAiSetSimpleBehavior(WSEAgentOperationsContext *context)
 	if (time <= 0)
 		time = 10000000;
 
-	wb::agent *agent = &cur_visitor_site_no->cur_mission->agents[agent_no];
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 	agent->set_ai_behavior(behavior);
 	agent->ai.behavior_update_timer.update();
@@ -216,7 +216,7 @@ void AgentAccelerate(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractRegister(preg);
 
-	wb::agent *agent = &cur_visitor_site_no->cur_mission->agents[agent_no];
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 	agent->movement_flags &= ~0x1;
 	agent->acceleration += data_basic_game->basic_game.position_registers[preg].o;
@@ -230,7 +230,7 @@ void AgentSetItemSlotModifier(WSEAgentOperationsContext *context)
 	context->ExtractBoundedValue(slot_no, 0, NUM_ITEM_SLOTS);
 	context->ExtractItemModifierNo(modifier_no);
 
-	cur_visitor_site_no->cur_mission->agents[agent_no].items[slot_no].set_modifier(modifier_no);
+	warband->cur_mission->agents[agent_no].items[slot_no].set_modifier(modifier_no);
 }
 /*
 int AgentGetItemModifier(WSEAgentOperationsContext *context)

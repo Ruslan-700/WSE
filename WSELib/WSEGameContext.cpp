@@ -69,9 +69,7 @@ void WSEGameContext::OnReadModuleFiles()
 	//WSE->Log.Warning(std::string(cur_module->cur_module_path));
 	//WSE->Log.Warning("Option: %s", cur_module->conversation_manager.sentences[0].id.c_str());
 	//WSE->Log.Warning("Port: %d", data_network_manager->network_manager.server.port);
-	
-
-	//WSE->Log.Warning("Test: %d", cur_visitor_site_no->cur_mission->cur_mission_template_no);
+	//WSE->Log.Warning("cur_visitor_site_no: %p", &warband->cur_visitor_site_no);
 	
 	//for (int i = 0; i < string_manager->script_manager.num_scripts; ++i)
 	//{

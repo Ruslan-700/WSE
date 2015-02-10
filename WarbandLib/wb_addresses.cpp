@@ -151,7 +151,6 @@ unsigned int addresses::game_data_ptr = 0x00867198;
 unsigned int addresses::cur_module_data_ptr = 0x02D87328;
 unsigned int addresses::string_manager_data_ptr = 0x00E0BBD8;
 unsigned int addresses::basic_game_data_ptr = 0x00E02938;
-unsigned int addresses::cur_visitor_site_no_data_ptr = 0x008EA038;
 
 #elif defined WARBAND_STEAM
 unsigned int addresses::operation_Execute_jumptable = 0x0057E410;
@@ -428,6 +427,5 @@ unsigned int addresses::game_data_ptr = 0x006E2420;
 unsigned int addresses::cur_module_data_ptr = 0x02A163E8;
 unsigned int addresses::string_manager_data_ptr = 0x00ABCFF0;
 unsigned int addresses::basic_game_data_ptr = 0x00AB4BF8;
-unsigned int addresses::cur_visitor_site_no_data_ptr = 0x007286E0;
 
 #endif
