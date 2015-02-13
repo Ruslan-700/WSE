@@ -25,8 +25,7 @@ int RegisterGet(WSECoreOperationsContext *context)
 
 	context->ExtractRegister(reg);
 
-	//return (int)warband->basic_game.registers[reg];
-	return (int)data_basic_game->basic_game.registers[reg];
+	return (int)warband->basic_game.registers[reg];
 }
 
 void RegisterSet(WSECoreOperationsContext *context)
@@ -36,8 +35,7 @@ void RegisterSet(WSECoreOperationsContext *context)
 	context->ExtractRegister(reg);
 	context->ExtractValue(value);
 
-	//warband->basic_game.registers[reg] = value;
-	data_basic_game->basic_game.registers[reg] = value;
+	warband->basic_game.registers[reg] = value;
 }
 
 int StoreWSEVersion(WSECoreOperationsContext *context)
@@ -59,160 +57,6 @@ int StoreWSEVersion(WSECoreOperationsContext *context)
 	return -1;
 }
 
-bool ItemSlotGt(WSECoreOperationsContext *context)
-{
-	int item_kind_no, slot_no, value;
-
-	context->ExtractItemKindNo(item_kind_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->item_kinds[item_kind_no].slots.get(slot_no) > value;
-}
-
-bool PartyTemplateSlotGt(WSECoreOperationsContext *context)
-{
-	int party_template_no, slot_no, value;
-
-	context->ExtractPartyTemplateNo(party_template_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->party_templates[party_template_no].slots.get(slot_no) > value;
-}
-
-bool TroopSlotGt(WSECoreOperationsContext *context)
-{
-	int troop_no, slot_no, value;
-
-	context->ExtractTroopNo(troop_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_game->troops[troop_no].slots.get(slot_no) > value;
-}
-
-bool FactionSlotGt(WSECoreOperationsContext *context)
-{
-	int faction_no, slot_no, value;
-
-	context->ExtractFactionNo(faction_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_game->factions[faction_no].slots.get(slot_no) > value;
-}
-
-bool QuestSlotGt(WSECoreOperationsContext *context)
-{
-	int quest_no, slot_no, value;
-
-	context->ExtractQuestNo(quest_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_game->quests[quest_no].slots.get(slot_no) > value;
-}
-
-bool SceneSlotGt(WSECoreOperationsContext *context)
-{
-	int site_no, slot_no, value;
-
-	context->ExtractSiteNo(site_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_game->sites[site_no].slots.get(slot_no) > value;
-}
-
-bool PartySlotGt(WSECoreOperationsContext *context)
-{
-	int party_no, slot_no, value;
-
-	context->ExtractPartyNo(party_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_game->parties[party_no].slots.get(slot_no) > value;
-}
-
-bool PlayerSlotGt(WSECoreOperationsContext *context)
-{
-	int player_no, slot_no, value;
-
-	context->ExtractPlayerNo(player_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return data_string_manager->multiplayer_data.players[player_no].slots.get(slot_no) > value;
-}
-
-bool TeamSlotGt(WSECoreOperationsContext *context)
-{
-	int team_no, slot_no, value;
-
-	context->ExtractTeamNo(team_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_mission->teams[team_no].slots.get(slot_no) > value;
-}
-
-bool AgentSlotGt(WSECoreOperationsContext *context)
-{
-	int agent_no, slot_no, value;
-
-	context->ExtractAgentNo(agent_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_mission->agents[agent_no].slots.get(slot_no) > value;
-}
-
-bool ScenePropSlotGt(WSECoreOperationsContext *context)
-{
-	int mission_object_no, slot_no, value;
-
-	context->ExtractMissionObjectNo(mission_object_no);
-	context->ExtractValue(slot_no);
-	context->ExtractValue(value);
-
-	if (slot_no < 0 || slot_no > NUM_SLOTS)
-		return 0;
-
-	return warband->cur_mission->mission_objects[mission_object_no].slots.get(slot_no) > value;
-}
-/*
 bool ItemSlotGt(WSECoreOperationsContext *context)
 {
 	int item_kind_no, slot_no, value;
@@ -366,7 +210,7 @@ bool ScenePropSlotGt(WSECoreOperationsContext *context)
 
 	return warband->cur_mission->mission_objects[mission_object_no].slots.get(slot_no) > value;
 }
-*/
+
 int StoreCurrentTrigger(WSECoreOperationsContext *context)
 {
 	return context->GetCurrentTrigger();
@@ -489,7 +333,7 @@ void CloseOrderMenu(WSECoreOperationsContext *context)
 	tactical_window->order_menu_timer.update();
 #endif
 }
-
+*/
 bool OrderFlagIsActive(WSECoreOperationsContext *context)
 {
 #if defined WARBAND
@@ -545,69 +389,6 @@ void PlayBinkFile(WSECoreOperationsContext *context)
 	{
 		DWORD *params = new DWORD[2];
 
-		params[0] = (DWORD)process_info.hProcess;
-		params[1] = duration;
-		_beginthread(BinkThread, 0x40000, params);
-	}
-#endif
-}
-*/
-
-bool OrderFlagIsActive(WSECoreOperationsContext *context)
-{
-#if defined WARBAND
-	if (warband->game_screen.open_windows.back() != wb::gwt_tactical)
-		return false;
-
-	wb::tactical_window *tactical_window = (wb::tactical_window *)warband->game_screen.game_windows[wb::gwt_tactical];
-	
-	return tactical_window->order_flag_entity && tactical_window->order_flag_entity->visible;
-#else
-	return false;
-#endif
-}
-
-void BinkThread(void *arg)
-{
-	DWORD *params = (DWORD *)arg;
-
-	WaitForSingleObject((HANDLE)params[0], params[1] != 0 ? params[1] : INFINITE);
-	TerminateProcess((HANDLE)params[0], 0);
-
-	delete[] params;
-}
-
-void PlayBinkFile(WSECoreOperationsContext *context)
-{
-#if !defined WARBAND_DEDICATED
-	std::string path;
-	int duration;
-	
-	context->ExtractString(path);
-	context->ExtractValue(duration);
-
-	char full_path[MAX_PATH];
-
-	PathCombine(full_path, cur_module->cur_module_path.c_str(), path.c_str());
-
-	if (!PathFileExists(full_path))
-		return;
-
-	char arg_list[512];
-
-	sprintf_s(arg_list, " %s /P /I2 /Z /J /U1 /W-1 /H-1 /C /B2", full_path);
-
-	STARTUPINFO startup_info;
-	PROCESS_INFORMATION process_info;
-
-	ZeroMemory(&startup_info, sizeof(startup_info));
-	startup_info.cb = sizeof(startup_info);
-	ZeroMemory(&process_info, sizeof(process_info));
-
-	if (CreateProcess("binkplay.exe", arg_list, NULL, NULL, false, 0, NULL, NULL, &startup_info, &process_info))
-	{
-		DWORD *params = new DWORD[2];
-		
 		params[0] = (DWORD)process_info.hProcess;
 		params[1] = duration;
 		_beginthread(BinkThread, 0x40000, params);
@@ -723,7 +504,7 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("store_wse_version", StoreWSEVersion, Both, Lhs, 2, 2,
 		"Stores <1> of the WSE version (0: major, 1: minor, 2: build) version into <0>",
 		"destination", "component");
-	/*
+	
 	RegisterOperation("item_slot_gt", ItemSlotGt, Both, Cf, 3, 3,
 		"Fails if <0>'s <1> is not greater than <2>",
 		"item_kind_no", "slot_no", "value");
@@ -731,7 +512,7 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("party_template_slot_gt", PartyTemplateSlotGt, Both, Cf, 3, 3,
 		"Fails if <0>'s <1> is not greater than <2>",
 		"party_template_no", "slot_no", "value");
-	*/
+	
 	RegisterOperation("troop_slot_gt", TroopSlotGt, Both, Cf, 3, 3,
 		"Fails if <0>'s <1> is not greater than <2>",
 		"troop_no", "slot_no", "value");
@@ -806,10 +587,10 @@ void WSECoreOperationsContext::OnLoad()
 	/*
 	RegisterOperation("close_order_menu", CloseOrderMenu, Client, None, 0, 0,
 		"Closes the order menu");
-	
+	*/
 	RegisterOperation("order_flag_is_active", OrderFlagIsActive, Client, Cf, 0, 0,
 		"Fails if the order flag is not being placed");
-	*/
+	
 	RegisterOperation("play_bink_file", PlayBinkFile, Client, None, 1, 2,
 		"Plays a .bik file located at <0>. If <1> is not set the full movie will be played",
 		"path_from_module_directory", "duration_in_ms");

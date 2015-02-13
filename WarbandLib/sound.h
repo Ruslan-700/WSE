@@ -38,6 +38,9 @@ namespace wb
 	{
 		int num_sounds;
 		sound *sounds;
+#if defined WARBAND_DEDICATED
+		int u1[18];//1166
+#endif		
 		int mapped_sounds[NUM_MAPPED_SOUNDS];
 		float sound_distances[NUM_MAPPED_SOUNDS];
 	};

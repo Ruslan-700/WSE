@@ -105,11 +105,11 @@ WSENetworkContext::WSENetworkContext()
 
 void WSENetworkContext::OnLoad()
 {
-	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
 #if defined WARBAND
-	WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
 #endif
-	/*
+	
 	if (WSE->SettingsIni.Bool("ogp_server", "enabled", false))
 	{
 		m_ogp_server = new WSEOGPServer((unsigned short)WSE->SettingsIni.Int("ogp_server", "port", 22222));
@@ -117,7 +117,7 @@ void WSENetworkContext::OnLoad()
 		WSE->Hooks.HookFunction(this, wb::addresses::CreateMbnetHost_entry, CreateMbnetHostHook);
 		WSE->Hooks.HookFunction(this, wb::addresses::DestroyMbnetHost_entry, DestroyMbnetHostHook);
 	}
-	*/
+	
 	//WSE->Hooks.HookFunction(this, wb::addresses::CheckUrlReplies_entry, CheckUrlRepliesHook);
 }
 
@@ -434,12 +434,9 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 
 			if (seq > cur_seq)
 			{
-				//warband->network_manager.control_block_dir = control_block_dir;
-				//warband->network_manager.ghost_mode = ghost_mode;
-				//warband->network_manager.combat_speed = combat_speed;
-				network_manager->network_manager.control_block_dir = control_block_dir;
-				network_manager->network_manager.ghost_mode = ghost_mode;
-				network_manager->network_manager.combat_speed = combat_speed;
+				warband->network_manager.control_block_dir = control_block_dir;
+				warband->network_manager.ghost_mode = ghost_mode;
+				warband->network_manager.combat_speed = combat_speed;
 				m_horse_ff = horse_ff != 0;
 				m_show_xhair = show_xhair != 0;
 			}

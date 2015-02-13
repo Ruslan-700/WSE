@@ -3,17 +3,6 @@
 #include "WSE.h"
 #include "warband.h"
 
-void PlayerSetBannerId(WSEPlayerOperationsContext *context)
-{
-	int player_no, banner_no;
-
-	context->ExtractPlayerNo(player_no);
-	context->ExtractValue(banner_no);
-
-	wb::network_player *player = &data_string_manager->multiplayer_data.players[player_no];
-
-	player->banner_no = banner_no;
-}
 /*
 void PlayerGetFaceKeys(WSEPlayerOperationsContext *context)
 {
@@ -122,7 +111,7 @@ void PlayerStopControllingAgent(WSEPlayerOperationsContext *context)
 		warband->multiplayer_data.players[i].send_event(evt);
 	}
 }
-
+*/
 void PlayerSetBannerId(WSEPlayerOperationsContext *context)
 {
 	int player_no, banner_no;
@@ -134,7 +123,7 @@ void PlayerSetBannerId(WSEPlayerOperationsContext *context)
 
 	player->banner_no = banner_no;
 }
-*/
+
 void PlayerSetUsername(WSEPlayerOperationsContext *context)
 {
 	int player_no;
@@ -143,7 +132,7 @@ void PlayerSetUsername(WSEPlayerOperationsContext *context)
 	context->ExtractPlayerNo(player_no);
 	context->ExtractString(name);
 
-	wb::network_player *player = &data_string_manager->multiplayer_data.players[player_no];
+	wb::network_player *player = &warband->multiplayer_data.players[player_no];
 
 	player->name = name;
 }

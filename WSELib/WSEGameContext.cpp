@@ -34,8 +34,7 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	params[2] = param_3;
 	params[3] = param_4;
 
-	//return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
-	return data_string_manager->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
+	return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
 }
 
 void WSEGameContext::OnReadModuleFiles()
@@ -46,14 +45,9 @@ void WSEGameContext::OnReadModuleFiles()
 	*/
 	
 	WSE->SettingsIni.Open(WSE->GetPath() + "wse_settings.ini");
-	/*
 	WSE->SettingsIni.Open(std::string(warband->cur_module_path) + "\\wse_settings.ini", false);
 	WSE->ModuleSettingsIni.Open(std::string(warband->cur_module_path) + "\\module.ini");
 	WSE->GameVariablesIni.Open(std::string(warband->cur_module_path) + "\\game_variables.txt");
-	*/
-	WSE->SettingsIni.Open(std::string(cur_module->cur_module_path) + "\\wse_settings.ini", false);
-	WSE->ModuleSettingsIni.Open(std::string(cur_module->cur_module_path) + "\\module.ini");
-	WSE->GameVariablesIni.Open(std::string(cur_module->cur_module_path) + "\\game_variables.txt");
 
 	/*
 #if defined WARBAND
@@ -66,16 +60,6 @@ void WSEGameContext::OnReadModuleFiles()
 #endif
 	*/
 	
-	//WSE->Log.Warning(std::string(cur_module->cur_module_path));
-	//WSE->Log.Warning("Option: %s", cur_module->conversation_manager.sentences[0].id.c_str());
-	//WSE->Log.Warning("Port: %d", data_network_manager->network_manager.server.port);
-	//WSE->Log.Warning("cur_visitor_site_no: %p", &warband->cur_visitor_site_no);
-	
-	//for (int i = 0; i < string_manager->script_manager.num_scripts; ++i)
-	//{
-		//WSE->Log.Warning("Script [%d] %s", i, string_manager->script_manager.scripts[i].id.c_str());
-	//}
-
 	/*
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];
 
@@ -102,6 +86,7 @@ void WSEGameContext::OnReadModuleFiles()
 		if (m_mapped_script_nos[i] < 0)
 			WSE->Log.Warning("Unable to map WSE script code: %s", mapped_script_ids[i]);
 	}
+	*/
 	
 	for (int i = 0; i < warband->num_item_kinds; ++i)
 	{
@@ -111,16 +96,17 @@ void WSEGameContext::OnReadModuleFiles()
 		}
 	}
 	
+	
 	for (int i = 0; i < warband->num_scene_props; ++i)
 	{
 		for (int j = 0; j < warband->scene_props[i].simple_triggers.num_simple_triggers; ++j)
 		{
 			warband->scene_props[i].simple_triggers.simple_triggers[j].operations.id.format("Scene Prop [%d] %s Trigger [%d]", i, warband->scene_props[i].id.c_str(), j);
-			rgl::_delete(warband->scene_props[i].body_part);
-			warband->scene_props[i].body_part = NULL;
+			//rgl::_delete(warband->scene_props[i].body_part);
+			//warband->scene_props[i].body_part = NULL;
 		}
 	}
-	
+
 	for (int i = 0; i < warband->conversation_manager.num_sentences; ++i)
 	{
 		warband->conversation_manager.sentences[i].conditions.id.format("Sentence [%d] %s Conditions", i, warband->conversation_manager.sentences[i].id.c_str());
@@ -174,14 +160,12 @@ void WSEGameContext::OnReadModuleFiles()
 		warband->tableau_manager.tableau_materials[i].operations.id.format("Tableau Material [%d] %s", i, warband->tableau_manager.tableau_materials[i].id.c_str());
 	}
 #endif
-	*/
 
 	WSE->SendContextEvent(this, ModuleLoad);
 }
 
 void WSEGameContext::OnReadGameFiles()
 {
-	/*
 	for (int i = 0; i < warband->cur_game->simple_triggers.num_simple_triggers; ++i)
 	{
 		warband->cur_game->simple_triggers.simple_triggers[i].operations.id.format("Simple Trigger [%d]", i);
@@ -192,7 +176,7 @@ void WSEGameContext::OnReadGameFiles()
 		warband->cur_game->triggers.triggers[i].conditions.id.format("Trigger [%d] Conditions", i);
 		warband->cur_game->triggers.triggers[i].consequences.id.format("Trigger [%d] Consequences", i);
 	}
-	*/
+	
 	WSE->SendContextEvent(this, GameLoad);
 }
 

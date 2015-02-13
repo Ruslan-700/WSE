@@ -31,6 +31,11 @@ namespace wb
 		float map_river_speed_x;
 		float map_river_speed_y;
 		float map_max_distance;
+		float u25;//1166
+		float u2;//1166
+		int u3;//1166
+		int u4;//1166
+		int u5;//1166
 		int map_tree_types;
 		int map_snow_tree_types;
 		int map_steppe_tree_types;
@@ -67,13 +72,16 @@ namespace wb
 		int can_run_faster_with_skills;
 		int use_phased_reload;
 		int horses_try_running_away;
-		int lance_pike_effect_speed;
+		int u6;//1166
+		float lance_pike_effect_speed;
+		//int lance_pike_effect_speed;
 		int no_friendly_fire_for_bots;
 		int sync_ragdoll_effects;
 		int can_adjust_camera_distance;
 		int has_forced_particles;
 		int can_objects_make_sound;
 		int disable_zoom;
+		int u7;//1166
 		int has_tutorial;
 		int has_single_player;
 		int has_multiplayer;
@@ -93,5 +101,22 @@ namespace wb
 		float extra_penetration_factor_reduction;
 		float crush_through_threshold;
 		int screenshot_format;
+		int u8;//1166
+		int u9;//1166
+		int u10;//1166
+		int u11;//1166
+		int u12;//1166
+		int u13;//1166
+		int u14;//1166
+		float u15;//1166
+		float u16;//1166
+		float u17;//1166
+		float u18;//1166
+		int u19;//1166
+		int u20;//1166
+		int u21;//1166
+		int u22;//1166
+		int u23;//1166
+		int u24;//1166
 	};
 }

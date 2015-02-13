@@ -32,7 +32,8 @@ void wb::check_types()
 	assert_size<game_string>(288, 288);
 	assert_size<ground_spec>(176, 176);
 	assert_size<info_page>(2808, 2808);
-	assert_size<input_manager>(3224, 3176);
+	//assert_size<input_manager>(3224, 3176);
+	assert_size<input_manager>(3232, 3160);
 	assert_size<item>(8, 8);
 	assert_size<item_kind>(3128, 3064);
 	assert_size<item_modifier>(296, 296);
@@ -55,7 +56,8 @@ void wb::check_types()
 	assert_size<mission_team>(52, 52);
 	assert_size<mission_template>(472, 472);
 	assert_size<mission_template_group>(132, 132);
-	assert_size<module_settings>(524, 524);
+	//assert_size<module_settings>(524, 524);
+	assert_size<module_settings>(620, 620);
 	assert_size<music_track>(160, -1);
 	assert_size<music_manager>(4248, -1);
 	assert_size<note_manager>(2376, 2376);
@@ -75,7 +77,8 @@ void wb::check_types()
 	assert_size<registry_manager>(4, 4);
 	assert_size<scene_prop>(240, 240);
 	assert_size<script>(308, 308);
-	assert_size<script_manager>(224, 224);
+	//assert_size<script_manager>(224, 224);
+	assert_size<script_manager>(232, 232);
 	assert_size<sentence>(756, 756);
 	assert_size<simple_trigger>(176, 176);
 	assert_size<simple_trigger_manager>(12, 12);
@@ -87,7 +90,8 @@ void wb::check_types()
 	assert_size<skin>(764, 292);
 	assert_size<skybox>(348, 348);
 	assert_size<slot_manager>(16, 16);
-	assert_size<sound_manager>(1048, 1048);
+	//assert_size<sound_manager>(1048, 1048);
+	assert_size<sound_manager>(1048, 1120);
 	assert_size<sound>(408, -1);
 	assert_size<sound_sample>(20, -1);
 	assert_size<string_manager>(16, 16);

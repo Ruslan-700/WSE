@@ -323,6 +323,7 @@ WSEMultiplayerOperationsContext::WSEMultiplayerOperationsContext() : WSEOperatio
 
 void WSEMultiplayerOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("multiplayer_send_chat_message_to_player", MultiplayerSendChatMessageToPlayer, Both, None, 3, 4,
 		"Sends <2> to <0> as a (native compatible) chat message by <1>. Works only on servers. <3>: 0 = chat, 1 = team chat",
 		"player_no", "sender_player_no", "text", "type");
@@ -334,7 +335,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_send_composite_message_to_server", MultiplayerSendCompositeMessageToServer, Both, BreakNetwork, 2, 2,
 		"Sends <1> with <0> to the server",
 		"message_type", "message_register");
-	
+	*/
 	RegisterOperation("multiplayer_get_cur_profile", MultiplayerGetCurProfile, Both, Lhs, 1, 1,
 		"Stores the current multiplayer profile into <0>",
 		"destination");
@@ -342,7 +343,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_get_num_profiles", MultiplayerGetNumProfiles, Both, Lhs, 1, 1,
 		"Stores the number of multiplayer profiles into <0>",
 		"destination");
-	
+	/*
 	RegisterOperation("multiplayer_profile_get_face_keys", MultiplayerProfileGetFaceKeys, Both, None, 2, 2,
 		"Stores <1>'s face keys into <0>",
 		"face_key_register", "profile_no");
@@ -390,6 +391,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_cur_message_get_face_keys", MultiplayerCurMessageGetFaceKeys, Both, BreakNetwork, 1, 1,
 		"Stores face keys from the current message register into <0>",
 		"face_keys_register");
+	*/
 }
 
 wb::network_buffer *WSEMultiplayerOperationsContext::GetCurrentNetworkBuffer()

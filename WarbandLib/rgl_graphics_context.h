@@ -81,13 +81,17 @@ namespace rgl
 		bool supports_format;
 		bool supports_dof;
 		bool supports_hdr;
+		bool u4;//1166
 		bool is_nvidia;
 		bool is_ati;
 		D3DCAPS9 device_caps;
+		int u5;//1166
 		bool has_ati_adapter;
+		int u6;//1166
 		D3DFORMAT adapter_format;
 		matrix view_matrix;
 		int u3;
+		/*
 		filtering_state_block *default_sampler_states[16];
 		filtering_state_block *postfx_sampler_states[5];
 		alpha_blending_state_block *alpha_blending_sampler_states[5];
@@ -99,6 +103,8 @@ namespace rgl
 		stl::vector<D3DMULTISAMPLE_TYPE> dof_hdr_antialiasing_samples_available;
 		stl::vector<D3DMULTISAMPLE_TYPE> antialiasing_samples_available;
 		D3DXHANDLE hlsl_data_handles[50];
+		*/
+		int u7[146];//1166 temp
 		bool apply_default_sampler_states;
 	};
 }

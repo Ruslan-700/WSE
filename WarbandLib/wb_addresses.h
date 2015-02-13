@@ -131,9 +131,5 @@ namespace wb
 		static unsigned int agent_SetAiBehavior;
 
 		static unsigned int game_data_ptr;
-
-		static unsigned int cur_module_data_ptr;
-		static unsigned int string_manager_data_ptr;
-		static unsigned int basic_game_data_ptr;
 	};
 }

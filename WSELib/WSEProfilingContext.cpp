@@ -45,8 +45,7 @@ void WSEProfilingContext::Start()
 	time(&raw_time);
 	localtime_s(&time_info, &raw_time);
 	strftime(time_str, MAX_PATH, "%H.%M.%S-%d.%m.%y", &time_info);
-	//sprintf_s(path, "%s%s-%s.wseprfb", WSE->GetPath().c_str(), warband->cur_module_name.c_str(), time_str);
-	sprintf_s(path, "%s%s-%s.wseprfb", WSE->GetPath().c_str(), cur_module->cur_module_name.c_str(), time_str);
+	sprintf_s(path, "%s%s-%s.wseprfb", WSE->GetPath().c_str(), warband->cur_module_name.c_str(), time_str);
 
 	if (!m_profile_stream.Open(path))
 	{

@@ -16,7 +16,8 @@ void rgl::check_types()
 	assert_size<camera>(296, -1);
 	assert_size<effect_state_manager>(84, -1);
 	assert_size<font>(14480, -1);
-	assert_size<graphics_context>(1036, -1);
+	//assert_size<graphics_context>(1036, -1);
+	assert_size<graphics_context>(1244, -1);
 	assert_size<ini_file>(1179652, 1179652);
 	assert_size<light>(124, -1);
 	assert_size<manifold>(104, 104);

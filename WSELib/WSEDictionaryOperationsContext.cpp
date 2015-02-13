@@ -128,8 +128,7 @@ void DictGetStr(WSEDictionaryOperationsContext *context)
 
 	WSEDictionary *dict = context->GetDictionary(id);
 
-	//warband->basic_game.string_registers[sreg] = dict->GetString(key, def);
-	data_basic_game->basic_game.string_registers[sreg] = dict->GetString(key, def);
+	warband->basic_game.string_registers[sreg] = dict->GetString(key, def);
 }
 
 int DictGetInt(WSEDictionaryOperationsContext *context)

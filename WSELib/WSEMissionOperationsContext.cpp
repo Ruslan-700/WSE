@@ -452,7 +452,7 @@ int GetWaterLevel(WSEMissionOperationsContext *context)
 {
 	return (int)(warband->cur_mission->water_level * warband->basic_game.fixed_point_multiplier);
 }
-
+/*
 bool CastRay(WSEMissionOperationsContext *context)
 {
 	int preg1, preg2;
@@ -561,7 +561,7 @@ void MissionObjectSetVertexKeysTimePoint(WSEMissionOperationsContext *context)
 	}
 #endif
 }
-
+*/
 void MissileRemoveOnHit(WSEMissionOperationsContext *context)
 {
 	if (context->GetCurrentTrigger() != wb::ti_on_missile_hit)
@@ -589,6 +589,7 @@ WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext
 
 void WSEMissionOperationsContext::OnLoad()
 {
+	/*
 	ReplaceOperation(1877, "prop_instance_receive_damage", PropInstanceReceiveDamage, Both, None, 3, 4,
 		"<0> received <2> damage from <1>. If <3> is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.",
 		"prop_instance_no", "agent_no", "damage", "advanced");
@@ -604,7 +605,7 @@ void WSEMissionOperationsContext::OnLoad()
 	ReplaceOperation(2014, "mission_cam_set_aperture", MissionCamSetAperture, Client, Undocumented, 1, 1,
 		"Changes the mission cam aperture",
 		"aperture");
-
+	*/
 	RegisterOperation("store_cur_mission_template_no", StoreCurrentMissionTemplateNo, Both, Lhs, 1, 1,
 		"Stores the current mission template into <0>",
 		"destination");
@@ -623,7 +624,7 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_show_use_tooltip", SetShowUseTooltip, Client, None, 1, 2,
 		"Enables or disables use tooltips. See header_constants_addon.py for possible types",
 		"tooltip_type", "value");
-
+	/*
 	RegisterOperation("set_ally_collision_threshold", MissionSetAllyCollisionThreshold, Both, None, 2, 2,
 		"Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)",
 		"low_boundary", "high_boundary");
@@ -631,7 +632,7 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
 		"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
 		"attack_direction", "low_boundary", "high_boundary");
-
+	*/
 	RegisterOperation("particle_system_remove", ParticleSystemRemove, Client, None, 0, 1,
 		"Removes <0> (all particle systems if not set or -1) from the current entity (can be used in several in triggers)",
 		"particle_system_no");
@@ -671,11 +672,11 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("cast_ray", CastRay, Both, Lhs|Cf, 3, 4,
 		"Casts a ray of length <3> starting from <2> and stores the closest hit position into <1> (fails if no hits). If the body hit is a prop instance, its id will be stored into <0>",
 		"destination", "hit_position_register", "ray_position_register", "ray_length_fixed_point");
-	*/
+	
 	RegisterOperation("prop_instance_set_vertex_keys_time_point", MissionObjectSetVertexKeysTimePoint, Client, None, 2, 2,
 		"Sets <0>'s mesh vertex keys time point to <1>",
 		"prop_instance_no", "time_point");
-
+	*/
 	RegisterOperation("missile_remove_on_hit", MissileRemoveOnHit, Both, None, 0, 0,
 		"Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)");
 }

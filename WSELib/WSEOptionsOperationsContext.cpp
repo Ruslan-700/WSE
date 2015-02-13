@@ -6,7 +6,7 @@
 WSEOptionsOperationsContext::WSEOptionsOperationsContext() : WSEOperationContext("options", 4300, 4399)
 {
 }
-
+/*
 int OptionsGetBattleSize(WSEOptionsOperationsContext *context)
 {
 	return round_half_up(warband->config.battle_size * 120) + 30;
@@ -26,7 +26,7 @@ void OptionsSetBattleSize(WSEOptionsOperationsContext *context)
 
 	warband->config.battle_size = ((value - 30) / 120.0f);
 }
-
+*/
 int OptionsGetVerboseCasualties(WSEOptionsOperationsContext *context)
 {
 	return warband->config.verbose_casualties;

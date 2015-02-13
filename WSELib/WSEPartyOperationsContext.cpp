@@ -7,68 +7,6 @@ int PartyStackGetExperience(WSEPartyOperationsContext *context)
 {
 	int party_no;
 	int party_stack_no;
-
-	context->ExtractPartyNo(party_no);
-	context->ExtractPartyStackNo(party_stack_no, party_no);
-
-	return (int)warband->cur_game->parties[party_no].stacks[party_stack_no].experience;
-}
-
-int PartyStackGetNumUpgradeable(WSEPartyOperationsContext *context)
-{
-	int party_no;
-	int party_stack_no;
-
-	context->ExtractPartyNo(party_no);
-	context->ExtractPartyStackNo(party_stack_no, party_no);
-
-	return warband->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable;
-}
-
-bool PartyHasFlag(WSEItemOperationsContext *context)
-{
-	int party_no, flag;
-
-	context->ExtractPartyNo(party_no);
-	context->ExtractValue(flag);
-
-	return (warband->cur_game->parties[party_no].flags & flag) > 0;
-}
-
-void PartyHealMembers(WSEPartyOperationsContext *context)
-{
-	int party_no;
-	int troop_no;
-	int num_to_heal;
-
-	context->ExtractPartyNo(party_no);
-	context->ExtractTroopNo(troop_no);
-	context->ExtractValue(num_to_heal);
-
-	wb::party *party = &warband->cur_game->parties[party_no];
-
-	for (int i = 0; i < party->num_stacks && num_to_heal > 0; ++i)
-	{
-		if (party->stacks[i].troop_no == troop_no && party->stacks[i].num_wounded > 0)
-		{
-			if (party->stacks[i].num_wounded > num_to_heal)
-			{
-				party->stacks[i].num_wounded -= num_to_heal;
-				return;
-			}
-			else
-			{
-				num_to_heal -= party->stacks[i].num_wounded;
-				party->stacks[i].num_wounded = 0;
-			}
-		}
-	}
-}
-/*
-int PartyStackGetExperience(WSEPartyOperationsContext *context)
-{
-	int party_no;
-	int party_stack_no;
 	
 	context->ExtractPartyNo(party_no);
 	context->ExtractPartyStackNo(party_stack_no, party_no);
@@ -126,7 +64,7 @@ void PartyHealMembers(WSEPartyOperationsContext *context)
 		}
 	}
 }
-*/
+
 WSEPartyOperationsContext::WSEPartyOperationsContext() : WSEOperationContext("party", 3900, 3999)
 {
 }

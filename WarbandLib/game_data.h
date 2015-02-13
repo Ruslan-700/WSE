@@ -176,7 +176,14 @@ namespace wb
 #if defined WARBAND
 		//CRITICAL_SECTION multithreading_critical_section;
 		//CRITICAL_SECTION directx_critical_section;
+		int uu14;//1166
 		rgl::font *default_font;
+		int uu15;//1166
+#endif
+		int unknown_structure[128];//1166
+#if defined WARBAND_DEDICATED
+		int uu16;//1166
+		int uu15;//1166
 #endif
 		bool reset_3d_env;
 		bool quitting;
@@ -185,15 +192,19 @@ namespace wb
 		ID3DXEffect *effect;
 		rgl::effect_state_manager *effect_state_manager;
 		int uu11[2]; // unused
+		int uu17;//1166
 #else if defined WARBAND_DEDICATED
-		int uu11[3]; // unused
+		//int uu11[3]; // unused
+		int uu11[2]; // unused
 #endif
 		__int64 timers[NUM_TIMERS];
 		__int64 diff_timers[NUM_TIMERS];
 #if defined WARBAND
-		int uu1211; // align
+		//int uu1211; // align
 		presentation_container *cur_presentation;
 		int uu12; // align
+#else if defined WARBAND_DEDICATED
+		int uu17;//1166
 #endif
 		int uu13[2]; // unused
 		menu *menus;
@@ -205,7 +216,9 @@ namespace wb
 		int full_version;
 		int give_performance_warnings;
 		int dont_suppress_initial_warnings;
+#if defined WARBAND	
 		int disable_moveable_flag_optimization;
+#endif		
 		int u4[2];
 		item_kind *item_kinds;
 		int num_item_kinds;
@@ -235,32 +248,33 @@ namespace wb
 		int intro_video_stage;
 		int reset_device;
 		int display_global_message;
+		presentation_manager presentation_manager;
 #else if defined WARBAND_DEDICATED
 		int u7; // align
 #endif
 		language_manager language_manager;
-#if defined WARBAND
-		presentation_manager presentation_manager;
-#endif
+		registry_manager registry_manager;
 		input_manager input_manager;
 #if defined WARBAND
-		rgl::renderer renderer;
+		//rgl::renderer renderer;
+		int renderer[405175];//1166 temp
 		rgl::graphics_context graphics_context;
 #endif
 		skeleton_manager skeleton_manager;
-		registry_manager registry_manager;
 		module_settings module_settings;
 #if defined WARBAND
 		particle_system_manager particle_system_manager;
 #endif
 		rgl::physics_manager physics_manager;
+#if defined WARBAND
+		HANDLE game_started_mutex;
+#else if defined WARBAND_DEDICATED
 		unsigned int aaaa;
-#if defined WARBAND_DEDICATED
 		unsigned int bbbb;
 #endif
 		rgl::ini_file resources_ini_file;
 #if defined WARBAND
-		HANDLE game_started_mutex;
+		unsigned int aaaa;
 #else if defined WARBAND_DEDICATED
 		int u9; // align
 #endif
@@ -270,8 +284,9 @@ namespace wb
 		int u11; // align
 #if defined WARBAND
 		rgl::shadowmap_renderer shadowmap_renderer;
-		int u12; // align
+		//int u12; // align
 #endif
+		rgl::string module_names[32]; //1166
 		basic_game basic_game;
 		meta_mission meta_mission;
 		game_key_manager game_key_manager;
@@ -282,7 +297,6 @@ namespace wb
 #endif
 		string_manager string_manager;
 		script_manager script_manager;
-		int u[2];//1166
 		multiplayer_data multiplayer_data;
 		item_modifier item_modifiers[NUM_ITEM_MODIFIERS];
 		action_set action_manager;
@@ -290,7 +304,12 @@ namespace wb
 #if defined WARBAND
 		post_effect cur_post_effect;
 #endif
-		terrain_generator terrain_generator;
+		//terrain_generator terrain_generator;
+#if defined WARBAND
+		int terrain_generator[4118275];//1166 temp
+#else if defined WARBAND_DEDICATED
+		int terrain_generator[4083262];//1166 temp
+#endif
 #if defined WARBAND
 		int newpadding; // align
 #endif
@@ -311,30 +330,6 @@ namespace wb
 		stl::vector<directx_call> directx_calls;
 		//core_game core_game;
 	};
-
-	struct cur_module_data
-	{
-		conversation_manager conversation_manager;
-		int u15; // align
-		skill skills[NUM_SKILLS];
-		rgl::string cur_module_path;
-		rgl::string cur_module_name;
-		rgl::string cur_module_args;
-	};
-
-	struct string_manager_data
-	{
-		string_manager string_manager;
-		script_manager script_manager;
-		int u[2];
-		multiplayer_data multiplayer_data;
-	};
-
-	struct basic_game_data
-	{
-		basic_game basic_game;
-	};
-
 }
 
 #pragma pack(pop)
