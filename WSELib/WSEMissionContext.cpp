@@ -21,8 +21,10 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_HorseCharged_entry, AgentHorseChargedHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_ApplyAttackRecord_entry, AgentApplyAttackRecHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_SetGroundQuad_entry, AgentSetGroundQuad);
+	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveChatEvent_entry, ChatMessageReceivedHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveTeamChatEvent_entry, TeamChatMessageReceivedHook);
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_ReceiveShieldHit_entry, AgentReceiveShieldHitHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_GetScaleHuman_entry, AgentGetScaleHumanHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_GetScaleHorse_entry, AgentGetScaleHorseHook);

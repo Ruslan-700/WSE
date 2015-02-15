@@ -34,8 +34,10 @@ unsigned int addresses::ParseConsoleCommand_exit_2 = 0;
 //unsigned int addresses::Save_entry = 0x00606612;
 unsigned int addresses::Save_entry = 0x0054E276;
 
-unsigned int addresses::CheckUrlReplies_entry = 0x005B293C;
-unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
+//unsigned int addresses::CheckUrlReplies_entry = 0x005B293C;
+//unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
+unsigned int addresses::CheckUrlReplies_entry = 0x00469B5B;
+unsigned int addresses::CheckUrlReplies_exit = 0x0056EE73;
 
 //unsigned int addresses::network_client_ReceiveMessage_entry = 0x0049F8A3;
 //unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0x004A38F9;
@@ -349,8 +351,10 @@ unsigned int addresses::ParseConsoleCommand_exit_2 = ParseConsoleCommand_entry +
 
 unsigned int addresses::Save_entry = 0;
 
-unsigned int addresses::CheckUrlReplies_entry = 0x004DBEDC;
-unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
+//unsigned int addresses::CheckUrlReplies_entry = 0x004DBEDC;
+//unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
+unsigned int addresses::CheckUrlReplies_entry = 0x00424AAB;
+unsigned int addresses::CheckUrlReplies_exit = 0x004E2633;
 
 unsigned int addresses::network_client_ReceiveMessage_entry = 0;
 unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0;

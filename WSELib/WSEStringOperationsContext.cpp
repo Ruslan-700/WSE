@@ -668,7 +668,7 @@ bool StrIsInteger(WSEStringOperationsContext *context)
 	return true;
 }
 
-WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 2600, 2699)
+WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
 

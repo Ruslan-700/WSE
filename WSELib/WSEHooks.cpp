@@ -183,7 +183,8 @@ void __declspec(naked) ParseConsoleCommandHook()
 		test al, al
 		jnz continue_exec
 		RESTORE_REGS
-		push 0x0069DA84
+		//push 0x0069DA84
+		push 0x006A6FB4
 		jmp [wb::addresses::ParseConsoleCommand_exit_2]
 continue_exec:
 		RESTORE_REGS
@@ -211,12 +212,13 @@ void __declspec(naked) CheckUrlRepliesHook()
 {
 	_asm
 	{
-		call ds:LeaveCriticalSection
+		//call ds:LeaveCriticalSection
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Network, OnCheckUrlReplies)
-		test eax, eax
+		//test eax, eax
 		RESTORE_REGS
-		jmp [wb::addresses::CheckUrlReplies_exit]
+		//jmp [wb::addresses::CheckUrlReplies_exit]
+		jmp ds : LeaveCriticalSection
 	}
 }
 

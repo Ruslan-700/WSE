@@ -242,7 +242,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	AddContext(&Game, true);
 	AddContext(&Profiling, true);
 	AddContext(&Screen, true);
-	//AddContext(&Network, true);
+	AddContext(&Network, true);
 	AddContext(&Mission, true);
 	AddContext(&Scripting, true);
 

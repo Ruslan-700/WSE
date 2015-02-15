@@ -68,10 +68,10 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 	data->ServerInfo.ConnectPort = warband->network_manager.server.port;
 	data->ServerInfo.SlotMax = warband->multiplayer_data.max_num_private_players;
 	data->ServerInfo.ReservedSlots = warband->multiplayer_data.max_num_private_players - warband->multiplayer_data.max_num_players;
-	strncpy_s(data->ServerInfo.GameName, warband->basic_game.name.c_str(), 32);
-	strncpy_s(data->ServerInfo.HostName, warband->multiplayer_data.server_name.c_str(), 256);
-	strncpy_s(data->ServerInfo.Mod.ModName, warband->cur_module_name.c_str(), 32);
-	strncpy_s(data->ServerInfo.Mod.ModIdentifier, warband->cur_module_name.c_str(), 32);
+	strncpy_s(data->ServerInfo.GameName, warband->basic_game.name.c_str(), 31);
+	strncpy_s(data->ServerInfo.HostName, warband->multiplayer_data.server_name.c_str(), 255);
+	strncpy_s(data->ServerInfo.Mod.ModName, warband->cur_module_name.c_str(), 31);
+	strncpy_s(data->ServerInfo.Mod.ModIdentifier, warband->cur_module_name.c_str(), 31);
 	
 	if (warband->module_version > 0)
 	{
@@ -81,9 +81,9 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 
 	data->AddOn.Count = 1;
 	data->AddOn.List[0].Flags.bActive = 1;
-	strncpy_s(data->AddOn.List[0].Version, WSE_VERSION, 32);
-	strncpy_s(data->AddOn.List[0].ShortName, "WSE", 32);
-	strncpy_s(data->AddOn.List[0].LongName, "Warband Script Enhancer", 64);
+	strncpy_s(data->AddOn.List[0].Version, WSE_VERSION, 31);
+	strncpy_s(data->AddOn.List[0].ShortName, "WSE", 31);
+	strncpy_s(data->AddOn.List[0].LongName, "Warband Script Enhancer", 63);
 	
 	data->Team.Count = 4;
 	data->Team.List[0].Score = warband->multiplayer_data.teams[0].score;
@@ -104,8 +104,8 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		if (player->status != wb::nps_active || !player->ready)
 			continue;
 		
-		strncpy_s(data->Player.List[index].Name, player->name.c_str(), 64);
-		strncpy_s(data->Player.List[index].Race, player->skin_no ? "female" : "male", 64);
+		strncpy_s(data->Player.List[index].Name, player->name.c_str(), 63);
+		strncpy_s(data->Player.List[index].Race, player->skin_no ? "female" : "male", 63);
 		data->Player.List[index].Score = player->score;
 		data->Player.List[index].Kills = player->kills;
 		data->Player.List[index].Death = player->deaths;
@@ -131,9 +131,9 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		warband->cur_game->execute_script(SCRIPT_GAME_GET_SCENE_NAME, warband->multiplayer_data.cur_site_no);
 
 		if (warband->basic_game.string_registers[0].length())
-			strncpy_s(data->ServerInfo.Map.MapName, warband->basic_game.string_registers[0].c_str(), 32);
+			strncpy_s(data->ServerInfo.Map.MapName, warband->basic_game.string_registers[0].c_str(), 31);
 
-		sprintf_s(data->ServerInfo.Map.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.cur_site_no].id);
+		sprintf_s(data->ServerInfo.Map.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.cur_site_no].id.c_str());
 	}
 	
 	if (warband->multiplayer_data.next_site_no >= 0)
@@ -142,9 +142,9 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		warband->cur_game->execute_script(SCRIPT_GAME_GET_SCENE_NAME, warband->multiplayer_data.next_site_no);
 
 		if (warband->basic_game.string_registers[0].length())
-			strncpy_s(data->ServerInfo.NextMap.MapName, warband->basic_game.string_registers[0].c_str(), 32);
+			strncpy_s(data->ServerInfo.NextMap.MapName, warband->basic_game.string_registers[0].c_str(), 31);
 
-		sprintf_s(data->ServerInfo.NextMap.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.next_site_no].id);
+		sprintf_s(data->ServerInfo.NextMap.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.next_site_no].id.c_str());
 	}
 
 	if (warband->multiplayer_data.cur_mission_template_no >= 0)
@@ -155,15 +155,15 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		if (warband->basic_game.string_registers[0].length())
 		{
 			data->ServerInfo.Fields.bGameType = 1;
-			strncpy_s(data->ServerInfo.GameType, warband->basic_game.string_registers[0].c_str(), 64);
+			strncpy_s(data->ServerInfo.GameType, warband->basic_game.string_registers[0].c_str(), 63);
 		}
 	}
 
 	if (warband->multiplayer_data.teams[0].faction_no >= 0)
-		strncpy_s(data->Team.List[0].Name, warband->cur_game->factions[warband->multiplayer_data.teams[0].faction_no].name.c_str(), 64);
+		strncpy_s(data->Team.List[0].Name, warband->cur_game->factions[warband->multiplayer_data.teams[0].faction_no].name.c_str(), 63);
 
 	if (warband->multiplayer_data.teams[1].faction_no >= 0)
-		strncpy_s(data->Team.List[1].Name, warband->cur_game->factions[warband->multiplayer_data.teams[1].faction_no].name.c_str(), 64);
+		strncpy_s(data->Team.List[1].Name, warband->cur_game->factions[warband->multiplayer_data.teams[1].faction_no].name.c_str(), 63);
 	
 	data->Rule.Count = 0;
 	
@@ -180,7 +180,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		warband->basic_game.string_registers[0].clear();
 		warband->cur_game->execute_script(SCRIPT_GAME_MULTIPLAYER_SERVER_OPTION_FOR_MISSION_TEMPLATE_TO_STRING, warband->multiplayer_data.cur_mission_template_no, i, (int)warband->basic_game.registers[0]);
 		
-		strncpy_s(data->Rule.List[data->Rule.Count].Key, warband->basic_game.string_registers[0].c_str(), 64);
+		strncpy_s(data->Rule.List[data->Rule.Count].Key, warband->basic_game.string_registers[0].c_str(), 63);
 
 		++data->Rule.Count;
 	}
@@ -288,7 +288,7 @@ void WSEOGPServer::Listen()
 		}
 		
 		m_update = true;
-
+		Run();
 		while (m_update)
 		{
 			Sleep(20);

@@ -9,11 +9,11 @@ void WSEGameContext::OnLoad()
 #endif
 	WSE->Hooks.HookFunction(this, wb::addresses::game_ReadModuleFiles_entry, GameReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ReadModuleFiles_entry, ReadModuleFilesHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
 #if defined WARBAND
-	//WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::game_screen_OpenWindow_entry, OpenWindowHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::game_screen_OpenWindow_entry, OpenWindowHook);
 #endif
 }
 
@@ -58,9 +58,8 @@ void WSEGameContext::OnReadModuleFiles()
 		return;
 	}
 #endif
-	*/
+	*/	
 	
-	/*
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];
 
 	mapped_script_ids[WSE_SCRIPT_CHAT_MESSAGE_RECEIVED] = "wse_chat_message_received";
@@ -86,7 +85,6 @@ void WSEGameContext::OnReadModuleFiles()
 		if (m_mapped_script_nos[i] < 0)
 			WSE->Log.Warning("Unable to map WSE script code: %s", mapped_script_ids[i]);
 	}
-	*/
 	
 	for (int i = 0; i < warband->num_item_kinds; ++i)
 	{
