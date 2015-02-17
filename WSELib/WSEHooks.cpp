@@ -213,12 +213,12 @@ void __declspec(naked) CheckUrlRepliesHook()
 	_asm
 	{
 		//call ds:LeaveCriticalSection
+		call [wb::addresses::CheckUrlReplies_call]
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Network, OnCheckUrlReplies)
-		//test eax, eax
+		test eax, eax
 		RESTORE_REGS
-		//jmp [wb::addresses::CheckUrlReplies_exit]
-		jmp ds : LeaveCriticalSection
+		jmp [wb::addresses::CheckUrlReplies_exit]
 	}
 }
 
@@ -443,13 +443,16 @@ void __declspec(naked) UpdateHorseAgentEntityBodyHook()
 		FREEZE_REGS
 		mov ebx, esp
 		push eax
-		push [ebx+480]
-		mov ebx, [ebx+496]
+		//push [ebx+480]
+		push[ebx + 488]
+		//mov ebx, [ebx+496]
+		mov ebx, [ebx + 504]
 		mov ebx, [ebx]
 		push ebx
 		CALL_CONTEXT_FUNC(Mission, OnUpdateHorseAgentEntityBody)
 		RESTORE_REGS
-		mov ecx, [esp+464]
+		//mov ecx, [esp+464]
+		mov ecx, [ebp+724]
 		jmp [wb::addresses::UpdateHorseAgentEntityBody_exit]
 	}
 }

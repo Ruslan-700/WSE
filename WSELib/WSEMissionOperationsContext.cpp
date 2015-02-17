@@ -589,23 +589,23 @@ WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext
 
 void WSEMissionOperationsContext::OnLoad()
 {
-	/*
+	
 	ReplaceOperation(1877, "prop_instance_receive_damage", PropInstanceReceiveDamage, Both, None, 3, 4,
 		"<0> received <2> damage from <1>. If <3> is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.",
 		"prop_instance_no", "agent_no", "damage", "advanced");
-
+	
 	ReplaceOperation(1960, "add_point_light", AddPointLight, Client, Undocumented, 0, 2,
 		"Adds a point light with <0> and <1>",
 		"flicker_magnitude", "flicker_interval");
-
+	
 	ReplaceOperation(1965, "particle_system_add_new", ParticleSystemAddNew, Client, Undocumented, 1, 1,
 		"Adds <particle_system_no>",
 		"particle_system_no");
-
+	
 	ReplaceOperation(2014, "mission_cam_set_aperture", MissionCamSetAperture, Client, Undocumented, 1, 1,
 		"Changes the mission cam aperture",
 		"aperture");
-	*/
+	
 	RegisterOperation("store_cur_mission_template_no", StoreCurrentMissionTemplateNo, Both, Lhs, 1, 1,
 		"Stores the current mission template into <0>",
 		"destination");
@@ -622,7 +622,7 @@ void WSEMissionOperationsContext::OnLoad()
 		"value");
 
 	RegisterOperation("set_show_use_tooltip", SetShowUseTooltip, Client, None, 1, 2,
-		"Enables or disables use tooltips. See header_constants_addon.py for possible types",
+		"Enables or disables use tooltips. See header_common_addon.py for possible types",
 		"tooltip_type", "value");
 	/*
 	RegisterOperation("set_ally_collision_threshold", MissionSetAllyCollisionThreshold, Both, None, 2, 2,

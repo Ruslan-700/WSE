@@ -22,6 +22,7 @@ namespace wb
 		ti_on_agent_killed_or_wounded         = -26,
 		ti_on_agent_knocked_down              = -27,
 		ti_on_agent_hit                       = -28,
+		ti_on_player_exit                     = -29,
 		ti_on_leave_area                      = -30,
 		ti_on_scene_prop_init                 = -40,
 		ti_on_scene_prop_hit                  = -42,
@@ -46,6 +47,10 @@ namespace wb
 		ti_on_presentation_mouse_enter_leave  = -63,
 		ti_on_presentation_mouse_press        = -64,
 		ti_on_init_map_icon                   = -70,
+		ti_on_order_issued                    = -71,
+		ti_on_switch_to_map                   = -75,
+		ti_scene_prop_deformation_finished    = -76,
+		ti_on_shield_hit                      = -80,
 		ti_once                               = 100000000,
 	};
 

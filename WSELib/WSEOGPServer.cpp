@@ -13,7 +13,7 @@ EOGP_Banned OGP_IsBanned(void *addr, int addr_len)
 }
 
 void OGP_UpdateServerData(ogp_serverdata_t *data)
-{		
+{
 	data->GameID = 0;
 
 	data->RequestFlags.bServerInfo = 1;

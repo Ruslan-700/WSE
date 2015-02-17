@@ -323,11 +323,11 @@ WSEMultiplayerOperationsContext::WSEMultiplayerOperationsContext() : WSEOperatio
 
 void WSEMultiplayerOperationsContext::OnLoad()
 {
-	/*
+	
 	RegisterOperation("multiplayer_send_chat_message_to_player", MultiplayerSendChatMessageToPlayer, Both, None, 3, 4,
 		"Sends <2> to <0> as a (native compatible) chat message by <1>. Works only on servers. <3>: 0 = chat, 1 = team chat",
 		"player_no", "sender_player_no", "text", "type");
-	
+	/*
 	RegisterOperation("multiplayer_send_composite_message_to_player", MultiplayerSendCompositeMessageToPlayer, Both, BreakNetwork, 3, 3,
 		"Sends <2> with <1> to <0>",
 		"player_no", "message_type", "message_register");

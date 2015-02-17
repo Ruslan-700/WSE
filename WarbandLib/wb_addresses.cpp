@@ -36,8 +36,9 @@ unsigned int addresses::Save_entry = 0x0054E276;
 
 //unsigned int addresses::CheckUrlReplies_entry = 0x005B293C;
 //unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
-unsigned int addresses::CheckUrlReplies_entry = 0x00469B5B;
+unsigned int addresses::CheckUrlReplies_entry = 0x0056EE6E;
 unsigned int addresses::CheckUrlReplies_exit = 0x0056EE73;
+unsigned int addresses::CheckUrlReplies_call = 0x00469B50;
 
 //unsigned int addresses::network_client_ReceiveMessage_entry = 0x0049F8A3;
 //unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0x004A38F9;
@@ -94,8 +95,9 @@ unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = config_manager_ChooseNumberOfEffectiveCorpses_entry + 5;
 
 //unsigned int addresses::UpdateHorseAgentEntityBody_entry = 0x00530D21;
+//unsigned int addresses::UpdateHorseAgentEntityBody_exit = UpdateHorseAgentEntityBody_entry + 7;
 unsigned int addresses::UpdateHorseAgentEntityBody_entry = 0x004F2F70; //?
-unsigned int addresses::UpdateHorseAgentEntityBody_exit = UpdateHorseAgentEntityBody_entry + 7;
+unsigned int addresses::UpdateHorseAgentEntityBody_exit = UpdateHorseAgentEntityBody_entry + 6;
 
 //unsigned int addresses::tactical_window_ShowUseTooltip_entry = 0x005F4B86;
 unsigned int addresses::tactical_window_ShowUseTooltip_entry = 0x005A38E6;
@@ -353,8 +355,9 @@ unsigned int addresses::Save_entry = 0;
 
 //unsigned int addresses::CheckUrlReplies_entry = 0x004DBEDC;
 //unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
-unsigned int addresses::CheckUrlReplies_entry = 0x00424AAB;
+unsigned int addresses::CheckUrlReplies_entry = 0x004E262E;
 unsigned int addresses::CheckUrlReplies_exit = 0x004E2633;
+unsigned int addresses::CheckUrlReplies_call = 0x00424AA0;
 
 unsigned int addresses::network_client_ReceiveMessage_entry = 0;
 unsigned int addresses::network_client_ReceiveMessage_exit_1 = 0;

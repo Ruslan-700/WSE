@@ -568,11 +568,11 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("set_forced_lod", SetForcedLod, Client, None, 1, 1,
 		"Forces the current trigger entity's LOD level to <0> (0 = auto)",
 		"lod_level");
-	/*
+	
 	RegisterOperation("send_message_to_url_advanced", SendMessageToUrlAdvanced, Both, None, 2, 6,
 		"Sends a HTTP request to <0> with <1>. If the request succeeds, <2> will be called. The script will behave like game_receive_url_response, unless <4> is non-zero, in which case the script will receive no arguments and s0 will contain the full response. If the request fails, <3> will be called.",
 		"url_string", "user_agent_string", "success_callback_script_no", "failure_callback_script_no", "skip_parsing", "timeout");
-	*/
+	
 	RegisterOperation("mtsrand", Mtsrand, Both, None, 1, 1,
 		"Seeds the MT19937 random generator with <0>",
 		"value");
@@ -594,10 +594,10 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("play_bink_file", PlayBinkFile, Client, None, 1, 2,
 		"Plays a .bik file located at <0>. If <1> is not set the full movie will be played",
 		"path_from_module_directory", "duration_in_ms");
-	/*
+	
 	RegisterOperation("process_advanced_url_messages", ProcessAdvancedUrlMessages, Both, None, 0, 0,
 		"Forces processing of URL messages sent with send_message_to_url_advanced");
-	*/
+	
 	RegisterOperation("sleep_ms", SleepMs, Both, None, 1, 1,
 		"Sleeps (blocking the game) for <0> ms",
 		"time");

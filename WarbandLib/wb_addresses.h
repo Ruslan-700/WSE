@@ -29,6 +29,7 @@ namespace wb
 	
 		static unsigned int CheckUrlReplies_entry;
 		static unsigned int CheckUrlReplies_exit;
+		static unsigned int CheckUrlReplies_call;
 	
 		static unsigned int network_client_ReceiveMessage_entry;
 		static unsigned int network_client_ReceiveMessage_exit_1;

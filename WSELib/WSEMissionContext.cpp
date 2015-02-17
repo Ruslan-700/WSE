@@ -34,16 +34,21 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloading_entry, AgentStartReloadingHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_1, AgentEndReloadingHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_2, AgentEndReloadingHook);
+	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
+	*/
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
-#endif
 	*/
+#endif
+	
 }
 
 void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
@@ -62,7 +67,7 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		m_prop_collision_threshold_high[2] = 0.80f;
 		m_prop_collision_threshold_high[3] = 0.75f;
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "ground_weapon_collision", false), wb::addresses::mission_CheckCollision_entry, MissionCheckCollisionHook);
-		//WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
+		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
 		break;
 	}
 }

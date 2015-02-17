@@ -118,7 +118,7 @@ void WSENetworkContext::OnLoad()
 		WSE->Hooks.HookFunction(this, wb::addresses::DestroyMbnetHost_entry, DestroyMbnetHostHook);
 	}
 	
-	//WSE->Hooks.HookFunction(this, wb::addresses::CheckUrlReplies_entry, CheckUrlRepliesHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::CheckUrlReplies_entry, CheckUrlRepliesHook);
 }
 
 void WSENetworkContext::OnUnload()
@@ -407,8 +407,8 @@ void WSENetworkContext::OnCheckUrlReplies()
 {
 	HandleHTTPReplies();
 
-	if (m_ogp_server)
-		m_ogp_server->Run();
+	//if (m_ogp_server)
+		//m_ogp_server->Run();
 }
 
 bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq)

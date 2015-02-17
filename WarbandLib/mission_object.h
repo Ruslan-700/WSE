@@ -48,11 +48,11 @@ namespace wb
 		int variation_no_2;
 		int u3;
 		int u4;
-		int u5;
 		rgl::strategic_entity *entity;
 		float max_hit_points;
 		float hit_points;
 		int team_no;
+		int u5;
 		int u6;
 		bool do_prune;
 		rgl::timer prune_timer;
