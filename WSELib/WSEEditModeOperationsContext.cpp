@@ -2,14 +2,14 @@
 
 #include "WSE.h"
 #include "warband.h"
-
+/*
 bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
 {
 	wb::game *game = warband->cur_game;
 
 	return game->edit_mode_active && game->edit_mode_mode == 0;
 }
-
+*/
 int EditModeGetNumSelectedMissionObjects(WSEEditModeOperationsContext *context)
 {
 	wb::game *game = warband->cur_game;
@@ -117,9 +117,10 @@ WSEEditModeOperationsContext::WSEEditModeOperationsContext() : WSEOperationConte
 
 void WSEEditModeOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("edit_mode_in_edit_objects_mode", EditModeInEditObjectsMode, Client, Cf, 0, 0,
 		"Fails if the game is not in edit objects mode");
-
+	*/
 	RegisterOperation("edit_mode_get_num_selected_prop_instances", EditModeGetNumSelectedMissionObjects, Client, Lhs, 1, 1,
 		"Stores the number of selected prop instances into <destination>",
 		"destination");

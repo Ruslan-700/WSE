@@ -14,41 +14,36 @@ WSEMissionContext::WSEMissionContext()
 
 void WSEMissionContext::OnLoad()
 {
-	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Human_entry, AgentAttackCollidesWithAllyHumanHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Horse_entry, AgentAttackCollidesWithAllyHorseHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Prop_entry, AgentAttackCollidesWithPropHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::agent_HorseCharged_entry, AgentHorseChargedHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::agent_HorseCharged_entry, AgentHorseChargedHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_ApplyAttackRecord_entry, AgentApplyAttackRecHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_SetGroundQuad_entry, AgentSetGroundQuad);
-	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveChatEvent_entry, ChatMessageReceivedHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveTeamChatEvent_entry, TeamChatMessageReceivedHook);
-	/*
-	WSE->Hooks.HookFunction(this, wb::addresses::agent_ReceiveShieldHit_entry, AgentReceiveShieldHitHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::agent_ReceiveShieldHit_entry, AgentReceiveShieldHitHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_GetScaleHuman_entry, AgentGetScaleHumanHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_GetScaleHorse_entry, AgentGetScaleHorseHook);
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_object_Hit_entry, MissionObjectHitHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_CancelSwing_entry, AgentGetItemForUnbalancedCheckHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_DropItem_entry, AgentDropItemHook);
+	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloading_entry, AgentStartReloadingHook);
+	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_1, AgentEndReloadingHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_2, AgentEndReloadingHook);
 	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
-	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
-	*/
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
-	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
-	*/
-#endif
-	
+	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
+#endif	
 }
 
 void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
@@ -211,7 +206,7 @@ bool WSEMissionContext::OnChatMessageReceived(bool team_chat, int player, rgl::s
 bool WSEMissionContext::OnAgentApplyAttackRec(wb::agent *agent)
 {
 	wb::agent_blow *cur_blow = &agent->cur_blow;
-	
+	/*
 	WSE->Scripting.SetTriggerParam(4, (int)cur_blow->raw_damage);
 	WSE->Scripting.SetTriggerParam(5, cur_blow->hit_bone_no);
 	WSE->Scripting.SetTriggerParam(6, cur_blow->item.item_no);
@@ -227,8 +222,20 @@ bool WSEMissionContext::OnAgentApplyAttackRec(wb::agent *agent)
 		WSE->Scripting.SetTriggerParam(8, -1);
 		WSE->Scripting.SetTriggerParam(9, -1);
 	}
+	*/
+	warband->basic_game.trigger_param_6 = (int)cur_blow->raw_damage;
+	warband->basic_game.trigger_param_7 = cur_blow->item.get_modifier();
 
-	WSE->Scripting.SetTriggerParam(10, cur_blow->damage_type);
+	if (cur_blow->missile)
+	{
+		warband->basic_game.trigger_param_8 = cur_blow->missile->missile_item.get_modifier();
+	}
+	else
+	{
+		warband->basic_game.trigger_param_8 = -1;
+	}
+
+	WSE->Scripting.SetTriggerParam(9, cur_blow->damage_type);
 	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-28);
 	return true;
 }
@@ -282,8 +289,10 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 	warband->basic_game.trigger_param_1 = missile->shooter_agent_no;
 	warband->basic_game.trigger_param_2 = missile->shooting_item.item_no;
 	warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
-	WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
-	WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
+	warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
+	warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
+	//WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
+	//WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
 	item_kind->simple_triggers.execute(-101);
 	m_cur_missile = nullptr;
 #if defined WARBAND
@@ -294,7 +303,7 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 int WSEMissionContext::OnAgentShieldHit(wb::agent *agent, wb::item *shield_item, int raw_damage, int damage, wb::agent_blow *blow, wb::missile *missile)
 {
 	wb::item_kind *item_kind = &warband->item_kinds[shield_item->item_no];
-	
+	/*
 	if (!item_kind->simple_triggers.has_trigger(-103))
 		return damage;
 	
@@ -318,6 +327,30 @@ int WSEMissionContext::OnAgentShieldHit(wb::agent *agent, wb::item *shield_item,
 
 	warband->basic_game.trigger_result = -1;
 	item_kind->simple_triggers.execute(-103);
+	*/
+	if (!item_kind->simple_triggers.has_trigger(-80))
+		return damage;
+
+	warband->basic_game.trigger_param_1 = agent->no;
+	warband->basic_game.trigger_param_2 = blow->agent_no;
+	warband->basic_game.trigger_param_3 = damage;
+	warband->basic_game.trigger_param_4 = blow->item.item_no;
+	warband->basic_game.trigger_param_6 = raw_damage;
+	warband->basic_game.trigger_param_7 = blow->item.get_modifier();
+
+	if (missile)
+	{
+		warband->basic_game.trigger_param_5 = missile->missile_item.item_no;
+		warband->basic_game.trigger_param_8 = missile->missile_item.get_modifier();
+	}
+	else
+	{
+		warband->basic_game.trigger_param_5 = -1;
+		warband->basic_game.trigger_param_8 = -1;
+	}
+
+	warband->basic_game.trigger_result = -1;
+	item_kind->simple_triggers.execute(-80);
 
 	if (warband->basic_game.trigger_result >= 0)
 		return (int)warband->basic_game.trigger_result;
@@ -592,7 +625,8 @@ bool WSEMissionContext::OnAgentDropItem(wb::agent *agent, int item_no)
 
 void WSEMissionContext::OnAgentStartReloading(wb::agent *agent)
 {
-	WSE->Scripting.SetTriggerParam(1, agent->no);
+	//WSE->Scripting.SetTriggerParam(1, agent->no);
+	warband->basic_game.trigger_param_1 = agent->no;
 	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-105);
 }
 
@@ -600,7 +634,8 @@ void WSEMissionContext::OnAgentEndReloading(wb::agent *agent)
 {
 	if (agent->attack_action == 5)
 	{
-		WSE->Scripting.SetTriggerParam(1, agent->no);
+		//WSE->Scripting.SetTriggerParam(1, agent->no);
+		warband->basic_game.trigger_param_1 = agent->no;
 		warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-106);
 	}
 }
@@ -623,11 +658,18 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 		wb::item_kind *item_kind = missile->missile_item.get_item_kind();
 		
 		warband->basic_game.position_registers[0] = pos;
+		warband->basic_game.trigger_param_1 = missile->shooter_agent_no;
+		warband->basic_game.trigger_param_2 = missile->shooting_item.item_no;
+		warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
+		warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
+		warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
+		/*
 		WSE->Scripting.SetTriggerParam(1, missile->shooter_agent_no);
 		WSE->Scripting.SetTriggerParam(2, missile->shooting_item.item_no);
 		WSE->Scripting.SetTriggerParam(3, missile->shooting_item.get_modifier());
 		WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
 		WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
+		*/
 		item_kind->simple_triggers.execute(-104);
 	}
 }

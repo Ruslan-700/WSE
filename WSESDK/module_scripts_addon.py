@@ -1,13 +1,3 @@
-#script_wse_multiplayer_message_received
-# Called each time a composite multiplayer message is received
-# INPUT
-# script param 1 = sender player no
-# script param 2 = event no
-("wse_multiplayer_message_received", [
-	(store_script_param, ":player_no", 1),
-	(store_script_param, ":event_no", 2),
-]),
-
 #script_wse_game_saved
 # Called each time after game is saved successfully
 ("wse_game_saved", [

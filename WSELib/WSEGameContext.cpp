@@ -59,7 +59,12 @@ void WSEGameContext::OnReadModuleFiles()
 	}
 #endif
 	*/	
-	
+
+#if defined WARBAND
+	warband->network_manager.server.port = WSE->SettingsIni.Int("listen_server", "port", 7240);
+	if (warband->network_manager.server.port < 1024 || warband->network_manager.server.port > 65535) warband->network_manager.server.port = 7240;
+#endif
+
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];
 
 	mapped_script_ids[WSE_SCRIPT_CHAT_MESSAGE_RECEIVED] = "wse_chat_message_received";

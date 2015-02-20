@@ -861,15 +861,15 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 		warband->basic_game.trigger_param_2 = value;
 	else if (index == 3)
 		warband->basic_game.trigger_param_3 = value;
-	else if (index == 2)
+	else if (index == 4)
 		warband->basic_game.trigger_param_4 = value;
-	else if (index == 2)
+	else if (index == 5)
 		warband->basic_game.trigger_param_5 = value;
-	else if (index == 2)
+	else if (index == 6)
 		warband->basic_game.trigger_param_6 = value;
-	else if (index == 2)
+	else if (index == 7)
 		warband->basic_game.trigger_param_7 = value;
-	else if (index == 2)
+	else if (index == 8)
 		warband->basic_game.trigger_param_8 = value;
 	else if (index > 0 && index <= 16)
 		m_trigger_params[index - 1] = value;

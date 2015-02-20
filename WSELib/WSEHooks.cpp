@@ -348,7 +348,8 @@ void __declspec(naked) AgentSetGroundQuad()
 	_asm
 	{
 		FREEZE_REGS
-		push ecx
+		//push ecx
+		push edx
 		push esi
 		CALL_CONTEXT_FUNC(Mission, OnAgentSetGroundQuad)
 		RESTORE_REGS
@@ -509,9 +510,15 @@ void __declspec(naked) AgentAttackCollidesWithPropHook()
 	_asm
 	{
 		FREEZE_REGS
-		mov ecx, [esp+10028]
+		//mov ecx, [esp+10028]
+#if defined WARBAND
+		mov ecx, [esp + 10064]
+#elif defined WARBAND_DEDICATED
+		mov ecx, [esp + 10056]
+#endif
 		mov ecx, [ecx]
-		push [esp+68]
+		//push [esp+68]
+		push[esp + 48]
 		push ecx
 		CALL_CONTEXT_FUNC(Mission, OnAgentAttackCollidesWithProp)
 		test al, al
@@ -712,9 +719,11 @@ void __declspec(naked) AgentStartReloadingHook()
 		pop ebp
 		pop ebx
 #if defined WARBAND
-		add esp, 800
+		//add esp, 800
+		add esp, 804
 #elif defined WARBAND_DEDICATED
-		add esp, 796
+		//add esp, 796
+		add esp, 800
 #endif
 		retn 4
 	}
@@ -731,9 +740,11 @@ void __declspec(naked) AgentEndReloadingHook()
 		pop ebp
 		pop ebx
 #if defined WARBAND
-		add esp, 800
+		//add esp, 800
+		add esp, 804
 #elif defined WARBAND_DEDICATED
-		add esp, 796
+		//add esp, 796
+		add esp, 800
 #endif
 		retn 4
 	}

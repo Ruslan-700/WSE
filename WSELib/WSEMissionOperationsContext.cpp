@@ -204,7 +204,7 @@ int StoreCurrentMissionTemplateNo(WSEMissionOperationsContext *context)
 
 	return warband->cur_mission->cur_mission_template_no;
 }
-
+/*
 void MissionObjectClearAttachedMissiles(WSEMissionOperationsContext *context)
 {
 #if defined WARBAND
@@ -264,7 +264,7 @@ void MissionObjectClearAttachedMissiles(WSEMissionOperationsContext *context)
 	entity->meta_meshes = meta_meshes_to_keep;
 #endif
 }
-
+*/
 bool CameraInFirstPerson(WSEMissionOperationsContext *context)
 {
 	if (!warband->cur_mission)
@@ -334,6 +334,7 @@ void ParticleSystemRemove(WSEMissionOperationsContext *context)
 	context->ExtractParticleSystemNo(particle_system_no);
 	
 	int trigger_no = context->GetCurrentTrigger();
+	
 	rgl::mesh *mesh = WSE->Mission.GetTriggerMesh(trigger_no);
 
 	if (mesh)
@@ -609,11 +610,11 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("store_cur_mission_template_no", StoreCurrentMissionTemplateNo, Both, Lhs, 1, 1,
 		"Stores the current mission template into <0>",
 		"destination");
-
+	/*
 	RegisterOperation("prop_instance_clear_attached_missiles", MissionObjectClearAttachedMissiles, Client, None, 1, 1,
 		"Removes all attached missiles from <0>. Works only with dynamic scene props (non-retrievable missiles)",
 		"prop_instance_no");
-
+	*/
 	RegisterOperation("camera_in_first_person", CameraInFirstPerson, Client, Cf, 0, 0,
 		"Fails if the camera is not in first person");
 	
@@ -624,15 +625,15 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_show_use_tooltip", SetShowUseTooltip, Client, None, 1, 2,
 		"Enables or disables use tooltips. See header_common_addon.py for possible types",
 		"tooltip_type", "value");
-	/*
+	
 	RegisterOperation("set_ally_collision_threshold", MissionSetAllyCollisionThreshold, Both, None, 2, 2,
 		"Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)",
 		"low_boundary", "high_boundary");
-
+	
 	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
 		"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
 		"attack_direction", "low_boundary", "high_boundary");
-	*/
+	
 	RegisterOperation("particle_system_remove", ParticleSystemRemove, Client, None, 0, 1,
 		"Removes <0> (all particle systems if not set or -1) from the current entity (can be used in several in triggers)",
 		"particle_system_no");

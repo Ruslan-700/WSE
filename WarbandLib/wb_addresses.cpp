@@ -96,7 +96,7 @@ unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = con
 
 //unsigned int addresses::UpdateHorseAgentEntityBody_entry = 0x00530D21;
 //unsigned int addresses::UpdateHorseAgentEntityBody_exit = UpdateHorseAgentEntityBody_entry + 7;
-unsigned int addresses::UpdateHorseAgentEntityBody_entry = 0x004F2F70; //?
+unsigned int addresses::UpdateHorseAgentEntityBody_entry = 0x004F2F70;
 unsigned int addresses::UpdateHorseAgentEntityBody_exit = UpdateHorseAgentEntityBody_entry + 6;
 
 //unsigned int addresses::tactical_window_ShowUseTooltip_entry = 0x005F4B86;
@@ -116,16 +116,16 @@ unsigned int addresses::mission_CheckHit_Human_exit_2 = 0x004E9E18;
 //unsigned int addresses::mission_CheckHit_Horse_entry = 0x00527974;
 //unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x005279CB;
 //unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x005279C0;
-unsigned int addresses::mission_CheckHit_Horse_entry = 0x004E9DC4;
-unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x004EBCF8;
-unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x004E9E18;
+unsigned int addresses::mission_CheckHit_Horse_entry = 0x004EA401;
+unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x004EA458;
+unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x004EA44D;
 
 //unsigned int addresses::mission_CheckHit_Prop_entry = 0x00526AEF;
 //unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x00526CF7;
 //unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00526B15;
-unsigned int addresses::mission_CheckHit_Prop_entry = 0x00526AEF;
-unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x00526CF7;
-unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00526B15;
+unsigned int addresses::mission_CheckHit_Prop_entry = 0x004E952A;
+unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004E9778;
+unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x004E9550;
 
 //unsigned int addresses::agent_HorseCharged_entry = 0x0050627A;
 unsigned int addresses::agent_HorseCharged_entry = 0x004C8186;
@@ -428,16 +428,16 @@ unsigned int addresses::mission_CheckHit_Human_exit_2 = 0x00492898;
 //unsigned int addresses::mission_CheckHit_Horse_entry = 0x004902B7;
 //unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x0049030E;
 //unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x00490303;
-unsigned int addresses::mission_CheckHit_Horse_entry = 0x00492844;
-unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x00494758;
-unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x00492898;
+unsigned int addresses::mission_CheckHit_Horse_entry = 0x00492E84;
+unsigned int addresses::mission_CheckHit_Horse_exit_1 = 0x00492EDB;
+unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x00492ED0;
 
 //unsigned int addresses::mission_CheckHit_Prop_entry = 0x0048F438;
 //unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x0048F63D;
 //unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x0048F45E;
-unsigned int addresses::mission_CheckHit_Prop_entry = 0x0048F438;
-unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x0048F63D;
-unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x0048F45E;
+unsigned int addresses::mission_CheckHit_Prop_entry = 0x00491FB3;
+unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004921F8;
+unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00491FD9;
 
 //unsigned int addresses::agent_HorseCharged_entry = 0x0047AEFA;
 unsigned int addresses::agent_HorseCharged_entry = 0x0047BF66;
