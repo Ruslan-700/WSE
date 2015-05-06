@@ -19,6 +19,7 @@ public:
 	int GetInt(const std::string &key, const int &def = 0) const;
 	void SetString(const std::string &key, const std::string &value);
 	void SetInt(const std::string &key, const int &value);
+	const std::string &GetKeyByIterator(const int &iterator, const std::string &def = "") const;
 
 public:
 	std::map<std::string, std::string> m_values;

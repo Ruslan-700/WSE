@@ -173,6 +173,19 @@ void DictSetInt(WSEDictionaryOperationsContext *context)
 	dict->SetInt(key, value);
 }
 
+void DictGetKeyByIterator(WSEDictionaryOperationsContext *context)
+{
+	int sreg, id, iterator;
+
+	context->ExtractValue(sreg);
+	context->ExtractValue(id);
+	context->ExtractValue(iterator);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	warband->basic_game.string_registers[sreg] = dict->GetKeyByIterator(iterator);
+}
+
 WSEDictionaryOperationsContext::WSEDictionaryOperationsContext() : WSEOperationContext("dictionary", 3200, 3299)
 {
 }
@@ -246,6 +259,10 @@ void WSEDictionaryOperationsContext::OnLoad()
 	RegisterOperation("dict_set_int", DictSetInt, Both, None, 3, 3,
 		"Adds (or changes) <2> as the numeric value paired to <1>",
 		"dict", "key", "value");
+
+	RegisterOperation("dict_get_key_by_iterator", DictGetKeyByIterator, Both, None, 3, 3,
+		"Stores the key <0> by iterator <2>",
+		"string_register", "dict", "iterator");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

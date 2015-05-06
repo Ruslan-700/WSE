@@ -1,9 +1,4 @@
 #Add the following definitions to the end (!) of header_operations.py
-go_to                        = 0 #(go_to, <statement_no>), #Jump to <statement_no>
-break_loop                   = 8 #(break_loop), #Break out of a loop, no matter how deeply nested in try_begin blocks
-continue_loop                = 9 #(continue_loop), #Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks
-try_for_agents               = 12 #(try_for_agents, <cur_agent_no>, [<position_no>], [<radius_fixed_point>]), #Loops through agents in the scene. If [<position_no>] and [<radius_fixed_point>] are defined, it will only loop through agents in the chosen area
-try_for_dict_keys            = 18 #(try_for_dict_keys, <cur_key_string_register>, <dict>), #Loops through keys of <2>
 server_set_max_num_players   = 491 #(server_set_max_num_players, <max_players>, [<max_private_players>]), #Sets maximum players to <max_players> and maximum private players to [<max_private_players>] (default = same as <max_players>). Both values must be in the range 2-250, [<max_private_players>] can't be lower than <max_players>
 position_rotate_x            = 723 #(position_rotate_x, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the x-axis by <angle> degrees
 position_rotate_y            = 724 #(position_rotate_y, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the y-axis by <angle> degrees
@@ -13,7 +8,6 @@ position_rotate_x_floating   = 738 #(position_rotate_x_floating, <position_regis
 position_rotate_y_floating   = 739 #(position_rotate_y_floating, <position_register>, <angle_fixed_point>, [<use_global_axis>]), #Rotates <position_register> around the y-axis by <angle_fixed_point> degrees
 is_vanilla_warband           = 1004 #(is_vanilla_warband), #Fails only when WSE is running
 prop_instance_receive_damage = 1877 #(prop_instance_receive_damage, <prop_instance_no>, <agent_no>, <damage>, [<advanced>]), #<prop_instance_no> received <damage> damage from <agent_no>. If [<advanced>] is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.
-store_trigger_param          = 2070 #(store_trigger_param, <destination>, [<trigger_param_no>]), #Stores [<trigger_param_no>] into <destination>
 
 val_shr    = 2800 #(val_shr, <value>, <shift>), #Performs an arithmetic right bit shift by <shift> on <value>
 store_shr  = 2801 #(store_shr, <destination>, <value>, <shift>), #Performs an arithmetic right bit shift by <shift> on <value> and stores the result into <destination>
@@ -64,20 +58,21 @@ game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Sto
 key_released      = 3101 #(key_released, <key>), #Fails if <key> wasn't released in the current frame
 game_key_released = 3102 #(game_key_released, <game_key_no>), #Fails if <game_key_no> wasn't released in the current frame
 
-dict_create      = 3200 #(dict_create, <destination>), #Creates an empty dictionary object and stores it into <destination>
-dict_free        = 3201 #(dict_free, <dict>), #Frees the dictionary object <dict>. A dictionary can't be used after freeing it
-dict_load_file   = 3202 #(dict_load_file, <dict>, <file>, [<mode>]), #Loads a dictionary file into <dict>. Setting [<mode>] to 0 (default) clears <dict> and then loads the file, setting [<mode>] to 1 doesn't clear <dict> but overrides any key that's already present, [<mode>] to 2 doesn't clear <dict> and doesn't overwrite keys that are already present
-dict_load_dict   = 3203 #(dict_load_dict, <dict_1>, <dict_2>, [<mode>]), #Loads <dict_2> into <dict_1>. [<mode>]: see above
-dict_save        = 3204 #(dict_save, <dict>, <file>), #Saves <dict> into a file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory
-dict_clear       = 3205 #(dict_clear, <dict>), #Clears all key-value pairs from <dict>
-dict_is_empty    = 3206 #(dict_is_empty, <dict>), #Fails if <dict> is not empty
-dict_has_key     = 3207 #(dict_has_key, <dict>, <key>), #Fails if <key> is not present in <dict>
-dict_get_size    = 3208 #(dict_get_size, <destination>, <dict>), #Stores the count of key-value pairs in <dict> into <destination>
-dict_delete_file = 3209 #(dict_delete_file, <file>), #Deletes dictionary file <file> from disk
-dict_get_str     = 3210 #(dict_get_str, <string_register>, <dict>, <key>, [<default>]), #Stores the string value paired to <key> into <string_register>. If the key is not found and [<default>] is set, [<default>] will be stored instead. If [<default>] is not set, an empty string will be stored
-dict_get_int     = 3211 #(dict_get_int, <destination>, <dict>, <key>, [<default>]), #Stores the numeric value paired to <key> into <destination>. If the key is not found and [<default>] is set, [<default>] will be stored instead. If [<default>] is not set, 0 will be stored
-dict_set_str     = 3212 #(dict_set_str, <dict>, <key>, <string_no>), #Adds (or changes) <string_no> as the string value paired to <key>
-dict_set_int     = 3213 #(dict_set_int, <dict>, <key>, <value>), #Adds (or changes) <value> as the numeric value paired to <key>
+dict_create              = 3200 #(dict_create, <destination>), #Creates an empty dictionary object and stores it into <destination>
+dict_free                = 3201 #(dict_free, <dict>), #Frees the dictionary object <dict>. A dictionary can't be used after freeing it
+dict_load_file           = 3202 #(dict_load_file, <dict>, <file>, [<mode>]), #Loads a dictionary file into <dict>. Setting [<mode>] to 0 (default) clears <dict> and then loads the file, setting [<mode>] to 1 doesn't clear <dict> but overrides any key that's already present, [<mode>] to 2 doesn't clear <dict> and doesn't overwrite keys that are already present
+dict_load_dict           = 3203 #(dict_load_dict, <dict_1>, <dict_2>, [<mode>]), #Loads <dict_2> into <dict_1>. [<mode>]: see above
+dict_save                = 3204 #(dict_save, <dict>, <file>), #Saves <dict> into a file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory
+dict_clear               = 3205 #(dict_clear, <dict>), #Clears all key-value pairs from <dict>
+dict_is_empty            = 3206 #(dict_is_empty, <dict>), #Fails if <dict> is not empty
+dict_has_key             = 3207 #(dict_has_key, <dict>, <key>), #Fails if <key> is not present in <dict>
+dict_get_size            = 3208 #(dict_get_size, <destination>, <dict>), #Stores the count of key-value pairs in <dict> into <destination>
+dict_delete_file         = 3209 #(dict_delete_file, <file>), #Deletes dictionary file <file> from disk
+dict_get_str             = 3210 #(dict_get_str, <string_register>, <dict>, <key>, [<default>]), #Stores the string value paired to <key> into <string_register>. If the key is not found and [<default>] is set, [<default>] will be stored instead. If [<default>] is not set, an empty string will be stored
+dict_get_int             = 3211 #(dict_get_int, <destination>, <dict>, <key>, [<default>]), #Stores the numeric value paired to <key> into <destination>. If the key is not found and [<default>] is set, [<default>] will be stored instead. If [<default>] is not set, 0 will be stored
+dict_set_str             = 3212 #(dict_set_str, <dict>, <key>, <string_no>), #Adds (or changes) <string_no> as the string value paired to <key>
+dict_set_int             = 3213 #(dict_set_int, <dict>, <key>, <value>), #Adds (or changes) <value> as the numeric value paired to <key>
+dict_get_key_by_iterator = 3214 #(dict_get_key_by_iterator, <string_register>, <dict>, <iterator>), #Stores the key <string_register> by iterator <iterator>
 
 agent_get_item_modifier           = 3300 #(agent_get_item_modifier, <destination>, <agent_no>), #Stores <agent_no>'s horse item modifier (-1 if agent is not a horse) into <destination>
 agent_get_item_slot_modifier      = 3301 #(agent_get_item_slot_modifier, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> modifier into <destination>
@@ -267,7 +262,6 @@ overlay_get_val       = 4900 #(overlay_get_val, <destination>, <overlay_no>), #S
 presentation_activate = 4901 #(presentation_activate, <presentation_no>), #Activates <presentation_no>. Fails if <presentation_no> is not running
 
 lhs_operations += [
-	try_for_agents,
 	store_trigger_param,
 	val_shr,
 	store_shr,
@@ -369,9 +363,4 @@ can_fail_operations += [
 	fge,
 	fle,
 	presentation_activate,
-]
-
-#for mb_warband_module_system_1165_lav
-depth_operations += [
-	try_for_dict_keys,
 ]

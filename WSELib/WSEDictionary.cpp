@@ -142,3 +142,17 @@ void WSEDictionary::SetInt(const std::string &key, const int &value)
 	sprintf_s(buf, "%d", value);
 	m_values[key] = buf;
 }
+
+const std::string &WSEDictionary::GetKeyByIterator(const int &iterator, const std::string &def) const
+{
+	std::map<std::string, std::string>::const_iterator it = m_values.begin();
+
+	for (int i = 0; i < iterator; i++){
+		it++;
+	}
+
+	if (it == m_values.end())
+		return def;
+
+	return it->first;
+}

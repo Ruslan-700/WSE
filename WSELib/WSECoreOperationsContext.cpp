@@ -455,7 +455,7 @@ WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core
 
 void WSECoreOperationsContext::OnLoad()
 {
-	
+	/*
 	DefineOperation(0, "go_to", Control, 1, 1,
 		"Jump to <0>",
 		"statement_no");
@@ -469,7 +469,7 @@ void WSECoreOperationsContext::OnLoad()
 	DefineOperation(12, "try_for_agents", Control | Lhs, 1, 3,
 		"Loops through agents in the scene. If <1> and <2> are defined, it will only loop through agents in the chosen area",
 		"cur_agent_no", "position_no", "radius_fixed_point");
-	/*
+	
 	DefineOperation(15, "try_for_attached_parties", Control | Lhs, 2, 2,
 		"Loops through parties attached to <1>.",
 		"cur_party_no", "party_no");
@@ -481,15 +481,15 @@ void WSECoreOperationsContext::OnLoad()
 	DefineOperation(17, "try_for_prop_instances", Control | Lhs, 1, 2,
 		"Loops through scene prop instances of <1>. If <1> is not set it will loop through all scene prop instances in the scene",
 		"cur_instance_no", "scene_prop_kind_no");
-	*/
+	
 	DefineOperation(18, "try_for_dict_keys", Control, 2, 2,
 		"Loops through keys of <2>",
 		"cur_key_string_register", "dict");
-
+	*/
 	ReplaceOperation(1004, "is_vanilla_warband", IsVanillaWarband, Both, Cf, 0, 0,
 		"Fails only when WSE is running");
 
-	ReplaceOperation(2070, "store_trigger_param", StoreTriggerParam, Both, Lhs, 1, 2,
+	ReplaceOperation(2070, "store_trigger_param", StoreTriggerParam, Both, Lhs | Undocumented, 1, 2,
 		"Stores <1> into <0>",
 		"destination", "trigger_param_no");
 	

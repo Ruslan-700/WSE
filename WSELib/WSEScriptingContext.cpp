@@ -64,7 +64,7 @@ WSEScriptingContext::WSEScriptingContext()
 void WSEScriptingContext::OnLoad()
 {
 	WSE->Hooks.HookFunction(this, wb::addresses::operation_Execute_entry, OperationExecuteHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
+	//WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
 }
 
 void WSEScriptingContext::OnUnload()
@@ -340,7 +340,7 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 	//case wb::try_for_active_players:
 	case wb::try_for_players:
 		{
-			start_value = (statement->num_operands > 1 && statement->get_operand_value(local_variables, 1, operand_type)) ? 1 : 0;
+			start_value = (statement->num_operands > 1 && (int)statement->get_operand_value(local_variables, 1, operand_type)) ? 1 : 0;
 
 			for (; start_value < NUM_NETWORK_PLAYERS; ++start_value)
 			{

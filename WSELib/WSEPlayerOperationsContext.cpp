@@ -128,13 +128,21 @@ void PlayerSetUsername(WSEPlayerOperationsContext *context)
 {
 	int player_no;
 	std::string name;
+	std::string name_lowercase;
 
 	context->ExtractPlayerNo(player_no);
 	context->ExtractString(name);
 
 	wb::network_player *player = &warband->multiplayer_data.players[player_no];
 
+	name_lowercase = name;
+	for (unsigned int i = 0; i<name_lowercase.length(); i++)
+	{
+		name_lowercase[i] = tolower(name_lowercase[i]);
+	}
+
 	player->name = name;
+	player->name_lowercase = name_lowercase;
 }
 
 WSEPlayerOperationsContext::WSEPlayerOperationsContext() : WSEOperationContext("player", 2900, 2999)
