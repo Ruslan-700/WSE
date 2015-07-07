@@ -53,6 +53,8 @@ sleep_ms                      = 3026 #(sleep_ms, <time>), #Sleeps (blocking the 
 timer_reset                   = 3027 #(timer_reset, <timer_register_no>, [<use_game_time>]), #Resets <timer_register_no>. If [<use_game_time>] is non-zero the timer will count game time rather than mission time
 timer_get_elapsed_time        = 3028 #(timer_get_elapsed_time, <destination>, <timer_register_no>), #Stores <timer_register_no>'s elapsed time into <destination>
 shell_open_url                = 3029 #(shell_open_url, <url>), #Open <url> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.
+set_main_party                = 3030 #(set_main_party, <party_no>), #Sets player's main party to <party_no>. Dynamic spawned party (not listed in module_parties.py) will corrupt the savegame!
+get_main_party                = 3031 #(get_main_party, <destination>), #Stores player's main party to <destination>
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
 key_released      = 3101 #(key_released, <key>), #Fails if <key> wasn't released in the current frame
@@ -281,6 +283,7 @@ lhs_operations += [
 	mtrand,
 	get_time,
 	timer_get_elapsed_time,
+	get_main_party,
 	game_key_get_key,
 	dict_create,
 	dict_get_size,

@@ -31,6 +31,7 @@ namespace wb
 		int label_visible;
 		int faction_no;
 		int personality;
+		int u11;//1166
 		float bandit_attraction;
 		float morale;
 		float hunger;

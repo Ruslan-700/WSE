@@ -65,7 +65,8 @@ void wb::check_types()
 	assert_size<operation_manager>(156, 156);
 	assert_size<particle_system>(452, -1);
 	assert_size<particle_system_manager>(52, -1);
-	assert_size<party>(23840, 23824);
+	//assert_size<party>(23840, 23824);
+	assert_size<party>(23848, 23832);
 	assert_size<party_stack>(32, 32);
 	assert_size<party_template>(432, 432);
 	assert_size<party_template_stack>(16, 16);

@@ -361,22 +361,30 @@ void BinkThread(void *arg)
 void PlayBinkFile(WSECoreOperationsContext *context)
 {
 #if !defined WARBAND_DEDICATED
-	std::string path;
+	std::string path, cur_module_path, toreplace;
 	int duration;
 
 	context->ExtractString(path);
 	context->ExtractValue(duration);
 
+	cur_module_path = warband->cur_module_path.c_str();
+	toreplace = "/";
+
+	for (size_t start_pos = cur_module_path.find(toreplace); start_pos != std::string::npos; start_pos = cur_module_path.find(toreplace, start_pos))
+	{
+		cur_module_path.replace(start_pos, toreplace.length(), "\\");
+	}
+
 	char full_path[MAX_PATH];
 
-	PathCombine(full_path, warband->cur_module_path.c_str(), path.c_str());
+	PathCombine(full_path, cur_module_path.c_str(), path.c_str());
 
 	if (!PathFileExists(full_path))
 		return;
 
 	char arg_list[512];
 
-	sprintf_s(arg_list, " %s /P /I2 /Z /J /U1 /W-1 /H-1 /C /B2", full_path);
+	sprintf_s(arg_list, " \"%s\" /P /I2 /Z /J /U1 /W-1 /H-1 /C /B2", full_path);
 
 	STARTUPINFO startup_info;
 	PROCESS_INFORMATION process_info;
@@ -446,6 +454,20 @@ void ShellOpenUrl(WSECoreOperationsContext *context)
 		context->ScriptError("Support only http://, https://, ftp:// and ts3server:// urls.");
 	}
 #endif
+}
+
+void SetMainParty(WSECoreOperationsContext *context)
+{
+	int party_no;
+
+	context->ExtractPartyNo(party_no);
+
+	warband->cur_game->main_party_no = party_no;
+}
+
+int GetMainParty(WSECoreOperationsContext *context)
+{
+	return warband->cur_game->main_party_no;
 }
 
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
@@ -613,5 +635,13 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("shell_open_url", ShellOpenUrl, Client, None, 1, 1,
 		"Open <0> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.",
 		"url");
+
+	RegisterOperation("set_main_party", SetMainParty, Client, None, 1, 1,
+		"Sets player's main party to <0>. Dynamic spawned party (not listed in module_parties.py) will corrupt the savegame!",
+		"party_no");
+
+	RegisterOperation("get_main_party", GetMainParty, Client, Lhs, 1, 1,
+		"Stores player's main party to <0>",
+		"destination");
 	
 }
