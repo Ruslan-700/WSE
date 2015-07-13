@@ -253,7 +253,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 #endif
 	AddContext(&DictionaryOperations, false);
 	AddContext(&EditModeOperations, false);
-	//AddContext(&EngineOperations, false);
+	AddContext(&EngineOperations, false);
 	AddContext(&FloatingPointOperations, false);
 	AddContext(&InputOperations, false);
 	//AddContext(&ItemOperations, false);
