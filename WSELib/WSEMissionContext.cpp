@@ -291,6 +291,7 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 	warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
 	warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
 	warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
+	warband->basic_game.trigger_param_6 = missile->no;
 	//WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
 	//WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
 	item_kind->simple_triggers.execute(-101);
@@ -651,7 +652,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 	pos.o.z = warband->cur_mission->water_level;
 
 	warband->basic_game.position_registers[1] = pos;
-	warband->cur_game->execute_script(52, missile->missile_item.item_no, missile->missile_item.get_modifier(), missile->shooting_item.item_no, missile->shooting_item.get_modifier(), missile->shooter_agent_no);
+	warband->cur_game->execute_script(52, missile->missile_item.item_no, missile->missile_item.get_modifier(), missile->shooting_item.item_no, missile->shooting_item.get_modifier(), missile->shooter_agent_no, missile->no);
 
 	if (missile->missile_item.item_no >= 0)
 	{
@@ -663,6 +664,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 		warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
 		warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
 		warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
+		warband->basic_game.trigger_param_6 = missile->no;
 		/*
 		WSE->Scripting.SetTriggerParam(1, missile->shooter_agent_no);
 		WSE->Scripting.SetTriggerParam(2, missile->shooting_item.item_no);

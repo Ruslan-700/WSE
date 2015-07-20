@@ -81,19 +81,18 @@ agent_get_item_slot_modifier      = 3301 #(agent_get_item_slot_modifier, <destin
 agent_get_animation_progress      = 3302 #(agent_get_animation_progress, <destination>, <agent_no>, [<channel_no>]), #Stores <agent_no>'s channel [<channel_no>] animation progress (in %%) into <destination>
 agent_get_dna                     = 3303 #(agent_get_dna, <destination>, <agent_no>), #Stores <agent_no>'s dna into <destination>
 agent_get_ground_scene_prop       = 3304 #(agent_get_ground_scene_prop, <destination>, <agent_no>), #Stores the prop instance on which <agent_no> is standing into <destination>
-agent_get_item_slot_ammo          = 3305 #(agent_get_item_slot_ammo, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> ammo count into <destination>
-agent_set_item_slot_ammo          = 3306 #(agent_set_item_slot_ammo, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> ammo count to <value>
-agent_get_item_slot_hit_points    = 3307 #(agent_get_item_slot_hit_points, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> shield hitpoints into <destination>
-agent_set_item_slot_hit_points    = 3308 #(agent_set_item_slot_hit_points, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> shield hitpoints to <value>
-agent_get_wielded_item_slot_no    = 3309 #(agent_get_wielded_item_slot_no, <destination>, <agent_no>, [<hand_no>]), #Stores <agent_no>'s wielded item slot for [<hand_no>] into <destination>
-agent_get_scale                   = 3310 #(agent_get_scale, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s scale into <destination_fixed_point>
-agent_set_forced_lod              = 3311 #(agent_set_forced_lod, <agent_no>, <lod_level>), #Forces <agent_no>'s LOD level to <lod_level> (0 = auto)
-agent_get_item_slot_flags         = 3312 #(agent_get_item_slot_flags, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> item slot flags into <destination>
-agent_ai_get_move_target_position = 3313 #(agent_ai_get_move_target_position, <position_register>, <agent_no>), #Stores <agent_no>'s move target position agent into <position_register>
-agent_set_horse                   = 3314 #(agent_set_horse, <agent_no>, <horse_agent_no>), #Sets <agent_no>'s horse to <horse_agent_no> (-1 for no horse)
-agent_ai_set_simple_behavior      = 3315 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
-agent_accelerate                  = 3316 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
-agent_set_item_slot_modifier      = 3317 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
+agent_set_item_slot_ammo          = 3305 #(agent_set_item_slot_ammo, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> ammo count to <value>
+agent_get_item_slot_hit_points    = 3306 #(agent_get_item_slot_hit_points, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> shield hitpoints into <destination>
+agent_set_item_slot_hit_points    = 3307 #(agent_set_item_slot_hit_points, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> shield hitpoints to <value>
+agent_get_wielded_item_slot_no    = 3308 #(agent_get_wielded_item_slot_no, <destination>, <agent_no>, [<hand_no>]), #Stores <agent_no>'s wielded item slot for [<hand_no>] into <destination>
+agent_get_scale                   = 3309 #(agent_get_scale, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s scale into <destination_fixed_point>
+agent_set_forced_lod              = 3310 #(agent_set_forced_lod, <agent_no>, <lod_level>), #Forces <agent_no>'s LOD level to <lod_level> (0 = auto)
+agent_get_item_slot_flags         = 3311 #(agent_get_item_slot_flags, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> item slot flags into <destination>
+agent_ai_get_move_target_position = 3312 #(agent_ai_get_move_target_position, <position_register>, <agent_no>), #Stores <agent_no>'s move target position agent into <position_register>
+agent_set_horse                   = 3313 #(agent_set_horse, <agent_no>, <horse_agent_no>), #Sets <agent_no>'s horse to <horse_agent_no> (-1 for no horse)
+agent_ai_set_simple_behavior      = 3314 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
+agent_accelerate                  = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
+agent_set_item_slot_modifier      = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
 
 multiplayer_send_chat_message_to_player = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_get_cur_profile             = 3401 #(multiplayer_get_cur_profile, <destination>), #Stores the current multiplayer profile into <destination>
@@ -109,20 +108,22 @@ server_map_rotation_add_map    = 3506 #(server_map_rotation_add_map, <site_no>, 
 server_map_rotation_remove_map = 3507 #(server_map_rotation_remove_map, [<index>]), #Removes the map at [<index>] from the map rotation (does not work when only one left)
 get_server_option_at_connect   = 3508 #(get_server_option_at_connect, <destination>, [<index>]), #Stores option [<index>] into <destination>
 
-store_cur_mission_template_no       = 3600 #(store_cur_mission_template_no, <destination>), #Stores the current mission template into <destination>
-camera_in_first_person              = 3601 #(camera_in_first_person), #Fails if the camera is not in first person
-set_camera_in_first_person          = 3602 #(set_camera_in_first_person, <value>), #Sets the camera to first or third person
-set_show_use_tooltip                = 3603 #(set_show_use_tooltip, <tooltip_type>, [<value>]), #Enables or disables use tooltips. See header_common_addon.py for possible types
-set_ally_collision_threshold        = 3604 #(set_ally_collision_threshold, <low_boundary>, <high_boundary>), #Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)
-particle_system_remove              = 3605 #(particle_system_remove, [<particle_system_no>]), #Removes [<particle_system_no>] (all particle systems if not set or -1) from the current entity (can be used in several in triggers)
-get_spectated_agent_no              = 3606 #(get_spectated_agent_no, <destination>), #Stores spectated agent no into <destination>
-prop_instance_set_forced_lod        = 3607 #(prop_instance_set_forced_lod, <prop_instance_no>, <lod_level>), #Forces <prop_instance_no>'s LOD level to <lod_level> (0 = auto)
-prop_instance_set_variation_id      = 3608 #(prop_instance_set_variation_id, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id to <value>
-prop_instance_set_variation_id_2    = 3609 #(prop_instance_set_variation_id_2, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id 2 to <value>
-stop_time                           = 3610 #(stop_time, <value>), #Stops/resumes the mission. Works only in singleplayer with cheat mode enabled.
-cur_missile_get_path_point_position = 3611 #(cur_missile_get_path_point_position, <position_register>, <path_point_no>), #Stores the position of the missile's <path_point_no> (0-499) into <position_register> (can be used in ti_on_init_missile)
-get_water_level                     = 3612 #(get_water_level, <destination_fixed_point>), #Stores the water level into <destination_fixed_point>
-missile_remove_on_hit               = 3613 #(missile_remove_on_hit), #Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)
+store_cur_mission_template_no    = 3600 #(store_cur_mission_template_no, <destination>), #Stores the current mission template into <destination>
+camera_in_first_person           = 3601 #(camera_in_first_person), #Fails if the camera is not in first person
+set_camera_in_first_person       = 3602 #(set_camera_in_first_person, <value>), #Sets the camera to first or third person
+set_show_use_tooltip             = 3603 #(set_show_use_tooltip, <tooltip_type>, [<value>]), #Enables or disables use tooltips. See header_common_addon.py for possible types
+set_ally_collision_threshold     = 3604 #(set_ally_collision_threshold, <low_boundary>, <high_boundary>), #Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)
+particle_system_remove           = 3605 #(particle_system_remove, [<particle_system_no>]), #Removes [<particle_system_no>] (all particle systems if not set or -1) from the current entity (can be used in several in triggers)
+get_spectated_agent_no           = 3606 #(get_spectated_agent_no, <destination>), #Stores spectated agent no into <destination>
+prop_instance_set_forced_lod     = 3607 #(prop_instance_set_forced_lod, <prop_instance_no>, <lod_level>), #Forces <prop_instance_no>'s LOD level to <lod_level> (0 = auto)
+prop_instance_set_variation_id   = 3608 #(prop_instance_set_variation_id, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id to <value>
+prop_instance_set_variation_id_2 = 3609 #(prop_instance_set_variation_id_2, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id 2 to <value>
+stop_time                        = 3610 #(stop_time, <value>), #Stops/resumes the mission. Works only in singleplayer with cheat mode enabled.
+missile_get_path_point_position  = 3611 #(missile_get_path_point_position, <position_register>, <path_point_no>, <missile_no>), #Stores the position of the <missile_no>'s <path_point_no> (0-499) into <position_register>
+get_water_level                  = 3612 #(get_water_level, <destination_fixed_point>), #Stores the water level into <destination_fixed_point>
+missile_remove_on_hit            = 3613 #(missile_remove_on_hit), #Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)
+missile_is_valid                 = 3614 #(missile_is_valid, <missile_no>), #Fails if <missile_no> is not valid
+missile_get_cur_position         = 3615 #(missile_get_cur_position, <position_register>, <missile_no>), #Stores <missile_no>'s current position into <position_register>
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>
@@ -293,7 +294,6 @@ lhs_operations += [
 	agent_get_animation_progress,
 	agent_get_dna,
 	agent_get_ground_scene_prop,
-	agent_get_item_slot_ammo,
 	agent_get_item_slot_hit_points,
 	agent_get_wielded_item_slot_no,
 	agent_get_scale,
@@ -350,6 +350,7 @@ can_fail_operations += [
 	dict_is_empty,
 	dict_has_key,
 	camera_in_first_person,
+	missile_is_valid,
 	troop_has_flag,
 	party_has_flag,
 	str_equals,

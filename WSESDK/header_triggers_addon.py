@@ -23,6 +23,7 @@ ti_on_init_missile = -101.0 #can only be used in module_items triggers
 # Trigger Param 3: launcher item modifier
 # Trigger Param 4: missile item kind no
 # Trigger Param 5: missile item modifier
+# Trigger Param 6: missile no
 
 ti_on_missile_dive = -104.0 #can only be used in module_items triggers
 # Trigger Param 1: shooter agent no
@@ -30,6 +31,7 @@ ti_on_missile_dive = -104.0 #can only be used in module_items triggers
 # Trigger Param 3: launcher item modifier
 # Trigger Param 4: missile item kind no
 # Trigger Param 5: missile item modifier
+# Trigger Param 6: missile no
 # Position Register 0: water impact position and rotation
 
 ti_on_agent_start_reloading = -105.0 #can only be used in module_mission_templates triggers

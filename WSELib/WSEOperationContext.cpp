@@ -380,6 +380,15 @@ void WSEOperationContext::ExtractOverlayNo(int &value)
 #endif
 }
 
+void WSEOperationContext::ExtractMissileNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (!warband->cur_mission || !warband->cur_mission->missiles.is_valid_index(value))
+		ScriptError("invalid missile no %d", value);
+}
+
+
 int WSEOperationContext::GetCurrentTrigger() const
 {
 	if (m_context_flags < 0)

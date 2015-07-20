@@ -426,14 +426,15 @@ void StopTime(WSEMissionOperationsContext *context)
 #endif
 }
 
-void CurMissileGetPathPointPosition(WSEMissionOperationsContext *context)
+void MissileGetPathPointPosition(WSEMissionOperationsContext *context)
 {
-	int preg, path_point_no;
+	int preg, path_point_no, missile_no;
 
 	context->ExtractRegister(preg);
 	context->ExtractBoundedValue(path_point_no, 0, 500);
+	context->ExtractMissileNo(missile_no);
 
-	wb::missile *missile = WSE->Mission.m_cur_missile;
+	wb::missile *missile = &warband->cur_mission->missiles[missile_no];
 
 	if (!missile)
 		return;
@@ -584,6 +585,41 @@ void MissileRemoveOnHit(WSEMissionOperationsContext *context)
 	}
 }
 
+bool MissileIsValid(WSEMissionOperationsContext *context)
+{
+	int missile_no;
+
+	context->ExtractValue(missile_no);
+
+	if (!warband->cur_mission)
+		return false;
+
+	return warband->cur_mission->missiles.is_valid_index(missile_no);
+}
+
+void MissileGetCurPosition(WSEMissionOperationsContext *context)
+{
+	int preg, missile_no;
+
+	context->ExtractRegister(preg);
+	context->ExtractMissileNo(missile_no);
+
+	wb::missile *missile = &warband->cur_mission->missiles[missile_no];
+
+	if (!missile)
+		return;
+
+	if (missile->cur_path == 0)
+		warband->basic_game.position_registers[preg].rot.f = missile->starting_direction;
+	else
+		warband->basic_game.position_registers[preg].rot.f = ((missile->cur_position - missile->prev_position) * 50.0f);
+
+	warband->basic_game.position_registers[preg].rot.f.normalize();
+	warband->basic_game.position_registers[preg].rot.u = rgl::vector4(0.0f, 1.0f, 0.0f);
+	warband->basic_game.position_registers[preg].o = missile->cur_position;
+	warband->basic_game.position_registers[preg].orthonormalize();
+}
+
 WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext("mission", 3600, 3699)
 {
 }
@@ -662,9 +698,9 @@ void WSEMissionOperationsContext::OnLoad()
 		"Stops/resumes the mission. Works only in singleplayer with cheat mode enabled.",
 		"value");
 
-	RegisterOperation("cur_missile_get_path_point_position", CurMissileGetPathPointPosition, Both, None, 2, 2,
-		"Stores the position of the missile's <1> (0-499) into <0> (can be used in ti_on_init_missile)",
-		"position_register", "path_point_no");
+	RegisterOperation("missile_get_path_point_position", MissileGetPathPointPosition, Both, None, 3, 3,
+		"Stores the position of the <2>'s <1> (0-499) into <0>",
+		"position_register", "path_point_no", "missile_no");
 
 	RegisterOperation("get_water_level", GetWaterLevel, Both, Lhs, 1, 1,
 		"Stores the water level into <0>",
@@ -680,4 +716,13 @@ void WSEMissionOperationsContext::OnLoad()
 	*/
 	RegisterOperation("missile_remove_on_hit", MissileRemoveOnHit, Both, None, 0, 0,
 		"Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)");
+
+	RegisterOperation("missile_is_valid", MissileIsValid, Both, Cf, 1, 1,
+		"Fails if <0> is not valid",
+		"missile_no");
+
+	RegisterOperation("missile_get_cur_position", MissileGetCurPosition, Both, None, 2, 2,
+		"Stores <1>'s current position into <0>",
+		"position_register", "missile_no");
+
 }

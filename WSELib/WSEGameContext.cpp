@@ -61,6 +61,7 @@ void WSEGameContext::OnReadModuleFiles()
 	*/	
 
 #if defined WARBAND
+	warband->basic_game.module_download_url = WSE->ModuleSettingsIni.String("", "module_download_url", "www.taleworlds.com/mb_warband_download_module.html");
 	warband->network_manager.server.port = WSE->SettingsIni.Int("listen_server", "port", 7240);
 	if (warband->network_manager.server.port < 1024 || warband->network_manager.server.port > 65535) warband->network_manager.server.port = 7240;
 #endif

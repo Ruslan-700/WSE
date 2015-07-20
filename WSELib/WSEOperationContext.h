@@ -55,6 +55,7 @@ public:
 	void ExtractAgentNo(int &value);
 	void ExtractMissionObjectNo(int &value);
 	void ExtractOverlayNo(int &value);
+	void ExtractMissileNo(int &value);
 	int GetCurrentTrigger() const;
 	void ScriptError(std::string format, ...) const;
 	void WindowsAPIError(std::string message, ...) const;
