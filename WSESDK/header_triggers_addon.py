@@ -9,6 +9,7 @@ ti_on_agent_hit = -28.0 #can only be used in module_mission_templates triggers
 # Trigger Param 8: missile item modifier
 # Trigger Param 9: damage type
 # Register 0: item kind no
+# Register 1: hit bone
 # Position Register 0: position of the blow
 #                      rotation gives the direction of the blow
 # Trigger Result: if set, damage dealt to agent

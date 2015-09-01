@@ -66,6 +66,7 @@ namespace wb
 		int background_presentation_no;
 		unsigned int encounter_flags_2;
 		int saving_allowed;
+		int u13; //1168
 		rgl::string cur_menu_text;
 		stl::vector<window_redirect> window_redirects;
 		rgl::stable_vector<map_event> map_events;

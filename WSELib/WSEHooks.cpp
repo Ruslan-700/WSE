@@ -36,7 +36,7 @@ void __declspec(naked) OperationExecuteHook()
 		mov edx, eax
 #if defined WARBAND
 		//add edx, 15
-		add edx, 39
+		add edx, 47
 		push edx
 		mov edx, eax
 		add edx, 48
@@ -78,7 +78,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x008FB428
-		push 0x00819818
+		push 0x0080E798
 #elif defined WARBAND_STEAM
 		mov ecx, [edi]
 		push ecx
@@ -87,7 +87,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x00697958
-		push 0x006A0B90
+		push 0x006A31C0
 #endif
 		jmp [wb::addresses::operation_Execute_exit_2]
 	}
@@ -445,9 +445,9 @@ void __declspec(naked) UpdateHorseAgentEntityBodyHook()
 		mov ebx, esp
 		push eax
 		//push [ebx+480]
-		push[ebx + 488]
+		push[ebx + 492]
 		//mov ebx, [ebx+496]
-		mov ebx, [ebx + 504]
+		mov ebx, [ebx + 508]
 		mov ebx, [ebx]
 		push ebx
 		CALL_CONTEXT_FUNC(Mission, OnUpdateHorseAgentEntityBody)
@@ -476,7 +476,8 @@ void __declspec(naked) AgentAttackCollidesWithAllyHumanHook()
 	_asm
 	{
 		FREEZE_REGS
-		push [esi]
+		//push [esi]
+		push[eax]
 		CALL_CONTEXT_FUNC(Mission, OnAgentAttackCollidesWithAllyHuman)
 		test al, al
 		jnz continue_exec

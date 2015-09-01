@@ -61,6 +61,7 @@ namespace rgl
 		string resource_path_copy;
 		bool edit_mode;
 		bool edit_mode_copy;
+		int u8; //1168
 		stl::vector<texture *> core_textures;
 #if defined WARBAND
 		stl::vector<resource *> ondemand_textures_1;

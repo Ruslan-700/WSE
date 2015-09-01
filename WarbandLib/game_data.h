@@ -61,8 +61,7 @@ namespace wb
 	{
 #if defined WARBAND_DEDICATED
 		network_manager network_manager;
-		//int junk[554];
-		int junk[550];
+		int junk[554];
 #endif
 		rgl::io_text_stream debug_text_stream;
 		int uuuuu1; // align
@@ -75,7 +74,7 @@ namespace wb
 		config_manager options_config;
 #if defined WARBAND_VANILLA
 		//int uuuuu5[56529];
-		int uuuuu5[55563];
+		int uuuuu5[10267];
 #elif defined WARBAND_STEAM
 		int uuuuu5[10331];
 #elif defined WARBAND_DEDICATED
@@ -87,14 +86,16 @@ namespace wb
 		int cur_frame_no;
 		int rand_seed;
 #if defined WARBAND
-		int uuuuu6;
+		//int uuuuu6;
 		rgl::window_manager window_manager;
 #endif
 		//int uuuu1[48];
 #if defined WARBAND
-		int uuuu1[40];
+		//int uuuu1[40];
+		int uuuu1[42];//1168
 #elif defined WARBAND_DEDICATED
-		int uuuu1[41];
+		//int uuuu1[41];
+		int uuuu1[42];//1168
 #endif
 #if defined WARBAND
 		int uuuu2;
@@ -213,7 +214,9 @@ namespace wb
 		int compatible_savegame_module_version;
 		int savegame_version;
 		int module_version;
+#if defined WARBAND_DEDICATED //1168
 		int full_version;
+#endif	
 		int give_performance_warnings;
 		int dont_suppress_initial_warnings;
 #if defined WARBAND	
@@ -248,12 +251,15 @@ namespace wb
 		int intro_video_stage;
 		int reset_device;
 		int display_global_message;
-		presentation_manager presentation_manager;
 #else if defined WARBAND_DEDICATED
 		int u7; // align
 #endif
 		language_manager language_manager;
+#if defined WARBAND //1168
+		presentation_manager presentation_manager;
+#else if defined WARBAND_DEDICATED //1168
 		registry_manager registry_manager;
+#endif
 		input_manager input_manager;
 #if defined WARBAND
 		//rgl::renderer renderer;
@@ -262,24 +268,26 @@ namespace wb
 #endif
 		skeleton_manager skeleton_manager;
 		module_settings module_settings;
-#if defined WARBAND
-		particle_system_manager particle_system_manager;
-#endif
 		rgl::physics_manager physics_manager;
 #if defined WARBAND
-		HANDLE game_started_mutex;
+		registry_manager registry_manager;
 #else if defined WARBAND_DEDICATED
-		unsigned int aaaa;
+		//unsigned int aaaa;
 		unsigned int bbbb;
 #endif
 		rgl::ini_file resources_ini_file;
 #if defined WARBAND
-		unsigned int aaaa;
+		particle_system_manager particle_system_manager;
+		//unsigned int aaaa;
 #else if defined WARBAND_DEDICATED
 		int u9; // align
 #endif
 		rgl::ini_file compatibility_resources_ini_file;
+#if defined WARBAND //1168
+		HANDLE game_started_mutex;
+#else if defined WARBAND_DEDICATED //1168
 		int u10; // align
+#endif
 		rgl::ini_file game_variables_ini_file;
 		int u11; // align
 #if defined WARBAND

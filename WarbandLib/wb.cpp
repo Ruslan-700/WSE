@@ -26,7 +26,8 @@ void wb::check_types()
 	assert_size<fading_out_entity>(48, 48);
 	assert_size<flora_kind>(168, 168);
 	assert_size<flora_kind_instance>(188, 152);
-	assert_size<game>(104672, 104656);
+	//assert_size<game>(104672, 104656);
+	assert_size<game>(104672, 104664);
 	assert_size<game_key_manager>(832, 832);
 	assert_size<game_screen>(160, -1);
 	assert_size<game_string>(288, 288);
@@ -57,7 +58,7 @@ void wb::check_types()
 	assert_size<mission_template>(472, 472);
 	assert_size<mission_template_group>(132, 132);
 	//assert_size<module_settings>(524, 524);
-	assert_size<module_settings>(620, 620);
+	assert_size<module_settings>(648, 648);
 	assert_size<music_track>(160, -1);
 	assert_size<music_manager>(4248, -1);
 	assert_size<note_manager>(2376, 2376);

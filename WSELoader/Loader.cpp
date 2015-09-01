@@ -182,15 +182,15 @@ void Loader::Process(const CString &cmdLine)
 
 	switch (crc32)
 	{
-	case CRC32_WARBAND_1166:
+	case CRC32_WARBAND_1168:
 		type = 0;
 		dllName = L"WSELib";
 		break;
-	//case CRC32_WARBAND_STEAM_1166:
+	//case CRC32_WARBAND_STEAM_1168:
 		//type = 1;
 		//dllName = L"WSELibSteam";
 		//break;
-	case CRC32_WARBAND_DEDICATED_1166:
+	case CRC32_WARBAND_DEDICATED_1168:
 		type = 2;
 		dllName = L"WSELibDedicated";
 		break;
@@ -218,7 +218,7 @@ void Loader::Process(const CString &cmdLine)
 	}
 
 	if (unsupported)
-		Write(MF_ERROR | MF_QUIT, L"You are running an unsupported version of Warband (WSE only supports version 1.166).\nPlease update or download the full game from http://www.taleworlds.com/download.aspx.");
+		Write(MF_ERROR | MF_QUIT, L"You are running an unsupported version of Warband (WSE only supports version 1.168).\nPlease update or download the full game from http://www.taleworlds.com/download.aspx.");
 
 	int cpuInfo[4];
 
