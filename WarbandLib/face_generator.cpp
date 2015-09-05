@@ -94,6 +94,7 @@ rgl::string face_keys::to_string() const
 {
 	char buf[67];
 
-	sprintf_s(buf, "0x%.16llX%.16llX%.16llX%.16llX", this->keys[0], this->keys[1], this->keys[2], this->keys[3]);
+	//sprintf_s(buf, "0x%.16llX%.16llX%.16llX%.16llX", this->keys[0], this->keys[1], this->keys[2], this->keys[3]);
+	sprintf_s(buf, "%.16llx%.16llx%.16llx%.16llx", this->keys[0], this->keys[1], this->keys[2], this->keys[3]);
 	return buf;
 }

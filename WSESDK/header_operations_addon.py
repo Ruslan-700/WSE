@@ -20,8 +20,10 @@ store_xor  = 2807 #(store_xor, <destination>, <value1>, <value2>), #Performs a b
 val_not    = 2808 #(val_not, <value>), #Performs a bitwise complement on <value>
 store_not  = 2809 #(store_not, <destination>, <value>), #Performs a bitwise complement on <value> and stores the result into <destination>
 
-player_set_banner_id = 2900 #(player_set_banner_id, <player_no>, <banner_no>), #Sets <player_no>'s banner to <banner_no>
-player_set_username  = 2901 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
+player_set_skin               = 2900 #(player_set_skin, <player_no>, <skin_no>), #Sets <player_no>'s skin (gender) to <skin_no> (requires network_compatible = 0 in wse_settings.ini)
+player_stop_controlling_agent = 2901 #(player_stop_controlling_agent, <player_no>), #Gives <player_no>'s agent back to AI control (requires network_compatible = 0 in wse_settings.ini)
+player_set_banner_id          = 2902 #(player_set_banner_id, <player_no>, <banner_no>), #Sets <player_no>'s banner to <banner_no>
+player_set_username           = 2903 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
 
 register_get                  = 3000 #(register_get, <destination>, <index>), #Stores the value of register <index> into <destination>
 register_set                  = 3001 #(register_set, <index>, <value>), #Sets the value of register <index> to <value>
@@ -94,9 +96,20 @@ agent_ai_set_simple_behavior      = 3314 #(agent_ai_set_simple_behavior, <agent_
 agent_accelerate                  = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
 agent_set_item_slot_modifier      = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
 
-multiplayer_send_chat_message_to_player = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
-multiplayer_get_cur_profile             = 3401 #(multiplayer_get_cur_profile, <destination>), #Stores the current multiplayer profile into <destination>
-multiplayer_get_num_profiles            = 3402 #(multiplayer_get_num_profiles, <destination>), #Stores the number of multiplayer profiles into <destination>
+multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
+multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_send_composite_message_to_server = 3402 #(multiplayer_send_composite_message_to_server, <message_type>, <message_register>), #Sends <message_register> with <message_type> to the server (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_get_cur_profile                  = 3403 #(multiplayer_get_cur_profile, <destination>), #Stores the current multiplayer profile into <destination>
+multiplayer_get_num_profiles                 = 3404 #(multiplayer_get_num_profiles, <destination>), #Stores the number of multiplayer profiles into <destination>
+multiplayer_message_init                     = 3405 #(multiplayer_message_init, <message_register>), #Initializes (empties) <message_register> (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_message_put_string               = 3406 #(multiplayer_message_put_string, <message_register>, <string>), #Puts <string> into <message_register> (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_message_put_int                  = 3407 #(multiplayer_message_put_int, <message_register>, <value>, [<num_bits>]), #Puts [<num_bits>] of <value> into <message_register> (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_message_put_position             = 3408 #(multiplayer_message_put_position, <message_register>, <position_register>, [<local>]), #Puts <position_register> into <9>. Set [<local>] to non-zero for small, relative positions (default: scene positions) (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_message_put_coordinate           = 3409 #(multiplayer_message_put_coordinate, <message_register>, <position_register>, [<local>]), #Puts x, y, z coordinates from <position_register> into <message_register>. Set [<local>] to non-zero for small, relative positions (default: scene positions) (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_cur_message_get_string           = 3410 #(multiplayer_cur_message_get_string, <string_register>), #Stores a string from the current message register into <string_register> (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_cur_message_get_int              = 3411 #(multiplayer_cur_message_get_int, <destination>, [<num_bits>]), #Stores [<num_bits>] of an int from the current message register into <destination>. [<num_bits>] MUST match the number of bits sent (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_cur_message_get_position         = 3412 #(multiplayer_cur_message_get_position, <position_register>, [<local>]), #Stores a position from the current message register into <position_register>. [<local>] MUST match the type sent (requires network_compatible = 0 in wse_settings.ini)
+multiplayer_cur_message_get_coordinate       = 3413 #(multiplayer_cur_message_get_coordinate, <position_register>, [<local>]), #Stores x, y, z coordinates from the current message register into <position_register>. [<local>] MUST match the type sent (requires network_compatible = 0 in wse_settings.ini)
 
 server_set_password_admin      = 3500 #(server_set_password_admin, <password>), #Sets <password> as server administrator password
 server_set_password_private    = 3501 #(server_set_password_private, <password>), #Sets <password> as server private player password
@@ -106,7 +119,11 @@ server_map_rotation_set_index  = 3504 #(server_map_rotation_set_index, <index>),
 server_map_rotation_get_map    = 3505 #(server_map_rotation_get_map, <destination>, <index>), #Stores the map at <index> into <destination>
 server_map_rotation_add_map    = 3506 #(server_map_rotation_add_map, <site_no>, [<index>]), #Adds <site_no> to the map rotation at [<index>]
 server_map_rotation_remove_map = 3507 #(server_map_rotation_remove_map, [<index>]), #Removes the map at [<index>] from the map rotation (does not work when only one left)
-get_server_option_at_connect   = 3508 #(get_server_option_at_connect, <destination>, [<index>]), #Stores option [<index>] into <destination>
+server_get_horse_friendly_fire = 3508 #(server_get_horse_friendly_fire, <destination>), #Stores horse friendly fire status into <destination> (requires network_compatible = 0 in wse_settings.ini)
+server_set_horse_friendly_fire = 3509 #(server_set_horse_friendly_fire, <value>), #Enables or disables horse friendly fire (requires network_compatible = 0 in wse_settings.ini)
+server_get_show_crosshair      = 3510 #(server_get_show_crosshair, <destination>), #Stores crosshair visibility status into <destination> (requires network_compatible = 0 in wse_settings.ini)
+server_set_show_crosshair      = 3511 #(server_set_show_crosshair, <value>), #Enables or disables the crosshair (requires network_compatible = 0 in wse_settings.ini)
+get_server_option_at_connect   = 3512 #(get_server_option_at_connect, <destination>, [<index>]), #Stores option [<index>] into <destination>
 
 store_cur_mission_template_no    = 3600 #(store_cur_mission_template_no, <destination>), #Stores the current mission template into <destination>
 camera_in_first_person           = 3601 #(camera_in_first_person), #Fails if the camera is not in first person
@@ -181,6 +198,7 @@ str_store_float                           = 4233 #(str_store_float, <string_regi
 str_sanitize                              = 4234 #(str_sanitize, <string_register>), #Removes invalid characters from <string_register>
 str_store_item_id                         = 4235 #(str_store_item_id, <string_register>, <item_no>), #Stores the id of <item_no> into <string_register>
 str_is_integer                            = 4236 #(str_is_integer, <string_1>), #Fails if <string_1> isn't a valid integer
+str_store_multiplayer_profile_face_keys   = 4237 #(str_store_multiplayer_profile_face_keys, <string_register>, <profile_no>), #Stores <profile_no>'s face keys into <string_register>
 
 options_get_verbose_casualties  = 4300 #(options_get_verbose_casualties, <destination>), #Stores verbose casualties enabled/disabled into <destination>
 options_set_verbose_casualties  = 4301 #(options_set_verbose_casualties, <value>), #Enables or disables verbose casualties
@@ -300,9 +318,12 @@ lhs_operations += [
 	agent_get_item_slot_flags,
 	multiplayer_get_cur_profile,
 	multiplayer_get_num_profiles,
+	multiplayer_cur_message_get_int,
 	server_map_rotation_get_count,
 	server_map_rotation_get_index,
 	server_map_rotation_get_map,
+	server_get_horse_friendly_fire,
+	server_get_show_crosshair,
 	get_server_option_at_connect,
 	store_cur_mission_template_no,
 	get_spectated_agent_no,

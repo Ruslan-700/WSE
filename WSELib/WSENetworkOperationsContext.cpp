@@ -235,7 +235,7 @@ void WSENetworkOperationsContext::OnLoad()
 	RegisterOperation("server_map_rotation_remove_map", ServerMapRotationRemoveMap, Server, None, 0, 1,
 		"Removes the map at <0> from the map rotation (does not work when only one left)",
 		"index");
-	/*
+	
 	RegisterOperation("server_get_horse_friendly_fire", ServerGetHorseFriendlyFire, Both, Lhs|BreakNetwork, 1, 1,
 		"Stores horse friendly fire status into <0>",
 		"destination");
@@ -251,7 +251,7 @@ void WSENetworkOperationsContext::OnLoad()
 	RegisterOperation("server_set_show_crosshair", ServerSetShowCrosshair, Both, BreakNetwork, 1, 1,
 		"Enables or disables the crosshair",
 		"value");
-	*/
+	
 	RegisterOperation("get_server_option_at_connect", GetServerOptionAtConnect, Both, Lhs, 1, 2,
 		"Stores option <1> into <0>",
 		"destination", "index");

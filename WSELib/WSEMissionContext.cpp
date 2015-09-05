@@ -17,7 +17,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Human_entry, AgentAttackCollidesWithAllyHumanHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Horse_entry, AgentAttackCollidesWithAllyHorseHook);
 	//WSE->Hooks.HookFunction(this, wb::addresses::mission_CheckHit_Prop_entry, AgentAttackCollidesWithPropHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::agent_HorseCharged_entry, AgentHorseChargedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_HorseCharged_entry, AgentHorseChargedHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_ApplyAttackRecord_entry, AgentApplyAttackRecHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_SetGroundQuad_entry, AgentSetGroundQuad);
 	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveChatEvent_entry, ChatMessageReceivedHook);
@@ -40,7 +40,7 @@ void WSEMissionContext::OnLoad()
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
 	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
 #endif	

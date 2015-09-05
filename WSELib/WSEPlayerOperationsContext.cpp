@@ -23,7 +23,7 @@ void PlayerSetFaceKeys(WSEPlayerOperationsContext *context)
 
 	warband->multiplayer_data.players[player_no].face_keys = WSE->SkinOperations.m_face_key_registers[fkreg];
 }
-
+*/
 void PlayerSetSkin(WSEPlayerOperationsContext *context)
 {
 	int player_no, skin_no;
@@ -111,7 +111,7 @@ void PlayerStopControllingAgent(WSEPlayerOperationsContext *context)
 		warband->multiplayer_data.players[i].send_event(evt);
 	}
 }
-*/
+
 void PlayerSetBannerId(WSEPlayerOperationsContext *context)
 {
 	int player_no, banner_no;
@@ -159,7 +159,7 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_set_face_keys", PlayerSetFaceKeys, Both, None, 2, 2,
 		"Sets <0>'s face keys to <1>",
 		"player_no", "face_key_register");
-	
+	*/
 	RegisterOperation("player_set_skin", PlayerSetSkin, Both, BreakNetwork, 2, 2,
 		"Sets <0>'s skin (gender) to <1>",
 		"player_no", "skin_no");
@@ -167,7 +167,7 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_stop_controlling_agent", PlayerStopControllingAgent, Both, BreakNetwork, 1, 1,
 		"Gives <0>'s agent back to AI control",
 		"player_no");
-	*/
+	
 	RegisterOperation("player_set_banner_id", PlayerSetBannerId, Both, None, 2, 2,
 		"Sets <0>'s banner to <1>",
 		"player_no", "banner_no");

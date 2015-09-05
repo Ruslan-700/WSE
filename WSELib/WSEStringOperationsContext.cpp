@@ -668,6 +668,16 @@ bool StrIsInteger(WSEStringOperationsContext *context)
 	return true;
 }
 
+void StrStoreMultiplayerProfileFaceKeys(WSEMultiplayerOperationsContext *context)
+{
+	int sreg, profile_no;
+
+	context->ExtractRegister(sreg);
+	context->ExtractProfileNo(profile_no);
+
+	warband->basic_game.string_registers[sreg] = warband->multiplayer_data.profile_manager.profiles[profile_no].face_keys.to_string();
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -825,6 +835,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_is_integer", StrIsInteger, Both, Cf, 1, 1,
 		"Fails if <0> isn't a valid integer",
 		"string_1");
+
+	RegisterOperation("str_store_multiplayer_profile_face_keys", StrStoreMultiplayerProfileFaceKeys, Both, None, 2, 2,
+		"Stores <1>'s face keys into <0>",
+		"string_register", "profile_no");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)

@@ -75,7 +75,7 @@ int MultiplayerGetNumProfiles(WSEMultiplayerOperationsContext *context)
 {
 	return warband->multiplayer_data.profile_manager.profiles.size();
 }
-
+/*
 void MultiplayerProfileGetFaceKeys(WSEMultiplayerOperationsContext *context)
 {
 	int fkreg, profile_no;
@@ -85,7 +85,7 @@ void MultiplayerProfileGetFaceKeys(WSEMultiplayerOperationsContext *context)
 
 	WSE->SkinOperations.m_face_key_registers[fkreg] = warband->multiplayer_data.profile_manager.profiles[profile_no].face_keys;
 }
-
+*/
 void MultiplayerSendCompositeMessageToPlayer(WSEMultiplayerOperationsContext *context)
 {
 	int player_no, message_type, nbreg;
@@ -231,7 +231,7 @@ void MultiplayerMessagePutCoordinate(WSEMultiplayerOperationsContext *context)
 	else
 		context->m_network_buffer_registers[nbreg].pack_vector4(warband->basic_game.position_registers[preg].o, MM_TRANSL_GLOBAL_BITS, MM_TRANSL_GLOBAL_OFF, MM_TRANSL_GLOBAL_MULT);
 }
-
+/*
 void MultiplayerMessagePutFaceKeys(WSEMultiplayerOperationsContext *context)
 {
 	int nbreg, fkreg;
@@ -246,7 +246,7 @@ void MultiplayerMessagePutFaceKeys(WSEMultiplayerOperationsContext *context)
 	nbuf->pack_uint64(face_keys->keys[1], MM_FACE_KEY_BITS);
 	nbuf->pack_uint64(face_keys->keys[2], MM_FACE_KEY_BITS);
 }
-
+*/
 void MultiplayerCurMessageGetString(WSEMultiplayerOperationsContext *context)
 {
 	int sreg;
@@ -301,7 +301,7 @@ void MultiplayerCurMessageGetCoordinate(WSEMultiplayerOperationsContext *context
 	else
 		nbuf->extract_vector4(warband->basic_game.position_registers[preg].o, MM_TRANSL_GLOBAL_BITS, MM_TRANSL_GLOBAL_OFF, MM_TRANSL_GLOBAL_MULT);
 }
-
+/*
 void MultiplayerCurMessageGetFaceKeys(WSEMultiplayerOperationsContext *context)
 {
 	int fkreg;
@@ -316,7 +316,7 @@ void MultiplayerCurMessageGetFaceKeys(WSEMultiplayerOperationsContext *context)
 	face_keys->keys[2] = nbuf->extract_uint64(MM_FACE_KEY_BITS);
 	face_keys->keys[3] = 0;
 }
-
+*/
 WSEMultiplayerOperationsContext::WSEMultiplayerOperationsContext() : WSEOperationContext("multiplayer", 3400, 3499)
 {
 }
@@ -327,7 +327,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_send_chat_message_to_player", MultiplayerSendChatMessageToPlayer, Both, None, 3, 4,
 		"Sends <2> to <0> as a (native compatible) chat message by <1>. Works only on servers. <3>: 0 = chat, 1 = team chat",
 		"player_no", "sender_player_no", "text", "type");
-	/*
+	
 	RegisterOperation("multiplayer_send_composite_message_to_player", MultiplayerSendCompositeMessageToPlayer, Both, BreakNetwork, 3, 3,
 		"Sends <2> with <1> to <0>",
 		"player_no", "message_type", "message_register");
@@ -335,7 +335,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_send_composite_message_to_server", MultiplayerSendCompositeMessageToServer, Both, BreakNetwork, 2, 2,
 		"Sends <1> with <0> to the server",
 		"message_type", "message_register");
-	*/
+	
 	RegisterOperation("multiplayer_get_cur_profile", MultiplayerGetCurProfile, Both, Lhs, 1, 1,
 		"Stores the current multiplayer profile into <0>",
 		"destination");
@@ -347,7 +347,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_profile_get_face_keys", MultiplayerProfileGetFaceKeys, Both, None, 2, 2,
 		"Stores <1>'s face keys into <0>",
 		"face_key_register", "profile_no");
-	
+	*/
 	RegisterOperation("multiplayer_message_init", MultiplayerMessageInit, Both, BreakNetwork, 1, 1,
 		"Initializes (empties) <0>",
 		"message_register");
@@ -367,11 +367,11 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_message_put_coordinate", MultiplayerMessagePutCoordinate, Both, BreakNetwork, 2, 3,
 		"Puts x, y, z coordinates from <1> into <0>. Set <2> to non-zero for small, relative positions (default: scene positions)",
 		"message_register", "position_register", "local");
-	
+	/*
 	RegisterOperation("multiplayer_message_put_face_keys", MultiplayerMessagePutFaceKeys, Both, BreakNetwork, 2, 2,
 		"Puts <1> into <0>",
 		"message_register", "face_keys_register");
-	
+	*/
 	RegisterOperation("multiplayer_cur_message_get_string", MultiplayerCurMessageGetString, Both, BreakNetwork, 1, 1,
 		"Stores a string from the current message register into <0>",
 		"string_register");
@@ -387,7 +387,7 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_cur_message_get_coordinate", MultiplayerCurMessageGetCoordinate, Both, BreakNetwork, 1, 2,
 		"Stores x, y, z coordinates from the current message register into <0>. <1> MUST match the type sent",
 		"position_register", "local");
-	
+	/*
 	RegisterOperation("multiplayer_cur_message_get_face_keys", MultiplayerCurMessageGetFaceKeys, Both, BreakNetwork, 1, 1,
 		"Stores face keys from the current message register into <0>",
 		"face_keys_register");

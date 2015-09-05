@@ -105,9 +105,9 @@ WSENetworkContext::WSENetworkContext()
 
 void WSENetworkContext::OnLoad()
 {
-	//WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::network_server_ReceiveMessage_entry, ServerNetworkMessageReceivedHook);
 #if defined WARBAND
-	//WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::network_client_ReceiveMessage_entry, ClientNetworkMessageReceivedHook);
 #endif
 	
 	if (WSE->SettingsIni.Bool("ogp_server", "enabled", false))
@@ -147,13 +147,12 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		m_break_compat = !WSE->ModuleSettingsIni.Bool("", "network_compatible", true);
 		m_filter_mods = WSE->ModuleSettingsIni.Bool("", "hide_other_mod_servers", false);
 		m_remote_scripting = WSE->SettingsIni.Bool("remote_debugging", "enabled", false);
-		//WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry, NetworkManagerPopulatePlayerInfoServerEventHook);
-		//WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry, NetworkManagerPopulateServerOptionsServerEventHook);
-		/*
+		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry, NetworkManagerPopulatePlayerInfoServerEventHook);
+		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry, NetworkManagerPopulateServerOptionsServerEventHook);
+		
 		if (m_break_compat && warband->network_manager.num_bits_item_kind > warband->network_manager.num_bits_scene_prop)
 			warband->network_manager.num_bits_scene_prop = warband->network_manager.num_bits_item_kind;
 		break;
-		*/
 	}
 }
 
@@ -407,8 +406,8 @@ void WSENetworkContext::OnCheckUrlReplies()
 {
 	HandleHTTPReplies();
 
-	//if (m_ogp_server)
-		//m_ogp_server->Run();
+	if (m_ogp_server)
+		m_ogp_server->Run();
 }
 
 bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq)
@@ -420,7 +419,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 		{
 			if (!m_break_compat)
 				return true;
-			/*
+			
 			int is_wse_event = nbuf->extract_uint32(1);
 
 			if (is_wse_event)
@@ -440,7 +439,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				m_horse_ff = horse_ff != 0;
 				m_show_xhair = show_xhair != 0;
 			}
-			*/
+			
 			return false;
 		}
 		break;
@@ -448,7 +447,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 		{
 			if (!m_break_compat)
 				return true;
-			/*
+
 			int player_no = nbuf->extract_int32(warband->network_manager.num_bits_player, -1);
 			std::string name = nbuf->extract_string(256);
 			int skin_no = nbuf->extract_uint32(4);
@@ -477,13 +476,12 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				player->face_keys.keys[2] = face_keys_3;
 				player->face_keys.keys[3] = face_keys_4;
 			}
-			*/
+			
 			return false;
 		}
 	case wb::mce_server_info_steam:
 	case wb::mce_server_info:
 		{
-			/*
 			wb::multiplayer_server server;
 
 			server.name = nbuf->extract_string(50);
@@ -492,8 +490,8 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 			unsigned int compat_version = 0;
 			
 			if (server.compatible_game_version & (1 << 13))
-				compat_version = (server.compatible_game_version - 1130) & ~(1 << 13);
-
+				compat_version = (server.compatible_game_version - 1157) & ~(1 << 13);
+			
 			if (compat_version > 0)
 			{
 				if (!m_break_compat)
@@ -503,7 +501,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				else if (compat_version > WSE_NETCODE_VERSION)
 					server.compatible_game_version = 9999;
 				else
-					server.compatible_game_version = 1130;
+					server.compatible_game_version = 1157;
 			}
 			else if (m_break_compat)
 			{
@@ -587,7 +585,6 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 			}
 
 			mpdata.disconnected_player_nos.push_back(player_no);
-			*/
 			return false;
 		}
 	default:
@@ -596,9 +593,9 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 
 	if (type != wb::mce_server_options)
 		return false;
-	/*
-	unsigned short my_type = nbuf->extract_uint16(MM_EVENT_BITS);
 	
+	unsigned short my_type = nbuf->extract_uint16(MM_EVENT_BITS);
+
 	switch (my_type)
 	{
 	case MultiplayerMessage:
@@ -639,7 +636,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 	default:
 		return false;
 	}
-	*/
+	
 #endif
 	return false;
 }
@@ -656,15 +653,14 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 		break;
 	case wb::mse_server_info_request_steam:
 	case wb::mse_server_info_request:
-		{
-			/*
+		{		
 			unsigned short player_slot_no = nbuf->extract_uint16(16);
 			wb::basic_game &basic_game = warband->basic_game;
 			wb::multiplayer_data &mpdata = warband->multiplayer_data;
 			wb::network_player &player = mpdata.players[player_no];
 			wb::multiplayer_event evt;
 			wb::network_buffer nbuf;
-
+	
 			if (seq > cur_seq && player_no < NUM_NETWORK_PLAYERS)
 			{
 				player.mbnet_peer.u1 = player_slot_no;
@@ -672,12 +668,12 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 				evt.type = wb::mce_server_info_steam;
 				evt.priority = 2;
 				nbuf.pack_string(mpdata.server_name, 50);
-
+				
 				if (m_break_compat)
-					nbuf.pack_uint32((1130 + WSE_NETCODE_VERSION) | (1 << 13), 14);
+					nbuf.pack_uint32((1157 + WSE_NETCODE_VERSION) | (1 << 13), 14);
 				else
-					nbuf.pack_uint32(1130, 14);
-
+					nbuf.pack_uint32(1157, 14);
+				
 				nbuf.pack_uint32(warband->compatible_module_version, 14);
 				nbuf.pack_string(warband->cur_module_name, 50);
 				nbuf.pack_uint16(mpdata.cur_site_no, 16);
@@ -694,7 +690,7 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 #elif defined WARBAND_DEDICATED
 				nbuf.pack_uint32(1, 1);
 #endif
-
+				
 				int index = 0;
 	
 				do
@@ -713,7 +709,7 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 					}
 				}
 				while (basic_game.trigger_result);
-
+				
 				double time_diff = wb::functions::DXUtil_Timer(wb::TIMER_GETAPPTIME) - nbuf.receive_time;
 
 				if (nbuf.receive_time <= 0.0 || time_diff <= 0.0)
@@ -727,7 +723,7 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 				evt.add_buffer(nbuf);
 				player.send_one_time_event(evt);
 			}
-			*/
+			
 			return false;
 		}
 	default:
@@ -736,7 +732,7 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 	
 	if (type != wb::mse_wse_event)
 		return false;
-	/*
+	
 	unsigned short my_type = nbuf->extract_uint16(MM_EVENT_BITS);
 
 	switch (my_type)
@@ -750,7 +746,7 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 	default:
 		return false;
 	}
-	*/
+	
 	return false;
 }
 

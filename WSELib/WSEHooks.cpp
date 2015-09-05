@@ -184,7 +184,7 @@ void __declspec(naked) ParseConsoleCommandHook()
 		jnz continue_exec
 		RESTORE_REGS
 		//push 0x0069DA84
-		push 0x006A6FB4
+		push 0x006A96C4
 		jmp [wb::addresses::ParseConsoleCommand_exit_2]
 continue_exec:
 		RESTORE_REGS

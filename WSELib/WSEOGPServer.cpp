@@ -105,7 +105,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 			continue;
 		
 		strncpy_s(data->Player.List[index].Name, player->name.c_str(), 63);
-		strncpy_s(data->Player.List[index].Race, player->skin_no ? "female" : "male", 63);
+		strncpy_s(data->Player.List[index].Race, warband->face_generator.skins[player->skin_no].id.c_str(), 63);
 		data->Player.List[index].Score = player->score;
 		data->Player.List[index].Kills = player->kills;
 		data->Player.List[index].Death = player->deaths;
@@ -288,7 +288,7 @@ void WSEOGPServer::Listen()
 		}
 		
 		m_update = true;
-		Run();
+
 		while (m_update)
 		{
 			Sleep(20);
