@@ -54,7 +54,7 @@ process_advanced_url_messages = 3025 #(process_advanced_url_messages), #Forces p
 sleep_ms                      = 3026 #(sleep_ms, <time>), #Sleeps (blocking the game) for <time> ms
 timer_reset                   = 3027 #(timer_reset, <timer_register_no>, [<use_game_time>]), #Resets <timer_register_no>. If [<use_game_time>] is non-zero the timer will count game time rather than mission time
 timer_get_elapsed_time        = 3028 #(timer_get_elapsed_time, <destination>, <timer_register_no>), #Stores <timer_register_no>'s elapsed time into <destination>
-shell_open_url                = 3029 #(shell_open_url, <url>), #Open <url> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.
+shell_open_url                = 3029 #(shell_open_url, <url>), #Opens <url> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.
 set_main_party                = 3030 #(set_main_party, <party_no>), #Sets player's main party to <party_no>. Dynamic spawned party (not listed in module_parties.py) will corrupt the savegame!
 get_main_party                = 3031 #(get_main_party, <destination>), #Stores player's main party to <destination>
 
@@ -124,6 +124,8 @@ server_set_horse_friendly_fire = 3509 #(server_set_horse_friendly_fire, <value>)
 server_get_show_crosshair      = 3510 #(server_get_show_crosshair, <destination>), #Stores crosshair visibility status into <destination> (requires network_compatible = 0 in wse_settings.ini)
 server_set_show_crosshair      = 3511 #(server_set_show_crosshair, <value>), #Enables or disables the crosshair (requires network_compatible = 0 in wse_settings.ini)
 get_server_option_at_connect   = 3512 #(get_server_option_at_connect, <destination>, [<index>]), #Stores option [<index>] into <destination>
+server_set_password_rcon       = 3513 #(server_set_password_rcon, <password>), #Sets <password> as server RCON password
+execute_server_console_command = 3514 #(execute_server_console_command, <string_register>, <command>), #Executes dedicated server console command <command> and stores result string into <string_register>
 
 store_cur_mission_template_no    = 3600 #(store_cur_mission_template_no, <destination>), #Stores the current mission template into <destination>
 camera_in_first_person           = 3601 #(camera_in_first_person), #Fails if the camera is not in first person
@@ -199,6 +201,7 @@ str_sanitize                              = 4234 #(str_sanitize, <string_registe
 str_store_item_id                         = 4235 #(str_store_item_id, <string_register>, <item_no>), #Stores the id of <item_no> into <string_register>
 str_is_integer                            = 4236 #(str_is_integer, <string_1>), #Fails if <string_1> isn't a valid integer
 str_store_multiplayer_profile_face_keys   = 4237 #(str_store_multiplayer_profile_face_keys, <string_register>, <profile_no>), #Stores <profile_no>'s face keys into <string_register>
+str_store_server_password_rcon            = 4238 #(str_store_server_password_rcon, <string_register>), #Stores the server RCON password into <string_register>
 
 options_get_verbose_casualties  = 4300 #(options_get_verbose_casualties, <destination>), #Stores verbose casualties enabled/disabled into <destination>
 options_set_verbose_casualties  = 4301 #(options_set_verbose_casualties, <value>), #Enables or disables verbose casualties

@@ -99,6 +99,7 @@ WSENetworkContext::WSENetworkContext()
 {
 	m_cur_nbuf = nullptr;
 	m_ogp_server = nullptr;
+	m_rcon_server = nullptr;
 	m_remote_scripting = false;
 	InitializeCriticalSectionAndSpinCount(&m_http_critical_section, 1000);
 }
@@ -113,11 +114,16 @@ void WSENetworkContext::OnLoad()
 	if (WSE->SettingsIni.Bool("ogp_server", "enabled", false))
 	{
 		m_ogp_server = new WSEOGPServer((unsigned short)WSE->SettingsIni.Int("ogp_server", "port", 22222));
-
-		WSE->Hooks.HookFunction(this, wb::addresses::CreateMbnetHost_entry, CreateMbnetHostHook);
-		WSE->Hooks.HookFunction(this, wb::addresses::DestroyMbnetHost_entry, DestroyMbnetHostHook);
 	}
-	
+#if defined WARBAND_DEDICATED
+	if (WSE->SettingsIni.Bool("rcon_server", "enabled", false))
+	{
+		m_rcon_server = new WSERCONServer((unsigned short)WSE->SettingsIni.Int("rcon_server", "port", 22222), WSE->SettingsIni.String("rcon_server", "password", ""));
+	}
+#endif
+
+	WSE->Hooks.HookFunction(this, wb::addresses::CreateMbnetHost_entry, CreateMbnetHostHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::DestroyMbnetHost_entry, DestroyMbnetHostHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::CheckUrlReplies_entry, CheckUrlRepliesHook);
 }
 
@@ -125,6 +131,10 @@ void WSENetworkContext::OnUnload()
 {
 	delete m_ogp_server;
 	m_ogp_server = nullptr;
+#if defined WARBAND_DEDICATED
+	delete m_rcon_server;
+	m_rcon_server = nullptr;
+#endif
 }
 
 void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
@@ -394,12 +404,20 @@ void WSENetworkContext::OnCreateMbnetHost()
 {
 	if (m_ogp_server)
 		m_ogp_server->Start();
+#if defined WARBAND_DEDICATED
+	if (m_rcon_server)
+		m_rcon_server->Start();
+#endif
 }
 
 void WSENetworkContext::OnDestroyMbnetHost()
 {
 	if (m_ogp_server)
 		m_ogp_server->Stop();
+#if defined WARBAND_DEDICATED
+	if (m_rcon_server)
+		m_rcon_server->Stop();
+#endif
 }
 
 void WSENetworkContext::OnCheckUrlReplies()

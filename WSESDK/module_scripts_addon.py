@@ -28,13 +28,15 @@
 ]),
 
 #script_wse_console_command_received
-# Called each time a command is typed on the dedicated server console (after parsing standard commands)
+# Called each time a command is typed on the dedicated server console or received with RCON (after parsing standard commands)
 # INPUT
+# script param 1 = command type (0 - local, 1 - remote)
 # s0 = text
 # OUTPUT
 # trigger result = anything non-zero if the command succeeded
 # result string = message to display on success (if empty, default message will be used)
 ("wse_console_command_received", [
+	(store_script_param, ":command_type", 1),
 ]),
 
 #script_wse_get_agent_scale

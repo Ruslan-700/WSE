@@ -93,7 +93,7 @@ void WSELog::Log(const std::string &format, va_list ap)
 		m_stream << "[" << sstream.str() << "] ";
 	}
 
-	char message[1024];
+	char message[8192];
 
 	vsprintf_s(message, format.c_str(), ap);
 	

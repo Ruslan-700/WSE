@@ -3,6 +3,7 @@
 #include <deque>
 #include "WSEContext.h"
 #include "WSEOGPServer.h"
+#include "WSERCONServer.h"
 #include "warband.h"
 
 #define MM_EVENT_BITS 4
@@ -79,6 +80,7 @@ public:
 	wb::network_buffer *m_cur_nbuf;
 	std::deque<HTTPConnection *> m_http_connections;
 	CRITICAL_SECTION m_http_critical_section;
+	WSERCONServer *m_rcon_server;
 
 private:
 	WSEOGPServer *m_ogp_server;

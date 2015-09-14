@@ -31,6 +31,8 @@ unsigned int addresses::ParseConsoleCommand_entry = 0;
 unsigned int addresses::ParseConsoleCommand_exit_1 = 0;
 unsigned int addresses::ParseConsoleCommand_exit_2 = 0;
 
+unsigned int addresses::ExecuteConsoleCommand_entry = 0;
+
 //unsigned int addresses::Save_entry = 0x00606612;
 unsigned int addresses::Save_entry = 0x0054E8D6;
 
@@ -214,6 +216,8 @@ unsigned int addresses::ParseConsoleCommand_entry = 0;
 unsigned int addresses::ParseConsoleCommand_exit_1 = 0;
 unsigned int addresses::ParseConsoleCommand_exit_2 = 0;
 
+unsigned int addresses::ExecuteConsoleCommand_entry = 0;
+
 unsigned int addresses::Save_entry = 0x0060AC12;
 
 unsigned int addresses::CheckUrlReplies_entry = 0x005B712C;
@@ -350,6 +354,8 @@ unsigned int addresses::game_ReadModuleFiles_entry = 0x004F7CDE;
 unsigned int addresses::ParseConsoleCommand_entry = 0x004E9D8F;
 unsigned int addresses::ParseConsoleCommand_exit_1 = 0x004EE4F6;
 unsigned int addresses::ParseConsoleCommand_exit_2 = ParseConsoleCommand_entry + 5;
+
+unsigned int addresses::ExecuteConsoleCommand_entry = 0x004E9CD0;
 
 unsigned int addresses::Save_entry = 0;
 

@@ -33,6 +33,12 @@
     <Filter Include="Header Files\mup">
       <UniqueIdentifier>{d798bc00-b08a-4c43-af30-a70d28fcaf91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\rcon">
+      <UniqueIdentifier>{0e8c1c53-447b-4e9e-bf40-2488b63f4fcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\rcon">
+      <UniqueIdentifier>{b8b62c6d-3096-4397-b9b7-94f38eb54832}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -224,6 +230,15 @@
     <ClInclude Include="mup\muParserTokenReader.h">
       <Filter>Header Files\mup</Filter>
     </ClInclude>
+    <ClInclude Include="WSERCONServer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rcon\ws-util.h">
+      <Filter>Header Files\rcon</Filter>
+    </ClInclude>
+    <ClInclude Include="rcon\rcon.h">
+      <Filter>Header Files\rcon</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -387,6 +402,15 @@
     </ClCompile>
     <ClCompile Include="mup\muParserTokenReader.cpp">
       <Filter>Source Files\mup</Filter>
+    </ClCompile>
+    <ClCompile Include="WSERCONServer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rcon\ws-util.cpp">
+      <Filter>Source Files\rcon</Filter>
+    </ClCompile>
+    <ClCompile Include="rcon\rcon.cpp">
+      <Filter>Source Files\rcon</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

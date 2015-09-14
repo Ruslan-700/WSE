@@ -678,6 +678,20 @@ void StrStoreMultiplayerProfileFaceKeys(WSEMultiplayerOperationsContext *context
 	warband->basic_game.string_registers[sreg] = warband->multiplayer_data.profile_manager.profiles[profile_no].face_keys.to_string();
 }
 
+void StrStoreServerPasswordRcon(WSEStringOperationsContext *context)
+{
+#if defined WARBAND_DEDICATED
+	int sreg;
+
+	context->ExtractRegister(sreg);
+
+	if (!warband->basic_game.is_dedicated_server() || !WSE->Network.m_rcon_server)
+		return;
+
+	warband->basic_game.string_registers[sreg] = WSE->Network.m_rcon_server->m_password;
+#endif
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -839,6 +853,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_multiplayer_profile_face_keys", StrStoreMultiplayerProfileFaceKeys, Both, None, 2, 2,
 		"Stores <1>'s face keys into <0>",
 		"string_register", "profile_no");
+
+	RegisterOperation("str_store_server_password_rcon", StrStoreServerPasswordRcon, Server, None, 1, 1,
+		"Stores the server RCON password into <0>",
+		"string_register");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)

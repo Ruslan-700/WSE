@@ -633,7 +633,7 @@ void WSECoreOperationsContext::OnLoad()
 		"destination", "timer_register_no");
 
 	RegisterOperation("shell_open_url", ShellOpenUrl, Client, None, 1, 1,
-		"Open <0> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.",
+		"Opens <0> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.",
 		"url");
 
 	RegisterOperation("set_main_party", SetMainParty, Client, None, 1, 1,

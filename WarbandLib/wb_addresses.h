@@ -24,6 +24,8 @@ namespace wb
 		static unsigned int ParseConsoleCommand_entry;
 		static unsigned int ParseConsoleCommand_exit_1;
 		static unsigned int ParseConsoleCommand_exit_2;
+
+		static unsigned int ExecuteConsoleCommand_entry;
 	
 		static unsigned int Save_entry;
 	

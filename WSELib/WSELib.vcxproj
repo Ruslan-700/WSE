@@ -395,6 +395,8 @@
     <ClInclude Include="ogp\ogp_intern.h" />
     <ClInclude Include="ogp\ogp_server.h" />
     <ClInclude Include="ogp\ogp_settings.h" />
+    <ClInclude Include="rcon\rcon.h" />
+    <ClInclude Include="rcon\ws-util.h" />
     <ClInclude Include="WSE.h" />
     <ClInclude Include="WSEAgentOperationsContext.h" />
     <ClInclude Include="WSEBitStream.h" />
@@ -416,6 +418,7 @@
     <ClInclude Include="WSEPlugin.h" />
     <ClInclude Include="WSEPluginWrapperContext.h" />
     <ClInclude Include="WSEPositionOperationsContext.h" />
+    <ClInclude Include="WSERCONServer.h" />
     <ClInclude Include="WSESiteOperationsContext.h" />
     <ClInclude Include="WSESkinOperationsContext.h" />
     <ClInclude Include="WSEGameContext.h" />
@@ -452,6 +455,8 @@
     <ClCompile Include="mup\muParserTokenReader.cpp" />
     <ClCompile Include="ogp\ogp_intern.c" />
     <ClCompile Include="ogp\ogp_server.c" />
+    <ClCompile Include="rcon\rcon.cpp" />
+    <ClCompile Include="rcon\ws-util.cpp" />
     <ClCompile Include="WSE.cpp" />
     <ClCompile Include="WSEAgentOperationsContext.cpp" />
     <ClCompile Include="WSEBitStream.cpp" />
@@ -471,6 +476,7 @@
     <ClCompile Include="WSEPerformanceContext.cpp" />
     <ClCompile Include="WSEPluginWrapperContext.cpp" />
     <ClCompile Include="WSEPositionOperationsContext.cpp" />
+    <ClCompile Include="WSERCONServer.cpp" />
     <ClCompile Include="WSESiteOperationsContext.cpp" />
     <ClCompile Include="WSESkinOperationsContext.cpp" />
     <ClCompile Include="WSEGameContext.cpp" />

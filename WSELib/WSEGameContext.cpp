@@ -37,6 +37,11 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
 }
 
+void WSEGameContext::ExecuteConsoleCommand(rgl::string &message, rgl::string &command)
+{
+	THISCALL2(wb::addresses::ExecuteConsoleCommand_entry, this, message, command)
+}
+
 void WSEGameContext::OnReadModuleFiles()
 {
 	/*
@@ -197,8 +202,6 @@ bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *re
 
 	if (ttext.starts_with("set_max_players"))
 	{
-		rgl::string ttext = text->trimmed();
-
 		int i1 = ttext.index_of(' ');
 		int i2 = ttext.index_of(' ', i1 + 1);
 		
@@ -237,8 +240,15 @@ bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *re
 	warband->basic_game.string_registers[0] = *text;
 	warband->basic_game.trigger_result = 0;
 	warband->basic_game.result_string.clear();
+
+	bool remote_command = false;
+	if (WSE->Network.m_rcon_server && WSE->Network.m_rcon_server->m_remote_command == true)
+	{
+		WSE->Network.m_rcon_server->m_remote_command = false;
+		remote_command = true;
+	}
 		
-	ExecuteScript(WSE_SCRIPT_CONSOLE_COMMAND_RECEIVED, 0);
+	ExecuteScript(WSE_SCRIPT_CONSOLE_COMMAND_RECEIVED, 1, remote_command);
 
 	if (warband->basic_game.result_string.length() > 0)
 		*result = warband->basic_game.result_string;

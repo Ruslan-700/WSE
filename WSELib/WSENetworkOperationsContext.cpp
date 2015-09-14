@@ -192,6 +192,38 @@ int GetServerOptionAtConnect(WSENetworkOperationsContext *context)
 	return -1;
 }
 
+void ServerSetPasswordRcon(WSECoreOperationsContext *context)
+{
+#if defined WARBAND_DEDICATED
+	std::string str;
+
+	context->ExtractString(str);
+
+	if (!warband->basic_game.is_dedicated_server() || !WSE->Network.m_rcon_server)
+		return;
+
+	EnterCriticalSection(&warband->network_manager.network_critical_section);
+	WSE->Network.m_rcon_server->m_password = str;
+	WSE->Network.m_rcon_server->ResetAuthorizationConnections();
+	LeaveCriticalSection(&warband->network_manager.network_critical_section);
+#endif
+}
+
+void ExecuteServerConsoleCommand(WSECoreOperationsContext *context)
+{
+#if defined WARBAND_DEDICATED
+	int sreg;
+	rgl::string command;
+
+	context->ExtractRegister(sreg);
+	context->ExtractString(command);
+
+	rgl::string message = "";
+	WSE->Game.ExecuteConsoleCommand(message, command);
+	warband->basic_game.string_registers[sreg] = message;
+#endif
+}
+
 WSENetworkOperationsContext::WSENetworkOperationsContext() : WSEOperationContext("network", 3500, 3599)
 {
 }
@@ -255,4 +287,12 @@ void WSENetworkOperationsContext::OnLoad()
 	RegisterOperation("get_server_option_at_connect", GetServerOptionAtConnect, Both, Lhs, 1, 2,
 		"Stores option <1> into <0>",
 		"destination", "index");
+
+	RegisterOperation("server_set_password_rcon", ServerSetPasswordRcon, Server, None, 1, 1,
+		"Sets <0> as server RCON password",
+		"password");
+
+	RegisterOperation("execute_server_console_command", ExecuteServerConsoleCommand, Server, None, 2, 2,
+		"Executes dedicated server console command <1> and stores result string into <0>",
+		"string_register", "command");
 }
