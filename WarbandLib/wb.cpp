@@ -129,7 +129,8 @@ void wb::check_types()
 	assert_size<map_window>(1064, -1);
 	assert_size<notes_window>(456, -1);
 	assert_size<graphics_options_window>(596, -1);
-	assert_size<tactical_window>(1392, -1);
+	//assert_size<tactical_window>(1392, -1);
+	assert_size<tactical_window>(1384, -1);
 	assert_size<face_gen_window>(1480, -1);
 	
 	assert_size<steam_manager>(-1, -1, 120);

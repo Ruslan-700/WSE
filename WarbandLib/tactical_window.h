@@ -11,7 +11,7 @@ namespace wb
 		rgl::popup_widget *popup_widget;
 		stl::vector<presentation_container *> presentations;
 		rgl::scene_widget *scene_widget;
-		int u1;
+		//int u1;
 		rgl::text_box_widget *console_text_box_widget;
 		rgl::widget *console_label_widget;
 		rgl::widget *notification_widget_1;
@@ -36,7 +36,7 @@ namespace wb
 		rgl::widget *player_health_widget_2;
 		rgl::widget *horse_health_widget_2;
 		rgl::mesh *item_image_mesh;
-		rgl::mesh *item_image_shadow_mesh;
+		//rgl::mesh *item_image_shadow_mesh;
 		rgl::widget *item_ready_status_widget;
 		rgl::mesh *item_ready_status_mesh;
 		rgl::widget *gold_widget_1;

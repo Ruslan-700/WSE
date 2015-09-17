@@ -25,6 +25,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 	data->ServerInfo.Fields.bServerFlags = 1;
 	data->ServerInfo.Fields.bConnectPort = 1;
 	data->ServerInfo.Fields.bPlayerCount = 1;
+	data->ServerInfo.Fields.bBotCount = 1;
 	data->ServerInfo.Fields.bSlotMax = 1;
 	data->ServerInfo.Fields.bReservedSlots = 1;
 	data->ServerInfo.Fields.bGameName = 1;
@@ -49,6 +50,8 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 	data->Player.Fields.bPlayerTime = 1;
 	data->Player.Fields.bPlayerName = 1;
 	data->Player.Fields.bPlayerRace = 1;
+	data->Player.Fields.bPlayerID = 1;
+	data->Player.Fields.bPlayerClass = 1;
 
 	data->Team.Fields.bTeamScore = 1;
 	data->Team.Fields.bTeamPlayerCount = 1;
@@ -106,12 +109,17 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		
 		strncpy_s(data->Player.List[index].Name, player->name.c_str(), 63);
 		strncpy_s(data->Player.List[index].Race, warband->face_generator.skins[player->skin_no].id.c_str(), 63);
+		if (player->troop_no >= 0)
+		{
+			strncpy_s(data->Player.List[index].Class, warband->cur_game->troops[player->troop_no].name.c_str(), 63);
+		}
 		data->Player.List[index].Score = player->score;
 		data->Player.List[index].Kills = player->kills;
 		data->Player.List[index].Death = player->deaths;
 		data->Player.List[index].Slot = i;
 		data->Player.List[index].Ping = player->ping;		
 		data->Player.List[index].TeamNo = player->team_no;
+		data->Player.List[index].ID = player->get_unique_id();
 		data->Team.List[player->team_no].PlayerCount++;
 
 		if (player->agent_no >= 0 && warband->cur_mission->agents[player->agent_no].status == wb::as_alive)
@@ -124,6 +132,19 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 	
 	data->ServerInfo.PlayerCount = index;
 	data->Player.Count = index;
+
+	data->ServerInfo.BotCount = 0;
+	for (int i = 0; i < warband->cur_mission->agents.num_items; ++i)
+	{
+		if (warband->cur_mission->agents[i].valid)
+		{
+			wb::agent *agent = &warband->cur_mission->agents[i];
+			if (agent->status == wb::as_alive && agent->type == wb::at_human && agent->controller == wb::ac_bot)
+			{
+				data->ServerInfo.BotCount++;
+			}
+		}
+	}
 	
 	if (warband->multiplayer_data.cur_site_no >= 0)
 	{
