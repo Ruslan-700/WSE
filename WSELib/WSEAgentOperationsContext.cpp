@@ -254,6 +254,27 @@ void AgentSetItemSlotModifier(WSEAgentOperationsContext *context)
 	warband->cur_mission->agents[agent_no].items[slot_no].set_modifier(modifier_no);
 }
 
+void AgentBodyMetaMeshSetVertexKeysTimePoint(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh, value;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+	context->ExtractValue(value);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if !defined WARBAND_DEDICATED
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return;
+
+	agent->body_meta_meshes[body_meta_mesh]->set_mesh_vertex_anim_frame_time((float)value);
+#endif
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -335,4 +356,9 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_item_slot_modifier", AgentSetItemSlotModifier, Both, None, 3, 3,
 		"Sets <0>'s <1> modifier to <2>",
 		"agent_no", "item_slot_no", "item_modifier_no");
+
+	RegisterOperation("agent_body_meta_mesh_set_vertex_keys_time_point", AgentBodyMetaMeshSetVertexKeysTimePoint, Client, None, 3, 3,
+		"Sets <0>'s <1> vertex keys time point to <2>",
+		"agent_no", "body_meta_mesh", "time_point");
+
 }

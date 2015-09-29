@@ -2,7 +2,7 @@
 
 #include "WSE.h"
 #include "warband.h"
-
+/*
 int ItemGetWeight(WSEItemOperationsContext *context)
 {
 	int item_kind_no;
@@ -195,7 +195,7 @@ bool ItemHasFaction(WSEItemOperationsContext *context)
 
 	return false;
 }
-
+*/
 void ItemSetThrustDamage(WSEItemOperationsContext *context)
 {
 	int item_kind_no;
@@ -305,6 +305,7 @@ WSEItemOperationsContext::WSEItemOperationsContext() : WSEOperationContext("item
 
 void WSEItemOperationsContext::OnLoad()
 {
+	/*
 	RegisterOperation("item_get_weight", ItemGetWeight, Both, Lhs, 2, 2,
 		"Stores <1>'s weight into <0>",
 		"destination_fixed_point", "item_kind_no");
@@ -416,7 +417,7 @@ void WSEItemOperationsContext::OnLoad()
 	RegisterOperation("item_has_faction", ItemHasFaction, Both, Cf, 2, 2,
 		"Fails if <0> doesn't have <1> in its faction list",
 		"item_kind_no", "faction_no");
-
+	*/
 	RegisterOperation("item_set_thrust_damage", ItemSetThrustDamage, Both, None, 2, 2,
 		"Sets <0>'s thrust damage to <1>",
 		"item_kind_no", "value");

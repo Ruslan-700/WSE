@@ -78,23 +78,24 @@ dict_set_str             = 3212 #(dict_set_str, <dict>, <key>, <string_no>), #Ad
 dict_set_int             = 3213 #(dict_set_int, <dict>, <key>, <value>), #Adds (or changes) <value> as the numeric value paired to <key>
 dict_get_key_by_iterator = 3214 #(dict_get_key_by_iterator, <string_register>, <dict>, <iterator>), #Stores the key <string_register> by iterator <iterator>
 
-agent_get_item_modifier           = 3300 #(agent_get_item_modifier, <destination>, <agent_no>), #Stores <agent_no>'s horse item modifier (-1 if agent is not a horse) into <destination>
-agent_get_item_slot_modifier      = 3301 #(agent_get_item_slot_modifier, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> modifier into <destination>
-agent_get_animation_progress      = 3302 #(agent_get_animation_progress, <destination>, <agent_no>, [<channel_no>]), #Stores <agent_no>'s channel [<channel_no>] animation progress (in %%) into <destination>
-agent_get_dna                     = 3303 #(agent_get_dna, <destination>, <agent_no>), #Stores <agent_no>'s dna into <destination>
-agent_get_ground_scene_prop       = 3304 #(agent_get_ground_scene_prop, <destination>, <agent_no>), #Stores the prop instance on which <agent_no> is standing into <destination>
-agent_set_item_slot_ammo          = 3305 #(agent_set_item_slot_ammo, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> ammo count to <value>
-agent_get_item_slot_hit_points    = 3306 #(agent_get_item_slot_hit_points, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> shield hitpoints into <destination>
-agent_set_item_slot_hit_points    = 3307 #(agent_set_item_slot_hit_points, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> shield hitpoints to <value>
-agent_get_wielded_item_slot_no    = 3308 #(agent_get_wielded_item_slot_no, <destination>, <agent_no>, [<hand_no>]), #Stores <agent_no>'s wielded item slot for [<hand_no>] into <destination>
-agent_get_scale                   = 3309 #(agent_get_scale, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s scale into <destination_fixed_point>
-agent_set_forced_lod              = 3310 #(agent_set_forced_lod, <agent_no>, <lod_level>), #Forces <agent_no>'s LOD level to <lod_level> (0 = auto)
-agent_get_item_slot_flags         = 3311 #(agent_get_item_slot_flags, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> item slot flags into <destination>
-agent_ai_get_move_target_position = 3312 #(agent_ai_get_move_target_position, <position_register>, <agent_no>), #Stores <agent_no>'s move target position agent into <position_register>
-agent_set_horse                   = 3313 #(agent_set_horse, <agent_no>, <horse_agent_no>), #Sets <agent_no>'s horse to <horse_agent_no> (-1 for no horse)
-agent_ai_set_simple_behavior      = 3314 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
-agent_accelerate                  = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
-agent_set_item_slot_modifier      = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
+agent_get_item_modifier                         = 3300 #(agent_get_item_modifier, <destination>, <agent_no>), #Stores <agent_no>'s horse item modifier (-1 if agent is not a horse) into <destination>
+agent_get_item_slot_modifier                    = 3301 #(agent_get_item_slot_modifier, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> modifier into <destination>
+agent_get_animation_progress                    = 3302 #(agent_get_animation_progress, <destination>, <agent_no>, [<channel_no>]), #Stores <agent_no>'s channel [<channel_no>] animation progress (in %%) into <destination>
+agent_get_dna                                   = 3303 #(agent_get_dna, <destination>, <agent_no>), #Stores <agent_no>'s dna into <destination>
+agent_get_ground_scene_prop                     = 3304 #(agent_get_ground_scene_prop, <destination>, <agent_no>), #Stores the prop instance on which <agent_no> is standing into <destination>
+agent_set_item_slot_ammo                        = 3305 #(agent_set_item_slot_ammo, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> ammo count to <value>
+agent_get_item_slot_hit_points                  = 3306 #(agent_get_item_slot_hit_points, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> shield hitpoints into <destination>
+agent_set_item_slot_hit_points                  = 3307 #(agent_set_item_slot_hit_points, <agent_no>, <item_slot_no>, <value>), #Sets <agent_no>'s <item_slot_no> shield hitpoints to <value>
+agent_get_wielded_item_slot_no                  = 3308 #(agent_get_wielded_item_slot_no, <destination>, <agent_no>, [<hand_no>]), #Stores <agent_no>'s wielded item slot for [<hand_no>] into <destination>
+agent_get_scale                                 = 3309 #(agent_get_scale, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s scale into <destination_fixed_point>
+agent_set_forced_lod                            = 3310 #(agent_set_forced_lod, <agent_no>, <lod_level>), #Forces <agent_no>'s LOD level to <lod_level> (0 = auto)
+agent_get_item_slot_flags                       = 3311 #(agent_get_item_slot_flags, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> item slot flags into <destination>
+agent_ai_get_move_target_position               = 3312 #(agent_ai_get_move_target_position, <position_register>, <agent_no>), #Stores <agent_no>'s move target position agent into <position_register>
+agent_set_horse                                 = 3313 #(agent_set_horse, <agent_no>, <horse_agent_no>), #Sets <agent_no>'s horse to <horse_agent_no> (-1 for no horse)
+agent_ai_set_simple_behavior                    = 3314 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
+agent_accelerate                                = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
+agent_set_item_slot_modifier                    = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
+agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> mesh vertex keys time point to <time_point>
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -154,6 +155,16 @@ troop_has_flag               = 3706 #(troop_has_flag, <troop_no>, <flag>), #Fail
 troop_set_skill              = 3707 #(troop_set_skill, <troop_no>, <skill_no>, <value>), #Sets <troop_no>'s <skill_no> to <value>
 troop_set_attribute          = 3708 #(troop_set_attribute, <troop_no>, <attribute>, <value>), #Sets <troop_no>'s <attribute> to <value>
 troop_set_proficiency        = 3709 #(troop_set_proficiency, <troop_no>, <proficiency>, <value>), #Sets <troop_no>'s <proficiency> to <value>
+
+item_set_thrust_damage      = 3800 #(item_set_thrust_damage, <item_kind_no>, <value>), #Sets <item_kind_no>'s thrust damage to <value>
+item_set_thrust_damage_type = 3801 #(item_set_thrust_damage_type, <item_kind_no>, <value>), #Sets <item_kind_no>'s thrust damage type to <value>
+item_set_swing_damage       = 3802 #(item_set_swing_damage, <item_kind_no>, <value>), #Sets <item_kind_no>'s thrust damage to <value>
+item_set_swing_damage_type  = 3803 #(item_set_swing_damage_type, <item_kind_no>, <value>), #Sets <item_kind_no>'s thrust damage type to <value>
+item_set_head_armor         = 3804 #(item_set_head_armor, <item_kind_no>, <value>), #Sets <item_kind_no>'s head armor to <value>
+item_set_body_armor         = 3805 #(item_set_body_armor, <item_kind_no>, <value>), #Sets <item_kind_no>'s body armor to <value>
+item_set_leg_armor          = 3806 #(item_set_leg_armor, <item_kind_no>, <value>), #Sets <item_kind_no>'s leg armor to <value>
+item_set_speed_rating       = 3807 #(item_set_speed_rating, <item_kind_no>, <value>), #Sets <item_kind_no>'s speed rating to <value>
+item_set_missile_speed      = 3808 #(item_set_missile_speed, <item_kind_no>, <value>), #Sets <item_kind_no>'s missile speed to <value>
 
 party_stack_get_experience      = 3900 #(party_stack_get_experience, <destination>, <party_no>, <party_stack_no>), #Stores the experience of <party_no>'s <party_stack_no> into <destination>
 party_stack_get_num_upgradeable = 3901 #(party_stack_get_num_upgradeable, <destination>, <party_no>, <party_stack_no>), #Stores the amount of upgradeable troops in <party_no>'s <party_stack_no> into <destination>
