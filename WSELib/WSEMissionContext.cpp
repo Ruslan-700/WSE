@@ -37,6 +37,7 @@ void WSEMissionContext::OnLoad()
 	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_Difficulty_entry, ItemDifficultyHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
@@ -63,6 +64,50 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		m_prop_collision_threshold_high[3] = 0.75f;
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "ground_weapon_collision", false), wb::addresses::mission_CheckCollision_entry, MissionCheckCollisionHook);
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
+		
+		m_item_difficulty_attribute[0] = -1;
+		m_item_difficulty_skill[0] = -1;
+		m_item_difficulty_attribute[wb::itp_type_horse] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_horse", -1);
+		m_item_difficulty_skill[wb::itp_type_horse] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_horse", 24);
+		m_item_difficulty_attribute[wb::itp_type_one_handed] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_one_handed", 0);
+		m_item_difficulty_skill[wb::itp_type_one_handed] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_one_handed", -1);
+		m_item_difficulty_attribute[wb::itp_type_two_handed] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_two_handed", 0);
+		m_item_difficulty_skill[wb::itp_type_two_handed] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_two_handed", -1);
+		m_item_difficulty_attribute[wb::itp_type_polearm] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_polearm", 0);
+		m_item_difficulty_skill[wb::itp_type_polearm] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_polearm", -1);
+		m_item_difficulty_attribute[wb::itp_type_arrows] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_arrows", -1);
+		m_item_difficulty_skill[wb::itp_type_arrows] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_arrows", -1);
+		m_item_difficulty_attribute[wb::itp_type_bolts] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_bolts", -1);
+		m_item_difficulty_skill[wb::itp_type_bolts] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_bolts", -1);
+		m_item_difficulty_attribute[wb::itp_type_shield] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_shield", -1);
+		m_item_difficulty_skill[wb::itp_type_shield] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_shield", 26);
+		m_item_difficulty_attribute[wb::itp_type_bow] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_bow", -1);
+		m_item_difficulty_skill[wb::itp_type_bow] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_bow", 33);
+		m_item_difficulty_attribute[wb::itp_type_crossbow] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_crossbow", 0);
+		m_item_difficulty_skill[wb::itp_type_crossbow] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_crossbow", -1);
+		m_item_difficulty_attribute[wb::itp_type_thrown] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_thrown", -1);
+		m_item_difficulty_skill[wb::itp_type_thrown] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_thrown", 34);
+		m_item_difficulty_attribute[wb::itp_type_goods] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_goods", -1);
+		m_item_difficulty_skill[wb::itp_type_goods] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_goods", -1);
+		m_item_difficulty_attribute[wb::itp_type_head_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_head_armor", 0);
+		m_item_difficulty_skill[wb::itp_type_head_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_head_armor", -1);
+		m_item_difficulty_attribute[wb::itp_type_body_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_body_armor", 0);
+		m_item_difficulty_skill[wb::itp_type_body_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_body_armor", -1);
+		m_item_difficulty_attribute[wb::itp_type_foot_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_foot_armor", 0);
+		m_item_difficulty_skill[wb::itp_type_foot_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_foot_armor", -1);
+		m_item_difficulty_attribute[wb::itp_type_hand_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_hand_armor", 0);
+		m_item_difficulty_skill[wb::itp_type_hand_armor] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_hand_armor", -1);
+		m_item_difficulty_attribute[wb::itp_type_pistol] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_pistol", -1);
+		m_item_difficulty_skill[wb::itp_type_pistol] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_pistol", -1);
+		m_item_difficulty_attribute[wb::itp_type_musket] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_musket", -1);
+		m_item_difficulty_skill[wb::itp_type_musket] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_musket", -1);
+		m_item_difficulty_attribute[wb::itp_type_bullets] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_bullets", -1);
+		m_item_difficulty_skill[wb::itp_type_bullets] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_bullets", -1);
+		m_item_difficulty_attribute[wb::itp_type_animal] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_animal", -1);
+		m_item_difficulty_skill[wb::itp_type_animal] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_animal", -1);
+		m_item_difficulty_attribute[wb::itp_type_book] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_book", -1);
+		m_item_difficulty_skill[wb::itp_type_book] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_book", -1);
+
 		break;
 	}
 }
@@ -673,5 +718,19 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 		WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
 		*/
 		item_kind->simple_triggers.execute(-104);
+	}
+}
+
+void WSEMissionContext::ItemDifficulty(wb::item_kind &item_kind, int *attribute, int *skill)
+{
+	*attribute = -1;
+	*skill = -1;
+
+	int item_kind_type = item_kind.get_type();
+
+	if (item_kind_type > 0 && item_kind_type <= 20)
+	{
+		*attribute = m_item_difficulty_attribute[item_kind_type];
+		*skill = m_item_difficulty_skill[item_kind_type];
 	}
 }

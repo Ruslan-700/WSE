@@ -426,6 +426,8 @@ void WSENetworkContext::OnCheckUrlReplies()
 
 	if (m_ogp_server)
 		m_ogp_server->Run();
+	
+	WSE->SendContextEvent(this, OnFrame);
 }
 
 bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq)

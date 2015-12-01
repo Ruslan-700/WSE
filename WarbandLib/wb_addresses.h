@@ -121,6 +121,8 @@ namespace wb
 		static unsigned int agent_EndReloading_entry_1;
 		static unsigned int agent_EndReloading_entry_2;
 
+		static unsigned int item_Difficulty_entry;
+
 		static unsigned int operation_Execute;
 
 		static unsigned int operation_manager_Execute;

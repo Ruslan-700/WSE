@@ -55,14 +55,14 @@ protected:
 
 public:
 	bool IsNetworkCompatible() const;
-	void ReceiveMultiplayerMessage(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
+	virtual void ReceiveMultiplayerMessage(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
 	void PopulateServerOptionsServerEvent(wb::multiplayer_event *evt);
-	bool GetHorseFriendlyFire() const;
-	void SetHorseFriendlyFire(bool value);
-	bool GetShowCrosshair() const;
-	void SetShowCrosshair(bool value);
+	virtual bool GetHorseFriendlyFire() const;
+	virtual void SetHorseFriendlyFire(bool value);
+	virtual bool GetShowCrosshair() const;
+	virtual void SetShowCrosshair(bool value);
 	void SendRemoteScript(wb::script *script, int num_params, int *params);
-	void ReceiveRemoteScript(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
+	virtual void ReceiveRemoteScript(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
 	void HandleHTTPReplies();
 
 private:

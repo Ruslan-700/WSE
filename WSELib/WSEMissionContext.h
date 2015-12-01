@@ -42,6 +42,7 @@ private:
 	void OnAgentStartReloading(wb::agent *agent);
 	void OnAgentEndReloading(wb::agent *agent);
 	void OnMissileDive(wb::missile *missile);
+	void ItemDifficulty(wb::item_kind &item_kind, int *attribute, int *skill);
 
 public:
 	wb::missile *m_cur_missile;
@@ -51,4 +52,6 @@ public:
 	float m_prop_collision_threshold_low[4];
 	float m_prop_collision_threshold_high[4];
 	wb::item m_fake_item;
+	int m_item_difficulty_attribute[21];
+	int m_item_difficulty_skill[21];
 };

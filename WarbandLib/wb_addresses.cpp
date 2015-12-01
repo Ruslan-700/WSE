@@ -174,6 +174,8 @@ unsigned int addresses::agent_StartReloading_entry = 0x004CE8D6;
 unsigned int addresses::agent_EndReloading_entry_1 = 0x004CF4B0;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x004CF455;
 
+unsigned int addresses::item_Difficulty_entry = 0x004DD930;
+
 //unsigned int addresses::operation_Execute = 0x0055FF90;
 unsigned int addresses::operation_Execute = 0x00518EE0;
 
@@ -310,6 +312,8 @@ unsigned int addresses::agent_StartReloading_entry = 0x0050EA18;
 
 unsigned int addresses::agent_EndReloading_entry_1 = 0x0050F5DE;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x0050F57A;
+
+unsigned int addresses::item_Difficulty_entry = 0x004DD930;
 
 unsigned int addresses::operation_Execute = 0x00563D30;
 
@@ -486,6 +490,8 @@ unsigned int addresses::agent_StartReloading_entry = 0x00467B99;
 //unsigned int addresses::agent_EndReloading_entry_2 = 0x00466A03;
 unsigned int addresses::agent_EndReloading_entry_1 = 0x00468612;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x00468653;
+
+unsigned int addresses::item_Difficulty_entry = 0x00487700;
 
 //unsigned int addresses::operation_Execute = 0x004AD270;
 unsigned int addresses::operation_Execute = 0x004AF960;

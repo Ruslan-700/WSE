@@ -45,3 +45,4 @@ void AgentStartReloadingHook();
 void AgentEndReloadingHook();
 void MissileDiveHook();
 void NewSerialKeyCheckHook();
+void ItemDifficultyHook();

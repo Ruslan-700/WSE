@@ -781,3 +781,18 @@ end:
 		retn
 	}
 }
+
+void __declspec(naked) ItemDifficultyHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+			mov eax, esp
+			push[eax + 8]
+			push[eax + 4]
+			push ecx
+			CALL_CONTEXT_FUNC(Mission, ItemDifficulty)
+			RESTORE_REGS
+			retn 8
+	}
+}

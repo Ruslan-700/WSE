@@ -8,6 +8,7 @@ enum WSEEvent
 	LoadOperations,
 	ModuleLoad,
 	GameLoad,
+	OnFrame,
 };
 
 class WSEContext
