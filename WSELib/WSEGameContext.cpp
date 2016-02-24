@@ -42,6 +42,12 @@ void WSEGameContext::ExecuteConsoleCommand(rgl::string &message, rgl::string &co
 	THISCALL2(wb::addresses::ExecuteConsoleCommand_entry, this, message, command)
 }
 
+void WSEGameContext::ScreenShot(int format, std::string &path)
+{
+	const char* path_buffer = path.c_str();
+	CDECL2(wb::addresses::makeScreenShot, format, path_buffer);
+}
+
 void WSEGameContext::OnReadModuleFiles()
 {
 	/*
@@ -69,6 +75,10 @@ void WSEGameContext::OnReadModuleFiles()
 	warband->basic_game.module_download_url = WSE->ModuleSettingsIni.String("", "module_download_url", "www.taleworlds.com/mb_warband_download_module.html");
 	warband->network_manager.server.port = WSE->SettingsIni.Int("listen_server", "port", 7240);
 	if (warband->network_manager.server.port < 1024 || warband->network_manager.server.port > 65535) warband->network_manager.server.port = 7240;
+#elif defined WARBAND_DEDICATED
+	bool fix_bots_blocking_for_dedicated_server = WSE->ModuleSettingsIni.Bool("", "fix_bots_blocking_for_dedicated_server", true);
+	if (fix_bots_blocking_for_dedicated_server)
+		WSE->Hooks.HookMemory(this, wb::addresses::fixBotsBlocking_entry, 0x82, 1);
 #endif
 
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];

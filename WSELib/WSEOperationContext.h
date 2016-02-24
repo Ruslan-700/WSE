@@ -60,6 +60,7 @@ public:
 	void ScriptError(std::string format, ...) const;
 	void WindowsAPIError(std::string message, ...) const;
 	std::string CreateFile(const std::string &file, const std::string &extension);
+	std::string CreateScreenshot(const std::string &file, const std::string &extension);
 
 protected:
 	void DefineOperation(int opcode, const std::string &name, unsigned int flags, short min_operands, short max_operands, std::string description, ...);

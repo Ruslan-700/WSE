@@ -470,6 +470,32 @@ int GetMainParty(WSECoreOperationsContext *context)
 	return warband->cur_game->main_party_no;
 }
 
+void MakeScreenshot(WSECoreOperationsContext *context)
+{
+#if defined WARBAND
+	int format;
+	std::string path;
+
+	context->ExtractValue(format);
+	context->ExtractPath(path);
+
+	if (format >= 0 && format <= 3)
+	{
+		char *formats[4];
+		formats[0] = "bmp";
+		formats[1] = "jpg";
+		formats[2] = "tga";
+		formats[3] = "png";
+
+		WSE->Game.ScreenShot(format, context->CreateScreenshot(path, formats[format]));
+	}
+	else
+	{
+		context->ScriptError("Support only BMP - 0, JPG - 1, TGA - 2, PNG - 3 formats.");
+	}
+#endif
+}
+
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
 	m_mersenne_twister.seed((int)time(NULL));
@@ -643,5 +669,9 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("get_main_party", GetMainParty, Client, Lhs, 1, 1,
 		"Stores player's main party to <0>",
 		"destination");
+
+	RegisterOperation("make_screenshot", MakeScreenshot, Client, None, 2, 2,
+		"Make game screenshot. For security reasons, <1> will be saved into a Screenshots directory. Supported <0>s: BMP - 0, JPG - 1, TGA - 2, PNG - 3.",
+		"format", "file");
 	
 }

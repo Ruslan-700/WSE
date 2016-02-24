@@ -167,7 +167,8 @@ void WSEOperationContext::ExtractPath(std::string &path)
 	size_t index = path.find_first_of(invalid);
 
 	if (index != std::string::npos)
-		ScriptError("invalid character in file path (%s)", invalid[index]);
+		//ScriptError("invalid character in file path (%s)", invalid[index]);
+		ScriptError("invalid character in file path");
 
 	trim(path);
 	ltrim(path, ".");
@@ -458,6 +459,31 @@ std::string WSEOperationContext::CreateFile(const std::string &file, const std::
 		path = "WSE";
 #endif
 	}
+
+	if (path[path.length() - 1] != '\\')
+		path.append("\\");
+
+	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
+		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
+
+	path += warband->cur_module_name.c_str();
+
+	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
+		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
+
+	path += "\\" + file + "." + extension;
+
+	return path;
+}
+
+std::string WSEOperationContext::CreateScreenshot(const std::string &file, const std::string &extension)
+{
+	char buffer[MAX_PATH];
+
+	if (SHGetFolderPath(nullptr, CSIDL_MYDOCUMENTS, nullptr, 0, buffer) != S_OK)
+		WindowsAPIError("SHGetFolderPath failed for CSIDL_MYDOCUMENTS");
+
+	std::string path = std::string(buffer) + "\\" + warband->basic_game.name.c_str() + "\\Screenshots";
 
 	if (path[path.length() - 1] != '\\')
 		path.append("\\");

@@ -57,6 +57,7 @@ timer_get_elapsed_time        = 3028 #(timer_get_elapsed_time, <destination>, <t
 shell_open_url                = 3029 #(shell_open_url, <url>), #Opens <url> in default browser. Support only http://, https://, ftp:// and ts3server:// urls.
 set_main_party                = 3030 #(set_main_party, <party_no>), #Sets player's main party to <party_no>. Dynamic spawned party (not listed in module_parties.py) will corrupt the savegame!
 get_main_party                = 3031 #(get_main_party, <destination>), #Stores player's main party to <destination>
+make_screenshot               = 3032 #(make_screenshot, <format>, <file>), #Make game screenshot. For security reasons, <file> will be saved into a Screenshots directory. Supported <format>s: BMP - 0, JPG - 1, TGA - 2, PNG - 3.
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
 key_released      = 3101 #(key_released, <key>), #Fails if <key> wasn't released in the current frame
@@ -95,7 +96,7 @@ agent_set_horse                                 = 3313 #(agent_set_horse, <agent
 agent_ai_set_simple_behavior                    = 3314 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
 agent_accelerate                                = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
 agent_set_item_slot_modifier                    = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
-agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> mesh vertex keys time point to <time_point>
+agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> vertex keys time point to <time_point>
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)

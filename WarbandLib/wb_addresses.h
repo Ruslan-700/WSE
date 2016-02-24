@@ -123,6 +123,10 @@ namespace wb
 
 		static unsigned int item_Difficulty_entry;
 
+		static unsigned int fixBotsBlocking_entry;
+
+		static unsigned int makeScreenShot;
+
 		static unsigned int operation_Execute;
 
 		static unsigned int operation_manager_Execute;

@@ -20,6 +20,7 @@ public:
 	bool HasScript(int script_no);
 	bool ExecuteScript(int script_no, int num_params, int param_1 = 0, int param_2 = 0, int param_3 = 0, int param_4 = 0);
 	void ExecuteConsoleCommand(rgl::string &message, rgl::string &command);
+	virtual void ScreenShot(int format, std::string &path);
 
 private:
 	void OnReadModuleFiles();
