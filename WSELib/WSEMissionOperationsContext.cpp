@@ -264,7 +264,7 @@ void MissionObjectClearAttachedMissiles(WSEMissionOperationsContext *context)
 	entity->meta_meshes = meta_meshes_to_keep;
 #endif
 }
-*/
+
 bool CameraInFirstPerson(WSEMissionOperationsContext *context)
 {
 	if (!warband->cur_mission)
@@ -291,7 +291,7 @@ void SetCameraInFirstPerson(WSEMissionOperationsContext *context)
 	agent->set_first_person_body_meta_meshes_visibility(game->camera_mode ? 0x2000 : 0xFFFF);
 	agent->control.camera_mode = game->camera_mode != 0;
 }
-
+*/
 void SetShowUseTooltip(WSEMissionOperationsContext *context)
 {
 	int type;
@@ -650,14 +650,14 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("prop_instance_clear_attached_missiles", MissionObjectClearAttachedMissiles, Client, None, 1, 1,
 		"Removes all attached missiles from <0>. Works only with dynamic scene props (non-retrievable missiles)",
 		"prop_instance_no");
-	*/
+	
 	RegisterOperation("camera_in_first_person", CameraInFirstPerson, Client, Cf, 0, 0,
 		"Fails if the camera is not in first person");
 	
 	RegisterOperation("set_camera_in_first_person", SetCameraInFirstPerson, Client, None, 1, 1,
 		"Sets the camera to first or third person",
 		"value");
-
+	*/
 	RegisterOperation("set_show_use_tooltip", SetShowUseTooltip, Client, None, 1, 2,
 		"Enables or disables use tooltips. See header_common_addon.py for possible types",
 		"tooltip_type", "value");

@@ -176,6 +176,9 @@ unsigned int addresses::agent_EndReloading_entry_2 = 0x004CF455;
 
 unsigned int addresses::item_Difficulty_entry = 0x004DD930;
 
+unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x004EDC5F;
+unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B0A40;
@@ -318,6 +321,9 @@ unsigned int addresses::agent_EndReloading_entry_1 = 0x0050F5DE;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x0050F57A;
 
 unsigned int addresses::item_Difficulty_entry = 0x004DD930;
+
+unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x004EDC5F;
+unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
@@ -500,6 +506,9 @@ unsigned int addresses::agent_EndReloading_entry_1 = 0x00468612;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x00468653;
 
 unsigned int addresses::item_Difficulty_entry = 0x00487700;
+
+unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x00495AC9;
+unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
 
 unsigned int addresses::fixBotsBlocking_entry = 0x00460825;
 

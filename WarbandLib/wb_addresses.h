@@ -123,6 +123,9 @@ namespace wb
 
 		static unsigned int item_Difficulty_entry;
 
+		static unsigned int mission_object_WeaponKnockBack_entry;
+		static unsigned int mission_object_WeaponKnockBack_exit;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;

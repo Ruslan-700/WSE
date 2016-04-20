@@ -130,21 +130,19 @@ server_set_password_rcon       = 3513 #(server_set_password_rcon, <password>), #
 execute_server_console_command = 3514 #(execute_server_console_command, <string_register>, <command>), #Executes dedicated server console command <command> and stores result string into <string_register>
 
 store_cur_mission_template_no    = 3600 #(store_cur_mission_template_no, <destination>), #Stores the current mission template into <destination>
-camera_in_first_person           = 3601 #(camera_in_first_person), #Fails if the camera is not in first person
-set_camera_in_first_person       = 3602 #(set_camera_in_first_person, <value>), #Sets the camera to first or third person
-set_show_use_tooltip             = 3603 #(set_show_use_tooltip, <tooltip_type>, [<value>]), #Enables or disables use tooltips. See header_common_addon.py for possible types
-set_ally_collision_threshold     = 3604 #(set_ally_collision_threshold, <low_boundary>, <high_boundary>), #Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)
-particle_system_remove           = 3605 #(particle_system_remove, [<particle_system_no>]), #Removes [<particle_system_no>] (all particle systems if not set or -1) from the current entity (can be used in several in triggers)
-get_spectated_agent_no           = 3606 #(get_spectated_agent_no, <destination>), #Stores spectated agent no into <destination>
-prop_instance_set_forced_lod     = 3607 #(prop_instance_set_forced_lod, <prop_instance_no>, <lod_level>), #Forces <prop_instance_no>'s LOD level to <lod_level> (0 = auto)
-prop_instance_set_variation_id   = 3608 #(prop_instance_set_variation_id, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id to <value>
-prop_instance_set_variation_id_2 = 3609 #(prop_instance_set_variation_id_2, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id 2 to <value>
-stop_time                        = 3610 #(stop_time, <value>), #Stops/resumes the mission. Works only in singleplayer with cheat mode enabled.
-missile_get_path_point_position  = 3611 #(missile_get_path_point_position, <position_register>, <path_point_no>, <missile_no>), #Stores the position of the <missile_no>'s <path_point_no> (0-499) into <position_register>
-get_water_level                  = 3612 #(get_water_level, <destination_fixed_point>), #Stores the water level into <destination_fixed_point>
-missile_remove_on_hit            = 3613 #(missile_remove_on_hit), #Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)
-missile_is_valid                 = 3614 #(missile_is_valid, <missile_no>), #Fails if <missile_no> is not valid
-missile_get_cur_position         = 3615 #(missile_get_cur_position, <position_register>, <missile_no>), #Stores <missile_no>'s current position into <position_register>
+set_show_use_tooltip             = 3601 #(set_show_use_tooltip, <tooltip_type>, [<value>]), #Enables or disables use tooltips. See header_common_addon.py for possible types
+set_ally_collision_threshold     = 3602 #(set_ally_collision_threshold, <low_boundary>, <high_boundary>), #Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)
+particle_system_remove           = 3603 #(particle_system_remove, [<particle_system_no>]), #Removes [<particle_system_no>] (all particle systems if not set or -1) from the current entity (can be used in several in triggers)
+get_spectated_agent_no           = 3604 #(get_spectated_agent_no, <destination>), #Stores spectated agent no into <destination>
+prop_instance_set_forced_lod     = 3605 #(prop_instance_set_forced_lod, <prop_instance_no>, <lod_level>), #Forces <prop_instance_no>'s LOD level to <lod_level> (0 = auto)
+prop_instance_set_variation_id   = 3606 #(prop_instance_set_variation_id, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id to <value>
+prop_instance_set_variation_id_2 = 3607 #(prop_instance_set_variation_id_2, <prop_instance_no>, <value>), #Sets <prop_instance_no>'s variation id 2 to <value>
+stop_time                        = 3608 #(stop_time, <value>), #Stops/resumes the mission. Works only in singleplayer with cheat mode enabled.
+missile_get_path_point_position  = 3609 #(missile_get_path_point_position, <position_register>, <path_point_no>, <missile_no>), #Stores the position of the <missile_no>'s <path_point_no> (0-499) into <position_register>
+get_water_level                  = 3610 #(get_water_level, <destination_fixed_point>), #Stores the water level into <destination_fixed_point>
+missile_remove_on_hit            = 3611 #(missile_remove_on_hit), #Causes a missile item not to spawn on hit (can be only used inside ti_on_missile_hit)
+missile_is_valid                 = 3612 #(missile_is_valid, <missile_no>), #Fails if <missile_no> is not valid
+missile_get_cur_position         = 3613 #(missile_get_cur_position, <position_register>, <missile_no>), #Stores <missile_no>'s current position into <position_register>
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>
@@ -385,7 +383,6 @@ can_fail_operations += [
 	game_key_released,
 	dict_is_empty,
 	dict_has_key,
-	camera_in_first_person,
 	missile_is_valid,
 	troop_has_flag,
 	party_has_flag,

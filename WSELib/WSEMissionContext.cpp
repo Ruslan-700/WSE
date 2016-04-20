@@ -38,6 +38,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_Difficulty_entry, ItemDifficultyHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::mission_object_WeaponKnockBack_entry, MissionObjectWeaponKnockBackHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
@@ -733,4 +734,9 @@ void WSEMissionContext::ItemDifficulty(wb::item_kind &item_kind, int *attribute,
 		*attribute = m_item_difficulty_attribute[item_kind_type];
 		*skill = m_item_difficulty_skill[item_kind_type];
 	}
+}
+
+bool WSEMissionContext::MissionObjectWeaponKnockBack(wb::scene_prop *scene_prop)
+{
+	return (scene_prop->flags & 0x10000000) > 0;
 }

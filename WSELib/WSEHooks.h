@@ -46,3 +46,4 @@ void AgentEndReloadingHook();
 void MissileDiveHook();
 void NewSerialKeyCheckHook();
 void ItemDifficultyHook();
+void MissionObjectWeaponKnockBackHook();

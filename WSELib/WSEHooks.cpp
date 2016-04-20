@@ -787,12 +787,37 @@ void __declspec(naked) ItemDifficultyHook()
 	_asm
 	{
 		FREEZE_REGS
-			mov eax, esp
-			push[eax + 8]
-			push[eax + 4]
-			push ecx
-			CALL_CONTEXT_FUNC(Mission, ItemDifficulty)
-			RESTORE_REGS
-			retn 8
+		mov eax, esp
+		push[eax + 8]
+		push[eax + 4]
+		push ecx
+		CALL_CONTEXT_FUNC(Mission, ItemDifficulty)
+		RESTORE_REGS
+		retn 8
+	}
+}
+
+void _declspec(naked) MissionObjectWeaponKnockBackHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		mov eax, [edx + 432]
+		imul eax, 240
+#if defined WARBAND
+		add eax, dword ptr ds:0x8B31F8
+#elif defined WARBAND_DEDICATED
+		add eax, dword ptr ds:0x72ABAC
+#endif
+		push eax
+		CALL_CONTEXT_FUNC(Mission, MissionObjectWeaponKnockBack)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		mov[esp + 27], 1
+		jmp[wb::addresses::mission_object_WeaponKnockBack_exit]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::mission_object_WeaponKnockBack_exit]
 	}
 }

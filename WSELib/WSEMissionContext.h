@@ -43,6 +43,7 @@ private:
 	void OnAgentEndReloading(wb::agent *agent);
 	void OnMissileDive(wb::missile *missile);
 	void ItemDifficulty(wb::item_kind &item_kind, int *attribute, int *skill);
+	bool MissionObjectWeaponKnockBack(wb::scene_prop *scene_prop);
 
 public:
 	wb::missile *m_cur_missile;
