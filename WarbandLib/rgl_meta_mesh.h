@@ -37,5 +37,6 @@ namespace rgl
 		void create_vertex_anim_morph(const float &time);
 		void remove_particle_system(int particle_system_no = -1);
 		void set_vertex_color(unsigned int color);
+		void set_visibility_flags(unsigned int color);
 	};
 }

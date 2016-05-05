@@ -119,3 +119,14 @@ void meta_mesh::set_vertex_color(unsigned int color)
 		}
 	}
 }
+
+void meta_mesh::set_visibility_flags(unsigned int visibility_flags)
+{
+	for (int i = 0; i < this->num_lods; ++i)
+	{
+		for (int j = 0; j < this->lods[i].meshes.size(); ++j)
+		{
+			this->lods[i].meshes[j]->visibility_flags = visibility_flags;
+		}
+	}
+}

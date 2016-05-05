@@ -275,6 +275,26 @@ void AgentBodyMetaMeshSetVertexKeysTimePoint(WSEAgentOperationsContext *context)
 #endif
 }
 
+void AgentBodyMetaMeshSetVisibility(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh;
+	bool visibility;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+	context->ExtractBoolean(visibility);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if defined WARBAND
+	if (agent->body_meta_meshes[body_meta_mesh])
+		agent->body_meta_meshes[body_meta_mesh]->set_visibility_flags(visibility ? 0xFFFF : 0x2000);
+#endif
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -360,5 +380,9 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_body_meta_mesh_set_vertex_keys_time_point", AgentBodyMetaMeshSetVertexKeysTimePoint, Client, None, 3, 3,
 		"Sets <0>'s <1> vertex keys time point to <2>",
 		"agent_no", "body_meta_mesh", "time_point");
+
+	RegisterOperation("agent_body_meta_mesh_set_visibility", AgentBodyMetaMeshSetVisibility, Client, None, 3, 3,
+		"Shows (<2> = 1) or hides (<2> = 0) <0>'s <1>",
+		"agent_no", "body_meta_mesh", "value");
 
 }

@@ -97,6 +97,7 @@ agent_ai_set_simple_behavior                    = 3314 #(agent_ai_set_simple_beh
 agent_accelerate                                = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
 agent_set_item_slot_modifier                    = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
 agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> vertex keys time point to <time_point>
+agent_body_meta_mesh_set_visibility             = 3318 #(agent_body_meta_mesh_set_visibility, <agent_no>, <body_meta_mesh>, <value>), #Shows (<value> = 1) or hides (<value> = 0) <agent_no>'s <body_meta_mesh>
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
