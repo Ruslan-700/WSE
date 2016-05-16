@@ -126,6 +126,33 @@ namespace wb
 		static unsigned int mission_object_WeaponKnockBack_entry;
 		static unsigned int mission_object_WeaponKnockBack_exit;
 
+		static unsigned int item_kind_ShieldNoParry_entry;
+		static unsigned int item_kind_ShieldNoParry_exit_1;
+		static unsigned int item_kind_ShieldNoParry_exit_2;
+
+		static unsigned int item_kind_ShieldNoParrySound_entry;
+		static unsigned int item_kind_ShieldNoParrySound_exit_1;
+		static unsigned int item_kind_ShieldNoParrySound_exit_2;
+
+		static unsigned int item_kind_ShieldNoParryDamage_entry;
+		static unsigned int item_kind_ShieldNoParryDamage_exit_1;
+		static unsigned int item_kind_ShieldNoParryDamage_exit_2;
+
+		static unsigned int item_kind_ShieldNoParryMissiles_entry;
+		static unsigned int item_kind_ShieldNoParryMissiles_exit_1;
+		static unsigned int item_kind_ShieldNoParryMissiles_exit_2;
+
+		static unsigned int item_kind_ShieldNoParrySpeed_entry;
+		static unsigned int item_kind_ShieldNoParrySpeed_exit_1;
+		static unsigned int item_kind_ShieldNoParrySpeed_exit_2;
+
+		static unsigned int item_kind_ShieldNoParryCarry_entry;
+		static unsigned int item_kind_ShieldNoParryCarry_exit_1;
+		static unsigned int item_kind_ShieldNoParryCarry_exit_2;
+
+		static unsigned int agent_BlockedAttack_entry;
+		static unsigned int agent_BlockedAttack_exit;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;

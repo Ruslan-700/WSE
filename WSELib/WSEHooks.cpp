@@ -782,7 +782,7 @@ end:
 	}
 }
 
-void __declspec(naked) ItemDifficultyHook()
+void __declspec(naked) ItemDifficultyCheckHook()
 {
 	_asm
 	{
@@ -791,7 +791,7 @@ void __declspec(naked) ItemDifficultyHook()
 		push[eax + 8]
 		push[eax + 4]
 		push ecx
-		CALL_CONTEXT_FUNC(Mission, ItemDifficulty)
+		CALL_CONTEXT_FUNC(Mission, OnItemDifficultyCheck)
 		RESTORE_REGS
 		retn 8
 	}
@@ -810,7 +810,7 @@ void _declspec(naked) MissionObjectWeaponKnockBackHook()
 		add eax, dword ptr ds:0x72ABAC
 #endif
 		push eax
-		CALL_CONTEXT_FUNC(Mission, MissionObjectWeaponKnockBack)
+		CALL_CONTEXT_FUNC(Mission, OnMissionObjectWeaponKnockBack)
 		test al, al
 		jnz continue_exec
 		RESTORE_REGS
@@ -819,5 +819,132 @@ void _declspec(naked) MissionObjectWeaponKnockBackHook()
 	continue_exec:
 		RESTORE_REGS
 		jmp[wb::addresses::mission_object_WeaponKnockBack_exit]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParryHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push dword ptr [eax]
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParry_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParry_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParrySoundHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push esi
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParrySound_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParrySound_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParryDamageHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push esi
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryDamage_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryDamage_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParryMissilesHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push eax
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryMissiles_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryMissiles_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParrySpeedHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push dword ptr [eax]
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParrySpeed_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParrySpeed_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindShieldNoParryCarryHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push edi
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParryCarry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryCarry_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryCarry_exit_2]
+	}
+}
+
+
+void __declspec(naked) AgentBlockedAttackHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push[esp + 28]
+		mov eax, [ebp + 16]
+		push eax
+		mov eax, [ebp + 12]
+		push[eax]
+		mov edi, [ebp + 8]
+		push[edi]
+		CALL_CONTEXT_FUNC(Mission, OnAgentBlockedAttack)
+		RESTORE_REGS
+		mov eax, [esp+104]
+#if defined WARBAND
+		mov [esp+116], eax
+#elif defined WARBAND_DEDICATED
+		mov [esp+112], eax
+#endif
+		jmp[wb::addresses::agent_BlockedAttack_exit]
 	}
 }

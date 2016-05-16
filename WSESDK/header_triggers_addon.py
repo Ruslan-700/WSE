@@ -26,6 +26,12 @@ ti_on_init_missile = -101.0 #can only be used in module_items triggers
 # Trigger Param 5: missile item modifier
 # Trigger Param 6: missile no
 
+ti_on_agent_blocked = -103.0 #can only be used in module_mission_templates triggers
+# Trigger Param 1: receiver agent no
+# Trigger Param 2: dealer agent no
+# Trigger Param 3: item kind no
+# Trigger Param 4: missile item kind no
+
 ti_on_missile_dive = -104.0 #can only be used in module_items triggers
 # Trigger Param 1: shooter agent no
 # Trigger Param 2: launcher item kind no

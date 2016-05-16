@@ -73,7 +73,7 @@ window_party = 8
 window_character = 11
 
 #Agent body meta meshes
-bmm_head = 0,
+bmm_head = 0
 bmm_beard = 1
 bmm_hair = 2
 bmm_helmet = 3

@@ -179,6 +179,33 @@ unsigned int addresses::item_Difficulty_entry = 0x004DD930;
 unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x004EDC5F;
 unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
 
+unsigned int addresses::item_kind_ShieldNoParry_entry = 0x004A564D;
+unsigned int addresses::item_kind_ShieldNoParry_exit_1 = item_kind_ShieldNoParry_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParry_exit_2 = 0x004A5669;
+
+unsigned int addresses::item_kind_ShieldNoParrySound_entry = 0x004ECF6F;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_1 = item_kind_ShieldNoParrySound_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_2 = 0x004ED0B4;
+
+unsigned int addresses::item_kind_ShieldNoParryDamage_entry = 0x004ECC21;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_1 = item_kind_ShieldNoParryDamage_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_2 = 0x004ECEF6;
+
+unsigned int addresses::item_kind_ShieldNoParryMissiles_entry = 0x004E8CFF;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_1 = item_kind_ShieldNoParryMissiles_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_2 = 0x004E9709;
+
+unsigned int addresses::item_kind_ShieldNoParrySpeed_entry = 0x004A8B19;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_1 = item_kind_ShieldNoParrySpeed_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x004A8B2D;
+
+unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0x004EFC60;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = item_kind_ShieldNoParryCarry_entry + 9;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0x004EFCEC;
+
+unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
+unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B0A40;
@@ -324,6 +351,33 @@ unsigned int addresses::item_Difficulty_entry = 0x004DD930;
 
 unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x004EDC5F;
 unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
+
+unsigned int addresses::item_kind_ShieldNoParry_entry = 0x004A564D;
+unsigned int addresses::item_kind_ShieldNoParry_exit_1 = item_kind_ShieldNoParry_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParry_exit_2 = 0x004A5669;
+
+unsigned int addresses::item_kind_ShieldNoParrySound_entry = 0x004ECF6F;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_1 = item_kind_ShieldNoParrySound_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_2 = 0x004ED0B4;
+
+unsigned int addresses::item_kind_ShieldNoParryDamage_entry = 0x004ECC21;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_1 = item_kind_ShieldNoParryDamage_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_2 = 0x004ECEF6;
+
+unsigned int addresses::item_kind_ShieldNoParryMissiles_entry = 0x004E8CFF;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_1 = item_kind_ShieldNoParryMissiles_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_2 = 0x004E9709;
+
+unsigned int addresses::item_kind_ShieldNoParrySpeed_entry = 0x004A8B19;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_1 = item_kind_ShieldNoParrySpeed_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x004A8B2D;
+
+unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0x004EFC60;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = item_kind_ShieldNoParryCarry_entry + 9;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0x004EFCEC;
+
+unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
+unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
@@ -509,6 +563,33 @@ unsigned int addresses::item_Difficulty_entry = 0x00487700;
 
 unsigned int addresses::mission_object_WeaponKnockBack_entry = 0x00495AC9;
 unsigned int addresses::mission_object_WeaponKnockBack_exit = mission_object_WeaponKnockBack_entry + 5;
+
+unsigned int addresses::item_kind_ShieldNoParry_entry = 0x0045456D;
+unsigned int addresses::item_kind_ShieldNoParry_exit_1 = item_kind_ShieldNoParry_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParry_exit_2 = 0x00454589;
+
+unsigned int addresses::item_kind_ShieldNoParrySound_entry = 0x00494DFF;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_1 = item_kind_ShieldNoParrySound_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParrySound_exit_2 = 0x00494F44;
+
+unsigned int addresses::item_kind_ShieldNoParryDamage_entry = 0x00494AB1;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_1 = item_kind_ShieldNoParryDamage_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryDamage_exit_2 = 0x00494D86;
+
+unsigned int addresses::item_kind_ShieldNoParryMissiles_entry = 0x00490E2F;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_1 = item_kind_ShieldNoParryMissiles_entry + 8;
+unsigned int addresses::item_kind_ShieldNoParryMissiles_exit_2 = 0x00491839;
+
+unsigned int addresses::item_kind_ShieldNoParrySpeed_entry = 0x00457720;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_1 = item_kind_ShieldNoParrySpeed_entry + 5;
+unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x00457734;
+
+unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = 0;
+unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0;
+
+unsigned int addresses::agent_BlockedAttack_entry = 0x00495059;
+unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
 
 unsigned int addresses::fixBotsBlocking_entry = 0x00460825;
 

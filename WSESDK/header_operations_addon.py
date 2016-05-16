@@ -213,6 +213,7 @@ str_store_item_id                         = 4235 #(str_store_item_id, <string_re
 str_is_integer                            = 4236 #(str_is_integer, <string_1>), #Fails if <string_1> isn't a valid integer
 str_store_multiplayer_profile_face_keys   = 4237 #(str_store_multiplayer_profile_face_keys, <string_register>, <profile_no>), #Stores <profile_no>'s face keys into <string_register>
 str_store_server_password_rcon            = 4238 #(str_store_server_password_rcon, <string_register>), #Stores the server RCON password into <string_register>
+str_store_item_mesh_name                  = 4239 #(str_store_item_mesh_name, <string_register>, <item_no>), #Stores the mesh name of <item_no> into <string_register>
 
 options_get_verbose_casualties  = 4300 #(options_get_verbose_casualties, <destination>), #Stores verbose casualties enabled/disabled into <destination>
 options_set_verbose_casualties  = 4301 #(options_set_verbose_casualties, <value>), #Enables or disables verbose casualties

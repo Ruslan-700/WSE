@@ -37,14 +37,21 @@ void WSEMissionContext::OnLoad()
 	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::item_Difficulty_entry, ItemDifficultyHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_Difficulty_entry, ItemDifficultyCheckHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_object_WeaponKnockBack_entry, MissionObjectWeaponKnockBackHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParry_entry, ItemKindShieldNoParryHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParrySound_entry, ItemKindShieldNoParrySoundHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryDamage_entry, ItemKindShieldNoParryDamageHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryMissiles_entry, ItemKindShieldNoParryMissilesHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParrySpeed_entry, ItemKindShieldNoParrySpeedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_BlockedAttack_entry, AgentBlockedAttackHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
 	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCarry_entry, ItemKindShieldNoParryCarryHook);
 #endif	
 }
 
@@ -350,31 +357,6 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 int WSEMissionContext::OnAgentShieldHit(wb::agent *agent, wb::item *shield_item, int raw_damage, int damage, wb::agent_blow *blow, wb::missile *missile)
 {
 	wb::item_kind *item_kind = &warband->item_kinds[shield_item->item_no];
-	/*
-	if (!item_kind->simple_triggers.has_trigger(-103))
-		return damage;
-	
-	warband->basic_game.trigger_param_1 = agent->no;
-	warband->basic_game.trigger_param_2 = blow->agent_no;
-	warband->basic_game.trigger_param_3 = damage;
-	WSE->Scripting.SetTriggerParam(4, raw_damage);
-	WSE->Scripting.SetTriggerParam(5, blow->item.item_no);
-	WSE->Scripting.SetTriggerParam(6, blow->item.get_modifier());
-
-	if (missile)
-	{
-		WSE->Scripting.SetTriggerParam(7, missile->missile_item.item_no);
-		WSE->Scripting.SetTriggerParam(8, missile->missile_item.get_modifier());
-	}
-	else
-	{
-		WSE->Scripting.SetTriggerParam(7, -1);
-		WSE->Scripting.SetTriggerParam(8, -1);
-	}
-
-	warband->basic_game.trigger_result = -1;
-	item_kind->simple_triggers.execute(-103);
-	*/
 	if (!item_kind->simple_triggers.has_trigger(-80))
 		return damage;
 
@@ -722,21 +704,57 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 	}
 }
 
-void WSEMissionContext::ItemDifficulty(wb::item_kind &item_kind, int *attribute, int *skill)
+void WSEMissionContext::OnItemDifficultyCheck(wb::item_kind &item_kind, int *attribute, int *skill)
 {
 	*attribute = -1;
 	*skill = -1;
 
 	int item_kind_type = item_kind.get_type();
 
-	if (item_kind_type > 0 && item_kind_type <= 20)
+	if (item_kind_type > 0 && item_kind_type <= wb::itp_type_book)
 	{
-		*attribute = m_item_difficulty_attribute[item_kind_type];
-		*skill = m_item_difficulty_skill[item_kind_type];
+		if (item_kind_type == wb::itp_type_shield && (item_kind.properties & 0x4000) > 0)
+		{
+			*attribute = m_item_difficulty_attribute[wb::itp_type_one_handed];
+			*skill = m_item_difficulty_skill[wb::itp_type_one_handed];
+		}
+		else
+		{
+			*attribute = m_item_difficulty_attribute[item_kind_type];
+			*skill = m_item_difficulty_skill[item_kind_type];
+		}
 	}
 }
 
-bool WSEMissionContext::MissionObjectWeaponKnockBack(wb::scene_prop *scene_prop)
+bool WSEMissionContext::OnMissionObjectWeaponKnockBack(wb::scene_prop *scene_prop)
 {
 	return (scene_prop->flags & 0x10000000) > 0;
+}
+
+bool WSEMissionContext::OnItemKindShieldNoParry(int item_no)
+{
+	if (item_no <= 0) return true;
+	return (warband->item_kinds[item_no].properties & 0x4000) > 0;
+}
+
+bool WSEMissionContext::OnItemKindShieldNoParryCarry(wb::item_kind *item_kind)
+{
+	return (item_kind->get_type() == wb::itp_type_shield && (item_kind->properties & 0x4000) == 0);
+}
+
+void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent)
+{
+	warband->basic_game.trigger_param_1 = agent->no;
+	warband->basic_game.trigger_param_2 = agent_no;
+	warband->basic_game.trigger_param_3 = item_no;
+	if (missile)
+	{
+		warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
+	}
+	else
+	{
+		warband->basic_game.trigger_param_4 = -1;
+	}
+	
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-103);
 }
