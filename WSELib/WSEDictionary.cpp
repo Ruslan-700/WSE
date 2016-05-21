@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 
 void WSEDictionary::Load(const std::string &file, const int &mode)
 {
@@ -130,6 +131,27 @@ int WSEDictionary::GetInt(const std::string &key, const int &def) const
 	return strtol(it->second.c_str(), nullptr, 0);
 }
 
+rgl::matrix WSEDictionary::GetPos(const std::string &key, const rgl::matrix &def) const
+{
+	std::map<std::string, std::string>::const_iterator it = m_values.find(key);
+	std::string val = it->second;
+
+	if (it == m_values.end())
+		return def;
+	
+	const float * pos = reinterpret_cast<float *>(&val);
+
+	rgl::matrix posMatr;
+
+	posMatr.o = rgl::vector4(pos[0], pos[1], pos[2]);
+	posMatr.rot.f = rgl::vector4(pos[3], pos[4], pos[5]);
+	posMatr.rot.u = rgl::vector4(pos[6], pos[7], pos[8]);
+
+	posMatr.orthonormalize();
+
+	return posMatr;
+}
+
 void WSEDictionary::SetString(const std::string &key, const std::string &value)
 {
 	m_values[key] = value;
@@ -141,6 +163,28 @@ void WSEDictionary::SetInt(const std::string &key, const int &value)
 
 	sprintf_s(buf, "%d", value);
 	m_values[key] = buf;
+}
+
+void WSEDictionary::SetPos(const std::string &key, const rgl::matrix pos)
+{
+	float posData[9];
+
+	posData[0] = pos.o.x;
+	posData[1] = pos.o.y;
+	posData[2] = pos.o.z;
+
+	posData[3] = pos.rot.f.x;
+	posData[4] = pos.rot.f.y;
+	posData[5] = pos.rot.f.z;
+
+	posData[6] = pos.rot.u.x;
+	posData[7] = pos.rot.u.y;
+	posData[8] = pos.rot.u.z;
+
+	char const * p = reinterpret_cast<char const *>(posData);
+	std::string s(p, p + sizeof posData);  // beginning + length constructor
+
+	m_values[key] = s;
 }
 
 const std::string &WSEDictionary::GetKeyByIterator(const int &iterator, const std::string &def) const
