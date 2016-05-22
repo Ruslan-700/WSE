@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <string>
 
 void WSEDictionary::Load(const std::string &file, const int &mode)
@@ -134,13 +135,23 @@ int WSEDictionary::GetInt(const std::string &key, const int &def) const
 rgl::matrix WSEDictionary::GetPos(const std::string &key, const rgl::matrix &def) const
 {
 	std::map<std::string, std::string>::const_iterator it = m_values.find(key);
-	std::string val = it->second;
+	std::string valStr = it->second;
 
 	if (it == m_values.end())
 		return def;
-	
-	const float * pos = reinterpret_cast<float *>(&val);
 
+	std::stringstream ss(valStr);
+	std::string item;
+
+	float pos[9];
+	int i = 0;
+
+	while (std::getline(ss, item, ',')) {
+		int valInt = std::stoi(item);
+		pos[i] = reinterpret_cast<float &>(valInt);
+		i++;
+	}
+	
 	rgl::matrix posMatr;
 
 	posMatr.o = rgl::vector4(pos[0], pos[1], pos[2]);
@@ -167,22 +178,18 @@ void WSEDictionary::SetInt(const std::string &key, const int &value)
 
 void WSEDictionary::SetPos(const std::string &key, const rgl::matrix pos)
 {
-	float posData[9];
+	float posData[9] = {pos.o.x, pos.o.y, pos.o.z, 
+		pos.rot.f.x, pos.rot.f.y, pos.rot.f.z,
+		pos.rot.u.x, pos.rot.u.y, pos.rot.u.z};
 
-	posData[0] = pos.o.x;
-	posData[1] = pos.o.y;
-	posData[2] = pos.o.z;
+	std::string s = "";
+	for (int i = 0; i < 9; i++){
+		int val = reinterpret_cast<int &>(posData[i]);
+		s += std::to_string(val);
 
-	posData[3] = pos.rot.f.x;
-	posData[4] = pos.rot.f.y;
-	posData[5] = pos.rot.f.z;
-
-	posData[6] = pos.rot.u.x;
-	posData[7] = pos.rot.u.y;
-	posData[8] = pos.rot.u.z;
-
-	char const * p = reinterpret_cast<char const *>(posData);
-	std::string s(p, p + sizeof posData);  // beginning + length constructor
+		if (i < 8) 
+			s += ',';
+	}
 
 	m_values[key] = s;
 }

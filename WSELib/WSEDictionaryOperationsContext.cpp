@@ -147,17 +147,25 @@ int DictGetInt(WSEDictionaryOperationsContext *context)
 
 void DictGetPos(WSEDictionaryOperationsContext *context)
 {
-	int id, preg, defpreg;
+	int id, preg, defPreg;
 	std::string key;
+	rgl::matrix  defPos;
 
 	context->ExtractValue(preg);
 	context->ExtractValue(id);
 	context->ExtractString(key);
-	context->ExtractRegister(defpreg);
+
+	if (context->HasMoreOperands()){
+		context->ExtractRegister(defPreg);
+		defPos = warband->basic_game.position_registers[defPreg];
+	}
+	else{
+		defPos.initialize();
+	}
 
 	WSEDictionary *dict = context->GetDictionary(id);
 
-	warband->basic_game.position_registers[preg] = dict->GetPos(key, warband->basic_game.position_registers[defpreg]);
+	warband->basic_game.position_registers[preg] = dict->GetPos(key, defPos);
 }
 
 void DictSetStr(WSEDictionaryOperationsContext *context)
