@@ -168,6 +168,45 @@ vector4 &matrix::transform_point_to_parent(vector4 &v, const vector4 &local) con
 	return v;
 }
 
+std::string matrix::toString() const
+{
+	float data[9] = { o.x, o.y, o.z,
+		rot.f.x, rot.f.y, rot.f.z,
+		rot.u.x, rot.u.y, rot.u.z };
+
+	std::string s = "";
+	for (int i = 0; i < 9; i++){
+		int val = reinterpret_cast<int &>(data[i]);
+		s += std::to_string(val);
+
+		if (i < 8)
+			s += ',';
+	}
+
+	return s;
+}
+
+void matrix::fromString(std::string str)
+{
+	std::stringstream ss(str);
+	std::string item;
+
+	float data[9];
+	int i = 0;
+
+	while (std::getline(ss, item, ',')) {
+		int valInt = std::stoi(item);
+		data[i] = reinterpret_cast<float &>(valInt);
+		i++;
+	}
+
+	o = rgl::vector4(data[0], data[1], data[2]);
+	rot.f = rgl::vector4(data[3], data[4], data[5]);
+	rot.u = rgl::vector4(data[6], data[7], data[8]);
+
+	orthonormalize();
+}
+
 bool matrix::operator ==(const matrix &m) const
 {
 	return this->rot == m.rot && this->o == m.o;

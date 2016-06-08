@@ -46,6 +46,7 @@
 #include "WSESkinOperationsContext.h"
 #include "WSEStringOperationsContext.h"
 #include "WSETroopOperationsContext.h"
+#include "WSEArrayOperationsContext.h"
 
 #define VAL(X) #X
 #define TOSTR(X) VAL(X)
@@ -116,6 +117,7 @@ public:
 	WSESkinOperationsContext SkinOperations;
 	WSEStringOperationsContext StringOperations;
 	WSETroopOperationsContext TroopOperations;
+	WSEArrayOperationsContext ArrayOperations;
 	
 	const std::string &GetPath() const;
 	void Load(HINSTANCE module_handle);

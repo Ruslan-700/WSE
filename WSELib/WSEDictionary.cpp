@@ -139,26 +139,9 @@ rgl::matrix WSEDictionary::GetPos(const std::string &key, const rgl::matrix &def
 
 	if (it == m_values.end())
 		return def;
-
-	std::stringstream ss(valStr);
-	std::string item;
-
-	float pos[9];
-	int i = 0;
-
-	while (std::getline(ss, item, ',')) {
-		int valInt = std::stoi(item);
-		pos[i] = reinterpret_cast<float &>(valInt);
-		i++;
-	}
 	
 	rgl::matrix posMatr;
-
-	posMatr.o = rgl::vector4(pos[0], pos[1], pos[2]);
-	posMatr.rot.f = rgl::vector4(pos[3], pos[4], pos[5]);
-	posMatr.rot.u = rgl::vector4(pos[6], pos[7], pos[8]);
-
-	posMatr.orthonormalize();
+	posMatr.fromString(valStr);
 
 	return posMatr;
 }
@@ -178,20 +161,7 @@ void WSEDictionary::SetInt(const std::string &key, const int &value)
 
 void WSEDictionary::SetPos(const std::string &key, const rgl::matrix pos)
 {
-	float posData[9] = {pos.o.x, pos.o.y, pos.o.z, 
-		pos.rot.f.x, pos.rot.f.y, pos.rot.f.z,
-		pos.rot.u.x, pos.rot.u.y, pos.rot.u.z};
-
-	std::string s = "";
-	for (int i = 0; i < 9; i++){
-		int val = reinterpret_cast<int &>(posData[i]);
-		s += std::to_string(val);
-
-		if (i < 8) 
-			s += ',';
-	}
-
-	m_values[key] = s;
+	m_values[key] = pos.toString();
 }
 
 const std::string &WSEDictionary::GetKeyByIterator(const int &iterator, const std::string &def) const

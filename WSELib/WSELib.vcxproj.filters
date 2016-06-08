@@ -239,6 +239,15 @@
     <ClInclude Include="rcon\rcon.h">
       <Filter>Header Files\rcon</Filter>
     </ClInclude>
+    <ClInclude Include="WSEArrayOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDynMultiArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WSEDynMultiArray2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -411,6 +420,9 @@
     </ClCompile>
     <ClCompile Include="rcon\rcon.cpp">
       <Filter>Source Files\rcon</Filter>
+    </ClCompile>
+    <ClCompile Include="WSEArrayOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

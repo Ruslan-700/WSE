@@ -399,6 +399,7 @@
     <ClInclude Include="rcon\ws-util.h" />
     <ClInclude Include="WSE.h" />
     <ClInclude Include="WSEAgentOperationsContext.h" />
+    <ClInclude Include="WSEArrayOperationsContext.h" />
     <ClInclude Include="WSEBitStream.h" />
     <ClInclude Include="WSEContext.h" />
     <ClInclude Include="WSECoreOperationsContext.h" />
@@ -407,6 +408,8 @@
     <ClInclude Include="WSEDictionary.h" />
     <ClInclude Include="WSEDictionaryOperationsContext.h" />
     <ClInclude Include="WSEArray.h" />
+    <ClInclude Include="WSEDynMultiArray.h" />
+    <ClInclude Include="WSEDynMultiArray2.h" />
     <ClInclude Include="WSEEditModeOperationsContext.h" />
     <ClInclude Include="WSEEngineOperationsContext.h" />
     <ClInclude Include="WSEFloatingPointOperationsContext.h" />
@@ -459,6 +462,7 @@
     <ClCompile Include="rcon\ws-util.cpp" />
     <ClCompile Include="WSE.cpp" />
     <ClCompile Include="WSEAgentOperationsContext.cpp" />
+    <ClCompile Include="WSEArrayOperationsContext.cpp" />
     <ClCompile Include="WSEBitStream.cpp" />
     <ClCompile Include="WSEContext.cpp" />
     <ClCompile Include="WSECoreOperationsContext.cpp" />
