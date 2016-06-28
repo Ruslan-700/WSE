@@ -397,6 +397,7 @@
     <ClInclude Include="ogp\ogp_settings.h" />
     <ClInclude Include="rcon\rcon.h" />
     <ClInclude Include="rcon\ws-util.h" />
+    <ClInclude Include="WSESimpleCharBuff.h" />
     <ClInclude Include="WSE.h" />
     <ClInclude Include="WSEAgentOperationsContext.h" />
     <ClInclude Include="WSEArrayOperationsContext.h" />

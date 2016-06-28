@@ -299,6 +299,42 @@ menu_clear_generated = 4803 #(menu_clear_generated), #Removes all dynamic menus
 overlay_get_val       = 4900 #(overlay_get_val, <destination>, <overlay_no>), #Stores <overlay_no>'s value into <destination>
 presentation_activate = 4901 #(presentation_activate, <presentation_no>), #Activates <presentation_no>. Fails if <presentation_no> is not running
 
+array_create          = 5000 #(array_create, <destination>, <type_id>, <dim0>, [<dim1>], ... [<dim13>]), 
+                             #Creates an array object of <type_id> (0: Integer, 1: String, 2: Position) and stores its ID into <destination>. You can specify up to 14 dimensions. At least one dimension is required.
+                             #The array will be initialized by default with 0 / empty string / 0-position. All dim sizes except dim0 must be >= 1.
+array_free            = 5001 #(array_free, <array_id>), #Frees array with <array_id>.
+array_copy            = 5002 #(array_copy, <destination>, <source_array_id>), #Copys array with <source_array_id> and stores the new array id into <destination>.
+
+array_save_file       = 5003 #(array_save_file, <array_id>, <file>), #Saves the array with <array_id> into a file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory.
+array_load_file       = 5004 #(array_load_file, <destination>, <file>), #Loads <file> as an array and stores the newly created array's ID into <destination>.
+array_delete_file     = 5005 #(array_delete_file, <file>), #Deletes array file <file> from disk.
+
+array_set_val         = 5006 #(array_set_val, <array_id>, <value>, <index0>, [<index1>], ... [<index13>]), #Writes <value> to the array with <array_id> at the specified index. <value> can be an integer, a position register or a string register and must match the type of the array.
+array_set_val_all     = 5007 #(array_set_val_all, <array_id>, <value>), #Writes <value> to all indices of the array with <array_id>. <value> can be an integer, a position register or a string register and must match the type of the array.
+array_get_val         = 5008 #(array_set_val, <destination>, <array_id>, <index0>, [<index1>], ... [<index13>]), #Gets a value from the array with <array_id> at the specified index and writes it to <destination>. <destination> can be an variable, a position register or a string register and must match the type of the array.
+array_push            = 5009 #(array_push, <destination_array_id>, <source>), 
+                             #Pushes <source> on the array with <destination_array_id>. If <destination_array_id> is a 1D array, <source> can be an int, string, or position register and must match the type of <destination_array_id>.
+                             #If <destination_array_id> is multidimensional, <source> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.
+array_pop             = 5010 #(array_pop, <destination, <array_id>), 
+                             #Pops the last value  from the array with <array_id>. If <array_id> is a 1D array, <destination> must be a variable, string, or position register and must match the type of <array_id>.
+                             #If <array_id> is multidimensional, a new array with dimension count = src dimension count - 1, dimensions dim_0 = src_dim_1 ... dim_n = src_dim_n+1 will be created and its ID will be stored in <destination>.
+array_resize_dim      = 5011 #(array_resize_dim, <array_id>, <dim_index>, <size>), #Gets the size of the dimension with <dim_index> of the array with <array_id> and stores it into <destination>.
+
+array_get_dim_size    = 5012 #(array_get_dim_size, <destination>, <array_id>, <dim_index>), #Gets the size of the dimension specified by <dim_index> of the array with <array_id>  and stores it into <destination>.
+array_get_dim_count   = 5013 #(array_get_dim_count, <destination>, <array_id>), #Gets the the amount of dimensions of the array with <array_id> and stores it into <destination>.
+array_get_type_id     = 5014 #(array_get_type_id, <destination>, <array_id>), #Gets the the type id of the array with <array_id> and stores it into <destination>.
+
+array_sort            = 5015 #(array_sort, <array_id>, <sort_mode>, [<index0>], [<index1>], ... [<index13>]),
+                             #Sorts the array with <array_id>. <sort_mode> can be: 
+                             #[sort_m_int_asc or sort_m_int_desc] for int,
+                             #[sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str 
+                             #(asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case).
+                             #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+array_sort_custom     = 5016 #(array_sort_custom, <array_id>, <cmp_script_no>, [<index0>], [<index1>], ... [<index13>]),
+                             #Sorts the array with <array_id>. <cmp_script_no> must compare its two input values 
+                             #(script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before the second, and zero otherwise.
+                             #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+
 lhs_operations += [
 	store_trigger_param,
 	val_shr,
@@ -367,6 +403,14 @@ lhs_operations += [
 	edit_mode_get_highlighted_prop_instance,
 	menu_create_new,
 	overlay_get_val,
+	array_create,
+	array_load_file,
+	array_copy,
+	array_pop,
+	array_get_val,
+	array_get_dim_size,
+	array_get_dim_count,
+	array_get_type_id,
 ]
 
 can_fail_operations += [

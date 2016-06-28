@@ -231,3 +231,14 @@ fp124 = 124
 fp125 = 125
 fp126 = 126
 fp127 = 127
+
+sort_f_desc = 1
+sort_f_ci	= 2
+
+sort_m_int_asc = 0
+sort_m_int_desc = sort_f_desc
+
+sort_m_str_cs_asc  = 0
+sort_m_str_cs_desc = sort_f_desc
+sort_m_str_ci_asc  = sort_f_ci
+sort_m_str_ci_desc = sort_f_ci | sort_f_desc
