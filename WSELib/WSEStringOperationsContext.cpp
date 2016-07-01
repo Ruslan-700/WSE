@@ -3,6 +3,7 @@
 #include <WinCrypt.h>
 #include <cstdio>
 #include <cstring>
+#include <regex>
 #include "WSE.h"
 #include "warband.h"
 
@@ -702,6 +703,31 @@ void StrStoreItemMeshName(WSEStringOperationsContext *context)
 	warband->basic_game.string_registers[sreg] = warband->item_kinds[item_no].variations[0].id;
 }
 
+bool StrRegexMatch(WSEStringOperationsContext *context)
+{
+	try{
+		rgl::string str1, strRegex;
+
+		context->ExtractString(str1);
+		context->ExtractString(strRegex);
+
+		std::wregex e(strRegex.to_utf8());
+
+		if (std::regex_match(str1.to_utf8(), e))
+			return true;
+	}
+	catch (std::regex_error &e) {
+		context->ScriptError("invalid regex");
+	}
+
+	return false;
+}
+
+bool StrRegexSearch(WSEStringOperationsContext *context)
+{
+
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -871,6 +897,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_item_mesh_name", StrStoreItemMeshName, Both, None, 2, 2,
 		"Stores the mesh name of <1> into <0>",
 		"string_register", "item_no");
+
+	RegisterOperation("str_regex_match", StrRegexMatch, Both, Cf, 2, 2,
+		"Fails if <0> does not match <1>",
+		"string_1", "string_regex");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)
