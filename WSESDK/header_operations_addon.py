@@ -214,6 +214,10 @@ str_is_integer                            = 4236 #(str_is_integer, <string_1>), 
 str_store_multiplayer_profile_face_keys   = 4237 #(str_store_multiplayer_profile_face_keys, <string_register>, <profile_no>), #Stores <profile_no>'s face keys into <string_register>
 str_store_server_password_rcon            = 4238 #(str_store_server_password_rcon, <string_register>), #Stores the server RCON password into <string_register>
 str_store_item_mesh_name                  = 4239 #(str_store_item_mesh_name, <string_register>, <item_no>), #Stores the mesh name of <item_no> into <string_register>
+str_regex_match 						  = 4240 #(str_regex_match, <string_1>, <string_regex>), #Fails if <string_1> does not match <string_regex>
+str_regex_search						  = 4241 #(str_regex_search, <string_1>, <string_regex>), #Fails if <string_1> does not contain <string_regex>
+str_regex_get_matches					  = 4242 #(str_regex_get_matches, <destination>, <string_register>, <string_1>, <string_regex>, [<max>]), #Stores all matches of <string_regex> that occur in <string_1> into a range of string registers, starting from <string_register>, storing [<max>] substrings at most (default = unlimited). Stores the amount of matches into <destination>
+str_store_regex_replace					  = 4243 #(str_regex_replace, <string_register>, <string_1>, <string_regex>, <string_2>), #Stores <string_1> into <string_register>, replacing occurrences of <string_regex> with <string_2>
 
 options_get_verbose_casualties  = 4300 #(options_get_verbose_casualties, <destination>), #Stores verbose casualties enabled/disabled into <destination>
 options_set_verbose_casualties  = 4301 #(options_set_verbose_casualties, <value>), #Enables or disables verbose casualties
@@ -365,6 +369,7 @@ lhs_operations += [
 	edit_mode_get_highlighted_prop_instance,
 	menu_create_new,
 	overlay_get_val,
+	str_regex_get_matches,
 ]
 
 can_fail_operations += [
@@ -402,4 +407,6 @@ can_fail_operations += [
 	fge,
 	fle,
 	presentation_activate,
+	str_regex_match,
+	str_regex_search,
 ]
