@@ -717,7 +717,7 @@ bool StrRegexMatch(WSEStringOperationsContext *context)
 			return true;
 	}
 	catch (std::regex_error &e) {
-		context->ScriptError("invalid regex");
+		context->ScriptError("invalid regex: %s", e.what());
 	}
 
 	return false;
@@ -737,7 +737,7 @@ bool StrRegexSearch(WSEStringOperationsContext *context)
 			return true;
 	}
 	catch (std::regex_error& e) {
-		context->ScriptError("invalid regex");
+		context->ScriptError("invalid regex: %s", e.what());
 	}
 
 	return false;
@@ -773,7 +773,7 @@ int StrRegexGetMatches(WSEStringOperationsContext *context)
 		}
 	}
 	catch (std::regex_error& e) {
-		context->ScriptError("invalid regex");
+		context->ScriptError("invalid regex: %s", e.what());
 	}
 
 	return cur;
@@ -799,7 +799,7 @@ void StrRegexReplace(WSEStringOperationsContext *context)
 		warband->basic_game.string_registers[dReg] = CStringW(res.c_str());
 	}
 	catch (std::regex_error &e) {
-		context->ScriptError("invalid regex");
+		context->ScriptError("invalid regex: %s", e.what());
 	}
 }
 
