@@ -705,35 +705,38 @@ void StrStoreItemMeshName(WSEStringOperationsContext *context)
 
 bool StrRegexMatch(WSEStringOperationsContext *context)
 {
-	rgl::string str1, strRegex;
+	std::string str1, strRegex;
 
 	context->ExtractString(str1);
-	context->ExtractString(strRegex);
+	//context->ExtractString(strRegex);
 
 	try{
-		std::wregex ex(strRegex.to_utf8());
+		std::regex ex(strRegex);
 
-		if (std::regex_match(str1.to_utf8(), ex))
+		if (std::regex_match(str1, ex))
 			return true;
 	}
 	catch (std::regex_error &e) {
 		context->ScriptError("invalid regex: %s", e.what());
 	}
 
+	//context->ScriptError("regex error, [%s], [%s]", str1.c_str(), strRegex.c_str());
+	int index = context->GetNextOperand();
+	context->ScriptError("index: %i, val: '%s', struct adress: %p, val adress: %p\n", index, warband->string_manager.quick_strings[index].value.c_str(), (void*)&(warband->string_manager.quick_strings[index]), (void*)&(warband->string_manager.quick_strings[index].value));
 	return false;
 }
 
 bool StrRegexSearch(WSEStringOperationsContext *context)
 {
-	rgl::string str1, strRegex;
+	std::string str1, strRegex;
 
 	context->ExtractString(str1);
 	context->ExtractString(strRegex);
 
 	try {
-		std::wregex ex(strRegex.to_utf8());
+		std::regex ex(strRegex);
 
-		if (std::regex_search(str1.to_utf8(), ex))
+		if (std::regex_search(str1, ex))
 			return true;
 	}
 	catch (std::regex_error& e) {
@@ -746,7 +749,7 @@ bool StrRegexSearch(WSEStringOperationsContext *context)
 int StrRegexGetMatches(WSEStringOperationsContext *context)
 {
 	int dReg, max;
-	rgl::string str1, strRegex;
+	std::string str1, strRegex;
 
 	context->ExtractRegister(dReg);
 	context->ExtractString(str1);
@@ -756,17 +759,15 @@ int StrRegexGetMatches(WSEStringOperationsContext *context)
 	int cur = 0;
 
 	try {
-		std::wregex ex(strRegex.to_utf8());
-		std::wstring s(str1.to_utf8());
+		std::regex ex(strRegex);
 
-		std::wsregex_iterator next(s.begin(), s.end(), ex);
-		std::wsregex_iterator end;
+		std::sregex_iterator next(str1.begin(), str1.end(), ex);
+		std::sregex_iterator end;
 
 		while (next != end && !(max && cur == max)) {
-			std::wsmatch match = *next;
+			std::smatch match = *next;
 
-			std::wstring curRes = match.str();
-			warband->basic_game.string_registers[dReg++] = CStringW(curRes.c_str());
+			warband->basic_game.string_registers[dReg++] = match.str();
 
 			next++;
 			cur++;
@@ -782,7 +783,7 @@ int StrRegexGetMatches(WSEStringOperationsContext *context)
 void StrRegexReplace(WSEStringOperationsContext *context)
 {
 	int dReg;
-	rgl::string strSrc, strRegex, strRep;
+	std::string strSrc, strRegex, strRep;
 
 	context->ExtractRegister(dReg);
 	context->ExtractString(strSrc);
@@ -790,13 +791,9 @@ void StrRegexReplace(WSEStringOperationsContext *context)
 	context->ExtractString(strRep);
 
 	try{
-		std::wregex ex(strRegex.to_utf8());
+		std::regex ex(strRegex);
 
-		std::wstring s(strSrc.to_utf8());
-		std::wstring r(strRep.to_utf8());
-
-		std::wstring res = std::regex_replace(s, ex, r);
-		warband->basic_game.string_registers[dReg] = CStringW(res.c_str());
+		warband->basic_game.string_registers[dReg] = std::regex_replace(strSrc, ex, strRep);
 	}
 	catch (std::regex_error &e) {
 		context->ScriptError("invalid regex: %s", e.what());
