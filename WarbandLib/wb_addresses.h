@@ -117,6 +117,8 @@ namespace wb
 		static unsigned int agent_DropItem_exit;
 		
 		static unsigned int agent_StartReloading_entry;
+		static unsigned int agent_StartReloadingClient_entry;
+		static unsigned int agent_StartReloadingClient_exit;
 		
 		static unsigned int agent_EndReloading_entry_1;
 		static unsigned int agent_EndReloading_entry_2;
@@ -149,6 +151,14 @@ namespace wb
 		static unsigned int item_kind_ShieldNoParryCarry_entry;
 		static unsigned int item_kind_ShieldNoParryCarry_exit_1;
 		static unsigned int item_kind_ShieldNoParryCarry_exit_2;
+
+		static unsigned int item_kind_ShieldNoParryCouchedLance_entry;
+		static unsigned int item_kind_ShieldNoParryCouchedLance_exit_1;
+		static unsigned int item_kind_ShieldNoParryCouchedLance_exit_2;
+
+		static unsigned int item_kind_DisableAgentSoundsHorseShort_entry;
+		static unsigned int item_kind_DisableAgentSoundsHorseShort_exit_1;
+		static unsigned int item_kind_DisableAgentSoundsHorseShort_exit_2;
 
 		static unsigned int agent_BlockedAttack_entry;
 		static unsigned int agent_BlockedAttack_exit;

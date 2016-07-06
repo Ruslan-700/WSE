@@ -31,10 +31,8 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_DropItem_entry, AgentDropItemHook);
 	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloading_entry, AgentStartReloadingHook);
-	/*
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_1, AgentEndReloadingHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_EndReloading_entry_2, AgentEndReloadingHook);
-	*/
 	WSE->Hooks.HookFunction(this, wb::addresses::mission_SpawnMissile_entry, MissionSpawnMissileHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::missile_Dive_entry, MissileDiveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_Difficulty_entry, ItemDifficultyCheckHook);
@@ -44,6 +42,8 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryDamage_entry, ItemKindShieldNoParryDamageHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryMissiles_entry, ItemKindShieldNoParryMissilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParrySpeed_entry, ItemKindShieldNoParrySpeedHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCouchedLance_entry, ItemKindShieldNoParryCouchedLanceHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_DisableAgentSoundsHorseShort_entry, ItemKindDisableAgentSoundsHorseShortHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_BlockedAttack_entry, AgentBlockedAttackHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
@@ -52,6 +52,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
 	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCarry_entry, ItemKindShieldNoParryCarryHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloadingClient_entry, AgentStartReloadingClientHook);
 #endif	
 }
 
@@ -654,19 +655,17 @@ bool WSEMissionContext::OnAgentDropItem(wb::agent *agent, int item_no)
 
 void WSEMissionContext::OnAgentStartReloading(wb::agent *agent)
 {
-	//WSE->Scripting.SetTriggerParam(1, agent->no);
 	warband->basic_game.trigger_param_1 = agent->no;
 	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-105);
 }
 
 void WSEMissionContext::OnAgentEndReloading(wb::agent *agent)
 {
-	if (agent->attack_action == 5)
-	{
-		//WSE->Scripting.SetTriggerParam(1, agent->no);
+	//if (agent->attack_action == 5)
+	//{
 		warband->basic_game.trigger_param_1 = agent->no;
 		warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-106);
-	}
+	//}
 }
 
 void WSEMissionContext::OnMissileDive(wb::missile *missile)
@@ -693,13 +692,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 		warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
 		warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
 		warband->basic_game.trigger_param_6 = missile->no;
-		/*
-		WSE->Scripting.SetTriggerParam(1, missile->shooter_agent_no);
-		WSE->Scripting.SetTriggerParam(2, missile->shooting_item.item_no);
-		WSE->Scripting.SetTriggerParam(3, missile->shooting_item.get_modifier());
-		WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
-		WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
-		*/
+
 		item_kind->simple_triggers.execute(-104);
 	}
 }
@@ -740,6 +733,11 @@ bool WSEMissionContext::OnItemKindShieldNoParry(int item_no)
 bool WSEMissionContext::OnItemKindShieldNoParryCarry(wb::item_kind *item_kind)
 {
 	return (item_kind->get_type() == wb::itp_type_shield && (item_kind->properties & 0x4000) == 0);
+}
+
+bool WSEMissionContext::OnItemKindDisableAgentSounds(int item_no)
+{
+	return (warband->item_kinds[item_no].properties & 0x40000000000000) > 0;
 }
 
 void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent)

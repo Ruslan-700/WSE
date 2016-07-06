@@ -46,6 +46,7 @@ private:
 	bool OnMissionObjectWeaponKnockBack(wb::scene_prop *scene_prop);
 	bool OnItemKindShieldNoParry(int item_no);
 	bool OnItemKindShieldNoParryCarry(wb::item_kind *item_kind);
+	bool OnItemKindDisableAgentSounds(int item_no);
 	void OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent);
 
 public:

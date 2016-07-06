@@ -43,3 +43,6 @@ ti_on_missile_dive = -104.0 #can only be used in module_items triggers
 
 ti_on_agent_start_reloading = -105.0 #can only be used in module_mission_templates triggers
 # Trigger Param 1: agent no
+
+ti_on_agent_end_reloading = -106.0 #can only be used in module_mission_templates triggers
+# Trigger Param 1: agent no

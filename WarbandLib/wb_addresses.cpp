@@ -168,6 +168,8 @@ unsigned int addresses::agent_DropItem_exit = agent_DropItem_entry + 6;
 
 //unsigned int addresses::agent_StartReloading_entry = 0x0050AC78;
 unsigned int addresses::agent_StartReloading_entry = 0x004CE8D6;
+unsigned int addresses::agent_StartReloadingClient_entry = 0x004CE8AC;
+unsigned int addresses::agent_StartReloadingClient_exit = agent_StartReloadingClient_entry + 10;
 
 //unsigned int addresses::agent_EndReloading_entry_1 = 0x0050B83E;
 //unsigned int addresses::agent_EndReloading_entry_2 = 0x0050B7DA;
@@ -202,6 +204,14 @@ unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x004A8B2D;
 unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0x004EFC60;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = item_kind_ShieldNoParryCarry_entry + 9;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0x004EFCEC;
+
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_entry = 0x004E99B0;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_1 = item_kind_ShieldNoParryCouchedLance_entry + 9;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_2 = 0x004E9709;
+
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_entry = 0x004CC538;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_1 = item_kind_DisableAgentSoundsHorseShort_entry + 5;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x004CC569;
 
 unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
@@ -343,6 +353,8 @@ unsigned int addresses::agent_DropItem_entry = 0x00512036;
 unsigned int addresses::agent_DropItem_exit = agent_DropItem_entry + 6;
 
 unsigned int addresses::agent_StartReloading_entry = 0x0050EA18;
+unsigned int addresses::agent_StartReloadingClient_entry = 0x004CE8AC;
+unsigned int addresses::agent_StartReloadingClient_exit = agent_StartReloadingClient_entry + 10;
 
 unsigned int addresses::agent_EndReloading_entry_1 = 0x0050F5DE;
 unsigned int addresses::agent_EndReloading_entry_2 = 0x0050F57A;
@@ -375,6 +387,14 @@ unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x004A8B2D;
 unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0x004EFC60;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = item_kind_ShieldNoParryCarry_entry + 9;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0x004EFCEC;
+
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_entry = 0x004E99B0;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_1 = item_kind_ShieldNoParryCouchedLance_entry + 9;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_2 = 0x004E9709;
+
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_entry = 0x004CC538;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_1 = item_kind_DisableAgentSoundsHorseShort_entry + 5;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x004CC569;
 
 unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
@@ -553,6 +573,8 @@ unsigned int addresses::agent_DropItem_exit = agent_DropItem_entry + 6;
 
 //unsigned int addresses::agent_StartReloading_entry = 0x00465F55;
 unsigned int addresses::agent_StartReloading_entry = 0x00467B99;
+unsigned int addresses::agent_StartReloadingClient_entry = 0;
+unsigned int addresses::agent_StartReloadingClient_exit = 0;
 
 //unsigned int addresses::agent_EndReloading_entry_1 = 0x004669C2;
 //unsigned int addresses::agent_EndReloading_entry_2 = 0x00466A03;
@@ -587,6 +609,14 @@ unsigned int addresses::item_kind_ShieldNoParrySpeed_exit_2 = 0x00457734;
 unsigned int addresses::item_kind_ShieldNoParryCarry_entry = 0;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_1 = 0;
 unsigned int addresses::item_kind_ShieldNoParryCarry_exit_2 = 0;
+
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_entry = 0x00491AE0;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_1 = item_kind_ShieldNoParryCouchedLance_entry + 9;
+unsigned int addresses::item_kind_ShieldNoParryCouchedLance_exit_2 = 0x00491839;
+
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_entry = 0x004654E2;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_1 = item_kind_DisableAgentSoundsHorseShort_entry + 5;
+unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x00465513;
 
 unsigned int addresses::agent_BlockedAttack_entry = 0x00495059;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;

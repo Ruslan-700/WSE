@@ -730,6 +730,19 @@ void __declspec(naked) AgentStartReloadingHook()
 	}
 }
 
+void __declspec(naked) AgentStartReloadingClientHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push ebp
+		CALL_CONTEXT_FUNC(Mission, OnAgentStartReloading)
+		RESTORE_REGS
+		mov dword ptr[ebp+24060], 5
+		jmp[wb::addresses::agent_StartReloadingClient_exit]
+	}
+}
+
 void __declspec(naked) AgentEndReloadingHook()
 {
 	_asm
@@ -924,6 +937,40 @@ void __declspec(naked) ItemKindShieldNoParryCarryHook()
 	}
 }
 
+void __declspec(naked) ItemKindShieldNoParryCouchedLanceHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push dword ptr[eax]
+		CALL_CONTEXT_FUNC(Mission, OnItemKindShieldNoParry)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryCouchedLance_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_ShieldNoParryCouchedLance_exit_2]
+	}
+}
+
+void __declspec(naked) ItemKindDisableAgentSoundsHorseShortHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push [ebx + 668]
+		CALL_CONTEXT_FUNC(Mission, OnItemKindDisableAgentSounds)
+		test al, al
+		jnz continue_exec
+		RESTORE_REGS
+		mov eax, 108
+		jmp[wb::addresses::item_kind_DisableAgentSoundsHorseShort_exit_1]
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::item_kind_DisableAgentSoundsHorseShort_exit_2]
+	}
+}
 
 void __declspec(naked) AgentBlockedAttackHook()
 {
