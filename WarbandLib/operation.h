@@ -29,6 +29,7 @@ namespace wb
 		store_script_param_2 = 22,
 		store_script_param = 23,
 		ge = 30,
+		ban_player = 466,
 	};
 
 	/*struct operand

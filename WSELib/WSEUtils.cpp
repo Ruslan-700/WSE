@@ -80,3 +80,12 @@ rgl::string format(const char *format, ...)
 	va_end(ap);
 	return buffer;
 }
+
+void game_memcpy_s(void *dest, const unsigned char *src, int num_bytes)
+{
+	DWORD prot_old, prot_new;
+
+	VirtualProtect(dest, num_bytes, PAGE_EXECUTE_READWRITE, &prot_old);
+	memcpy_s(dest, num_bytes, src, num_bytes);
+	VirtualProtect(dest, num_bytes, prot_old, &prot_new);
+}

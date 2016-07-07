@@ -24,6 +24,7 @@ player_set_skin               = 2900 #(player_set_skin, <player_no>, <skin_no>),
 player_stop_controlling_agent = 2901 #(player_stop_controlling_agent, <player_no>), #Gives <player_no>'s agent back to AI control (requires network_compatible = 0 in wse_settings.ini)
 player_set_banner_id          = 2902 #(player_set_banner_id, <player_no>, <banner_no>), #Sets <player_no>'s banner to <banner_no>
 player_set_username           = 2903 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
+player_temp_ban				  = 2904 #(player_temp_ban, <player_no>, <ban_time>), #Bans <player_no> temporarily for <ban_time> seconds
 
 register_get                  = 3000 #(register_get, <destination>, <index>), #Stores the value of register <index> into <destination>
 register_set                  = 3001 #(register_set, <index>, <value>), #Sets the value of register <index> to <value>

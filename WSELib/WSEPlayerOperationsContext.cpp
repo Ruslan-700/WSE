@@ -145,6 +145,28 @@ void PlayerSetUsername(WSEPlayerOperationsContext *context)
 	player->name_lowercase = name_lowercase;
 }
 
+void PlayerTempBan(WSEPlayerOperationsContext *context)
+{
+	int player_no, banTime;
+
+	context->ExtractValue(player_no);
+	context->ExtractValue(banTime);
+
+	if (!warband->basic_game.is_server())
+		return;
+
+	double fBanTime = (double)banTime;
+
+	double oldGameBanTime = *((double*)wb::addresses::temp_ban_time_dbl_ptr);
+
+	game_memcpy_s((void *)wb::addresses::temp_ban_time_dbl_ptr, (unsigned char*)&fBanTime, sizeof(double));
+
+	std::vector<int> ops { player_no, 1 };
+	WSE->Scripting.ExecuteScriptOperation(wb::ban_player, ops);
+
+	game_memcpy_s((void *)wb::addresses::temp_ban_time_dbl_ptr, (unsigned char*)&oldGameBanTime, sizeof(double));
+}
+
 WSEPlayerOperationsContext::WSEPlayerOperationsContext() : WSEOperationContext("player", 2900, 2999)
 {
 }
@@ -175,4 +197,8 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_set_username", PlayerSetUsername, Both, None, 2, 2,
 		"Sets <0>'s username to <1>",
 		"player_no", "string_no");
+
+	RegisterOperation("player_temp_ban", PlayerTempBan, Both, None, 2, 2,
+		"Bans <0> temporarily for <1> seconds",
+		"player_no", "ban_time");
 }

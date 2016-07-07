@@ -914,3 +914,31 @@ bool WSEScriptingContext::OnOperationExecute(wb::operation *operation, int *oper
 
 	return false;
 }
+
+void WSEScriptingContext::ExecuteScriptOperation(int opcode)
+{
+	std::vector<int> tmp;
+	this->ExecuteScriptOperation(opcode, tmp);
+}
+
+void WSEScriptingContext::ExecuteScriptOperation(int opcode, const std::vector<int> &operands)
+{
+	if (operands.size() < 0 || operands.size() > 16)
+		return;
+
+	wb::operation_manager mgr;
+
+	__int64 params[16];
+	int num_params = 0;
+
+	mgr.num_operations = 1;
+	mgr.operations = rgl::_new<wb::operation>(mgr.num_operations);
+
+	mgr.operations[0].opcode = wb::ban_player;
+	mgr.operations[0].num_operands = operands.size();
+
+	for (size_t i = 0; i < operands.size(); i++)
+		mgr.operations[0].operands[i] = operands[i];
+
+	mgr.execute(0, 0, num_params, params);
+}

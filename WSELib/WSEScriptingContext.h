@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 #include "WSEContext.h"
 #include "warband.h"
 
@@ -105,6 +106,8 @@ public:
 	void UnregisterOperations(WSEContext *context);
 	int GetTriggerParam(int index) const;
 	void SetTriggerParam(int index, int value);
+	void ExecuteScriptOperation(int opcode);
+	void ExecuteScriptOperation(int opcode, const std::vector<int> &operands);
 
 private:
 	void DumpOperationsHeader();
