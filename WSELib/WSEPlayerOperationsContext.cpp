@@ -155,11 +155,11 @@ void PlayerTempBan(WSEPlayerOperationsContext *context)
 	if (!warband->basic_game.is_server())
 		return;
 
-	double fBanTime = (double)banTime;
+	double dBanTime = (double)banTime;
 
 	double oldGameBanTime = *((double*)wb::addresses::temp_ban_time_dbl_ptr);
 
-	game_memcpy_s((void *)wb::addresses::temp_ban_time_dbl_ptr, (unsigned char*)&fBanTime, sizeof(double));
+	game_memcpy_s((void *)wb::addresses::temp_ban_time_dbl_ptr, (unsigned char*)&dBanTime, sizeof(double));
 
 	std::vector<int> ops { player_no, 1 };
 	WSE->Scripting.ExecuteScriptOperation(wb::ban_player, ops);
