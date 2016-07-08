@@ -242,10 +242,10 @@
     <ClInclude Include="WSEArrayOperationsContext.h">
       <Filter>Header Files\operations</Filter>
     </ClInclude>
-    <ClInclude Include="WSEDynMultiArray.h">
+    <ClInclude Include="WSESimpleCharBuff.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="WSEDynMultiArray2.h">
+    <ClInclude Include="WSEDynMultiArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

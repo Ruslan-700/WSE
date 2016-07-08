@@ -2,6 +2,7 @@
 
 #include "WSE.h"
 #include "warband.h"
+#include "WSEDynMultiArray.h"
 #include <string>
 #include <algorithm>
 
@@ -140,19 +141,19 @@ int ArrayCreate(WSEArrayOperationsContext *context)
 
 	if ((dims.size() > 0) && (dims.size() <= MAX_DIMENSIONS)){
 		if (typeId == type_id::num){
-			WSEDynMultiArray2<int> *ptr = new WSEDynMultiArray2<int>(dims, (type_id)typeId);
+			WSEDynMultiArray<int> *ptr = new WSEDynMultiArray<int>(dims, (type_id)typeId);
 			if (ptr->isValid())
 				return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 			delete ptr;
 		}
 		else if (typeId == type_id::str){
-			WSEDynMultiArray2<std::string> *ptr = new WSEDynMultiArray2<std::string>(dims, (type_id)typeId);
+			WSEDynMultiArray<std::string> *ptr = new WSEDynMultiArray<std::string>(dims, (type_id)typeId);
 			if (ptr->isValid())
 				return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 			delete ptr;
 		}
 		else if (typeId == type_id::pos){
-			WSEDynMultiArray2<rgl::matrix> *ptr = new WSEDynMultiArray2<rgl::matrix>(dims, (type_id)typeId);
+			WSEDynMultiArray<rgl::matrix> *ptr = new WSEDynMultiArray<rgl::matrix>(dims, (type_id)typeId);
 			if (ptr->isValid())
 				return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 			delete ptr;
@@ -163,7 +164,7 @@ int ArrayCreate(WSEArrayOperationsContext *context)
 	}
 
 	context->ScriptError("invalid array dimensions: " + IntVecToStr(dims));
-	return 0; //won't happen
+	return 0; //won't happen but ide will shut up
 }
 
 void ArrayFree(WSEArrayOperationsContext *context)
@@ -188,27 +189,27 @@ int ArrayCopy(WSEArrayOperationsContext *context)
 	typeId = srcPtr->getTypeID();
 
 	if (typeId == type_id::num){
-		WSEDynMultiArray2<int> *src = (WSEDynMultiArray2<int> *) srcPtr;
+		WSEDynMultiArray<int> *src = (WSEDynMultiArray<int> *) srcPtr;
 
-		WSEDynMultiArray2<int> *ptr = new WSEDynMultiArray2<int>(src);
+		WSEDynMultiArray<int> *ptr = new WSEDynMultiArray<int>(src);
 
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 		delete ptr;
 	}
 	else if (typeId == type_id::str){
-		WSEDynMultiArray2<std::string> *src = (WSEDynMultiArray2<std::string> *) srcPtr;
+		WSEDynMultiArray<std::string> *src = (WSEDynMultiArray<std::string> *) srcPtr;
 
-		WSEDynMultiArray2<std::string> *ptr = new WSEDynMultiArray2<std::string>(src);
+		WSEDynMultiArray<std::string> *ptr = new WSEDynMultiArray<std::string>(src);
 
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 		delete ptr;
 	}
 	else if (typeId == type_id::pos){
-		WSEDynMultiArray2<rgl::matrix> *src = (WSEDynMultiArray2<rgl::matrix> *) srcPtr;
+		WSEDynMultiArray<rgl::matrix> *src = (WSEDynMultiArray<rgl::matrix> *) srcPtr;
 
-		WSEDynMultiArray2<rgl::matrix> *ptr = new WSEDynMultiArray2<rgl::matrix>(src);
+		WSEDynMultiArray<rgl::matrix> *ptr = new WSEDynMultiArray<rgl::matrix>(src);
 
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
@@ -263,24 +264,24 @@ int ArrayLoadFromFile(WSEArrayOperationsContext *context)
 
 	int version = getVersionFromFile(file);
 	if (version > WSE_ARRAY_VERSION)
-		context->ScriptError("array file version is newer than current version");
+		context->ScriptError("array file version is newer than the current version");
 
 	type_id typeId = getDataTypeIdFromFile(file);
 
 	if (typeId == type_id::num){
-		WSEDynMultiArray2<int> *ptr = new WSEDynMultiArray2<int>(file, ReadIntFromMemory, typeId);
+		WSEDynMultiArray<int> *ptr = new WSEDynMultiArray<int>(file, ReadIntFromMemory, typeId);
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 		delete ptr;
 	}
 	else if (typeId == type_id::str){
-		WSEDynMultiArray2<std::string> *ptr = new WSEDynMultiArray2<std::string>(file, ReadStrFromMemory, typeId);
+		WSEDynMultiArray<std::string> *ptr = new WSEDynMultiArray<std::string>(file, ReadStrFromMemory, typeId);
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 		delete ptr;
 	}
 	else if (typeId == type_id::pos){
-		WSEDynMultiArray2<rgl::matrix> *ptr = new WSEDynMultiArray2<rgl::matrix>(file, ReadPosFromMemory, typeId);
+		WSEDynMultiArray<rgl::matrix> *ptr = new WSEDynMultiArray<rgl::matrix>(file, ReadPosFromMemory, typeId);
 		if (ptr->isValid())
 			return WSE->Objects.AllocObject(context->m_type, (void*)ptr);
 		delete ptr;
@@ -310,7 +311,7 @@ void ArraySetVal(WSEArrayOperationsContext *context)
 	int typeID = ((WSEBasicDynMultiArray *)ptr)->getTypeID();
 
 	if (typeID == type_id::num){
-		WSEDynMultiArray2<int> *array = (WSEDynMultiArray2<int> *) ptr;
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
 		int value;
 		context->ExtractValue(value);
@@ -320,7 +321,7 @@ void ArraySetVal(WSEArrayOperationsContext *context)
 			context->ScriptError("failed to set index: " + IntVecToStr(indices));
 	}
 	else if (typeID == type_id::str){
-		WSEDynMultiArray2<std::string> *array = (WSEDynMultiArray2 <std::string> *) ptr;
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
 		std::string value;
 		context->ExtractString(value);
@@ -330,7 +331,7 @@ void ArraySetVal(WSEArrayOperationsContext *context)
 			context->ScriptError("failed to set index: " + IntVecToStr(indices));
 	}
 	else if (typeID == type_id::pos){
-		WSEDynMultiArray2<rgl::matrix> *array = (WSEDynMultiArray2 <rgl::matrix> *) ptr;
+		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
 		int preg;
 		rgl::matrix value;
@@ -357,7 +358,7 @@ void ArrayGetVal(WSEArrayOperationsContext *context)
 	int typeID = ((WSEBasicDynMultiArray *)ptr)->getTypeID();
 
 	if (typeID == type_id::num){
-		WSEDynMultiArray2<int> *array = (WSEDynMultiArray2<int> *) ptr;
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
 		const int *value = array->getIndex(indices);
 		if (value == NULL)
@@ -368,7 +369,7 @@ void ArrayGetVal(WSEArrayOperationsContext *context)
 	else if (typeID == type_id::str){
 		CheckReg(context, dreg);
 
-		WSEDynMultiArray2<std::string> *array = (WSEDynMultiArray2 <std::string> *) ptr;
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
 		const std::string *value = array->getIndex(indices);
 		if (value == NULL)
@@ -379,7 +380,7 @@ void ArrayGetVal(WSEArrayOperationsContext *context)
 	else if (typeID == type_id::pos){
 		CheckReg(context, dreg);
 
-		WSEDynMultiArray2<rgl::matrix> *array = (WSEDynMultiArray2 <rgl::matrix> *) ptr;
+		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
 		const rgl::matrix *value = array->getIndex(indices);
 		if (value == NULL)
@@ -410,24 +411,24 @@ void ArrayPush(WSEArrayOperationsContext *context)
 		}
 
 		if (destTypeID == type_id::num){
-			WSEDynMultiArray2<int> *destArray = (WSEDynMultiArray2<int> *) baseDestArray;
-			WSEDynMultiArray2<int> *srcArray = (WSEDynMultiArray2<int> *) baseSrcArray;
+			WSEDynMultiArray<int> *destArray = (WSEDynMultiArray<int> *) baseDestArray;
+			WSEDynMultiArray<int> *srcArray = (WSEDynMultiArray<int> *) baseSrcArray;
 
 			if (!destArray->push_back(*srcArray)){
 				context->ScriptError("failed to push array [%i] on array [%i]", srcId, destId);
 			}
 		}
 		else if (destTypeID == type_id::str){
-			WSEDynMultiArray2<std::string> *destArray = (WSEDynMultiArray2<std::string> *) baseDestArray;
-			WSEDynMultiArray2<std::string> *srcArray = (WSEDynMultiArray2<std::string> *) baseSrcArray;
+			WSEDynMultiArray<std::string> *destArray = (WSEDynMultiArray<std::string> *) baseDestArray;
+			WSEDynMultiArray<std::string> *srcArray = (WSEDynMultiArray<std::string> *) baseSrcArray;
 
 			if (!destArray->push_back(*srcArray)){
 				context->ScriptError("failed to push array [%i] on array [%i]", srcId, destId);
 			}
 		}
 		else if (destTypeID == type_id::pos){
-			WSEDynMultiArray2<rgl::matrix> *destArray = (WSEDynMultiArray2<rgl::matrix> *) baseDestArray;
-			WSEDynMultiArray2<rgl::matrix> *srcArray = (WSEDynMultiArray2<rgl::matrix> *) baseSrcArray;
+			WSEDynMultiArray<rgl::matrix> *destArray = (WSEDynMultiArray<rgl::matrix> *) baseDestArray;
+			WSEDynMultiArray<rgl::matrix> *srcArray = (WSEDynMultiArray<rgl::matrix> *) baseSrcArray;
 
 			if (!destArray->push_back(*srcArray)){
 				context->ScriptError("failed to push array [%i] on array [%i]", srcId, destId);
@@ -436,7 +437,7 @@ void ArrayPush(WSEArrayOperationsContext *context)
 	}
 	else if (baseDestArray->getDimCount() == 1){
 		if (destTypeID == type_id::num){
-			WSEDynMultiArray2<int> *destArray = (WSEDynMultiArray2<int> *) baseDestArray;
+			WSEDynMultiArray<int> *destArray = (WSEDynMultiArray<int> *) baseDestArray;
 
 			int val;
 			context->ExtractValue(val);
@@ -446,7 +447,7 @@ void ArrayPush(WSEArrayOperationsContext *context)
 			}
 		}
 		else if (destTypeID == type_id::str){
-			WSEDynMultiArray2<std::string> *destArray = (WSEDynMultiArray2<std::string> *) baseDestArray;
+			WSEDynMultiArray<std::string> *destArray = (WSEDynMultiArray<std::string> *) baseDestArray;
 
 			std::string val;
 			context->ExtractString(val);
@@ -456,7 +457,7 @@ void ArrayPush(WSEArrayOperationsContext *context)
 			}
 		}
 		else if (destTypeID == type_id::pos){
-			WSEDynMultiArray2<rgl::matrix> *destArray = (WSEDynMultiArray2<rgl::matrix> *) baseDestArray;
+			WSEDynMultiArray<rgl::matrix> *destArray = (WSEDynMultiArray<rgl::matrix> *) baseDestArray;
 
 			int pReg;
 			context->ExtractRegister(pReg);
@@ -488,7 +489,7 @@ void ArrayPop(WSEArrayOperationsContext *context)
 	}
 	else{
 		if (baseArray->getTypeID() == type_id::num){
-			WSEDynMultiArray2<int> *arr = (WSEDynMultiArray2<int> *)baseArray;
+			WSEDynMultiArray<int> *arr = (WSEDynMultiArray<int> *)baseArray;
 
 			int *val = arr->pop_back_single();
 
@@ -500,7 +501,7 @@ void ArrayPop(WSEArrayOperationsContext *context)
 		}
 		else if (baseArray->getTypeID() == type_id::num){
 			CheckReg(context, dReg);
-			WSEDynMultiArray2<std::string> *arr = (WSEDynMultiArray2<std::string> *)baseArray;
+			WSEDynMultiArray<std::string> *arr = (WSEDynMultiArray<std::string> *)baseArray;
 
 			std::string *val = arr->pop_back_single();
 
@@ -512,7 +513,7 @@ void ArrayPop(WSEArrayOperationsContext *context)
 		}
 		else if (baseArray->getTypeID() == type_id::num){
 			CheckReg(context, dReg);
-			WSEDynMultiArray2<rgl::matrix> *arr = (WSEDynMultiArray2<rgl::matrix> *)baseArray;
+			WSEDynMultiArray<rgl::matrix> *arr = (WSEDynMultiArray<rgl::matrix> *)baseArray;
 
 			rgl::matrix *val = arr->pop_back_single();
 
@@ -536,7 +537,7 @@ void ArraySetValAll(WSEArrayOperationsContext *context)
 	int typeID = ((WSEBasicDynMultiArray *)ptr)->getTypeID();
 
 	if (typeID == type_id::num){
-		WSEDynMultiArray2<int> *array = (WSEDynMultiArray2<int> *) ptr;
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
 		int value;
 		context->ExtractValue(value);
@@ -545,7 +546,7 @@ void ArraySetValAll(WSEArrayOperationsContext *context)
 			context->ScriptError("failed to set all values");
 	}
 	else if (typeID == type_id::str){
-		WSEDynMultiArray2<std::string> *array = (WSEDynMultiArray2 <std::string> *) ptr;
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
 		std::string value;
 		context->ExtractString(value);
@@ -554,7 +555,7 @@ void ArraySetValAll(WSEArrayOperationsContext *context)
 			context->ScriptError("failed to set all values");
 	}
 	else if (typeID == type_id::pos){
-		WSEDynMultiArray2<rgl::matrix> *array = (WSEDynMultiArray2 <rgl::matrix> *) ptr;
+		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
 		int preg;
 		rgl::matrix value;
@@ -629,14 +630,14 @@ void ArraySort(WSEArrayOperationsContext *context)
 
 	if (typeID == type_id::num){
 		context->setSortMode(sortMode, 1, false);
-		WSEDynMultiArray2<int> *array = (WSEDynMultiArray2<int> *) ptr;
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
 		if (!array->sort(indices, context->cmpIntCB, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else if (typeID == type_id::str){
 		context->setSortMode(sortMode, 3, false);
-		WSEDynMultiArray2<std::string> *array = (WSEDynMultiArray2 <std::string> *) ptr;
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
 		if (!array->sort(indices, context->cmpStrCB, 0, end))
 			context->ScriptError("failed to sort array");
@@ -655,7 +656,7 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 	context->ExtractValue(cmp_script_no);
 	context->ExtractVector(indices, -1);
 
-	if (cmp_script_no < 0)
+	if (cmp_script_no < 0 || !WSE->Game.HasScript(cmp_script_no))
 		context->ScriptError("invalid script no");
 
 	context->setSortMode(cmp_script_no, 0, true);
@@ -663,22 +664,22 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 	WSEBasicDynMultiArray *ptr = (WSEBasicDynMultiArray *)context->GetArray(id);
 
 	type_id typeID = ptr->getTypeID();
-	int end = ptr->getDimSize(0);
+	int end = ptr->getDimSize(0) - 1;
 
 	if (typeID == type_id::num){
-		WSEDynMultiArray2<int> *array = (WSEDynMultiArray2<int> *) ptr;
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
 		if (!array->sort(indices, context->cmpIntCB, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else if (typeID == type_id::str){
-		WSEDynMultiArray2<std::string> *array = (WSEDynMultiArray2 <std::string> *) ptr;
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
 		if (!array->sort(indices, context->cmpStrCB, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else {
-		WSEDynMultiArray2<rgl::matrix> *array = (WSEDynMultiArray2 <rgl::matrix> *) ptr;
+		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
 		if (!array->sort(indices, context->cmpPosCB, 0, end))
 			context->ScriptError("failed to sort array");

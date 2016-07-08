@@ -410,7 +410,6 @@
     <ClInclude Include="WSEDictionaryOperationsContext.h" />
     <ClInclude Include="WSEArray.h" />
     <ClInclude Include="WSEDynMultiArray.h" />
-    <ClInclude Include="WSEDynMultiArray2.h" />
     <ClInclude Include="WSEEditModeOperationsContext.h" />
     <ClInclude Include="WSEEngineOperationsContext.h" />
     <ClInclude Include="WSEFloatingPointOperationsContext.h" />

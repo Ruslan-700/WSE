@@ -1,6 +1,6 @@
 #pragma once
 
-#include "WSEDynMultiArray2.h"
+#include <functional>
 #include "WSEObjectManager.h"
 #include "WSEOperationContext.h"
 

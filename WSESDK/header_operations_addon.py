@@ -332,7 +332,7 @@ array_sort            = 5015 #(array_sort, <array_id>, <sort_mode>, [<index0>], 
                              #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
 array_sort_custom     = 5016 #(array_sort_custom, <array_id>, <cmp_script_no>, [<index0>], [<index1>], ... [<index13>]),
                              #Sorts the array with <array_id>. <cmp_script_no> must compare its two input values 
-                             #(script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before the second, and zero otherwise.
+                             #(script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, <x>) where <x> is nonzero if the first value goes before the second, and zero otherwise.
                              #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
 
 lhs_operations += [
