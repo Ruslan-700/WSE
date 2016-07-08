@@ -934,7 +934,7 @@ void WSEScriptingContext::ExecuteScriptOperation(int opcode, const std::vector<i
 	mgr.num_operations = 1;
 	mgr.operations = rgl::_new<wb::operation>(mgr.num_operations);
 
-	mgr.operations[0].opcode = wb::ban_player;
+	mgr.operations[0].opcode = opcode;
 	mgr.operations[0].num_operands = operands.size();
 
 	for (size_t i = 0; i < operands.size(); i++)
