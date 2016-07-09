@@ -107,6 +107,7 @@ class WSEDynMultiArray : public WSEBasicDynMultiArray
 {
 public:
 	typedef void(*read_val_f)(char*, int, T&);
+	typedef bool(*cmp_vals_f)(const T&, const T&, const WSEArraySortOptions &opts);
 
 	WSEDynMultiArray(const std::vector<int> &dimensions, type_id typeID) : WSEBasicDynMultiArray()
 	{
@@ -347,7 +348,7 @@ public:
 		return res;
 	}
 
-	bool sort(const std::vector<int> &indices, std::function<bool(const T&, const T&)> cmp_cb, int start, int end)
+	bool sort(const std::vector<int> &indices, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts, int start, int end)
 	{
 		if (!isValid())
 			return false;
@@ -366,7 +367,7 @@ public:
 		if (end < 0 || end >= dimSizes[0])
 			return false;
 
-		quickSort(indices, cmp_cb, start, end);
+		quickSort(indices, cmp_cb, opts, start, end);
 		return true;
 	}
 
@@ -582,15 +583,13 @@ protected:
 		int curIndex, curDimIndex;
 
 		if (isMultidim()){
-			void *curRawPointer = (*curPtr)[index];
-			curPtr = (std::vector<void*> *) curRawPointer;
+			curPtr = (std::vector<void*> *) (*curPtr)[index];
 			curDimIndex = 1;
 
 			while (isPtrDim(curDimIndex)){
 				int curIndex = indices[curDimIndex - 1];
-				curRawPointer = (*curPtr)[curIndex];
 
-				curPtr = (std::vector<void*> *) curRawPointer;
+				curPtr = (std::vector<void*> *) (*curPtr)[curIndex];
 				curDimIndex++;
 			}
 			curIndex = indices[curDimIndex - 1];
@@ -613,16 +612,18 @@ protected:
 		b = tmp;
 	}
 
-	void quickSort(const std::vector<int> &indices, std::function<bool(const T&, const T&)> cmp_cb, int left, int right) {
+	void quickSort(const std::vector<int> &indices, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts, int left, int right) {
 
 		int i = left, j = right;
-		T pivot = getIndexQuick((left + right) / 2, indices);
+		int mid = left + (right - left) / 2;
+
+		T pivot = getIndexQuick(mid, indices);
 
 		while (i <= j) {
-			while (cmp_cb(getIndexQuick(i, indices), pivot))
+			while (cmp_cb(getIndexQuick(i, indices), pivot, opts))
 				i++;
 
-			while (cmp_cb(pivot, getIndexQuick(j, indices)))
+			while (cmp_cb(pivot, getIndexQuick(j, indices), opts))
 				j--;
 
 			if (i <= j) {
@@ -633,9 +634,9 @@ protected:
 		}
 
 		if (left < j)
-			quickSort(indices, cmp_cb, left, j);
+			quickSort(indices, cmp_cb, opts, left, j);
 
 		if (i < right)
-			quickSort(indices, cmp_cb, i, right);
+			quickSort(indices, cmp_cb, opts, i, right);
 	}
 };

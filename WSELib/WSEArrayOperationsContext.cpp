@@ -629,17 +629,21 @@ void ArraySort(WSEArrayOperationsContext *context)
 	int end = ptr->getDimSize(0) - 1;
 
 	if (typeID == type_id::num){
-		context->setSortMode(sortMode, 1, false);
+		if(!context->sortOptions.setSortMode(sortMode, 1, false))
+			context->ScriptError("invalid sort mode");
+
 		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
-		if (!array->sort(indices, context->cmpIntCB, 0, end))
+		if (!array->sort(indices, cmpInt, context->sortOptions, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else if (typeID == type_id::str){
-		context->setSortMode(sortMode, 3, false);
+		if (!context->sortOptions.setSortMode(sortMode, 3, false))
+			context->ScriptError("invalid sort mode");
+
 		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
-		if (!array->sort(indices, context->cmpStrCB, 0, end))
+		if (!array->sort(indices, cmpStr, context->sortOptions, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else {
@@ -656,10 +660,8 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 	context->ExtractValue(cmp_script_no);
 	context->ExtractVector(indices, -1);
 
-	if (cmp_script_no < 0 || !WSE->Game.HasScript(cmp_script_no))
+	if (!context->sortOptions.setSortMode(cmp_script_no, 0, true))
 		context->ScriptError("invalid script no");
-
-	context->setSortMode(cmp_script_no, 0, true);
 
 	WSEBasicDynMultiArray *ptr = (WSEBasicDynMultiArray *)context->GetArray(id);
 
@@ -669,19 +671,19 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 	if (typeID == type_id::num){
 		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
-		if (!array->sort(indices, context->cmpIntCB, 0, end))
+		if (!array->sort(indices, cmpInt, context->sortOptions, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else if (typeID == type_id::str){
 		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
-		if (!array->sort(indices, context->cmpStrCB, 0, end))
+		if (!array->sort(indices, cmpStr, context->sortOptions, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 	else {
 		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
-		if (!array->sort(indices, context->cmpPosCB, 0, end))
+		if (!array->sort(indices, cmpPos, context->sortOptions, 0, end))
 			context->ScriptError("failed to sort array");
 	}
 }
@@ -690,11 +692,6 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 
 WSEArrayOperationsContext::WSEArrayOperationsContext() : WSEOperationContext("array", 5000, 5099)
 {
-	using namespace std::placeholders;
-
-	cmpIntCB = std::bind(&WSEArrayOperationsContext::cmpInt, this, _1, _2);
-	cmpStrCB = std::bind(&WSEArrayOperationsContext::cmpStr, this, _1, _2);
-	cmpPosCB = std::bind(&WSEArrayOperationsContext::cmpPos, this, _1, _2);
 }
 
 void *WSEArrayOperationsContext::GetArray(int id)
@@ -710,76 +707,6 @@ void *WSEArrayOperationsContext::GetArray(int id)
 	ScriptError("operand [%i] is not a valid array", id);
 }
 
-bool WSEArrayOperationsContext::cmpInt(const int &a, const int &b)
-{
-	if (sortCmpScriptNo >= 0){
-		return customCmp(a, b);
-	}
-
-	if (sortDescending)
-		return b < a;
-
-	return a < b;
-}
-
-bool WSEArrayOperationsContext::cmpStr(const std::string &a, const std::string &b)
-{
-	if (sortCmpScriptNo >= 0){
-		warband->basic_game.string_registers[0] = a;
-		warband->basic_game.string_registers[1] = b;
-		return customCmp(0, 0);
-	}
-
-	if (sortCaseInsensitive){
-		std::string a1(a.size(), 0);
-		std::string b1(b.size(), 0);
-
-		std::transform(a.begin(), a.end(), a1.begin(), ::tolower);
-		std::transform(b.begin(), b.end(), b1.begin(), ::tolower);
-
-		if (sortDescending)
-			return b1 < a1;
-
-		return a1 < b1;
-	}
-
-	if (sortDescending)
-		return b < a;
-	
-	return a < b;
-}
-
-bool WSEArrayOperationsContext::cmpPos(const rgl::matrix &a, const rgl::matrix &b)
-{
-	warband->basic_game.position_registers[0] = a;
-	warband->basic_game.position_registers[1] = b;
-	return customCmp(0, 0);
-}
-
-bool WSEArrayOperationsContext::customCmp(int arg1, int arg2)
-{
-	WSE->Game.ExecuteScript(sortCmpScriptNo, 2, arg1, arg2);
-	return (WSE->CoreOperations.m_num_return_values == 1) && (WSE->CoreOperations.m_return_values[0] != 0);
-}
-
-void WSEArrayOperationsContext::setSortMode(int mode, int maxMode, bool isCustomScript)
-{
-	if (isCustomScript){
-		if (mode < 0)
-			ScriptError("invalid script no");
-
-		sortCmpScriptNo = mode;
-	}
-	else{
-		sortCmpScriptNo = -1;
-
-		if (mode < 0 || mode > maxMode)
-			ScriptError("invalid sort mode");
-
-		sortDescending = (mode & SORT_F_DESCENDING) == SORT_F_DESCENDING;
-		sortCaseInsensitive = (mode & SORT_F_CASE_INSENSITIVE) == SORT_F_CASE_INSENSITIVE;
-	}
-}
 
 void WSEArrayOperationsContext::OnLoad()
 {
@@ -861,4 +788,85 @@ void WSEArrayOperationsContext::OnLoad()
 void WSEArrayOperationsContext::OnUnload()
 {
 	WSE->Objects.FreeType(m_type);
+}
+
+
+bool WSEArraySortOptions::setSortMode(int mode, int maxMode, bool isCustomScript)
+{
+	if (isCustomScript){
+		if (mode < 0 || !WSE->Game.HasScript(mode))
+			return false;
+
+		sortCmpScriptNo = mode;
+	}
+	else{
+		sortCmpScriptNo = -1;
+
+		if (mode < 0 || mode > maxMode)
+			return false;
+
+		sortDescending = (mode & SORT_F_DESCENDING) == SORT_F_DESCENDING;
+		sortCaseInsensitive = (mode & SORT_F_CASE_INSENSITIVE) == SORT_F_CASE_INSENSITIVE;
+	}
+
+	return true;
+}
+
+bool cmpInt(const int &a, const int &b, const WSEArraySortOptions &opt)
+{
+	if (opt.sortCmpScriptNo >= 0){
+		return customCmp(a, b, opt);
+	}
+
+	if (opt.sortDescending)
+		return b < a;
+
+	return a < b;
+}
+
+bool cmpStr(const std::string &a, const std::string &b, const WSEArraySortOptions &opt)
+{
+	if (opt.sortCmpScriptNo >= 0){
+		warband->basic_game.string_registers[0] = a;
+		warband->basic_game.string_registers[1] = b;
+		return customCmp(0, 0, opt);
+	}
+
+	if (opt.sortCaseInsensitive){
+		std::string a1(a.size(), 0);
+		std::string b1(b.size(), 0);
+
+		std::transform(a.begin(), a.end(), a1.begin(), ::tolower);
+		std::transform(b.begin(), b.end(), b1.begin(), ::tolower);
+
+		if (opt.sortDescending)
+			return b1 < a1;
+
+		return a1 < b1;
+	}
+
+	if (opt.sortDescending)
+		return b < a;
+
+	return a < b;
+}
+
+bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, const WSEArraySortOptions &opt)
+{
+	warband->basic_game.position_registers[0] = a;
+	warband->basic_game.position_registers[1] = b;
+	return customCmp(0, 0, opt);
+}
+
+bool customCmp(int arg1, int arg2, const WSEArraySortOptions &opt)
+{
+	//WSE->Game.ExecuteScript(opt.sortCmpScriptNo, 2, arg1, arg2);
+	__int64 params[16];
+	int num_params = 2;
+	params[0] = arg1;
+	params[1] = arg2;
+
+	warband->script_manager.scripts[opt.sortCmpScriptNo].execute(2, params);
+
+	return (WSE->CoreOperations.m_num_return_values == 1) && (WSE->CoreOperations.m_return_values[0] != 0);
 }
