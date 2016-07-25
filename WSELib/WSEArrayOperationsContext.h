@@ -17,10 +17,10 @@ struct WSEArraySortOptions
 	bool setSortMode(int mode, int maxMode, bool isCustomScript);
 };
 
-bool cmpInt(const int &a, const int &b, const WSEArraySortOptions &opt);
-bool cmpStr(const std::string &a, const std::string &b, const WSEArraySortOptions &opt);
-bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, const WSEArraySortOptions &opt);
-bool customCmp(int arg1, int arg2, const WSEArraySortOptions &opt);
+bool cmpInt(const int &a, const int &b, size_t index1, size_t index2, const WSEArraySortOptions &opt);
+bool cmpStr(const std::string &a, const std::string &b, size_t index1, size_t index2, const WSEArraySortOptions &opt);
+bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, size_t index1, size_t index2, const WSEArraySortOptions &opt);
+bool customCmp(size_t index1, size_t index2, const WSEArraySortOptions &opt);
 
 class WSEArrayOperationsContext : public WSEOperationContext
 {

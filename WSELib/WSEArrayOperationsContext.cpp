@@ -812,24 +812,26 @@ bool WSEArraySortOptions::setSortMode(int mode, int maxMode, bool isCustomScript
 	return true;
 }
 
-bool cmpInt(const int &a, const int &b, const WSEArraySortOptions &opt)
+bool cmpInt(const int &a, const int &b, size_t index1, size_t index2, const WSEArraySortOptions &opt)
 {
 	if (opt.sortCmpScriptNo >= 0){
-		return customCmp(a, b, opt);
+		warband->basic_game.registers[0] = a;
+		warband->basic_game.registers[1] = b;
+		return customCmp(index1, index2, opt);
 	}
 
 	if (opt.sortDescending)
-		return b < a;
+		return b <= a;
 
-	return a < b;
+	return a <= b;
 }
 
-bool cmpStr(const std::string &a, const std::string &b, const WSEArraySortOptions &opt)
+bool cmpStr(const std::string &a, const std::string &b, size_t index1, size_t index2, const WSEArraySortOptions &opt)
 {
 	if (opt.sortCmpScriptNo >= 0){
 		warband->basic_game.string_registers[0] = a;
 		warband->basic_game.string_registers[1] = b;
-		return customCmp(0, 0, opt);
+		return customCmp(index1, index2, opt);
 	}
 
 	if (opt.sortCaseInsensitive){
@@ -840,31 +842,31 @@ bool cmpStr(const std::string &a, const std::string &b, const WSEArraySortOption
 		std::transform(b.begin(), b.end(), b1.begin(), ::tolower);
 
 		if (opt.sortDescending)
-			return b1 < a1;
+			return b1 <= a1;
 
-		return a1 < b1;
+		return a1 <= b1;
 	}
 
 	if (opt.sortDescending)
-		return b < a;
+		return b <= a;
 
-	return a < b;
+	return a <= b;
 }
 
-bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, const WSEArraySortOptions &opt)
+bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, size_t index1, size_t index2, const WSEArraySortOptions &opt)
 {
 	warband->basic_game.position_registers[0] = a;
 	warband->basic_game.position_registers[1] = b;
-	return customCmp(0, 0, opt);
+	return customCmp(index1, index2, opt);
 }
 
-bool customCmp(int arg1, int arg2, const WSEArraySortOptions &opt)
+bool customCmp(size_t index1, size_t index2, const WSEArraySortOptions &opt)
 {
 	//WSE->Game.ExecuteScript(opt.sortCmpScriptNo, 2, arg1, arg2);
-	__int64 params[16];
-	int num_params = 2;
-	params[0] = arg1;
-	params[1] = arg2;
+	__int64 params[16] = {
+		index1,
+		index2,
+	};
 
 	warband->script_manager.scripts[opt.sortCmpScriptNo].execute(2, params);
 
