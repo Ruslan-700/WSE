@@ -324,16 +324,21 @@ array_get_dim_size    = 5012 #(array_get_dim_size, <destination>, <array_id>, <d
 array_get_dim_count   = 5013 #(array_get_dim_count, <destination>, <array_id>), #Gets the the amount of dimensions of the array with <array_id> and stores it into <destination>.
 array_get_type_id     = 5014 #(array_get_type_id, <destination>, <array_id>), #Gets the the type id of the array with <array_id> and stores it into <destination>.
 
+							 #The following operations sort the array using a stable natural-mergesort algorithm.
+							 #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+							 
 array_sort            = 5015 #(array_sort, <array_id>, <sort_mode>, [<index0>], [<index1>], ... [<index13>]),
                              #Sorts the array with <array_id>. <sort_mode> can be: 
                              #[sort_m_int_asc or sort_m_int_desc] for int,
-                             #[sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str 
-                             #(asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case).
-                             #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+                             #[sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str						 
+                             #	(asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case).
+							 #For positions, use array_sort_custom                      
+							 
 array_sort_custom     = 5016 #(array_sort_custom, <array_id>, <cmp_script_no>, [<index0>], [<index1>], ... [<index13>]),
-                             #Sorts the array with <array_id>. <cmp_script_no> must compare its two input values 
-                             #(script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, <x>) where <x> is nonzero if the first value goes before the second, and zero otherwise.
-                             #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+                             #Sorts the array with <array_id>. <cmp_script_no> must compare its two input values
+                             #(reg0 and reg1 / s0 and s1 / pos0 and pos1) and use (return_values, <x>) where <x> is non-zero if the first value goes before the second, and zero otherwise.
+							 #script_param_1 and _2 hold the indices of the two values.
+                             #The sorting won't be successful if the compare script does not work properly. The algorithm will abort at some point and not go into an infinite loop, it may however take extremely long to finish on big arrays.
 
 lhs_operations += [
 	store_trigger_param,

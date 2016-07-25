@@ -107,7 +107,13 @@ class WSEDynMultiArray : public WSEBasicDynMultiArray
 {
 public:
 	typedef void(*read_val_f)(char*, int, T&);
-	typedef bool(*cmp_vals_f)(const T&, const T&, const WSEArraySortOptions &opts);
+	typedef bool(*cmp_vals_f)(const T&, const T&, size_t, size_t, const WSEArraySortOptions&);
+
+	struct tmpSortElement
+	{
+		T *srcValPtr;
+		size_t srcValIndex;
+	};
 
 	WSEDynMultiArray(const std::vector<int> &dimensions, type_id typeID) : WSEBasicDynMultiArray()
 	{
@@ -367,8 +373,7 @@ public:
 		if (end < 0 || end >= dimSizes[0])
 			return false;
 
-		quickSort(indices, cmp_cb, opts, start, end);
-		return true;
+		return mergeSort(indices, cmp_cb, opts);
 	}
 
 protected:
@@ -576,67 +581,135 @@ protected:
 		return NULL;
 	}
 
-	T &getIndexQuick(int index, const std::vector<int> &indices) const
+	bool mergeSort(const std::vector<int> &indices, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts)
 	{
-		std::vector<void*> *curPtr = (std::vector<void*> *)data;
+		size_t dataLength = dimSizes[0];
 
-		int curIndex, curDimIndex;
+		if (dataLength <= 1)
+			return false;
+
+		std::vector<int> curIndices(indices.size() + 1);
+
+		for (size_t i = 1; i < curIndices.size(); i++){
+			curIndices[i] = indices[i - 1];
+		}
+
+		std::vector<tmpSortElement> sortData(dataLength);
+		std::vector<tmpSortElement> sortBuffer(dataLength);
+
+		for (size_t i = 0; i < dataLength; i++){
+			curIndices[0] = (int)i;
+
+			sortData[i].srcValPtr = getIndexPtr(curIndices);
+			sortData[i].srcValIndex = i;
+		}
+
+		std::vector<tmpSortElement> *sortedVector;
+
+		size_t steps = 0;
+		while (true){
+			int runs;
+			
+			runs = mergeRuns(sortData, sortBuffer, cmp_cb, opts);
+
+			if (runs == 1){
+				sortedVector = &sortData;
+				break;
+			}
+			else if (runs == 2){
+				sortedVector = &sortBuffer;
+				break;
+			}
+
+			runs = mergeRuns(sortBuffer, sortData, cmp_cb, opts);
+
+			if (runs == 2){
+				sortedVector = &sortData;
+				break;
+			}
+
+			if (steps++ >= dataLength)
+				return false;
+		}
 
 		if (isMultidim()){
-			curPtr = (std::vector<void*> *) (*curPtr)[index];
-			curDimIndex = 1;
+			std::vector<void*> *newData = new std::vector<void*>(dataLength);
 
-			while (isPtrDim(curDimIndex)){
-				int curIndex = indices[curDimIndex - 1];
-
-				curPtr = (std::vector<void*> *) (*curPtr)[curIndex];
-				curDimIndex++;
-			}
-			curIndex = indices[curDimIndex - 1];
+			for (size_t i = 0; i < dataLength; i++)
+				(*newData)[i] = (*((std::vector<void*> *)data))[(*sortedVector)[i].srcValIndex];
+			
+			delete data;
+			data = (void*)newData;
 		}
 		else{
-			curIndex = index;
+			std::vector<T> *newData = new std::vector<T>(dataLength);
+
+			for (size_t i = 0; i < dataLength; i++)
+				(*newData)[i] = (*((std::vector<T> *)data))[(*sortedVector)[i].srcValIndex];
+			
+			delete data;
+			data = (void*)newData;
 		}
 
-		std::vector<T> *finalDimPtr = (std::vector<T> *)curPtr;
-		return (*finalDimPtr)[curIndex];
+		return true;
 	}
 
-	inline void swapQuick(int index1, int index2, const std::vector<int> &indices)
+	int mergeRuns(std::vector<tmpSortElement> &sortData, std::vector<tmpSortElement> &sortBuffer, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts)
 	{
-		T &a = getIndexQuick(index1, indices);
-		T &b = getIndexQuick(index2, indices);
+		int i = 0,
+			aStart,
+			bStart,
+			n = sortData.size(),
+			runCount = 0;
 
-		T tmp = a;
-		a = b;
-		b = tmp;
-	}
+		tmpSortElement x;
 
-	void quickSort(const std::vector<int> &indices, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts, int left, int right) {
+		while (i < n)
+		{
+			aStart = i;
 
-		int i = left, j = right;
-		int mid = left + (right - left) / 2;
+			//first run
+			runCount++;
+			do x = sortData[i++];
+				while (i<n && cmp_cb(*(x.srcValPtr), *(sortData[i].srcValPtr), i - 1, i, opts));
 
-		T pivot = getIndexQuick(mid, indices);
+			bStart = i;
 
-		while (i <= j) {
-			while (cmp_cb(getIndexQuick(i, indices), pivot, opts))
-				i++;
-
-			while (cmp_cb(pivot, getIndexQuick(j, indices), opts))
-				j--;
-
-			if (i <= j) {
-				swapQuick(i, j, indices);
-				i++;
-				j--;
+			if (i < n){
+				//second run
+				runCount++;
+				do x = sortData[i++];
+					while (i<n && cmp_cb(*(x.srcValPtr), *(sortData[i].srcValPtr), i - 1, i, opts));
 			}
+			else{
+				if (runCount == 1) //-> sortData is already sorted!
+					return 1;
+			}
+				
+
+			merge(sortData, sortBuffer, aStart, bStart, i, cmp_cb, opts);
 		}
 
-		if (left < j)
-			quickSort(indices, cmp_cb, opts, left, j);
+		return runCount;
+	}
 
-		if (i < right)
-			quickSort(indices, cmp_cb, opts, i, right);
+	void merge(std::vector<tmpSortElement> &sortData, std::vector<tmpSortElement> &sortBuffer, int aStart, int bStart, int bEnd, cmp_vals_f cmp_cb, const WSEArraySortOptions &opts)
+	{
+		int i = aStart,
+			j = aStart,
+			k = bStart;
+
+		while (j < bStart && k < bEnd){
+			if (cmp_cb(*(sortData[j].srcValPtr), *(sortData[k].srcValPtr), j, k, opts))
+				sortBuffer[i++] = sortData[j++];
+			else
+				sortBuffer[i++] = sortData[k++];
+		}
+
+		while (j < bStart)
+			sortBuffer[i++] = sortData[j++];
+
+		while (k < bEnd)
+			sortBuffer[i++] = sortData[k++];
 	}
 };
