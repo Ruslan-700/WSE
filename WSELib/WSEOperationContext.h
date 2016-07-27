@@ -61,7 +61,7 @@ public:
 	void WindowsAPIError(std::string message, ...) const;
 	std::string CreateFile(const std::string &file, const std::string &extension);
 	std::string CreateScreenshot(const std::string &file, const std::string &extension);
-	int GetNextOperand(int def = 0);
+
 protected:
 	void DefineOperation(int opcode, const std::string &name, unsigned int flags, short min_operands, short max_operands, std::string description, ...);
 	void DisableOperation(int opcode, const std::string &name);
@@ -70,7 +70,7 @@ protected:
 
 private:
 	int GetOperandType(int def = 0);
-	//int GetNextOperand(int def = 0);
+	int GetNextOperand(int def = 0);
 	unsigned __int64 GetNextOperandRaw(unsigned __int64 def = 0);
 
 public:

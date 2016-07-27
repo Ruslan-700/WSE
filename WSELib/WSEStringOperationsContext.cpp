@@ -720,9 +720,6 @@ bool StrRegexMatch(WSEStringOperationsContext *context)
 		context->ScriptError("invalid regex: %s", e.what());
 	}
 
-	//context->ScriptError("regex error, [%s], [%s]", str1.c_str(), strRegex.c_str());
-	int index = context->GetNextOperand();
-	context->ScriptError("index: %i, val: '%s', struct adress: %p, val adress: %p\n", index, warband->string_manager.quick_strings[index].value.c_str(), (void*)&(warband->string_manager.quick_strings[index]), (void*)&(warband->string_manager.quick_strings[index].value));
 	return false;
 }
 
