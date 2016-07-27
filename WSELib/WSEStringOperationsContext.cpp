@@ -708,7 +708,7 @@ bool StrRegexMatch(WSEStringOperationsContext *context)
 	std::string str1, strRegex;
 
 	context->ExtractString(str1);
-	//context->ExtractString(strRegex);
+	context->ExtractString(strRegex);
 
 	try{
 		std::regex ex(strRegex);
