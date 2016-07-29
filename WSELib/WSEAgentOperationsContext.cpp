@@ -295,6 +295,80 @@ void AgentBodyMetaMeshSetVisibility(WSEAgentOperationsContext *context)
 #endif
 }
 
+void AgentSetPersonalAnimation(WSEAgentOperationsContext *context)
+{
+	int agent_no, agent_anim_no, new_anim_no;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractAnimationNo(agent_anim_no);
+	context->ExtractAnimationNo(new_anim_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	if (WSE->Mission.m_agents_personal_action_manager.find(agent_no) == WSE->Mission.m_agents_personal_action_manager.end())
+	{
+		WSE->Mission.m_agents_personal_action_manager[agent_no].num_actions = warband->action_manager.num_actions;
+		WSE->Mission.m_agents_personal_action_manager[agent_no].actions = new wb::action[warband->action_manager.num_actions];
+		for (int i = 0; i < warband->action_manager.num_actions; ++i)
+		{
+			WSE->Mission.m_agents_personal_action_manager[agent_no].actions[i] = warband->action_manager.actions[i];
+			WSE->Mission.m_agents_personal_animations[agent_no][i] = i;
+		}
+	}
+
+	agent->action_set = &WSE->Mission.m_agents_personal_action_manager[agent_no];
+	WSE->Mission.m_agents_personal_action_manager[agent_no].actions[agent_anim_no] = warband->action_manager.actions[new_anim_no];
+	WSE->Mission.m_agents_personal_animations[agent_no][agent_anim_no] = new_anim_no;
+}
+
+int AgentGetPersonalAnimation(WSEAgentOperationsContext *context)
+{
+	int agent_no, anim_no;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractAnimationNo(anim_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	if (WSE->Mission.m_agents_personal_action_manager.find(agent_no) == WSE->Mission.m_agents_personal_action_manager.end())
+	{
+		return anim_no;
+	}
+
+	return WSE->Mission.m_agents_personal_animations[agent_no][anim_no];
+}
+
+void AgentSetDefaultAnimations(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	if (WSE->Mission.m_agents_personal_action_manager.find(agent_no) != WSE->Mission.m_agents_personal_action_manager.end())
+	{
+		for (int i = 0; i < warband->action_manager.num_actions; ++i)
+		{
+			WSE->Mission.m_agents_personal_action_manager[agent_no].actions[i] = warband->action_manager.actions[i];
+			WSE->Mission.m_agents_personal_animations[agent_no][i] = i;
+		}
+	}
+}
+
+void AgentCancelCurrentAnimation(WSEAgentOperationsContext *context)
+{
+	int agent_no, channel_no;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractBoundedValue(channel_no, 0, 2);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	agent->action_channels[channel_no].action_no = -1;
+	agent->action_channels[channel_no].next_action_no = -1;
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -384,5 +458,21 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_body_meta_mesh_set_visibility", AgentBodyMetaMeshSetVisibility, Client, None, 3, 3,
 		"Shows (<2> = 1) or hides (<2> = 0) <0>'s <1>",
 		"agent_no", "body_meta_mesh", "value");
+
+	RegisterOperation("agent_set_personal_animation", AgentSetPersonalAnimation, Both, None, 3, 3,
+		"Replaces <0>'s default <1> to personal <2>",
+		"agent_no", "anim_no", "anim_no");
+
+	RegisterOperation("agent_get_personal_animation", AgentGetPersonalAnimation, Both, Lhs, 3, 3,
+		"Stores <1>'s personal <2> into <0>",
+		"destination", "agent_no", "anim_no");
+
+	RegisterOperation("agent_set_default_animations", AgentSetDefaultAnimations, Both, None, 1, 1,
+		"Removes <0>'s personal animations",
+		"agent_no");
+
+	RegisterOperation("agent_cancel_current_animation", AgentCancelCurrentAnimation, Both, None, 2, 2,
+		"Cancels <0>'s channel <2> animation",
+		"agent_no", "channel_no");
 
 }

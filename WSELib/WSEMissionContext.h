@@ -3,6 +3,7 @@
 #include "fmod.h"
 #include "WSEContext.h"
 #include "warband.h"
+#include <map>
 
 class WSEMissionContext : public WSEContext
 {
@@ -59,4 +60,6 @@ public:
 	wb::item m_fake_item;
 	int m_item_difficulty_attribute[21];
 	int m_item_difficulty_skill[21];
+	std::map <unsigned int, wb::action_set> m_agents_personal_action_manager;
+	std::map <unsigned int, std::map <int,int>> m_agents_personal_animations;
 };

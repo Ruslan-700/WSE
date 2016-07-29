@@ -389,6 +389,14 @@ void WSEOperationContext::ExtractMissileNo(int &value)
 		ScriptError("invalid missile no %d", value);
 }
 
+void WSEOperationContext::ExtractAnimationNo(int &value)
+{
+	value = GetNextOperand();
+
+	if (value < 0 || value >= warband->action_manager.num_actions)
+		ScriptError("invalid animation no %d", value);
+}
+
 
 int WSEOperationContext::GetCurrentTrigger() const
 {

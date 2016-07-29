@@ -98,6 +98,10 @@ agent_accelerate                                = 3315 #(agent_accelerate, <agen
 agent_set_item_slot_modifier                    = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
 agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> vertex keys time point to <time_point>
 agent_body_meta_mesh_set_visibility             = 3318 #(agent_body_meta_mesh_set_visibility, <agent_no>, <body_meta_mesh>, <value>), #Shows (<value> = 1) or hides (<value> = 0) <agent_no>'s <body_meta_mesh>
+agent_set_personal_animation                    = 3319 #(agent_set_personal_animation, <agent_no>, <anim_no>, <anim_no>), #Replaces <agent_no>'s default <anim_no> to personal <anim_no>
+agent_get_personal_animation                    = 3320 #(agent_get_personal_animation, <destination>, <agent_no>, <anim_no>), #Stores <agent_no>'s personal <anim_no> into <destination>
+agent_set_default_animations                    = 3321 #(agent_set_default_animations, <agent_no>), #Removes <agent_no>'s personal animations
+agent_cancel_current_animation                  = 3322 #(agent_cancel_current_animation, <agent_no>, <channel_no>), #Cancels <agent_no>'s channel <2> animation
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -331,6 +335,7 @@ lhs_operations += [
 	agent_get_wielded_item_slot_no,
 	agent_get_scale,
 	agent_get_item_slot_flags,
+	agent_get_personal_animation,
 	multiplayer_get_cur_profile,
 	multiplayer_get_num_profiles,
 	multiplayer_cur_message_get_int,
