@@ -397,6 +397,16 @@ void WSEOperationContext::ExtractAnimationNo(int &value)
 		ScriptError("invalid animation no %d", value);
 }
 
+void WSEOperationContext::ExtractVector(std::vector<int> &vector, int maxDims)
+{
+	int curVal;
+
+	while (HasMoreOperands() && maxDims != 0){
+		ExtractValue(curVal);
+		vector.push_back(curVal);
+		maxDims--;
+	}
+}
 
 int WSEOperationContext::GetCurrentTrigger() const
 {

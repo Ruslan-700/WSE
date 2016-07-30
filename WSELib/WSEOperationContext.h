@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include "WSEContext.h"
 #include "WSEIniFile.h"
 #include "WSEScriptingContext.h"
@@ -57,6 +58,7 @@ public:
 	void ExtractOverlayNo(int &value);
 	void ExtractMissileNo(int &value);
 	void ExtractAnimationNo(int &value);
+	void ExtractVector(std::vector<int> &vector, int maxDims);
 	int GetCurrentTrigger() const;
 	void ScriptError(std::string format, ...) const;
 	void WindowsAPIError(std::string message, ...) const;

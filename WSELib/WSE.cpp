@@ -271,6 +271,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	//AddContext(&SkinOperations, false);
 	AddContext(&StringOperations, false);
 	AddContext(&TroopOperations, false);
+	AddContext(&ArrayOperations, false);
 	
 	WIN32_FIND_DATA data;
 	HANDLE handle = FindFirstFile((m_path + "\\*WSE*Plugin*.dll").c_str(), &data);

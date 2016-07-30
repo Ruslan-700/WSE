@@ -145,6 +145,29 @@ int DictGetInt(WSEDictionaryOperationsContext *context)
 	return dict->GetInt(key, def);
 }
 
+void DictGetPos(WSEDictionaryOperationsContext *context)
+{
+	int id, preg, defPreg;
+	std::string key;
+	rgl::matrix  defPos;
+
+	context->ExtractValue(preg);
+	context->ExtractValue(id);
+	context->ExtractString(key);
+
+	if (context->HasMoreOperands()){
+		context->ExtractRegister(defPreg);
+		defPos = warband->basic_game.position_registers[defPreg];
+	}
+	else{
+		defPos.initialize();
+	}
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	warband->basic_game.position_registers[preg] = dict->GetPos(key, defPos);
+}
+
 void DictSetStr(WSEDictionaryOperationsContext *context)
 {
 	int id;
@@ -171,6 +194,20 @@ void DictSetInt(WSEDictionaryOperationsContext *context)
 	WSEDictionary *dict = context->GetDictionary(id);
 
 	dict->SetInt(key, value);
+}
+
+void DictSetPos(WSEDictionaryOperationsContext *context)
+{
+	int id, preg;
+	std::string key;
+
+	context->ExtractValue(id);
+	context->ExtractString(key);
+	context->ExtractRegister(preg);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	dict->SetPos(key, warband->basic_game.position_registers[preg]);
 }
 
 void DictGetKeyByIterator(WSEDictionaryOperationsContext *context)
@@ -263,6 +300,14 @@ void WSEDictionaryOperationsContext::OnLoad()
 	RegisterOperation("dict_get_key_by_iterator", DictGetKeyByIterator, Both, None, 3, 3,
 		"Stores the key <0> by iterator <2>",
 		"string_register", "dict", "iterator");
+
+	RegisterOperation("dict_get_pos", DictGetPos, Both, None, 3, 4,
+		"Stores the key <0> by iterator <2>",
+		"pos_register", "dict", "key", "default");
+
+	RegisterOperation("dict_set_pos", DictSetPos, Both, None, 3, 3,
+		"Adds (or changes) <2> as the position value paired to <1>",
+		"dict", "key", "pos_register");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

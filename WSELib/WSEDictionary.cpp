@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
+#include <string>
 
 void WSEDictionary::Load(const std::string &file, const int &mode)
 {
@@ -130,6 +132,20 @@ int WSEDictionary::GetInt(const std::string &key, const int &def) const
 	return strtol(it->second.c_str(), nullptr, 0);
 }
 
+rgl::matrix WSEDictionary::GetPos(const std::string &key, const rgl::matrix &def) const
+{
+	std::map<std::string, std::string>::const_iterator it = m_values.find(key);
+	std::string valStr = it->second;
+
+	if (it == m_values.end())
+		return def;
+	
+	rgl::matrix posMatr;
+	posMatr.fromString(valStr);
+
+	return posMatr;
+}
+
 void WSEDictionary::SetString(const std::string &key, const std::string &value)
 {
 	m_values[key] = value;
@@ -141,6 +157,11 @@ void WSEDictionary::SetInt(const std::string &key, const int &value)
 
 	sprintf_s(buf, "%d", value);
 	m_values[key] = buf;
+}
+
+void WSEDictionary::SetPos(const std::string &key, const rgl::matrix pos)
+{
+	m_values[key] = pos.toString();
 }
 
 const std::string &WSEDictionary::GetKeyByIterator(const int &iterator, const std::string &def) const

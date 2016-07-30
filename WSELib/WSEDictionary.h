@@ -2,6 +2,7 @@
 
 #include <map>
 #include <string>
+#include <rgl_matrix.h>
 
 #define WSE_DICT_MAGIC 0x57534544
 #define WSE_DICT_VERSION 2
@@ -17,8 +18,10 @@ public:
 	int GetSize() const;
 	const std::string &GetString(const std::string &key, const std::string &def = "") const;
 	int GetInt(const std::string &key, const int &def = 0) const;
+	rgl::matrix GetPos(const std::string &key, const rgl::matrix &def) const;
 	void SetString(const std::string &key, const std::string &value);
 	void SetInt(const std::string &key, const int &value);
+	void WSEDictionary::SetPos(const std::string &key, const rgl::matrix pos);
 	const std::string &GetKeyByIterator(const int &iterator, const std::string &def = "") const;
 
 public:
