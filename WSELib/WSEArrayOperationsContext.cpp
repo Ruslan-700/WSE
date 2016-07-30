@@ -772,11 +772,11 @@ void WSEArrayOperationsContext::OnLoad()
 		"Gets the the type id of the array with <1> and stores it into <0>.",
 		"destination", "arrayID");
 
-	RegisterOperation("array_sort", ArraySort, Both, None, 2, 15,
+	RegisterOperation("array_sort", ArraySort, Both, None, 2, 14,
 		"Sorts the array with <0>. <1> can be: [sort_m_int_asc or sort_m_int_desc] for int, [sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str (asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case). If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
 		"arrayID", "sortMode", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12");
 
-	RegisterOperation("array_sort_custom", ArraySortCustom, Both, None, 2, 15,
+	RegisterOperation("array_sort_custom", ArraySortCustom, Both, None, 2, 14,
 		"Sorts the array with <0>. <1> must compare its two input values (script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before the second, and zero otherwise. If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
 		"arrayID", "cmpScript", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12");
 }
