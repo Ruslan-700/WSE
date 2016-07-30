@@ -3,6 +3,7 @@
 #include <WinCrypt.h>
 #include <cstdio>
 #include <cstring>
+#include <regex>
 #include "WSE.h"
 #include "warband.h"
 
@@ -702,6 +703,100 @@ void StrStoreItemMeshName(WSEStringOperationsContext *context)
 	warband->basic_game.string_registers[sreg] = warband->item_kinds[item_no].variations[0].id;
 }
 
+bool StrRegexMatch(WSEStringOperationsContext *context)
+{
+	std::string str1, strRegex;
+
+	context->ExtractString(str1);
+	context->ExtractString(strRegex);
+
+	try{
+		std::regex ex(strRegex);
+
+		if (std::regex_match(str1, ex))
+			return true;
+	}
+	catch (std::regex_error &e) {
+		context->ScriptError("invalid regex: %s", e.what());
+	}
+
+	return false;
+}
+
+bool StrRegexSearch(WSEStringOperationsContext *context)
+{
+	std::string str1, strRegex;
+
+	context->ExtractString(str1);
+	context->ExtractString(strRegex);
+
+	try {
+		std::regex ex(strRegex);
+
+		if (std::regex_search(str1, ex))
+			return true;
+	}
+	catch (std::regex_error& e) {
+		context->ScriptError("invalid regex: %s", e.what());
+	}
+
+	return false;
+}
+
+int StrRegexGetMatches(WSEStringOperationsContext *context)
+{
+	int dReg, max;
+	std::string str1, strRegex;
+
+	context->ExtractRegister(dReg);
+	context->ExtractString(str1);
+	context->ExtractString(strRegex);
+	context->ExtractValue(max);
+	
+	int cur = 0;
+
+	try {
+		std::regex ex(strRegex);
+
+		std::sregex_iterator next(str1.begin(), str1.end(), ex);
+		std::sregex_iterator end;
+
+		while (next != end && !(max && cur == max)) {
+			std::smatch match = *next;
+
+			warband->basic_game.string_registers[dReg++] = match.str();
+
+			next++;
+			cur++;
+		}
+	}
+	catch (std::regex_error& e) {
+		context->ScriptError("invalid regex: %s", e.what());
+	}
+
+	return cur;
+}
+
+void StrRegexReplace(WSEStringOperationsContext *context)
+{
+	int dReg;
+	std::string strSrc, strRegex, strRep;
+
+	context->ExtractRegister(dReg);
+	context->ExtractString(strSrc);
+	context->ExtractString(strRegex);
+	context->ExtractString(strRep);
+
+	try{
+		std::regex ex(strRegex);
+
+		warband->basic_game.string_registers[dReg] = std::regex_replace(strSrc, ex, strRep);
+	}
+	catch (std::regex_error &e) {
+		context->ScriptError("invalid regex: %s", e.what());
+	}
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -871,6 +966,22 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_item_mesh_name", StrStoreItemMeshName, Both, None, 2, 2,
 		"Stores the mesh name of <1> into <0>",
 		"string_register", "item_no");
+
+	RegisterOperation("str_regex_match", StrRegexMatch, Both, Cf, 2, 2,
+		"Fails if <0> does not match <1>",
+		"string_1", "string_regex");
+
+	RegisterOperation("str_regex_search", StrRegexSearch, Both, Cf, 2, 2,
+		"Fails if <0> does not contain <1>",
+		"string_1", "string_regex");
+
+	RegisterOperation("str_regex_get_matches", StrRegexGetMatches, Both, Lhs, 4, 5,
+		"Stores all matches of <3> that occur in <2> into a range of string registers, starting from <1>, storing [<4>] substrings at most (default = unlimited). Stores the amount of matches into <0>",
+		"destination", "string_register", "string_1", "string_regex", "max");
+
+	RegisterOperation("str_store_regex_replace", StrRegexReplace, Both, None, 4, 4,
+		"Stores <1> into <0>, replacing occurrences of <2> with <3>",
+		"string_register", "string_1", "string_regex", "string_2");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)
