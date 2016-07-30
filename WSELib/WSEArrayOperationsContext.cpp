@@ -724,7 +724,6 @@ void WSEArrayOperationsContext::OnLoad()
 		"Copys array with <1> and stores the new array id into <0>.",
 		"destination", "source arrayID");
 
-
 	RegisterOperation("array_save_file", ArraySaveToFile, Both, None, 2, 2,
 		"Saves <0> into a file. For security reasons, <1> is just a name, not a full path, and will be stored into a WSE managed directory.",
 		"arrayID", "file");
@@ -737,8 +736,6 @@ void WSEArrayOperationsContext::OnLoad()
 		"Deletes array <0>.",
 		"file");
 
-
-
 	RegisterOperation("array_set_val", ArraySetVal, Both, None, 3, 16,
 		"Writes <1> to the array with <0> at the specified index. <1> can be an integer, a position register or a string register and must match the type of the array.",
 		"arrayID", "value", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
@@ -747,7 +744,7 @@ void WSEArrayOperationsContext::OnLoad()
 		"Writes <1> to all indices of the array with <0>. <1> can be an integer, a position register or a string register and must match the type of the array.",
 		"arrayID", "value");
 
-	RegisterOperation("array_get_val", ArrayGetVal, Both, None, 3, 16,
+	RegisterOperation("array_get_val", ArrayGetVal, Both, Lhs, 3, 16,
 		"Gets a value from the array with <1> at the specified index and writes it to <0>. <0> can be a variable, a position register or a string register and must match the type of the array.",
 		"destination", "arrayID", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
 
@@ -755,10 +752,9 @@ void WSEArrayOperationsContext::OnLoad()
 		"Pushes <1> on the array with <0>. If <0> is a 1D array, <1> can be an int, string, or position register and must match the type of <0>. If <0> is multidimensional, <1> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.",
 		"destination arrayID", "source");
 
-	RegisterOperation("array_pop", ArrayPop, Both, None, 2, 2,
+	RegisterOperation("array_pop", ArrayPop, Both, Lhs, 2, 2,
 		"Pops the last value  from the array with <1>. If <1> is a 1D array, <0> must be a variable, string, or position register and must match the type of <1>. If <1> is multidimensional, a new array with dimension count = src dimension count - 1, dimensions dim_0 = src_dim_1 ... dim_n = src_dim_n+1 will be created and its ID will be stored in <0>",
 		"destination", "arrayID");
-
 
 	RegisterOperation("array_resize_dim", ArrayResizeDim, Both, None, 3, 3,
 		"Changes the size of the dimension with <1> of the array with <0> to <2>.",

@@ -302,12 +302,12 @@ void WSEDictionaryOperationsContext::OnLoad()
 		"string_register", "dict", "iterator");
 
 	RegisterOperation("dict_get_pos", DictGetPos, Both, None, 3, 4,
-		"Stores the key <0> by iterator <2>",
-		"pos_register", "dict", "key", "default");
+		"Stores the position paired to <2> into <0>. If the key is not found and <3> is set, <3> will be stored instead. If <3> is not set, (x:0,y:0,z:0,rotX:0,rotY:0,rotZ:0) will be stored",
+		"position_register", "dict", "key", "default_position_register");
 
 	RegisterOperation("dict_set_pos", DictSetPos, Both, None, 3, 3,
 		"Adds (or changes) <2> as the position value paired to <1>",
-		"dict", "key", "pos_register");
+		"dict", "key", "position_register");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

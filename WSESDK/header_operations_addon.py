@@ -24,7 +24,7 @@ player_set_skin               = 2900 #(player_set_skin, <player_no>, <skin_no>),
 player_stop_controlling_agent = 2901 #(player_stop_controlling_agent, <player_no>), #Gives <player_no>'s agent back to AI control (requires network_compatible = 0 in wse_settings.ini)
 player_set_banner_id          = 2902 #(player_set_banner_id, <player_no>, <banner_no>), #Sets <player_no>'s banner to <banner_no>
 player_set_username           = 2903 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
-player_temp_ban				  = 2904 #(player_temp_ban, <player_no>, <ban_time>), #Bans <player_no> temporarily for <ban_time> seconds
+player_temp_ban               = 2904 #(player_temp_ban, <player_no>, <ban_time>), #Bans <player_no> temporarily for <ban_time> seconds
 
 register_get                  = 3000 #(register_get, <destination>, <index>), #Stores the value of register <index> into <destination>
 register_set                  = 3001 #(register_set, <index>, <value>), #Sets the value of register <index> to <value>
@@ -80,7 +80,7 @@ dict_set_str             = 3212 #(dict_set_str, <dict>, <key>, <string_no>), #Ad
 dict_set_int             = 3213 #(dict_set_int, <dict>, <key>, <value>), #Adds (or changes) <value> as the numeric value paired to <key>
 dict_get_key_by_iterator = 3214 #(dict_get_key_by_iterator, <string_register>, <dict>, <iterator>), #Stores the key <string_register> by iterator <iterator>
 dict_get_pos             = 3215 #(dict_get_pos, <position_register>, <dict>, <key>, [<default_position_register>]), #Stores the position paired to <key> into <position_register>. If the key is not found and [<default_position_register>] is set, [<default_position_register>] will be stored instead. If [<default_position_register>] is not set, (x:0,y:0,z:0,rotX:0,rotY:0,rotZ:0) will be stored
-dict_set_pos             = 3216 #(dict_set_pos, <dict>, <key>, <position_register>), #Adds (or changes) <position_register> as the position paired to <key>
+dict_set_pos             = 3216 #(dict_set_pos, <dict>, <key>, <position_register>), #Adds (or changes) <position_register> as the position value paired to <key>
 
 agent_get_item_modifier                         = 3300 #(agent_get_item_modifier, <destination>, <agent_no>), #Stores <agent_no>'s horse item modifier (-1 if agent is not a horse) into <destination>
 agent_get_item_slot_modifier                    = 3301 #(agent_get_item_slot_modifier, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> modifier into <destination>
@@ -221,10 +221,10 @@ str_is_integer                            = 4236 #(str_is_integer, <string_1>), 
 str_store_multiplayer_profile_face_keys   = 4237 #(str_store_multiplayer_profile_face_keys, <string_register>, <profile_no>), #Stores <profile_no>'s face keys into <string_register>
 str_store_server_password_rcon            = 4238 #(str_store_server_password_rcon, <string_register>), #Stores the server RCON password into <string_register>
 str_store_item_mesh_name                  = 4239 #(str_store_item_mesh_name, <string_register>, <item_no>), #Stores the mesh name of <item_no> into <string_register>
-str_regex_match 						  = 4240 #(str_regex_match, <string_1>, <string_regex>), #Fails if <string_1> does not match <string_regex>
-str_regex_search						  = 4241 #(str_regex_search, <string_1>, <string_regex>), #Fails if <string_1> does not contain <string_regex>
-str_regex_get_matches					  = 4242 #(str_regex_get_matches, <destination>, <string_register>, <string_1>, <string_regex>, [<max>]), #Stores all matches of <string_regex> that occur in <string_1> into a range of string registers, starting from <string_register>, storing [<max>] substrings at most (default = unlimited). Stores the amount of matches into <destination>
-str_store_regex_replace					  = 4243 #(str_store_regex_replace, <string_register>, <string_1>, <string_regex>, <string_2>), #Stores <string_1> into <string_register>, replacing occurrences of <string_regex> with <string_2>
+str_regex_match                           = 4240 #(str_regex_match, <string_1>, <string_regex>), #Fails if <string_1> does not match <string_regex>
+str_regex_search                          = 4241 #(str_regex_search, <string_1>, <string_regex>), #Fails if <string_1> does not contain <string_regex>
+str_regex_get_matches                     = 4242 #(str_regex_get_matches, <destination>, <string_register>, <string_1>, <string_regex>, [<max>]), #Stores all matches of <string_regex> that occur in <string_1> into a range of string registers, starting from <string_register>, storing [[<max>]] substrings at most (default = unlimited). Stores the amount of matches into <destination>
+str_store_regex_replace                   = 4243 #(str_store_regex_replace, <string_register>, <string_1>, <string_regex>, <string_2>), #Stores <string_1> into <string_register>, replacing occurrences of <string_regex> with <string_2>
 
 options_get_verbose_casualties  = 4300 #(options_get_verbose_casualties, <destination>), #Stores verbose casualties enabled/disabled into <destination>
 options_set_verbose_casualties  = 4301 #(options_set_verbose_casualties, <value>), #Enables or disables verbose casualties
@@ -308,46 +308,23 @@ menu_clear_generated = 4803 #(menu_clear_generated), #Removes all dynamic menus
 overlay_get_val       = 4900 #(overlay_get_val, <destination>, <overlay_no>), #Stores <overlay_no>'s value into <destination>
 presentation_activate = 4901 #(presentation_activate, <presentation_no>), #Activates <presentation_no>. Fails if <presentation_no> is not running
 
-array_create          = 5000 #(array_create, <destination>, <type_id>, <dim0>, [<dim1>], ... [<dim13>]), 
-                             #Creates an array object of <type_id> (0: Integer, 1: String, 2: Position) and stores its ID into <destination>. You can specify up to 14 dimensions. At least one dimension is required.
-                             #The array will be initialized by default with 0 / empty string / 0-position. All dim sizes except dim0 must be >= 1.
-array_free            = 5001 #(array_free, <array_id>), #Frees array with <array_id>.
-array_copy            = 5002 #(array_copy, <destination>, <source_array_id>), #Copys array with <source_array_id> and stores the new array id into <destination>.
-
-array_save_file       = 5003 #(array_save_file, <array_id>, <file>), #Saves the array with <array_id> into a file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory.
-array_load_file       = 5004 #(array_load_file, <destination>, <file>), #Loads <file> as an array and stores the newly created array's ID into <destination>.
-array_delete_file     = 5005 #(array_delete_file, <file>), #Deletes array file <file> from disk.
-
-array_set_val         = 5006 #(array_set_val, <array_id>, <value>, <index0>, [<index1>], ... [<index13>]), #Writes <value> to the array with <array_id> at the specified index. <value> can be an integer, a position register or a string register and must match the type of the array.
-array_set_val_all     = 5007 #(array_set_val_all, <array_id>, <value>), #Writes <value> to all indices of the array with <array_id>. <value> can be an integer, a position register or a string register and must match the type of the array.
-array_get_val         = 5008 #(array_set_val, <destination>, <array_id>, <index0>, [<index1>], ... [<index13>]), #Gets a value from the array with <array_id> at the specified index and writes it to <destination>. <destination> can be an variable, a position register or a string register and must match the type of the array.
-array_push            = 5009 #(array_push, <destination_array_id>, <source>), 
-                             #Pushes <source> on the array with <destination_array_id>. If <destination_array_id> is a 1D array, <source> can be an int, string, or position register and must match the type of <destination_array_id>.
-                             #If <destination_array_id> is multidimensional, <source> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.
-array_pop             = 5010 #(array_pop, <destination, <array_id>), 
-                             #Pops the last value  from the array with <array_id>. If <array_id> is a 1D array, <destination> must be a variable, string, or position register and must match the type of <array_id>.
-                             #If <array_id> is multidimensional, a new array with dimension count = src dimension count - 1, dimensions dim_0 = src_dim_1 ... dim_n = src_dim_n+1 will be created and its ID will be stored in <destination>.
-array_resize_dim      = 5011 #(array_resize_dim, <array_id>, <dim_index>, <size>), #Gets the size of the dimension with <dim_index> of the array with <array_id> and stores it into <destination>.
-
-array_get_dim_size    = 5012 #(array_get_dim_size, <destination>, <array_id>, <dim_index>), #Gets the size of the dimension specified by <dim_index> of the array with <array_id>  and stores it into <destination>.
-array_get_dim_count   = 5013 #(array_get_dim_count, <destination>, <array_id>), #Gets the the amount of dimensions of the array with <array_id> and stores it into <destination>.
-array_get_type_id     = 5014 #(array_get_type_id, <destination>, <array_id>), #Gets the the type id of the array with <array_id> and stores it into <destination>.
-
-							 #The following operations sort the array using a stable natural-mergesort algorithm.
-							 #If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
-							 
-array_sort            = 5015 #(array_sort, <array_id>, <sort_mode>, [<index0>], [<index1>], ... [<index13>]),
-                             #Sorts the array with <array_id>. <sort_mode> can be: 
-                             #[sort_m_int_asc or sort_m_int_desc] for int,
-                             #[sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str						 
-                             #	(asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case).
-							 #For positions, use array_sort_custom                      
-							 
-array_sort_custom     = 5016 #(array_sort_custom, <array_id>, <cmp_script_no>, [<index0>], [<index1>], ... [<index13>]),
-                             #Sorts the array with <array_id>. <cmp_script_no> must compare its two input values
-                             #(reg0 and reg1 / s0 and s1 / pos0 and pos1) and use (return_values, <x>) where <x> is non-zero if the first value goes before the second, and zero otherwise.
-							 #script_param_1 and _2 hold the indices of the two values.
-                             #The sorting won't be successful if the compare script does not work properly. The algorithm will abort at some point and not go into an infinite loop, it may however take extremely long to finish on big arrays.
+array_create        = 5000 #(array_create, <destination>, <type_id>, <Dim 0>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<Dim 13>]), #Creates an array object of <type_id> (0: Integer, 1: String, 2: Position) and stores its ID into <destination>. You can specify up to 14 dimensions, from <Dim 0> to [<Dim 13>]. The array will be initialized by default with 0 / empty string / 0-position.
+array_free          = 5001 #(array_free, <arrayID>), #Frees array with <arrayID>.
+array_copy          = 5002 #(array_copy, <destination>, <source arrayID>), #Copys array with <source arrayID> and stores the new array id into <destination>.
+array_save_file     = 5003 #(array_save_file, <arrayID>, <file>), #Saves <arrayID> into a file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory.
+array_load_file     = 5004 #(array_load_file, <destination>, <file>), #Loads <file> as an array and stores the newly created array's ID into <destination>.
+array_delete_file   = 5005 #(array_delete_file, <file>), #Deletes array <file>.
+array_set_val       = 5006 #(array_set_val, <arrayID>, <value>, <Dim 0>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<Dim 13>]), #Writes <value> to the array with <arrayID> at the specified index. <value> can be an integer, a position register or a string register and must match the type of the array.
+array_set_val_all   = 5007 #(array_set_val_all, <arrayID>, <value>), #Writes <value> to all indices of the array with <arrayID>. <value> can be an integer, a position register or a string register and must match the type of the array.
+array_get_val       = 5008 #(array_get_val, <destination>, <arrayID>, <Dim 0>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<Dim 13>]), #Gets a value from the array with <arrayID> at the specified index and writes it to <destination>. <destination> can be a variable, a position register or a string register and must match the type of the array.
+array_push          = 5009 #(array_push, <destination arrayID>, <source>), #Pushes <source> on the array with <destination arrayID>. If <destination arrayID> is a 1D array, <source> can be an int, string, or position register and must match the type of <destination arrayID>. If <destination arrayID> is multidimensional, <source> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.
+array_pop           = 5010 #(array_pop, <destination>, <arrayID>), #Pops the last value  from the array with <arrayID>. If <arrayID> is a 1D array, <destination> must be a variable, string, or position register and must match the type of <arrayID>. If <arrayID> is multidimensional, a new array with dimension count = src dimension count - 1, dimensions dim_0 = src_dim_1 ... dim_n = src_dim_n+1 will be created and its ID will be stored in <destination>
+array_resize_dim    = 5011 #(array_resize_dim, <arrayID>, <dimIndex>, <size>), #Changes the size of the dimension with <dimIndex> of the array with <arrayID> to <size>.
+array_get_dim_size  = 5012 #(array_get_dim_size, <destination>, <arrayID>, <dimIndex>), #Gets the size of the dimension with <dimIndex> of the array with <arrayID> and stores it into <destination>.
+array_get_dim_count = 5013 #(array_get_dim_count, <destination>, <arrayID>), #Gets the the amount of dimensions of the array with <arrayID> and stores it into <destination>.
+array_get_type_id   = 5014 #(array_get_type_id, <destination>, <arrayID>), #Gets the the type id of the array with <arrayID> and stores it into <destination>.
+array_sort          = 5015 #(array_sort, <arrayID>, <sortMode>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<œš>]), #Sorts the array with <arrayID>. <sortMode> can be: [sort_m_int_asc or sort_m_int_desc] for int, [sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str (asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case). If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
+array_sort_custom   = 5016 #(array_sort_custom, <arrayID>, <cmpScript>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<œš>]), #Sorts the array with <arrayID>. <cmpScript> must compare its two input values (script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before the second, and zero otherwise. If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.
 
 lhs_operations += [
 	store_trigger_param,
@@ -409,6 +386,7 @@ lhs_operations += [
 	str_to_num,
 	str_compare,
 	str_split,
+	str_regex_get_matches,
 	options_get_verbose_casualties,
 	options_get_cheat_mode,
 	options_get_realistic_headshots,
@@ -419,14 +397,13 @@ lhs_operations += [
 	menu_create_new,
 	overlay_get_val,
 	array_create,
-	array_load_file,
 	array_copy,
-	array_pop,
+	array_load_file,
 	array_get_val,
+	array_pop,
 	array_get_dim_size,
 	array_get_dim_count,
 	array_get_type_id,
-	str_regex_get_matches,
 ]
 
 can_fail_operations += [
@@ -458,12 +435,12 @@ can_fail_operations += [
 	str_is_digit,
 	str_is_whitespace,
 	str_is_integer,
+	str_regex_match,
+	str_regex_search,
 	feq,
 	fgt,
 	flt,
 	fge,
 	fle,
 	presentation_activate,
-	str_regex_match,
-	str_regex_search,
 ]
