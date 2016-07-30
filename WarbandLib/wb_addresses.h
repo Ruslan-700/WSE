@@ -178,6 +178,8 @@ namespace wb
 		static unsigned int DXUtil_Timer;
 
 		static unsigned int agent_SetAiBehavior;
+		
+		static unsigned int temp_ban_time_dbl_ptr;
 
 		static unsigned int game_data_ptr;
 	};

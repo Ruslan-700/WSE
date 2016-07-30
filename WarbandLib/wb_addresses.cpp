@@ -238,6 +238,8 @@ unsigned int addresses::DXUtil_Timer = 0x0040EA30;
 //unsigned int addresses::agent_SetAiBehavior = 0x0050EFC0;
 unsigned int addresses::agent_SetAiBehavior = 0x004D1B70;
 
+unsigned int addresses::temp_ban_time_dbl_ptr = 0x00809068;
+
 //unsigned int addresses::game_data_ptr = 0x0094F118;
 unsigned int addresses::game_data_ptr = 0x0085C1B8;
 #elif defined WARBAND_STEAM
@@ -640,6 +642,8 @@ unsigned int addresses::DXUtil_Timer = 0x00401040;
 
 //unsigned int addresses::agent_SetAiBehavior = 0x0046F3C0;
 unsigned int addresses::agent_SetAiBehavior = 0x004710F0;
+
+unsigned int addresses::temp_ban_time_dbl_ptr = 0x0069F650;
 
 //unsigned int addresses::game_data_ptr = 0x006D8428;
 unsigned int addresses::game_data_ptr = 0x006E4430;
