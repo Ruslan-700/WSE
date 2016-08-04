@@ -36,6 +36,7 @@ enum WSEOperationFlags
 	BreakNetwork = 0x10,
 	Control = 0x20,
 	Undocumented = 0x40,
+	FakeLhs = 0x80,
 };
 
 enum WSEOperationTarget

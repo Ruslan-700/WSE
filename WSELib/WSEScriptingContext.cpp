@@ -810,7 +810,7 @@ void WSEScriptingContext::DumpOperationsHeader()
 
 	for (int i = 0; i < WSE_MAX_NUM_OPERATIONS; ++i)
 	{
-		if (m_descriptors[i] && m_descriptors[i]->m_flags & Lhs)
+		if (m_descriptors[i] && m_descriptors[i]->m_flags & (Lhs | FakeLhs))
 		{
 			stream << "\t" << m_descriptors[i]->m_name.c_str() << "," << std::endl;
 		}

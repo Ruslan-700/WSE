@@ -499,7 +499,7 @@ void ArrayPop(WSEArrayOperationsContext *context)
 			context->SetReturnValue(*val);
 			delete val;
 		}
-		else if (baseArray->getTypeID() == type_id::num){
+		else if (baseArray->getTypeID() == type_id::str){
 			CheckReg(context, dReg);
 			WSEDynMultiArray<std::string> *arr = (WSEDynMultiArray<std::string> *)baseArray;
 
@@ -511,7 +511,7 @@ void ArrayPop(WSEArrayOperationsContext *context)
 			warband->basic_game.string_registers[dReg] = *val;
 			delete val;
 		}
-		else if (baseArray->getTypeID() == type_id::num){
+		else if (baseArray->getTypeID() == type_id::pos){
 			CheckReg(context, dReg);
 			WSEDynMultiArray<rgl::matrix> *arr = (WSEDynMultiArray<rgl::matrix> *)baseArray;
 
@@ -744,7 +744,7 @@ void WSEArrayOperationsContext::OnLoad()
 		"Writes <1> to all indices of the array with <0>. <1> can be an integer, a position register or a string register and must match the type of the array.",
 		"arrayID", "value");
 
-	RegisterOperation("array_get_val", ArrayGetVal, Both, Lhs, 3, 16,
+	RegisterOperation("array_get_val", ArrayGetVal, Both, FakeLhs, 3, 16,
 		"Gets a value from the array with <1> at the specified index and writes it to <0>. <0> can be a variable, a position register or a string register and must match the type of the array.",
 		"destination", "arrayID", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
 
@@ -752,7 +752,7 @@ void WSEArrayOperationsContext::OnLoad()
 		"Pushes <1> on the array with <0>. If <0> is a 1D array, <1> can be an int, string, or position register and must match the type of <0>. If <0> is multidimensional, <1> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.",
 		"destination arrayID", "source");
 
-	RegisterOperation("array_pop", ArrayPop, Both, Lhs, 2, 2,
+	RegisterOperation("array_pop", ArrayPop, Both, FakeLhs, 2, 2,
 		"Pops the last value  from the array with <1>. If <1> is a 1D array, <0> must be a variable, string, or position register and must match the type of <1>. If <1> is multidimensional, a new array with dimension count = src dimension count - 1, dimensions dim_0 = src_dim_1 ... dim_n = src_dim_n+1 will be created and its ID will be stored in <0>",
 		"destination", "arrayID");
 
@@ -769,16 +769,16 @@ void WSEArrayOperationsContext::OnLoad()
 		"destination", "arrayID");
 
 	RegisterOperation("array_get_type_id", ArrayGetTypeId, Both, Lhs, 2, 2,
-		"Gets the the type id of the array with <1> and stores it into <0>.",
+		"Gets the the type id of the array with <1> and stores it into <0>.", 
 		"destination", "arrayID");
 
-	RegisterOperation("array_sort", ArraySort, Both, None, 2, 14,
-		"Sorts the array with <0>. <1> can be: [sort_m_int_asc or sort_m_int_desc] for int, [sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str (asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case). If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
-		"arrayID", "sortMode", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12");
+	RegisterOperation("array_sort", ArraySort, Both, None, 2, 15,
+		"Sorts the array with <0> using a stable natural-mergesort algorithm. <1> can be: [sort_m_int_asc or sort_m_int_desc] for int, [sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str (asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case). If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
+		"arrayID", "sortMode", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
 
-	RegisterOperation("array_sort_custom", ArraySortCustom, Both, None, 2, 14,
-		"Sorts the array with <0>. <1> must compare its two input values (script_param_1 and _2 for int, s0 and s1, pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before the second, and zero otherwise. If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
-		"arrayID", "cmpScript", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12");
+	RegisterOperation("array_sort_custom", ArraySortCustom, Both, None, 2, 15,
+		"Sorts the array with <0> using a stable natural-mergesort algorithm. <1> must compare its two input values (reg0 and reg1 / s0 and s1 / pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before or is equal to the second, and zero otherwise. If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access. The sorting won't be successful if the compare script does not work properly. The algorithm will abort at some point and not go into an infinite loop, it may however take extremely long to finish on big arrays.",
+		"arrayID", "cmpScript", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
 }
 
 void WSEArrayOperationsContext::OnUnload()
