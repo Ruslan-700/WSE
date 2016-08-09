@@ -22,6 +22,14 @@ bool cmpStr(const std::string &a, const std::string &b, size_t index1, size_t in
 bool cmpPos(const rgl::matrix &a, const rgl::matrix &b, size_t index1, size_t index2, const WSEArraySortOptions &opt);
 bool customCmp(size_t index1, size_t index2, const WSEArraySortOptions &opt);
 
+enum cmp_operation{
+	eq = 0,
+	gt = 1,
+	ge = 2,
+	lt = 3,
+	le = 4
+};
+
 class WSEArrayOperationsContext : public WSEOperationContext
 {
 public:

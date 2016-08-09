@@ -688,7 +688,111 @@ void ArraySortCustom(WSEArrayOperationsContext *context)
 	}
 }
 
+bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
+{
+	int id, cmpVal;
+	std::vector<int> indices;
 
+	context->ExtractValue(id);
+	context->ExtractValue(cmpVal);
+	context->ExtractVector(indices, -1);
+
+	WSEBasicDynMultiArray *ptr = (WSEBasicDynMultiArray *)context->GetArray(id);
+
+	type_id typeID = ptr->getTypeID();
+
+	if (typeID == type_id::num){
+		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
+
+		const int *value = array->getIndex(indices);
+		if (value == NULL)
+			context->ScriptError("failed to get index: " + IntVecToStr(indices));
+
+		if (op == cmp_operation::eq){
+			return *value == cmpVal;
+		}
+		else if (op == cmp_operation::gt){
+			return *value > cmpVal;
+		}
+		else if (op == cmp_operation::ge){
+			return *value >= cmpVal;
+		}
+		else if (op == cmp_operation::lt){
+			return *value < cmpVal;
+		}
+		else if (op == cmp_operation::le){
+			return *value <= cmpVal;
+		}
+	}
+	else if (typeID == type_id::str){
+		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
+
+		CheckReg(context, cmpVal);
+		std::string cmpStr = warband->basic_game.string_registers[cmpVal];
+
+		const std::string *value = array->getIndex(indices);
+		if (value == NULL)
+			context->ScriptError("failed to get index: " + IntVecToStr(indices));
+		
+		if (op == cmp_operation::eq){
+			return *value == cmpStr;
+		}
+		else if (op == cmp_operation::gt){
+			return *value > cmpStr;
+		}
+		else if (op == cmp_operation::ge){
+			return *value >= cmpStr;
+		}
+		else if (op == cmp_operation::lt){
+			return *value < cmpStr;
+		}
+		else if (op == cmp_operation::le){
+			return *value <= cmpStr;
+		}
+	}
+	else {
+		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
+
+		if (op = cmp_operation::eq){
+			CheckReg(context, cmpVal);
+			const rgl::matrix *value = array->getIndex(indices);
+			if (value == NULL)
+				context->ScriptError("failed to get index: " + IntVecToStr(indices));
+
+			return *value == warband->basic_game.position_registers[cmpVal];
+		}
+		else{
+			context->ScriptError("invalid operation for pos array");
+		}
+	}
+
+	return false;
+}
+
+bool ArrayEq(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::eq);
+}
+
+bool ArrayGt(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::gt);
+}
+
+bool ArrayGe(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::ge);
+}
+
+bool ArrayLt(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::lt);
+}
+
+bool ArrayLe(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::le);
+}
 
 WSEArrayOperationsContext::WSEArrayOperationsContext() : WSEOperationContext("array", 5000, 5099)
 {
@@ -738,7 +842,7 @@ void WSEArrayOperationsContext::OnLoad()
 
 	RegisterOperation("array_set_val", ArraySetVal, Both, None, 3, 16,
 		"Writes <1> to the array with <0> at the specified index. <1> can be an integer, a position register or a string register and must match the type of the array.",
-		"arrayID", "value", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
+		"arrayID", "value", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
 
 	RegisterOperation("array_set_val_all", ArraySetValAll, Both, None, 2, 2,
 		"Writes <1> to all indices of the array with <0>. <1> can be an integer, a position register or a string register and must match the type of the array.",
@@ -746,7 +850,7 @@ void WSEArrayOperationsContext::OnLoad()
 
 	RegisterOperation("array_get_val", ArrayGetVal, Both, FakeLhs, 3, 16,
 		"Gets a value from the array with <1> at the specified index and writes it to <0>. <0> can be a variable, a position register or a string register and must match the type of the array.",
-		"destination", "arrayID", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
+		"destination", "arrayID", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
 
 	RegisterOperation("array_push", ArrayPush, Both, None, 2, 2,
 		"Pushes <1> on the array with <0>. If <0> is a 1D array, <1> can be an int, string, or position register and must match the type of <0>. If <0> is multidimensional, <1> must be the id of an array with matching type, src dimension count = dest dimension count - 1, and dimension sizes src_dim_0_size = dest_dim_1_size ... src_dim_n_size = dest_dim_n+1_size.",
@@ -774,11 +878,31 @@ void WSEArrayOperationsContext::OnLoad()
 
 	RegisterOperation("array_sort", ArraySort, Both, None, 2, 15,
 		"Sorts the array with <0> using a stable natural-mergesort algorithm. <1> can be: [sort_m_int_asc or sort_m_int_desc] for int, [sort_m_str_cs_asc, sort_m_str_cs_desc, sort_m_str_ci_asc, sort_m_str_ci_desc] for str (asc=ascending, desc=descending, cs=case sensitive, ci=case insensitive, strings are compared alphabetically, upper before lower case). If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access.",
-		"arrayID", "sortMode", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
+		"arrayID", "sortMode", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
 
 	RegisterOperation("array_sort_custom", ArraySortCustom, Both, None, 2, 15,
 		"Sorts the array with <0> using a stable natural-mergesort algorithm. <1> must compare its two input values (reg0 and reg1 / s0 and s1 / pos0 and pos1) and use (return_values, x) where x is nonzero if the first value goes before or is equal to the second, and zero otherwise. If the array is multidimensional, only the first dimension will be sorted and you must specify (dim_count - 1) fixed indices that will be used for access. The sorting won't be successful if the compare script does not work properly. The algorithm will abort at some point and not go into an infinite loop, it may however take extremely long to finish on big arrays.",
-		"arrayID", "cmpScript", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
+		"arrayID", "cmpScript", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_eq", ArrayEq, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is not equal to <1>. Works for int, str and pos.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_gt", ArrayGt, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is not greater than <1>. Works for int and str. Strings are compared alphabetically, upper before lower case.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_ge", ArrayGe, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is not greater or equal to <1>. Works for int and str. Strings are compared alphabetically, upper before lower case.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_lt", ArrayLt, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is not lower than <1>. Works for int and str. Strings are compared alphabetically, upper before lower case.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_le", ArrayLe, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is not lower or equal to <1>. Works for int and str. Strings are compared alphabetically, upper before lower case.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
 }
 
 void WSEArrayOperationsContext::OnUnload()
