@@ -24,10 +24,11 @@ bool customCmp(size_t index1, size_t index2, const WSEArraySortOptions &opt);
 
 enum cmp_operation{
 	eq = 0,
-	gt = 1,
-	ge = 2,
-	lt = 3,
-	le = 4
+	neq = 1,
+	gt = 2,
+	ge = 3,
+	lt = 4,
+	le = 5
 };
 
 class WSEArrayOperationsContext : public WSEOperationContext

@@ -694,8 +694,6 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 	std::vector<int> indices;
 
 	context->ExtractValue(id);
-	context->ExtractValue(cmpVal);
-	context->ExtractVector(indices, -1);
 
 	WSEBasicDynMultiArray *ptr = (WSEBasicDynMultiArray *)context->GetArray(id);
 
@@ -704,12 +702,18 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 	if (typeID == type_id::num){
 		WSEDynMultiArray<int> *array = (WSEDynMultiArray<int> *) ptr;
 
+		context->ExtractValue(cmpVal);
+		context->ExtractVector(indices, -1);
+
 		const int *value = array->getIndex(indices);
 		if (value == NULL)
 			context->ScriptError("failed to get index: " + IntVecToStr(indices));
 
 		if (op == cmp_operation::eq){
 			return *value == cmpVal;
+		}
+		else if (op == cmp_operation::neq){
+			return *value != cmpVal;
 		}
 		else if (op == cmp_operation::gt){
 			return *value > cmpVal;
@@ -727,8 +731,9 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 	else if (typeID == type_id::str){
 		WSEDynMultiArray<std::string> *array = (WSEDynMultiArray <std::string> *) ptr;
 
-		CheckReg(context, cmpVal);
-		std::string cmpStr = warband->basic_game.string_registers[cmpVal];
+		std::string cmpStr;
+		context->ExtractString(cmpStr);
+		context->ExtractVector(indices, -1);
 
 		const std::string *value = array->getIndex(indices);
 		if (value == NULL)
@@ -736,6 +741,9 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 		
 		if (op == cmp_operation::eq){
 			return *value == cmpStr;
+		}
+		else if (op == cmp_operation::neq){
+			return *value != cmpStr;
 		}
 		else if (op == cmp_operation::gt){
 			return *value > cmpStr;
@@ -753,13 +761,25 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 	else {
 		WSEDynMultiArray<rgl::matrix> *array = (WSEDynMultiArray <rgl::matrix> *) ptr;
 
-		if (op = cmp_operation::eq){
-			CheckReg(context, cmpVal);
-			const rgl::matrix *value = array->getIndex(indices);
-			if (value == NULL)
-				context->ScriptError("failed to get index: " + IntVecToStr(indices));
+		context->ExtractRegister(cmpVal);
+		context->ExtractVector(indices, -1);
 
-			return *value == warband->basic_game.position_registers[cmpVal];
+		const rgl::matrix *value = array->getIndex(indices);
+		if (value == NULL)
+			context->ScriptError("failed to get index: " + IntVecToStr(indices));
+
+		rgl::matrix pos = *value;
+		rgl::matrix pos1 = warband->basic_game.position_registers[cmpVal];
+
+		pos.orthonormalize();
+		pos1.orthonormalize();
+
+
+		if (op == cmp_operation::eq){
+			return pos == pos1;
+		}
+		else if (op == cmp_operation::neq){
+			return pos != pos1;
 		}
 		else{
 			context->ScriptError("invalid operation for pos array");
@@ -772,6 +792,11 @@ bool ArrayCompare(WSEArrayOperationsContext *context, cmp_operation op)
 bool ArrayEq(WSEArrayOperationsContext *context)
 {
 	return ArrayCompare(context, cmp_operation::eq);
+}
+
+bool ArrayNeq(WSEArrayOperationsContext *context)
+{
+	return ArrayCompare(context, cmp_operation::neq);
 }
 
 bool ArrayGt(WSEArrayOperationsContext *context)
@@ -886,6 +911,10 @@ void WSEArrayOperationsContext::OnLoad()
 
 	RegisterOperation("array_eq", ArrayEq, Both, Cf, 3, 16,
 		"Fails if the specified value in the array with <0> is not equal to <1>. Works for int, str and pos.",
+		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
+
+	RegisterOperation("array_neq", ArrayNeq, Both, Cf, 3, 16,
+		"Fails if the specified value in the array with <0> is equal to <1>. Works for int, str and pos.",
 		"arrayID", "value_1", "Index 0", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9", "Index 10", "Index 11", "Index 12", "Index 13");
 
 	RegisterOperation("array_gt", ArrayGt, Both, Cf, 3, 16,
