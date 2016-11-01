@@ -159,9 +159,7 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		m_remote_scripting = WSE->SettingsIni.Bool("remote_debugging", "enabled", false);
 		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry, NetworkManagerPopulatePlayerInfoServerEventHook);
 		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry, NetworkManagerPopulateServerOptionsServerEventHook);
-		
-		if (m_break_compat && warband->network_manager.num_bits_item_kind > warband->network_manager.num_bits_scene_prop)
-			warband->network_manager.num_bits_scene_prop = warband->network_manager.num_bits_item_kind;
+
 		break;
 	}
 }
@@ -402,6 +400,9 @@ void WSENetworkContext::HandleHTTPReplies()
 
 void WSENetworkContext::OnCreateMbnetHost()
 {
+	if (m_break_compat && warband->network_manager.num_bits_item_kind > warband->network_manager.num_bits_scene_prop)
+		warband->network_manager.num_bits_scene_prop = warband->network_manager.num_bits_item_kind;
+
 	if (m_ogp_server)
 		m_ogp_server->Start();
 #if defined WARBAND_DEDICATED

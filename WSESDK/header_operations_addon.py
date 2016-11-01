@@ -271,6 +271,7 @@ facos     = 4434 #(facos, <destination_fp_register>, <fp_register>), #Stores the
 fatan     = 4435 #(fatan, <destination_fp_register>, <fp_register>), #Stores the arc tangent of <fp_register> into <destination_fp_register>
 fatan2    = 4436 #(fatan2, <destination_fp_register>, <fp_register_1>, <fp_register_2>), #Stores the arc cosine of <fp_register_1>/<fp_register_2> into <destination_fp_register>
 feval     = 4437 #(feval, <expression_string>), #Evaluates <expression_string>. See EVAL_README.txt in WSESDK for more information
+fadd      = 4438 #(fadd, <destination_fp_register>, <fp_register_1>, <fp_register_2>), #Adds <fp_register_2> to <fp_register_1> and stores the result into <destination_fp_register>
 
 scene_set_flags         = 4500 #(scene_set_flags, <scene_no>, <flags>), #Sets <scene_no>'s flags to <flags>
 scene_set_water_level   = 4501 #(scene_set_water_level, <scene_no>, <water_level_fixed_point>), #Sets <scene_no>'s water level to <water_level_fixed_point>

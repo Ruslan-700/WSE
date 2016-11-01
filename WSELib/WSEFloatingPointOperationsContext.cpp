@@ -730,6 +730,10 @@ void WSEFloatingPointOperationsContext::OnLoad()
 	RegisterOperation("feval", FEval, Both, None, 1, 1,
 		"Evaluates <0>. See EVAL_README.txt in WSESDK for more information",
 		"expression_string");
+
+	RegisterOperation("fadd", FAdd, Both, None, 3, 3,
+		"Adds <2> to <1> and stores the result into <0>",
+		"destination_fp_register", "fp_register_1", "fp_register_2");
 }
 
 void WSEFloatingPointOperationsContext::OnUnload()
