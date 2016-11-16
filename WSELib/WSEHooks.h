@@ -57,3 +57,4 @@ void ItemKindShieldNoParryCarryHook();
 void ItemKindShieldNoParryCouchedLanceHook();
 void ItemKindDisableAgentSoundsHorseShortHook();
 void AgentBlockedAttackHook();
+void AgentTurnHook();

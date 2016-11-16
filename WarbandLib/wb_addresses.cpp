@@ -216,6 +216,9 @@ unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x004CC5
 unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
 
+unsigned int addresses::agent_Turn_entry = 0x004A06BC;
+unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B0A40;
@@ -400,6 +403,9 @@ unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x004CC5
 
 unsigned int addresses::agent_BlockedAttack_entry = 0x004ED1C9;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
+
+unsigned int addresses::agent_Turn_entry = 0x004A06BC;
+unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
@@ -622,6 +628,9 @@ unsigned int addresses::item_kind_DisableAgentSoundsHorseShort_exit_2 = 0x004655
 
 unsigned int addresses::agent_BlockedAttack_entry = 0x00495059;
 unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8;
+
+unsigned int addresses::agent_Turn_entry = 0x0044EA19;
+unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 
 unsigned int addresses::fixBotsBlocking_entry = 0x00460825;
 

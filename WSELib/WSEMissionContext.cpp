@@ -45,6 +45,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCouchedLance_entry, ItemKindShieldNoParryCouchedLanceHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_DisableAgentSoundsHorseShort_entry, ItemKindDisableAgentSoundsHorseShortHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_BlockedAttack_entry, AgentBlockedAttackHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_Turn_entry, AgentTurnHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
@@ -755,4 +756,17 @@ void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::miss
 	}
 	
 	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-103);
+}
+
+void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
+{
+	warband->basic_game.trigger_param_1 = agent->no;
+	warband->basic_game.trigger_param_2 = (int)*max_rotation_speed * warband->basic_game.fixed_point_multiplier;
+	
+	warband->basic_game.trigger_result = -1;
+
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-102);
+
+	if (warband->basic_game.trigger_result >= 0)
+		*max_rotation_speed = warband->basic_game.trigger_result / (float)warband->basic_game.fixed_point_multiplier;
 }

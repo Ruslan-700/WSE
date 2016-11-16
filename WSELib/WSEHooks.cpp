@@ -995,3 +995,20 @@ void __declspec(naked) AgentBlockedAttackHook()
 		jmp[wb::addresses::agent_BlockedAttack_exit]
 	}
 }
+
+void __declspec(naked) AgentTurnHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		mov edx, esp
+		add edx, 20
+		push edx
+		push esi
+		CALL_CONTEXT_FUNC(Mission, OnAgentTurn)
+		RESTORE_REGS
+		fstp[esp + 24]
+		fld[esp + 20]
+		jmp[wb::addresses::agent_Turn_exit]
+	}
+}

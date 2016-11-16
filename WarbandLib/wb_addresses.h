@@ -163,6 +163,9 @@ namespace wb
 		static unsigned int agent_BlockedAttack_entry;
 		static unsigned int agent_BlockedAttack_exit;
 
+		static unsigned int agent_Turn_entry;
+		static unsigned int agent_Turn_exit;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;
