@@ -46,8 +46,8 @@ void troop::set_attribute(int attribute, int value)
 	if (value < 0)
 		value = 0;
 
-	if (value > 100)
-		value = 100;
+	//if (value > 100)
+		//value = 100;
 
 	this->attributes[attribute] = value;
 	this->update_health();

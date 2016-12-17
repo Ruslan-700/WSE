@@ -154,7 +154,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		if (warband->basic_game.string_registers[0].length())
 			strncpy_s(data->ServerInfo.Map.MapName, warband->basic_game.string_registers[0].c_str(), 31);
 
-		sprintf_s(data->ServerInfo.Map.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.cur_site_no].id.c_str());
+		_snprintf_s(data->ServerInfo.Map.MapFileName, 32, _TRUNCATE, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.cur_site_no].id.c_str());
 	}
 	
 	if (warband->multiplayer_data.next_site_no >= 0)
@@ -165,7 +165,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		if (warband->basic_game.string_registers[0].length())
 			strncpy_s(data->ServerInfo.NextMap.MapName, warband->basic_game.string_registers[0].c_str(), 31);
 
-		sprintf_s(data->ServerInfo.NextMap.MapFileName, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.next_site_no].id.c_str());
+		_snprintf_s(data->ServerInfo.NextMap.MapFileName, 32, _TRUNCATE, "%s.sco", warband->cur_game->sites[warband->multiplayer_data.next_site_no].id.c_str());
 	}
 
 	if (warband->multiplayer_data.cur_mission_template_no >= 0)
