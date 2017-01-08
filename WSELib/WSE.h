@@ -14,6 +14,7 @@
 
 #include "WSEPluginWrapperContext.h"
 
+#include "WSESignatureScannerContext.h"
 #include "WSEDebugContext.h"
 #include "WSEPerformanceContext.h"
 #include "WSEGameContext.h"
@@ -53,7 +54,7 @@
 #define WSE_VERSION TOSTR(WSE_VERSION_MAJOR) ## "." ## TOSTR(WSE_VERSION_MINOR) ## "." ## TOSTR(WSE_VERSION_BUILD)
 #define WSE_VERSION_MAJOR 4
 #define WSE_VERSION_MINOR 3
-#define WSE_VERSION_BUILD 6
+#define WSE_VERSION_BUILD 7
 #define WSE_NETCODE_VERSION 8
 
 #if defined WARBAND_VANILLA
@@ -82,6 +83,7 @@ public:
 	WSEObjectManager Objects;
 	
 #if defined DEBUG
+	WSESignatureScannerContext SignatureScanner;
 	WSEDebugContext Debug;
 #endif
 	WSEPerformanceContext Performance;

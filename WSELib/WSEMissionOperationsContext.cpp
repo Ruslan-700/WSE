@@ -313,7 +313,7 @@ void MissionSetAllyCollisionThreshold(WSEMissionOperationsContext *context)
 	WSE->Mission.m_ally_collision_threshold_low = low / 100.0f;
 	WSE->Mission.m_ally_collision_threshold_high = high / 100.0f;
 }
-/*
+
 void MissionSetPropCollisionThreshold(WSEMissionOperationsContext *context)
 {
 	int dir, low, high;
@@ -325,7 +325,7 @@ void MissionSetPropCollisionThreshold(WSEMissionOperationsContext *context)
 	WSE->Mission.m_prop_collision_threshold_low[dir] = low / 100.0f;
 	WSE->Mission.m_prop_collision_threshold_high[dir] = high / 100.0f;
 }
-*/
+
 void ParticleSystemRemove(WSEMissionOperationsContext *context)
 {
 #if defined WARBAND
@@ -665,11 +665,6 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_ally_collision_threshold", MissionSetAllyCollisionThreshold, Both, None, 2, 2,
 		"Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)",
 		"low_boundary", "high_boundary");
-	/*
-	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
-		"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
-		"attack_direction", "low_boundary", "high_boundary");
-	*/
 	RegisterOperation("particle_system_remove", ParticleSystemRemove, Client, None, 0, 1,
 		"Removes <0> (all particle systems if not set or -1) from the current entity (can be used in several in triggers)",
 		"particle_system_no");
@@ -724,5 +719,9 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("missile_get_cur_position", MissileGetCurPosition, Both, None, 2, 2,
 		"Stores <1>'s current position into <0>",
 		"position_register", "missile_no");
-
+	
+	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
+	"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
+	"attack_direction", "low_boundary", "high_boundary");
+	
 }

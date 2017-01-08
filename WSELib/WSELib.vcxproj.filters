@@ -248,6 +248,9 @@
     <ClInclude Include="WSEDynMultiArray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WSESignatureScannerContext.h">
+      <Filter>Header Files\contexts</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -423,6 +426,9 @@
     </ClCompile>
     <ClCompile Include="WSEArrayOperationsContext.cpp">
       <Filter>Source Files\operations</Filter>
+    </ClCompile>
+    <ClCompile Include="WSESignatureScannerContext.cpp">
+      <Filter>Source Files\contexts</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

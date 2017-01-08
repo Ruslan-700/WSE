@@ -125,9 +125,9 @@ unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x004EC221;
 //unsigned int addresses::mission_CheckHit_Prop_entry = 0x00526AEF;
 //unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x00526CF7;
 //unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00526B15;
-unsigned int addresses::mission_CheckHit_Prop_entry = 0x004E952A;
-unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004E9778;
-unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x004E9550;
+unsigned int addresses::mission_CheckHit_Prop_entry = 0x004EB2CC;
+unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004EB51D;
+unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x004EB2F2;
 
 //unsigned int addresses::agent_HorseCharged_entry = 0x0050627A;
 unsigned int addresses::agent_HorseCharged_entry = 0x004C9E48;
@@ -541,9 +541,9 @@ unsigned int addresses::mission_CheckHit_Horse_exit_2 = 0x004940B1;
 //unsigned int addresses::mission_CheckHit_Prop_entry = 0x0048F438;
 //unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x0048F63D;
 //unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x0048F45E;
-unsigned int addresses::mission_CheckHit_Prop_entry = 0x00491FB3;
-unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004921F8;
-unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00491FD9;
+unsigned int addresses::mission_CheckHit_Prop_entry = 0x00493172;
+unsigned int addresses::mission_CheckHit_Prop_exit_1 = 0x004933BA;
+unsigned int addresses::mission_CheckHit_Prop_exit_2 = 0x00493198;
 
 //unsigned int addresses::agent_HorseCharged_entry = 0x0047AEFA;
 unsigned int addresses::agent_HorseCharged_entry = 0x0047CF88;

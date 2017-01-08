@@ -513,13 +513,13 @@ void __declspec(naked) AgentAttackCollidesWithPropHook()
 		FREEZE_REGS
 		//mov ecx, [esp+10028]
 #if defined WARBAND
-		mov ecx, [esp + 10064]
+		mov ecx, [esp + 10044]
 #elif defined WARBAND_DEDICATED
-		mov ecx, [esp + 10056]
+		mov ecx, [esp + 10052]
 #endif
 		mov ecx, [ecx]
 		//push [esp+68]
-		push[esp + 48]
+		push[esp + 52]
 		push ecx
 		CALL_CONTEXT_FUNC(Mission, OnAgentAttackCollidesWithProp)
 		test al, al

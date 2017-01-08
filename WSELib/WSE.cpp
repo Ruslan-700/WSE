@@ -236,6 +236,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 #endif
 
 #if defined DEBUG
+	AddContext(&SignatureScanner, true);
 	AddContext(&Debug, true);
 #endif
 	AddContext(&Performance, true);
