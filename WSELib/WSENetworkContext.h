@@ -81,6 +81,7 @@ public:
 	std::deque<HTTPConnection *> m_http_connections;
 	CRITICAL_SECTION m_http_critical_section;
 	WSERCONServer *m_rcon_server;
+	int compatible_multiplayer_version_no;
 
 private:
 	WSEOGPServer *m_ogp_server;

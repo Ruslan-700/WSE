@@ -287,7 +287,7 @@ namespace wb
 		bool u16;
 		float u17;
 		float slope;
-		int u18;
+		float u18;
 		int weapon_usage_order;
 		float cur_action_progress_for_sound;
 		float prev_action_progress_for_sound;
@@ -312,7 +312,7 @@ namespace wb
 		bool horse_charge;
 		float horse_charge_time;
 		int experience;
-		int u20[2];
+		float u20[2];
 		bool routed;
 		rgl::toggle_timer dismount_timer;
 		rgl::timer exit_timer;
@@ -329,11 +329,12 @@ namespace wb
 		bool has_corpse;
 		int horse_agent_before_death_no;
 		hkpRigidBody *horse_agent_before_death_body;
-		int u21;
+		float u21;
 		int running_away_state;
 #if defined WARBAND
 		FMOD_CHANNEL *fmod_channel;
 #endif
+		int u32[2];//1153
 		int num_times_cheered;
 		bool update_banner;
 		rgl::ai_mesh_face *ai_mesh_face;
@@ -341,7 +342,7 @@ namespace wb
 		int ragdoll_hit_bone_no;
 		rgl::vector4 ragdoll_hit_force;
 		float ragdoll_hit_duration;
-		rgl::matrix ragdoll_position;
+		//rgl::matrix ragdoll_position;
 		bool ragdoll_update_position;
 		bool ragdoll_set_bone_velocity;
 		rgl::vector4 ragdoll_velocity;
@@ -364,8 +365,8 @@ namespace wb
 		mission_grid_location grid_location;
 		unsigned int prev_actions_2;
 		agent_control control;
-		float u26;
-		float u27;
+		//float u26;
+		//float u27;
 		int u28; //1166
 		rgl::timer u29; //1166
 		float u30; //1166

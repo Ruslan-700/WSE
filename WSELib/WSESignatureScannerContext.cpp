@@ -285,7 +285,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_Turn_entry = FindSignature("\xD9\x5C\x24\x18\xD9\x44\x24\x14\xD9\x86\x00\x00\x00\x00", "xxxxxxxxxx????");
 	wb::addresses::agent_Turn_exit = wb::addresses::agent_Turn_entry + 8;
 
-	wb::addresses::makeScreenShot = FindSignature("\x81\xEC\x00\x00\x00\x00\x80\x3D\x65\xC0\x85\x00\x00\x0F\x84\x00\x00\x00\x00\x8B\x84\x24\x00\x00\x00\x00", "xx????xxxxxxxxx????xxx????");
+	wb::addresses::makeScreenShot = FindSignature("\x81\xEC\x00\x00\x00\x00\x80\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8B\x84\x24\x00\x00\x00\x00", "xx????xx?????xx????xxx????");
 
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");
 
@@ -301,7 +301,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 
-	wb::addresses::game_data_ptr = FindSignature("\x2E\xBA\x00\x00\x00\x00\x00\x3F\x04\xE2\x7B\x00", "xx????xxxxxx") + 8;
+	wb::addresses::game_data_ptr = FindSignature("\x2E\xBA\x00\x00\x00\x00\x00\x3F\x00\x00\x00\x00", "xx????xxxxxx") + 12;
 
 #elif defined WARBAND_DEDICATED
 	wb::addresses::operation_Execute_jumptable = FindSignature("\x89\x11\x5B\x8B\xE5\x5D\xC2\x0C\x00\x8B\xFF", "xxxxxxxxxxx") + 11;

@@ -154,6 +154,7 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
 		warband->network_manager.anti_cheat = 0;
 		m_horse_ff = false;
 		m_show_xhair = true;
+		compatible_multiplayer_version_no = WSE->ModuleSettingsIni.Int("", "compatible_multiplayer_version_no", 1157);
 		m_break_compat = !WSE->ModuleSettingsIni.Bool("", "network_compatible", true);
 		m_filter_mods = WSE->ModuleSettingsIni.Bool("", "hide_other_mod_servers", false);
 		m_remote_scripting = WSE->SettingsIni.Bool("remote_debugging", "enabled", false);
@@ -511,7 +512,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 			unsigned int compat_version = 0;
 			
 			if (server.compatible_game_version & (1 << 13))
-				compat_version = (server.compatible_game_version - 1157) & ~(1 << 13);
+				compat_version = (server.compatible_game_version - compatible_multiplayer_version_no) & ~(1 << 13);
 			
 			if (compat_version > 0)
 			{
@@ -522,7 +523,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				else if (compat_version > WSE_NETCODE_VERSION)
 					server.compatible_game_version = 9999;
 				else
-					server.compatible_game_version = 1157;
+					server.compatible_game_version = compatible_multiplayer_version_no;
 			}
 			else if (m_break_compat)
 			{
@@ -691,9 +692,9 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 				nbuf.pack_string(mpdata.server_name, 50);
 				
 				if (m_break_compat)
-					nbuf.pack_uint32((1157 + WSE_NETCODE_VERSION) | (1 << 13), 14);
+					nbuf.pack_uint32((compatible_multiplayer_version_no + WSE_NETCODE_VERSION) | (1 << 13), 14);
 				else
-					nbuf.pack_uint32(1157, 14);
+					nbuf.pack_uint32(compatible_multiplayer_version_no, 14);
 				
 				nbuf.pack_uint32(warband->compatible_module_version, 14);
 				nbuf.pack_string(warband->cur_module_name, 50);

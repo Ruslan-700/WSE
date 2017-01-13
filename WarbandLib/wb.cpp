@@ -11,7 +11,7 @@ void wb::check_types()
 	//assert_size<agent_ai>(21864, 21864);
 	assert_size<agent_ai>(21856, 21856);
 	//assert_size<agent>(25136, 25008);
-	assert_size<agent>(25152, 25024);
+	assert_size<agent>(25088, 24960);
 	assert_size<agent_blow>(132, 132);
 	assert_size<animation>(316, 316);
 	assert_size<attack>(160, 160);

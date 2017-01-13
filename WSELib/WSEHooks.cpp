@@ -78,7 +78,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x008FB428
-		push 0x0080E798
+		push 0x0081A810
 #elif defined WARBAND_STEAM
 		mov ecx, [edi]
 		push ecx
@@ -87,7 +87,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x00697958
-		push 0x006A31C0
+		push 0x006A31F8
 #endif
 		jmp [wb::addresses::operation_Execute_exit_2]
 	}
@@ -184,7 +184,7 @@ void __declspec(naked) ParseConsoleCommandHook()
 		jnz continue_exec
 		RESTORE_REGS
 		//push 0x0069DA84
-		push 0x006A96C4
+		push 0x006A9774
 		jmp [wb::addresses::ParseConsoleCommand_exit_2]
 continue_exec:
 		RESTORE_REGS
@@ -230,13 +230,13 @@ void __declspec(naked) ClientNetworkMessageReceivedHook()
 		mov edx, esp
 		mov ebx, esp
 		//mov edx, [ebx+7092]
-		mov edx, [ebx + 7052]
+		mov edx, [ebx + 7040]
 		mov edx, [edx]
 		push edx
 		push edi
 		push esi
 		//mov ebx, [ebx+7084]
-		mov ebx, [ebx + 7044]
+		mov ebx, [ebx + 7032]
 		mov ebx, [ebx]
 		push ebx
 		push eax
@@ -512,11 +512,7 @@ void __declspec(naked) AgentAttackCollidesWithPropHook()
 	{
 		FREEZE_REGS
 		//mov ecx, [esp+10028]
-#if defined WARBAND
-		mov ecx, [esp + 10044]
-#elif defined WARBAND_DEDICATED
 		mov ecx, [esp + 10052]
-#endif
 		mov ecx, [ecx]
 		//push [esp+68]
 		push[esp + 52]
@@ -818,9 +814,9 @@ void _declspec(naked) MissionObjectWeaponKnockBackHook()
 		mov eax, [edx + 432]
 		imul eax, 240
 #if defined WARBAND
-		add eax, dword ptr ds:0x8B31F8
+		add eax, dword ptr ds:0x008EB5BC
 #elif defined WARBAND_DEDICATED
-		add eax, dword ptr ds:0x72ABAC
+		add eax, dword ptr ds:0x0072ABCC
 #endif
 		push eax
 		CALL_CONTEXT_FUNC(Mission, OnMissionObjectWeaponKnockBack)

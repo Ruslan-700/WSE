@@ -61,7 +61,7 @@ namespace wb
 	{
 #if defined WARBAND_DEDICATED
 		network_manager network_manager;
-		int junk[554];
+		int junk[556];
 #endif
 		rgl::io_text_stream debug_text_stream;
 		int uuuuu1; // align
@@ -74,12 +74,12 @@ namespace wb
 		config_manager options_config;
 #if defined WARBAND_VANILLA
 		//int uuuuu5[56529];
-		int uuuuu5[10267];
+		int uuuuu5[55561];
 #elif defined WARBAND_STEAM
 		int uuuuu5[10331];
 #elif defined WARBAND_DEDICATED
 		//int uuuuu5[9147];
-		int uuuuu5[9199];
+		int uuuuu5[9205];
 #endif
 		rgl::resource_manager resource_manager;
 		bool error;
@@ -221,8 +221,11 @@ namespace wb
 		int dont_suppress_initial_warnings;
 #if defined WARBAND	
 		int disable_moveable_flag_optimization;
+		int u4[3];//1170
+#else if defined WARBAND_DEDICATED
+		int u4[2];//1170
 #endif		
-		int u4[2];
+		//int u4[2];
 		item_kind *item_kinds;
 		int num_item_kinds;
 		int u5; // align
@@ -251,15 +254,12 @@ namespace wb
 		int intro_video_stage;
 		int reset_device;
 		int display_global_message;
+		presentation_manager presentation_manager;
 #else if defined WARBAND_DEDICATED
 		int u7; // align
 #endif
 		language_manager language_manager;
-#if defined WARBAND //1168
-		presentation_manager presentation_manager;
-#else if defined WARBAND_DEDICATED //1168
 		registry_manager registry_manager;
-#endif
 		input_manager input_manager;
 #if defined WARBAND
 		//rgl::renderer renderer;
@@ -270,24 +270,20 @@ namespace wb
 		module_settings module_settings;
 		rgl::physics_manager physics_manager;
 #if defined WARBAND
-		registry_manager registry_manager;
+		particle_system_manager particle_system_manager;
 #else if defined WARBAND_DEDICATED
 		//unsigned int aaaa;
 		unsigned int bbbb;
 #endif
 		rgl::ini_file resources_ini_file;
 #if defined WARBAND
-		particle_system_manager particle_system_manager;
 		//unsigned int aaaa;
+		HANDLE game_started_mutex;
 #else if defined WARBAND_DEDICATED
 		int u9; // align
 #endif
 		rgl::ini_file compatibility_resources_ini_file;
-#if defined WARBAND //1168
-		HANDLE game_started_mutex;
-#else if defined WARBAND_DEDICATED //1168
 		int u10; // align
-#endif
 		rgl::ini_file game_variables_ini_file;
 		int u11; // align
 #if defined WARBAND
