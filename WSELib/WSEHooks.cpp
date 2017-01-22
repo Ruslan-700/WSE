@@ -512,7 +512,7 @@ void __declspec(naked) AgentAttackCollidesWithPropHook()
 	{
 		FREEZE_REGS
 		//mov ecx, [esp+10028]
-		mov ecx, [esp + 10052]
+		mov ecx, [ebp + 8]
 		mov ecx, [ecx]
 		//push [esp+68]
 		push[esp + 52]
