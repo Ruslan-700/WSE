@@ -1,0 +1,46 @@
+﻿Build started 06.02.2017 20:28:13.
+     1>Project "D:\Projekte\Warband\WSE\luajit\luajit.vcxproj" on node 2 (Build target(s)).
+     1>Build:
+         setlocal enabledelayedexpansion
+         
+         cd D:\Projekte\Warband\WSE\luajit\
+         
+         if exist lastSrcState.txt (
+           call :writeSrcState newSrcState.txt
+         
+           fc lastSrcState.txt newSrcState.txt > nul
+         
+           if ERRORLEVEL 1 (
+             call :build
+             call :writeSrcState lastSrcState.txt
+           ) else (
+             echo luaJIT is up to date.
+           )
+         
+           del newSrcState.txt
+         ) else (
+           call :build
+           call :writeSrcState lastSrcState.txt
+         )
+         
+         goto:eof
+         
+         :build
+           call "D:\Program Files (x86)\VisualStudio2013\Common7\IDE\..\Tools\VsDevCmd.bat" & cd "D:\Projekte\Warband\WSE\luajit\luajit\src\" & msvcbuild.bat & cd D:\Projekte\Warband\WSE\luajit\
+           echo done building
+         goto:eof
+         
+         :writeSrcState
+           if exist "%1" del "%1"
+           set Line=
+           for /f "delims=" %%a in ('dir /s luajit') do (
+             if not "!Line!"=="" >>"%1" echo.!Line!
+             set Line=%%a
+           )
+         goto:eof
+         luaJIT is up to date.
+     1>Done Building Project "D:\Projekte\Warband\WSE\luajit\luajit.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.19
