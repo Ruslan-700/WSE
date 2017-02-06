@@ -6,3 +6,15 @@ WarbandScriptEnhancer.sdf
 WarbandScriptEnhancer.v12.suo
 WSEProfiler/obj
 WSEProfiler/bin
+luajit\lastSrcState.txt
+luajit\luajit\src\host\buildvm_arch.h
+luajit\luajit\src\jit\vmdef.lua
+luajit\luajit\src\lj_bcdef.h
+luajit\luajit\src\lj_ffdef.h
+luajit\luajit\src\lj_folddef.h
+luajit\luajit\src\lj_libdef.h
+luajit\luajit\src\lj_recdef.h
+luajit\luajit\src\lua51.dll
+luajit\luajit\src\lua51.exp
+luajit\luajit\src\lua51.lib
+luajit\luajit\src\luajit.exe
