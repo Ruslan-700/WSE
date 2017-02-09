@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 #include <rgl_matrix.h>
+#include "json/json.h"
 
 #define WSE_DICT_MAGIC 0x57534544
 #define WSE_DICT_VERSION 2
@@ -13,6 +14,8 @@ public:
 	void Load(const std::string &file, const int &mode = 0);
 	void Load(const WSEDictionary &dict, const int &mode = 0);
 	void Save(const std::string &file) const;
+	void LoadJson(const std::string &file, const int &mode = 0);
+	void SaveJson(const std::string &file) const;
 	void Clear();
 	bool Has(const std::string &key) const;
 	int GetSize() const;

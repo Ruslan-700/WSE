@@ -39,6 +39,12 @@
     <Filter Include="Header Files\rcon">
       <UniqueIdentifier>{b8b62c6d-3096-4397-b9b7-94f38eb54832}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{bfdcb208-4bc4-4261-866c-13d35a8fb314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\json">
+      <UniqueIdentifier>{b8f06597-20a6-42e5-a31b-6874f27f850c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -251,6 +257,12 @@
     <ClInclude Include="WSESignatureScannerContext.h">
       <Filter>Header Files\contexts</Filter>
     </ClInclude>
+    <ClInclude Include="json\json.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="json\json-forwards.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -429,6 +441,9 @@
     </ClCompile>
     <ClCompile Include="WSESignatureScannerContext.cpp">
       <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="json\jsoncpp.cpp">
+      <Filter>Source Files\json</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -61,6 +61,33 @@ void DictSave(WSEDictionaryOperationsContext *context)
 	dict->Save(context->CreateFile(path, "wsedict"));
 }
 
+void DictLoadFileJson(WSEDictionaryOperationsContext *context)
+{
+	int id, mode;
+	std::string path;
+
+	context->ExtractValue(id);
+	context->ExtractPath(path);
+	context->ExtractValue(mode);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	dict->LoadJson(context->CreateFile(path, "json"), mode);
+}
+
+void DictSaveJson(WSEDictionaryOperationsContext *context)
+{
+	int id;
+	std::string path;
+
+	context->ExtractValue(id);
+	context->ExtractPath(path);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	dict->SaveJson(context->CreateFile(path, "json"));
+}
+
 void DictClear(WSEDictionaryOperationsContext *context)
 {
 	int id;
@@ -308,6 +335,14 @@ void WSEDictionaryOperationsContext::OnLoad()
 	RegisterOperation("dict_set_pos", DictSetPos, Both, None, 3, 3,
 		"Adds (or changes) <2> as the position value paired to <1>",
 		"dict", "key", "position_register");
+
+	RegisterOperation("dict_load_file_json", DictLoadFileJson, Both, None, 2, 3,
+		"Loads a dictionary json file into <0>. <2>: see above",
+		"dict", "file", "mode");
+
+	RegisterOperation("dict_save_json", DictSaveJson, Both, None, 2, 2,
+		"Saves <0> into a json file. For security reasons, <1> is just a name, not a full path, and will be stored into a WSE managed directory",
+		"dict", "file");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

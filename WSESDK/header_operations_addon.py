@@ -81,6 +81,8 @@ dict_set_int             = 3213 #(dict_set_int, <dict>, <key>, <value>), #Adds (
 dict_get_key_by_iterator = 3214 #(dict_get_key_by_iterator, <string_register>, <dict>, <iterator>), #Stores the key <string_register> by iterator <iterator>
 dict_get_pos             = 3215 #(dict_get_pos, <position_register>, <dict>, <key>, [<default_position_register>]), #Stores the position paired to <key> into <position_register>. If the key is not found and [<default_position_register>] is set, [<default_position_register>] will be stored instead. If [<default_position_register>] is not set, (x:0,y:0,z:0,rotX:0,rotY:0,rotZ:0) will be stored
 dict_set_pos             = 3216 #(dict_set_pos, <dict>, <key>, <position_register>), #Adds (or changes) <position_register> as the position value paired to <key>
+dict_load_file_json      = 3217 #(dict_load_file_json, <dict>, <file>, [<mode>]), #Loads a dictionary json file into <dict>. [<mode>]: see above
+dict_save_json           = 3218 #(dict_save_json, <dict>, <file>), #Saves <dict> into a json file. For security reasons, <file> is just a name, not a full path, and will be stored into a WSE managed directory
 
 agent_get_item_modifier                         = 3300 #(agent_get_item_modifier, <destination>, <agent_no>), #Stores <agent_no>'s horse item modifier (-1 if agent is not a horse) into <destination>
 agent_get_item_slot_modifier                    = 3301 #(agent_get_item_slot_modifier, <destination>, <agent_no>, <item_slot_no>), #Stores <agent_no>'s <item_slot_no> modifier into <destination>
