@@ -3,3 +3,4 @@
 #include <Windows.h>
 
 DWORD CRC32(LPCTSTR filename);
+DWORD CRC32(LPCTSTR string, DWORD length);
