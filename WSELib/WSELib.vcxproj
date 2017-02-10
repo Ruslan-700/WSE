@@ -177,7 +177,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
@@ -200,7 +200,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -220,7 +220,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -238,7 +238,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -267,7 +267,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -296,7 +296,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -311,7 +311,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
     </Link>
@@ -325,7 +325,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -354,7 +354,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -397,6 +397,7 @@
     <ClInclude Include="ogp\ogp_settings.h" />
     <ClInclude Include="rcon\rcon.h" />
     <ClInclude Include="rcon\ws-util.h" />
+    <ClInclude Include="WSELuaOperationsContext.h" />
     <ClInclude Include="WSESignatureScannerContext.h" />
     <ClInclude Include="WSESimpleCharBuff.h" />
     <ClInclude Include="WSE.h" />
@@ -475,6 +476,7 @@
     <ClCompile Include="WSEEngineOperationsContext.cpp" />
     <ClCompile Include="WSEFloatingPointOperationsContext.cpp" />
     <ClCompile Include="WSEInputOperationsContext.cpp" />
+    <ClCompile Include="WSELuaOperationsContext.cpp" />
     <ClCompile Include="WSEMenuOperationsContext.cpp" />
     <ClCompile Include="WSEObjectManager.cpp" />
     <ClCompile Include="WSEOptionsOperationsContext.cpp" />

@@ -251,6 +251,9 @@
     <ClInclude Include="WSESignatureScannerContext.h">
       <Filter>Header Files\contexts</Filter>
     </ClInclude>
+    <ClInclude Include="WSELuaOperationsContext.h">
+      <Filter>Header Files\operations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -429,6 +432,9 @@
     </ClCompile>
     <ClCompile Include="WSESignatureScannerContext.cpp">
       <Filter>Source Files\contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELuaOperationsContext.cpp">
+      <Filter>Source Files\operations</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

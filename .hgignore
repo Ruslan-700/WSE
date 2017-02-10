@@ -18,3 +18,4 @@ luajit\luajit\src\lua51.dll
 luajit\luajit\src\lua51.exp
 luajit\luajit\src\lua51.lib
 luajit\luajit\src\luajit.exe
+luajit\Release\lua51.lib
