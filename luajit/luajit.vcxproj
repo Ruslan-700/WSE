@@ -28,7 +28,7 @@
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
     <NMakeBuildCommandLine>setlocal enabledelayedexpansion
 
-cd $(ProjectDir)
+cd "$(ProjectDir)"
 
 if exist lastSrcState.txt (
   call :writeSrcState newSrcState.txt
@@ -51,8 +51,7 @@ if exist lastSrcState.txt (
 goto:eof
 
 :build
-  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd $(ProjectDir)
-  echo done building
+  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.lib" ".\Release\lua51.lib"
 goto:eof
 
 :writeSrcState

@@ -48,6 +48,7 @@
 #include "WSEStringOperationsContext.h"
 #include "WSETroopOperationsContext.h"
 #include "WSEArrayOperationsContext.h"
+#include "WSELuaOperationsContext.h"
 
 #define VAL(X) #X
 #define TOSTR(X) VAL(X)
@@ -120,6 +121,7 @@ public:
 	WSEStringOperationsContext StringOperations;
 	WSETroopOperationsContext TroopOperations;
 	WSEArrayOperationsContext ArrayOperations;
+	WSELuaOperationsContext LuaOperations;
 	
 	const std::string &GetPath() const;
 	void Load(HINSTANCE module_handle);
