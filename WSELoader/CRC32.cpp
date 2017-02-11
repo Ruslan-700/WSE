@@ -103,3 +103,15 @@ DWORD CRC32(LPCTSTR filename)
 	CloseHandle(file);
 	return ~crc32;
 }
+
+DWORD CRC32(LPCTSTR string, DWORD length)
+{
+	DWORD crc32 = 0xFFFFFFFF;
+
+	for (DWORD i = 0; i < length; i++)
+	{
+		crc32 = ((crc32) >> 8) ^ __CRC32Table[(string[i]) ^ ((crc32)& 0x000000FF)];
+	}
+
+	return ~crc32;
+}

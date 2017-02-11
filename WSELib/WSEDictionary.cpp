@@ -54,6 +54,36 @@ void WSEDictionary::Load(const std::string &file, const int &mode)
 	}
 }
 
+void WSEDictionary::LoadJson(const std::string &file, const int &mode)
+{
+	if (mode == 0)
+		m_values.clear();
+
+	std::ifstream stream(file);
+
+	if (!stream.is_open())
+		return;
+
+	Json::Value root;
+	Json::Reader reader;
+
+	bool parsingSuccessful = reader.parse(stream, root);
+	if (!parsingSuccessful)
+		return;
+
+	if (!root.isObject())
+		return;
+
+	for (Json::Value::iterator it = root.begin(); it != root.end(); ++it)
+	{
+		std::string key = it.key().asString();
+		std::string value = (*it).asString();
+
+		if (mode != 2 || m_values.find(key) == m_values.end())
+			m_values[key] = value;
+	}
+}
+
 void WSEDictionary::Load(const WSEDictionary &dict, const int &mode)
 {
 	if (mode == 0)
@@ -93,6 +123,24 @@ void WSEDictionary::Save(const std::string &file) const
 		stream.write(it->first.c_str(), key_len);
 		stream.write(it->second.c_str(), value_len);
 	}
+
+	stream.close();
+}
+
+void WSEDictionary::SaveJson(const std::string &file) const
+{
+	std::ofstream stream(file);
+	if (!stream.is_open())
+		return;
+
+	Json::Value root;
+	for (std::map<std::string, std::string>::const_iterator it = m_values.begin(); it != m_values.end(); ++it)
+	{
+		root[it->first] = it->second;
+	}
+
+	Json::StyledStreamWriter writer;
+	writer.write(stream, root);
 
 	stream.close();
 }

@@ -126,10 +126,13 @@ void matrix::scale(const vector4 &scale)
 
 matrix &matrix::transform_to_local(matrix &m, const matrix &parent) const
 {
-	this->transform_point_to_local(m.o, parent.o);
-	this->transform_dir_to_local(m.rot.s, parent.rot.s);
-	this->transform_dir_to_local(m.rot.f, parent.rot.f);
-	this->transform_dir_to_local(m.rot.u, parent.rot.u);
+	matrix temp = m;
+	this->transform_point_to_local(temp.o, parent.o);
+	this->transform_dir_to_local(temp.rot.s, parent.rot.s);
+	this->transform_dir_to_local(temp.rot.f, parent.rot.f);
+	this->transform_dir_to_local(temp.rot.u, parent.rot.u);
+	m = temp;
+
 	return m;
 }
 
@@ -163,8 +166,9 @@ vector4 &matrix::transform_point_to_local(vector4 &v, const vector4 &parent) con
 
 vector4 &matrix::transform_point_to_parent(vector4 &v, const vector4 &local) const
 {
+	vector4 temp = this->o;
 	transform_dir_to_parent(v, local);
-	v += this->o;
+	v += temp;
 	return v;
 }
 
