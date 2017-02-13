@@ -51,7 +51,7 @@ if exist lastSrcState.txt (
 goto:eof
 
 :build
-  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.lib" ".\Release\lua51.lib"
+  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.lib" ".\Release\lua51.lib" &amp; copy ".\luajit\src\lua51.dll" ".\Release\lua51.dll"
 goto:eof
 
 :writeSrcState
@@ -60,6 +60,10 @@ goto:eof
   for /f "delims=" %%a in ('dir /s luajit') do (
     if not "!Line!"=="" &gt;&gt;"%1" echo.!Line!
     set Line=%%a
+  )
+
+  for %%a in (luajit.vcxproj) do (
+    echo luajit.vcxproj %%~ta %%~za &gt;&gt; "%1"
   )
 goto:eof</NMakeBuildCommandLine>
   </PropertyGroup>

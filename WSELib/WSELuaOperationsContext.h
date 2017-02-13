@@ -10,6 +10,8 @@ public:
 	WSELuaOperationsContext();
 
 protected:
+	lua_State *luaState;
+
 	virtual void OnLoad();
 	virtual void OnUnload();
 };

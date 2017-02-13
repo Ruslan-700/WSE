@@ -62,6 +62,7 @@ public:
 	int GetCurrentTrigger() const;
 	void ScriptError(std::string format, ...) const;
 	void WindowsAPIError(std::string message, ...) const;
+	std::string CreateStorageDir();
 	std::string CreateFile(const std::string &file, const std::string &extension);
 	std::string CreateScreenshot(const std::string &file, const std::string &extension);
 
