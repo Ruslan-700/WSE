@@ -159,7 +159,6 @@ inline void WSELuaOperationsContext::initLua()
 inline void WSELuaOperationsContext::loadOperations()
 {
 	std::string opFile = getLuaScriptDir() + "header_operations.py";
-
 	if (!fileExists(opFile))
 		return;
 
@@ -169,8 +168,9 @@ inline void WSELuaOperationsContext::loadOperations()
 
 	std::smatch curMatches;
 
-	std::regex opRegEx( R"((\w+)=(\d+)#\(\1((?:,<\w+>)*)((?:,\[<\w+>\])*)\).*)" );
-	std::regex listStartRegEx( R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?))" );
+	std::regex opRegEx( R"((\w+)=((0x)?\d+).*)" );
+	std::regex opOrRegEx( R"((\w+)=(\w+)\|(\w+).*)" );
+	std::regex listStartRegEx( R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?).*)" );
 
 	std::unordered_map<std::string, std::vector<std::string>*> flagLists;
 
@@ -178,45 +178,23 @@ inline void WSELuaOperationsContext::loadOperations()
 	{
 		curLineNum++;
 		delBlank(curLine);
-		//gPrint(curLine);
 
 		if (curLine.length() == 0 || curLine[0] == '#')
 			continue;
 		
 		if (std::regex_match(curLine, curMatches, opRegEx))
 		{
-			//for (size_t i = 0; i < curMatches.size(); i++)
-			//	gPrintf("match #%i: %s", i, curMatches.str(i).c_str());
-
-			if (curMatches.size() < 3)
-				continue;
 
 			gameOperation newOp;
 			newOp.flags = 0;
 
-			newOp.opcode = std::stoi(curMatches.str(2));
+			if (curMatches.str(3).length())
+				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 16);
+			else
+				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 10);
 
-			size_t reqArgs = 0, addArgs = 0;
+			operationMap[curMatches.str(1)] = newOp;
 
-			if (curMatches[3].length())
-				reqArgs = countChar(curMatches.str(3), '<');
-			
-			if (curMatches[4].length())
-				addArgs = countChar(curMatches.str(4), '<');
-
-			if (reqArgs + addArgs > 16)
-			{
-				gPrintf("WSELuaOperationsContext: Error reading %s, line %i: arg count > 16", opFile.c_str(), curLineNum);
-			}
-			else 
-			{
-				newOp.minOperands = static_cast<short>(reqArgs);
-				newOp.maxOperands = static_cast<short>(reqArgs + addArgs);
-
-				operationMap[curMatches.str(1)] = newOp;
-
-				//gPrintf("added op %s, code %i, #min args %i, #max args %i", curMatches.str(1).c_str(), newOp.opcode, newOp.minOperands, newOp.maxOperands);
-			}
 		}
 		else if (std::regex_match(curLine, curMatches, listStartRegEx))
 		{
@@ -243,7 +221,6 @@ inline void WSELuaOperationsContext::loadOperations()
 				}
 			}
 
-			//gPrintf("curKeyStr (list start): [%s], len: %i", curKeysStr.c_str(), curKeysStr.length());
 			if (curKeysStr.length())
 			{
 				std::vector<std::string> curKeys = split(curKeysStr, ',', true);
@@ -270,7 +247,6 @@ inline void WSELuaOperationsContext::loadOperations()
 				curKeysStr += curLine;
 			}
 
-			//gPrintf("curKeyStr: [%s], len: %i", curKeysStr.c_str(), curKeysStr.length());
 			if (curKeysStr.length()) 
 			{
 				std::vector<std::string> curKeys = split(curKeysStr, ',', true);
@@ -279,7 +255,23 @@ inline void WSELuaOperationsContext::loadOperations()
 					flagLists[listName]->push_back(curKeys[i]);
 			}			
 		}
-		else 
+		else if (std::regex_match(curLine, curMatches, opOrRegEx))
+		{
+			auto op1 = operationMap.find(curMatches.str(2));
+			auto op2 = operationMap.find(curMatches.str(3));
+
+			if (op1 == operationMap.end() || op2 == operationMap.end())
+			{
+				gPrintf("WSELuaOperationsContext: Warning reading %s, line %i: undefined value", opFile.c_str(), curLineNum);
+			}
+
+			gameOperation newOp;
+			newOp.opcode = op1->second.opcode | op2->second.opcode;
+			newOp.flags = 0;
+
+			operationMap[curMatches.str(1)] = newOp;
+		}
+		else
 		{
 			gPrintf("WSELuaOperationsContext: Warning reading %s, could not process line %i", opFile.c_str(), curLineNum);
 		}
@@ -342,23 +334,41 @@ inline void WSELuaOperationsContext::doMainScript()
 
 static int lGameTableHandler(lua_State *L)
 {
-	int n = lua_gettop(L);
+	int numLArgs = lua_gettop(L);
 
-#if defined DEBUG
-	char ab[1000];
-	sprintf_s(ab, "game table call - num args: %i", n);
-	print(ab);
+	if (numLArgs == 0)
+		luaL_error(L, "need operation identifier");
+	else if (numLArgs > 17)
+		luaL_error(L, "operand count can't be > 16");
 
-	for (int i = 1; i <= n; i++)
+	if (!lua_isstring(L, 1))
+		luaL_error(L, "invalid operation identifier");
+
+	std::string opName(lua_tostring(L, 1));
+
+	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
+
+	if (opEntry == WSE->LuaOperations.operationMap.end())
+		luaL_error(L, "undefined operation: [%s]", opName.c_str());
+
+	gameOperation op = opEntry->second;
+	//WSEOperationFlags::Lhs
+	std::vector<int> operands(numLArgs - 1);
+	int curStrReg = NUM_REGISTERS;
+
+	for (int i = 2; i <= numLArgs; i++)
 	{
-		const char *s = lua_tostring(L, i);
-		if (s != NULL)
+		if (lua_isnumber(L, i))
+			operands[i - 2] = lua_tointeger(L, i);
+		else if (lua_isstring(L, i))
 		{
-			sprintf_s(ab, "arg%i: %s", i, s);
-			print(ab);
-		}		
+			warband->basic_game.string_registers[--curStrReg] = lua_tostring(L, i);
+			operands[i - 2] = curStrReg;
+		}
+		else
+			luaL_error(L, "invalid operand #%i", i - 2);
 	}
-#endif
 
+	WSE->Scripting.ExecuteScriptOperation(op.opcode, operands);
 	return 0;
 }

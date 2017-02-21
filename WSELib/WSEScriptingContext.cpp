@@ -917,8 +917,7 @@ bool WSEScriptingContext::OnOperationExecute(wb::operation *operation, int *oper
 
 void WSEScriptingContext::ExecuteScriptOperation(int opcode)
 {
-	std::vector<int> tmp;
-	this->ExecuteScriptOperation(opcode, tmp);
+	this->ExecuteScriptOperation(opcode, std::vector<int>());
 }
 
 void WSEScriptingContext::ExecuteScriptOperation(int opcode, const std::vector<int> &operands)

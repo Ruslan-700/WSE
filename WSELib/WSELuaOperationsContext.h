@@ -5,22 +5,20 @@
 
 #include "WSEOperationContext.h"
 
+struct gameOperation
+{
+	unsigned int opcode;
+	unsigned short flags;
+};
+
 class WSELuaOperationsContext : public WSEOperationContext
 {
 public:
 	WSELuaOperationsContext();
+	std::unordered_map<std::string, gameOperation> operationMap;
 
 protected:
-	struct gameOperation
-	{
-		unsigned int opcode;
-		short minOperands;
-		short maxOperands;
-		unsigned short flags;
-	};
-
 	lua_State *luaState;
-	std::unordered_map<std::string, gameOperation> operationMap;
 
 	virtual void OnLoad();
 	virtual void OnUnload();
