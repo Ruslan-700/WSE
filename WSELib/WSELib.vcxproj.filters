@@ -452,4 +452,9 @@
       <Filter>Source Files\json</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="WSELuaOperationsLuaCode.txt">
+      <Filter>Source Files\operations</Filter>
+    </None>
+  </ItemGroup>
 </Project>

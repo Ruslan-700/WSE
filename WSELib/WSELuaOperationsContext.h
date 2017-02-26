@@ -16,14 +16,14 @@ class WSELuaOperationsContext : public WSEOperationContext
 public:
 	WSELuaOperationsContext();
 	std::unordered_map<std::string, gameOperation> operationMap;
+	lua_State *luaState;
+	void printLastError();
 
 protected:
-	lua_State *luaState;
 
 	virtual void OnLoad();
 	virtual void OnUnload();
 
-	void printLastError();
 
 	inline void initLua();
 
@@ -36,5 +36,3 @@ protected:
 	//void luaPush_str();
 	//void luaPop();
 };
-
-static int lGameTableHandler(lua_State *L);

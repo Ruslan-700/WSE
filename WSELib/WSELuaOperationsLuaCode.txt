@@ -1,0 +1,21 @@
+R"(
+game.mt = {}
+game.mt.__index = function(table, key)
+	return function(...)
+		return game.execOperation(key,...)
+	end
+end
+setmetatable(game, game.mt)
+
+game.regMt = {}
+game.regMt.__index = function(table, key)
+	return game.getReg(table.typeId, key)
+end
+game.regMt.__newindex = function(table, key, value)
+	game.setReg(table.typeId, key, value)
+end
+
+game.reg = setmetatable({typeId = 0}, game.regMt)
+game.sreg = setmetatable({typeId = 1}, game.regMt)
+game.preg = setmetatable({typeId = 2}, game.regMt)
+)"

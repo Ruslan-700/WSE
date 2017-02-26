@@ -520,6 +520,9 @@
       <Project>{7ed16498-7641-4f22-96ad-e071603a5658}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="WSELuaOperationsLuaCode.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

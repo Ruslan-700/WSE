@@ -11,7 +11,6 @@ void gPrint(const char *msg)
 	warband->window_manager.display_message(msg, 0xFFFF5555, 0);
 #endif
 
-	warband->log_stream.write_c_str("\n");
 	warband->log_stream.write_c_str(msg);
 	warband->log_stream.write_c_str("\n");
 }
@@ -81,7 +80,6 @@ void split(const std::string &s, char delim, bool skipEmpty, Out result)
 	}
 }
 
-
 std::vector<std::string> split(const std::string &s, char delim, bool skipEmpty)
 {
 	std::vector<std::string> elems;
@@ -103,22 +101,264 @@ std::string getLuaScriptDir()
 	return dir;
 }
 
-void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
+inline void setOperandToLocalVar(__int64 &operand, int localsIndex)
 {
-	auto l = flagLists.find(listName);
-	if (l != flagLists.end())
-	{
-		for (size_t i = 0; i < l->second->size(); i++)
-		{
-			std::string curKey = l->second->at(i);
-			auto op = operationMap.find(curKey);
+	operand = ((__int64)17 << 56) + localsIndex;
+}
 
-			if (op == operationMap.end())
-				gPrintf("WSELuaOperationsContext: Warning reading %s, trying to set flag %s for non-existing operation [%s]", opFile.c_str(), listName.c_str(), curKey.c_str());
-			else
-				op->second.flags |= flag;
+
+static int lGameTableHandler(lua_State *L)
+{
+	int numLArgs = lua_gettop(L);
+
+	if (numLArgs == 0)
+		luaL_error(L, "need operation identifier");
+	else if (numLArgs > 17)
+		luaL_error(L, "operand count can't be > 16");
+
+	if (!lua_isstring(L, 1))
+		luaL_error(L, "invalid operation identifier");
+
+	std::string opName(lua_tostring(L, 1));
+
+	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
+
+	if (opEntry == WSE->LuaOperations.operationMap.end())
+		luaL_error(L, "undefined operation: [%s]", opName.c_str());
+
+	gameOperation op = opEntry->second;
+
+	wb::operation wop;
+	wop.opcode = op.opcode;
+	wop.num_operands = numLArgs - 1;
+	wop.end_statement = -1;
+
+	__int64 locals[1];
+
+	int curStrReg = NUM_REGISTERS;
+
+	int curLArgIndex = 2;
+	int curOperandIndex = 0;
+
+	if (op.flags & WSEOperationType::LhsOperation)
+	{
+		locals[0] = lua_tointeger(L, curLArgIndex++);
+		setOperandToLocalVar(wop.operands[curOperandIndex++], 0);
+	}
+
+	while (curLArgIndex <= numLArgs)
+	{
+		if (lua_isnumber(L, curLArgIndex))
+			wop.operands[curOperandIndex] = lua_tointeger(L, curLArgIndex);
+		else if (lua_isstring(L, curLArgIndex))
+		{
+			warband->basic_game.string_registers[--curStrReg] = lua_tostring(L, curLArgIndex);
+			wop.operands[curOperandIndex] = curStrReg;
+		}
+		else
+			luaL_error(L, "invalid operand #%i", curOperandIndex);
+
+		curOperandIndex++;
+		curLArgIndex++;
+	}
+
+	int e = 0;
+
+	bool b = wop.execute(locals, 0, e);
+
+	int retCount = 1;
+	if (op.flags & WSEOperationType::CfOperation)
+	{
+		lua_pushboolean(L, b);
+		retCount++;
+	}
+
+	if (op.flags & WSEOperationType::LhsOperation)
+	{
+		lua_pushinteger(L, (lua_Integer)locals[0]);
+		retCount++;
+	}
+
+	lua_pushinteger(L, e);
+
+	return retCount;
+
+	/*lua_newtable(L);
+
+	lua_pushinteger(L, e);
+	lua_setfield(L, -2, "error");
+
+	if (op.flags & WSEOperationType::LhsOperation)
+	{
+		lua_pushinteger(L, (lua_Integer)locals[0]);
+		lua_setfield(L, -2, "result");
+	}
+
+	if (op.flags & WSEOperationType::CfOperation)
+	{
+		lua_pushboolean(L, b);
+		lua_setfield(L, -2, "nofail");
+	}
+
+	return 1;*/
+}
+
+static int lGetRegHandler(lua_State *L)
+{
+	if (lua_gettop(L) != 2)
+		luaL_error(L, "invalid arg count");
+
+	if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2))
+		luaL_error(L, "arg is not number");
+
+	int typeId = lua_tointeger(L, 1);
+	int index = lua_tointeger(L, 2);
+
+	if (index < 0 || index >= NUM_REGISTERS)
+		luaL_error(L, "index out of range");
+
+	if (typeId == 0)
+		lua_pushinteger(L, (lua_Integer)warband->basic_game.registers[index]);
+	else if (typeId == 1)
+		lua_pushstring(L, warband->basic_game.string_registers[index]);
+
+	return 1;
+}
+
+static int lSetRegHandler(lua_State *L)
+{
+	if (lua_gettop(L) != 3)
+		luaL_error(L, "invalid arg count");
+
+	if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2))
+		luaL_error(L, "arg is not number");
+
+	int typeId = lua_tointeger(L, 1);
+	int index = lua_tointeger(L, 2);
+
+	if (index < 0 || index >= NUM_REGISTERS)
+		luaL_error(L, "index out of range");
+
+	if (typeId == 0)
+	{
+		if (lua_isnumber(L, 3))
+			warband->basic_game.registers[index] = lua_tointeger(L, 3);
+		else
+			luaL_error(L, "val is not number");
+
+	}
+	else if (typeId == 1)
+	{
+		if (lua_isstring(L, 3))
+			warband->basic_game.string_registers[index] = lua_tostring(L, 3);
+		else
+			luaL_error(L, "val is not string");
+	}
+
+	return 0;
+}
+
+static int lGetCurMissionTemplateId(lua_State *L)
+{
+	lua_pushstring(L, warband->mission_templates[warband->cur_mission->cur_mission_template_no].id);
+	return 1;
+}
+
+static int lGetScriptNo(lua_State *L)
+{
+	if (lua_gettop(L) != 1)
+		luaL_error(L, "invalid arg count");
+
+	if (!lua_isstring(L, 1))
+		luaL_error(L, "arg is not string");
+
+	const char *scriptId = lua_tostring(L, 1);
+
+	for (int i = 0; i < warband->script_manager.num_scripts; i++)
+	{
+		if (warband->script_manager.scripts[i].id == scriptId)
+		{
+			lua_pushinteger(L, i);
+			return 1;
 		}
 	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
+
+int opGetTop(WSELuaOperationsContext *context)
+{
+	return lua_gettop(context->luaState);
+}
+
+int opToInt(WSELuaOperationsContext *context)
+{
+	int index;
+	context->ExtractValue(index);
+
+	return lua_tointeger(context->luaState, index);
+}
+
+void opToStr(WSELuaOperationsContext *context)
+{
+	int index, sreg;
+	context->ExtractValue(index);
+	context->ExtractRegister(sreg);
+
+	const char *str = lua_tostring(context->luaState, index);
+
+	if (str == NULL)
+		context->ScriptError("value at index %i is not a valid string", index);
+	else
+		warband->basic_game.string_registers[sreg] = str;
+}
+
+void opPushInt(WSELuaOperationsContext *context)
+{
+	int val;
+	context->ExtractValue(val);
+
+	lua_pushinteger(context->luaState, val);
+}
+
+void opPushStr(WSELuaOperationsContext *context)
+{
+	std::string val;
+	context->ExtractString(val);
+
+	lua_pushstring(context->luaState, val.c_str());
+}
+
+void opPop(WSELuaOperationsContext *context)
+{
+	int n;
+	context->ExtractValue(n);
+
+	lua_pop(context->luaState, n);
+}
+
+void opCall(WSELuaOperationsContext *context)
+{
+	std::string funcName;
+	int numArgs;
+
+	context->ExtractString(funcName);
+	context->ExtractValue(numArgs);
+
+	int stackSize = lua_gettop(context->luaState);
+
+	if (stackSize < numArgs)
+		context->ScriptError("not enough arguments on stack");
+
+	lua_getglobal(context->luaState, funcName.c_str());
+
+	if (numArgs)
+		lua_insert(context->luaState, stackSize - numArgs + 1);
+
+	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
+		context->printLastError();
 }
 
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("array", 5100, 5199)
@@ -127,9 +367,33 @@ WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("array"
 
 void WSELuaOperationsContext::OnLoad()
 {
-	//RegisterOperation("lua_call", luaCall, Both, Lhs, 3, 16,
-	//	"Creates an array object of <1> (0: Integer, 1: String, 2: Position) and stores its ID into <0>. You can specify up to 14 dimensions, from <2> to <15>. The array will be initialized by default with 0 / empty string / 0-position.",
-	//	"destination", "type_id", "Dim 0", "Dim 1", "Dim 2", "Dim 3", "Dim 4", "Dim 5", "Dim 6", "Dim 7", "Dim 8", "Dim 9", "Dim 10", "Dim 11", "Dim 12", "Dim 13");
+	RegisterOperation("lua_get_top", opGetTop, Both, Lhs, 1, 1,
+		"Stores the index of the top element in the lua stack into <0>. The result also is equal to the number of elements in the stack.",
+		"destination");
+
+	RegisterOperation("lua_to_int", opToInt, Both, Lhs, 2, 2,
+		"Retrieves the value at <1> from the lua stack and stores it in <0>",
+		"destination", "index");
+
+	RegisterOperation("lua_to_str", opToStr, Both, None, 2, 2,
+		"Retrieves the string at <1> from the lua stack and stores it in <0>",
+		"string_register", "index");
+
+	RegisterOperation("lua_push_int", opPushInt, Both, None, 1, 1,
+		"Pushes <0> onto the lua stack.",
+		"value");
+
+	RegisterOperation("lua_push_str", opPushStr, Both, None, 1, 1,
+		"Pushes <0> onto the lua stack.",
+		"string_1");
+
+	RegisterOperation("lua_pop", opPop, Both, None, 1, 1,
+		"Pops <0> values from the lua stack.",
+		"value");
+
+	RegisterOperation("lua_call", opCall, Both, None, 2, 2,
+		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values.",
+		"func_name", "num_args");
 	
 	initLua();
 }
@@ -154,6 +418,24 @@ inline void WSELuaOperationsContext::initLua()
 	loadOperations();
 	initLGameTable();
 	doMainScript();
+}
+
+void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
+{
+	auto l = flagLists.find(listName);
+	if (l != flagLists.end())
+	{
+		for (size_t i = 0; i < l->second->size(); i++)
+		{
+			std::string curKey = l->second->at(i);
+			auto op = operationMap.find(curKey);
+
+			if (op == operationMap.end())
+				gPrintf("WSELuaOperationsContext: Warning reading %s, trying to set flag %s for non-existing operation [%s]", opFile.c_str(), listName.c_str(), curKey.c_str());
+			else
+				op->second.flags |= flag;
+		}
+	}
 }
 
 inline void WSELuaOperationsContext::loadOperations()
@@ -262,14 +544,16 @@ inline void WSELuaOperationsContext::loadOperations()
 
 			if (op1 == operationMap.end() || op2 == operationMap.end())
 			{
-				gPrintf("WSELuaOperationsContext: Warning reading %s, line %i: undefined value", opFile.c_str(), curLineNum);
+				gPrintf("WSELuaOperationsContext: Error reading %s, line %i: undefined value", opFile.c_str(), curLineNum);
 			}
+			else
+			{
+				gameOperation newOp;
+				newOp.opcode = op1->second.opcode | op2->second.opcode;
+				newOp.flags = 0;
 
-			gameOperation newOp;
-			newOp.opcode = op1->second.opcode | op2->second.opcode;
-			newOp.flags = 0;
-
-			operationMap[curMatches.str(1)] = newOp;
+				operationMap[curMatches.str(1)] = newOp;
+			}
 		}
 		else
 		{
@@ -296,16 +580,31 @@ inline void WSELuaOperationsContext::initLGameTable()
 	lua_pushcfunction(luaState, lGameTableHandler);
 	lua_setfield(luaState, -2, "execOperation");
 
+	lua_pushcfunction(luaState, lGetRegHandler);
+	lua_setfield(luaState, -2, "getReg");
+
+	lua_pushcfunction(luaState, lSetRegHandler);
+	lua_setfield(luaState, -2, "setReg");
+
+	lua_pushcfunction(luaState, lGetScriptNo);
+	lua_setfield(luaState, -2, "getScriptNo");
+
+	lua_pushcfunction(luaState, lGetCurMissionTemplateId);
+	lua_setfield(luaState, -2, "getCurMissionTemplateId");
+
 	lua_setglobal(luaState, "game");
 
-	const char *s =
-		"game.mt = {}\n"
+	const char *s = 
+		#include "WSELuaOperationsLuaCode.txt"
+		;
+
+		/*"game.mt = {}\n"
 		"game.mt.__index = function(table, key)\n"
 			"return function(...)\n"
-				"game.execOperation(key,...)\n"
+				"return game.execOperation(key,...)\n"
 			"end\n"
 		"end\n"
-		"setmetatable(game, game.mt)\n";
+		"setmetatable(game, game.mt)\n";*/
 
 	if (luaL_dostring(luaState, s))
 		printLastError();
@@ -330,45 +629,4 @@ inline void WSELuaOperationsContext::doMainScript()
 				printLastError();
 		}
 	}
-}
-
-static int lGameTableHandler(lua_State *L)
-{
-	int numLArgs = lua_gettop(L);
-
-	if (numLArgs == 0)
-		luaL_error(L, "need operation identifier");
-	else if (numLArgs > 17)
-		luaL_error(L, "operand count can't be > 16");
-
-	if (!lua_isstring(L, 1))
-		luaL_error(L, "invalid operation identifier");
-
-	std::string opName(lua_tostring(L, 1));
-
-	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
-
-	if (opEntry == WSE->LuaOperations.operationMap.end())
-		luaL_error(L, "undefined operation: [%s]", opName.c_str());
-
-	gameOperation op = opEntry->second;
-	//WSEOperationFlags::Lhs
-	std::vector<int> operands(numLArgs - 1);
-	int curStrReg = NUM_REGISTERS;
-
-	for (int i = 2; i <= numLArgs; i++)
-	{
-		if (lua_isnumber(L, i))
-			operands[i - 2] = lua_tointeger(L, i);
-		else if (lua_isstring(L, i))
-		{
-			warband->basic_game.string_registers[--curStrReg] = lua_tostring(L, i);
-			operands[i - 2] = curStrReg;
-		}
-		else
-			luaL_error(L, "invalid operand #%i", i - 2);
-	}
-
-	WSE->Scripting.ExecuteScriptOperation(op.opcode, operands);
-	return 0;
 }
