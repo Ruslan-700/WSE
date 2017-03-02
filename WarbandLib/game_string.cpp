@@ -40,3 +40,24 @@ const rgl::string &string_manager::get_operand_string(rgl::string &str, int stri
 
 	return str;
 };
+
+int string_manager::addQuickString(const char *str)
+{
+	size_t oldSize = this->num_quick_strings * sizeof(game_string);
+	size_t newSize = (this->num_quick_strings + 1) * sizeof(game_string);
+
+	void *newQuickStrings = malloc(newSize);
+	memcpy_s(newQuickStrings, newSize, this->quick_strings, oldSize);
+	free(this->quick_strings);
+
+	this->quick_strings = (game_string*)newQuickStrings;
+
+	game_string &lastStr = this->quick_strings[this->num_quick_strings];
+	lastStr.value.initialize();
+	lastStr.id.initialize();
+
+	lastStr.value = str;
+	lastStr.id = str;
+
+	return this->num_quick_strings++;
+}

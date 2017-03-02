@@ -397,14 +397,15 @@ void WSEOperationContext::ExtractAnimationNo(int &value)
 		ScriptError("invalid animation no %d", value);
 }
 
-void WSEOperationContext::ExtractVector(std::vector<int> &vector, int maxDims)
+void WSEOperationContext::ExtractVector(std::vector<int> &vector, int maxCount)
 {
 	int curVal;
 
-	while (HasMoreOperands() && maxDims != 0){
+	while (HasMoreOperands() && maxCount)
+	{
 		ExtractValue(curVal);
 		vector.push_back(curVal);
-		maxDims--;
+		maxCount--;
 	}
 }
 

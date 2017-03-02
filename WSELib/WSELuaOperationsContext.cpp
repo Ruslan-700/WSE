@@ -106,6 +106,79 @@ inline void setOperandToLocalVar(__int64 &operand, int localsIndex)
 	operand = ((__int64)17 << 56) + localsIndex;
 }
 
+void addMissionTemplateTrigger(int mtNo, const wb::trigger &newTrigger)
+{
+	wb::mission_template &curTemplate = warband->mission_templates[mtNo];
+	int newNumTriggers = curTemplate.triggers.num_triggers + 1;
+
+	size_t oldTriggersSize = curTemplate.triggers.num_triggers * sizeof(wb::trigger);
+	size_t newTriggersSize = newNumTriggers * sizeof(wb::trigger);
+
+	void *oldTriggers = (void*)curTemplate.triggers.triggers;
+	void *newTriggers = malloc(newTriggersSize);
+
+	wb::trigger &actualNewTrigger = ((wb::trigger*)newTriggers)[newNumTriggers - 1];
+
+	actualNewTrigger.conditions.id.initialize();
+	actualNewTrigger.consequences.id.initialize();
+
+	actualNewTrigger = newTrigger;
+	gPrintf("newNumTriggers: %i", newNumTriggers);
+	actualNewTrigger.conditions.id.format("Mission Template [%i] %s Trigger [%i] Conditions", mtNo, curTemplate.id.static_c_str(), newNumTriggers - 1);
+	actualNewTrigger.consequences.id.format("Mission Template [%i] %s Trigger [%i] Consequences", mtNo, curTemplate.id.static_c_str(), newNumTriggers - 1);
+
+	memcpy_s(newTriggers, newTriggersSize, oldTriggers, oldTriggersSize);
+	free(curTemplate.triggers.triggers);
+
+	curTemplate.triggers.triggers = (wb::trigger*)newTriggers;
+	curTemplate.triggers.num_triggers = newNumTriggers;
+
+
+	for (int i = 0; i < curTemplate.triggers.num_triggers; i++)
+		//for (int i = 0; i < 1; i++)
+	{
+		wb::trigger &a = curTemplate.triggers.triggers[i];
+		gPrintf("#####trigger %i - ptr: %p#######\n  -check interval: %f\n  -delay interval: %f\n  -rearm interval: %f\n  -status: %i", i, (void*)&a, a.check_interval, a.delay_interval, a.rearm_interval, a.status);
+		/////
+		gPrintf(" -conditions: sizeof = %i", (int)sizeof(a.conditions));
+		gPrintf("  -conditions_operations *: %p", (void*)a.conditions.operations);
+		gPrintf("  -conditions_num_operations: %i", a.conditions.num_operations);
+		gPrintf("  -conditions_analyzed: %i", (int)a.conditions.analyzed);
+
+		gPrintf("  -conditions_id_cursor: %i", a.conditions.id.cursor);
+		gPrintf("  -conditions_id_buffer: %p", (void*)a.conditions.id.buffer);
+		gPrintf("  -conditions_id_buffer_length: %i", a.conditions.id.buffer_length);
+		gPrintf("  -conditions_id_str_length: %i", a.conditions.id.str_length);
+		gPrintf("  -conditions_id_static_buffer: %s", a.conditions.id.static_buffer);
+		/////
+		gPrintf(" -consequences: sizeof = %i", (int)sizeof(a.consequences));
+		gPrintf("  -consequences_operations *: %p", (void*)a.consequences.operations);
+		gPrintf("  -consequences_num_operations: %i", a.consequences.num_operations);
+		gPrintf("  -consequences_analyzed: %i", (int)a.consequences.analyzed);
+
+		gPrintf("  -consequences_id_cursor: %i", a.consequences.id.cursor);
+		gPrintf("  -consequences_id_buffer: %p", (void*)a.consequences.id.buffer);
+		gPrintf("  -consequences_id_buffer_length: %i", a.consequences.id.buffer_length);
+		gPrintf("  -consequences_id_str_length: %i", a.consequences.id.str_length);
+		gPrintf("  -consequences_id_static_buffer: %s", a.consequences.id.static_buffer);
+		/////
+		gPrintf(" -check interval timer:\n   -timer no: %i\n   -elapsed time: %f\n   -value: %I64d", a.check_interval_timer.timer_no, a.check_interval_timer.get_elapsed_time(), a.check_interval_timer.value);
+		gPrintf(" -delay interval timer:\n   -timer no: %i\n   -elapsed time: %f\n   -value: %I64d", a.delay_interval_timer.timer_no, a.delay_interval_timer.get_elapsed_time(), a.delay_interval_timer.value);
+		gPrintf(" -rearm interval timer:\n   -timer no: %i\n   -elapsed time: %f\n   -value: %I64d", a.rearm_interval_timer.timer_no, a.rearm_interval_timer.get_elapsed_time(), a.rearm_interval_timer.value);
+
+		gPrintf(" -conditions id: %s\n  -consequences id: %s", a.conditions.id, a.consequences.id);
+	}
+}
+
+int getMissionNo(const char *id)
+{
+	for (int i = 0; i < warband->num_mission_templates; i++)
+		if (warband->mission_templates[i].id == id)
+			return i;
+
+	return -1;
+}
+
 
 static int lGameTableHandler(lua_State *L)
 {
@@ -287,6 +360,47 @@ static int lGetScriptNo(lua_State *L)
 	return 1;
 }
 
+void test(WSELuaOperationsContext *context)
+{
+	int sb = sizeof(bool);
+	int ss = sizeof(rgl::string);
+	int si = sizeof(int);
+	int sst = sizeof(size_t);
+
+	gPrintf("sizeof(bool): %i, sizeof(rgl::string): %i, sizeof(int): %i, sizeof(size_t): %i", sb, ss, si, sst);
+
+	gPrintf("warband->mission_templates*: %p", (void*)&warband->mission_templates);
+	gPrintf("warband->mission_templates: %p", (void*)warband->mission_templates);
+
+	int no = getMissionNo("mst_multiplayer_dm");
+	gPrintf("dm mst no: %i, ptr: %p, triggers ptr: %p", no, (void*)&warband->mission_templates[no], (void*)warband->mission_templates[no].triggers.triggers);
+
+	wb::trigger newT;
+	newT.check_interval = 1.0;
+	newT.delay_interval = 0.0;
+	newT.rearm_interval = 0.0;
+	newT.status = wb::trigger_status::ts_ready;
+	newT.check_interval_timer = rgl::timer(2);
+	newT.delay_interval_timer = rgl::timer(2);
+	newT.rearm_interval_timer = rgl::timer(2);
+
+	newT.conditions = wb::operation_manager();
+	newT.conditions.id = "tmeoaweo";
+	newT.conditions.num_operations = 1;
+	newT.conditions.operations = rgl::_new<wb::operation>(1);
+
+	newT.conditions.operations[0].opcode = 1106;
+	newT.conditions.operations[0].num_operands = 1;
+
+	newT.conditions.operations[0].operands[0] = 1585267068834415291;
+	
+	newT.consequences = wb::operation_manager();
+	newT.consequences.id = "kameowameo";
+
+	addMissionTemplateTrigger(no, newT);
+	gPrintf("dm mst no: %i, ptr: %p, triggers ptr: %p", no, (void*)&warband->mission_templates[no], (void*)warband->mission_templates[no].triggers.triggers);
+}
+
 
 int opGetTop(WSELuaOperationsContext *context)
 {
@@ -367,6 +481,9 @@ WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("array"
 
 void WSELuaOperationsContext::OnLoad()
 {
+	RegisterOperation("testtest", test, Both, None, 0, 0,
+		"<0> op", "test");
+
 	RegisterOperation("lua_get_top", opGetTop, Both, Lhs, 1, 1,
 		"Stores the index of the top element in the lua stack into <0>. The result also is equal to the number of elements in the stack.",
 		"destination");

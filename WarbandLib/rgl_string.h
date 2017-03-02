@@ -11,8 +11,8 @@ namespace rgl
 	public:
 		int cursor;
 		char *buffer;
-		size_t buffer_length;
-		size_t str_length;
+		int buffer_length;
+		int str_length;
 		char static_buffer[128];
 
 	public:
