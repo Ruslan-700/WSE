@@ -20,14 +20,14 @@ namespace rgl
 		string(const string &str);
 		string(const char *str);
 		~string();
-		size_t length() const;
+		int length() const;
 		bool starts_with(const string &str) const;
 		int index_of(char c, int start = 0) const;
 		int index_of(const string &str, int start = 0) const;
 		string substr(int start, int end) const;
 		void initialize();
-		void resize(size_t size);
-		void reallocate(size_t size);
+		void resize(int size);
+		void reallocate(int size);
 		const char *c_str() const;
 		const char *static_c_str() const;
 		const char &char_at(int pos) const;

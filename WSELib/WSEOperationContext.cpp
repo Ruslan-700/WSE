@@ -626,3 +626,8 @@ unsigned __int64 WSEOperationContext::GetNextOperandRaw(unsigned __int64 def)
 
 	return m_operand_values[m_cur_operand++];
 }
+
+int WSEOperationContext::getOpcodeRangeCur()
+{
+	return this->m_opcode_range_cur;
+}

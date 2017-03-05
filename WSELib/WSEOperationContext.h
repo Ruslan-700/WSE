@@ -65,6 +65,7 @@ public:
 	std::string CreateStorageDir();
 	std::string CreateFile(const std::string &file, const std::string &extension);
 	std::string CreateScreenshot(const std::string &file, const std::string &extension);
+	int getOpcodeRangeCur();
 
 protected:
 	void DefineOperation(int opcode, const std::string &name, unsigned int flags, short min_operands, short max_operands, std::string description, ...);

@@ -32,5 +32,7 @@ namespace wb
 		int num_groups;
 		int u1[4];
 		trigger_manager triggers;
+
+		int addTrigger(const trigger &newTrigger, int templateNo);
 	};
 }

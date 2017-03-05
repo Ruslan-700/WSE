@@ -241,6 +241,7 @@
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="missile.cpp" />
     <ClCompile Include="mission_grid.cpp" />
+    <ClCompile Include="mission_template.cpp" />
     <ClCompile Include="multiplayer_event.cpp" />
     <ClCompile Include="multiplayer_server.cpp" />
     <ClCompile Include="network_buffer.cpp" />

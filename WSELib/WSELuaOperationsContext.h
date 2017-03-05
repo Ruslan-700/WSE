@@ -18,6 +18,7 @@ public:
 	std::unordered_map<std::string, gameOperation> operationMap;
 	lua_State *luaState;
 	void printLastError();
+	int callTriggerOpcode;
 
 protected:
 

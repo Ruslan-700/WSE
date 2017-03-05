@@ -35,7 +35,7 @@ string::~string()
 		_free(this->buffer);
 };
 
-size_t string::length() const
+int string::length() const
 {
 	return this->str_length;
 }
@@ -45,7 +45,7 @@ bool string::starts_with(const string &str) const
 	if (str.str_length > str_length)
 		return false;
 
-	for (size_t i = 0; i < str.str_length; ++i)
+	for (int i = 0; i < str.str_length; ++i)
 	{
 		if (str.buffer[i] != buffer[i])
 			return false;
@@ -56,7 +56,7 @@ bool string::starts_with(const string &str) const
 
 int string::index_of(char c, int start) const
 {
-	for (size_t i = start; i < str_length; ++i)
+	for (int i = start; i < str_length; ++i)
 	{
 		if (buffer[i] == c)
 			return i;
@@ -71,7 +71,7 @@ int string::index_of(const string &str, int start) const
 
 	for (int i = start; i < max; ++i)
 	{
-		size_t j;
+		int j;
 
 		for (j = 0; j < str.str_length; ++j)
 		{
@@ -107,7 +107,7 @@ void string::initialize()
 	this->cursor = 0;
 }
 
-void string::resize(size_t size)
+void string::resize(int size)
 {
 	if (size <= 0)
 		return;
@@ -127,7 +127,7 @@ void string::resize(size_t size)
 	this->buffer = new_buffer;
 }
 
-void string::reallocate(size_t size)
+void string::reallocate(int size)
 {
 	if (size <= 0)
 		return;
@@ -163,7 +163,7 @@ const char &string::char_at(int pos) const
 
 void string::underscores_to_spaces()
 {
-	for (size_t i = 0; i < this->str_length; ++i)
+	for (int i = 0; i < this->str_length; ++i)
 	{
 		if (this->buffer[i] == '_')
 			this->buffer[i] = ' ';
@@ -172,7 +172,7 @@ void string::underscores_to_spaces()
 
 void string::spaces_to_underscores()
 {
-	for (size_t i = 0; i < this->str_length; ++i)
+	for (int i = 0; i < this->str_length; ++i)
 	{
 		if (this->buffer[i] == ' ')
 			this->buffer[i] = '_';
@@ -181,7 +181,7 @@ void string::spaces_to_underscores()
 
 void string::upper()
 {
-	for (size_t i = 0; i < this->str_length; ++i)
+	for (int i = 0; i < this->str_length; ++i)
 	{
 		if (this->buffer[i] >= 'a' && this->buffer[i] <= 'z')
 			this->buffer[i] -= 32;
@@ -190,7 +190,7 @@ void string::upper()
 
 void string::lower()
 {
-	for (size_t i = 0; i < this->str_length; ++i)
+	for (int i = 0; i < this->str_length; ++i)
 	{
 		if (this->buffer[i] >= 'A' && this->buffer[i] <= 'Z')
 			this->buffer[i] += 32;
@@ -205,8 +205,8 @@ void string::clear()
 
 string string::trimmed() const
 {
-	size_t start;
-	size_t end;
+	int start;
+	int end;
 	
 	for (start = 0; start < str_length; ++start)
 	{
@@ -224,7 +224,7 @@ string string::trimmed() const
 
 	str.resize(end - start);
 
-	for (size_t i = 0; i < end - start; ++i)
+	for (int i = 0; i < end - start; ++i)
 	{
 		str.buffer[i] = buffer[start + i];
 	}
@@ -261,7 +261,7 @@ void string::format(const char *format, ...)
 
 char *string::get_buffer(int size)
 {
-	if (size > 0 && (size_t)size > this->buffer_length)
+	if (size > 0 && size > this->buffer_length)
 		this->resize(size);
 
 	return this->buffer;
@@ -284,7 +284,7 @@ bool string::is_integer() const
 	if (trimmed_str.length() > 0 && trimmed_str[0] == '-')
 		start = 1;
 
-	for (size_t i = start; i < trimmed_str.length(); ++i)
+	for (int i = start; i < trimmed_str.length(); ++i)
 	{
 		if (!isdigit(trimmed_str[i]))
 			return false;
@@ -297,7 +297,7 @@ string *string::split(char separator, int &num_parts) const
 {
 	num_parts = 0;
 
-	for (size_t i = 0; i < str_length; ++i)
+	for (int i = 0; i < str_length; ++i)
 	{
 		if (buffer[i] == separator)
 			num_parts++;
@@ -309,7 +309,7 @@ string *string::split(char separator, int &num_parts) const
 	int curPart = 0;
 	int start = 0;
 
-	for (size_t i = 0; i < str_length; ++i)
+	for (int i = 0; i < str_length; ++i)
 	{
 		if (buffer[i] == separator)
 		{

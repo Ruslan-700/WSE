@@ -6,7 +6,7 @@ int language_manager::get_hash(const rgl::string &str) const
 {
 	int hash = 0;
 
-	for (size_t i = 0; i < str.length(); ++i)
+	for (int i = 0; i < str.length(); ++i)
 	{
 		hash = (str[i] + 59 * hash) % 3571;
 	}

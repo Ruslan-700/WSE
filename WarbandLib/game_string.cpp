@@ -61,3 +61,8 @@ int string_manager::addQuickString(const char *str)
 
 	return this->num_quick_strings++;
 }
+
+__int64 getQuickStringAsOperand(int index)
+{
+	return ((__int64)176 << 56) + index;
+}

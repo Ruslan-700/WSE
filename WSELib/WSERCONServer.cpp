@@ -197,7 +197,7 @@ bool ReadRcon(Connection& conn)
 			{
 				rgl::string chunk = "";
 				int offset = 0;
-				size_t end = 0;
+				int end = 0;
 				int remain = message.str_length;
 				while (remain > 0)
 				{	
