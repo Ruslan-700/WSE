@@ -66,6 +66,8 @@ int trigger_manager::addTrigger(const trigger &newTrigger)
 	free(oldTriggers);
 	this->triggers = (trigger*)newTriggers;
 
+	this->triggers[this->num_triggers].conditions.operations = rgl::_new<operation>();
+	this->triggers[this->num_triggers].consequences.operations = rgl::_new<operation>();
 	this->triggers[this->num_triggers].conditions.id.initialize();
 	this->triggers[this->num_triggers].consequences.id.initialize();
 	this->triggers[this->num_triggers] = newTrigger;

@@ -380,6 +380,7 @@
   <ItemGroup>
     <ClInclude Include="json\json-forwards.h" />
     <ClInclude Include="json\json.h" />
+    <ClInclude Include="WSELuaOperationsLuaCallbacks.h" />
     <ClInclude Include="mup\muParser.h" />
     <ClInclude Include="mup\muParserBase.h" />
     <ClInclude Include="mup\muParserBytecode.h" />
@@ -400,6 +401,7 @@
     <ClInclude Include="rcon\rcon.h" />
     <ClInclude Include="rcon\ws-util.h" />
     <ClInclude Include="WSELuaOperationsContext.h" />
+    <ClInclude Include="WSELuaOperationsHelpers.h" />
     <ClInclude Include="WSESignatureScannerContext.h" />
     <ClInclude Include="WSESimpleCharBuff.h" />
     <ClInclude Include="WSE.h" />
@@ -454,6 +456,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="json\jsoncpp.cpp" />
+    <ClCompile Include="WSELuaOperationsHelpers.cpp" />
+    <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp" />
     <ClCompile Include="mup\muParser.cpp" />
     <ClCompile Include="mup\muParserBase.cpp" />
     <ClCompile Include="mup\muParserBytecode.cpp" />

@@ -45,6 +45,12 @@
     <Filter Include="Source Files\json">
       <UniqueIdentifier>{b8f06597-20a6-42e5-a31b-6874f27f850c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\operations\WSELuaOperationsContext">
+      <UniqueIdentifier>{b7103203-3ff6-4307-b884-295acf4f2b93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext">
+      <UniqueIdentifier>{17bbd24b-64f3-4f91-9f62-9e838c78baab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -257,14 +263,20 @@
     <ClInclude Include="WSESignatureScannerContext.h">
       <Filter>Header Files\contexts</Filter>
     </ClInclude>
-    <ClInclude Include="WSELuaOperationsContext.h">
-      <Filter>Header Files\operations</Filter>
-    </ClInclude>
     <ClInclude Include="json\json.h">
       <Filter>Header Files\json</Filter>
     </ClInclude>
     <ClInclude Include="json\json-forwards.h">
       <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELuaOperationsContext.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELuaOperationsHelpers.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELuaOperationsLuaCallbacks.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -445,16 +457,22 @@
     <ClCompile Include="WSESignatureScannerContext.cpp">
       <Filter>Source Files\contexts</Filter>
     </ClCompile>
-    <ClCompile Include="WSELuaOperationsContext.cpp">
-      <Filter>Source Files\operations</Filter>
-    </ClCompile>
     <ClCompile Include="json\jsoncpp.cpp">
       <Filter>Source Files\json</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELuaOperationsContext.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELuaOperationsHelpers.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="WSELuaOperationsLuaCode.txt">
-      <Filter>Source Files\operations</Filter>
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
     </None>
   </ItemGroup>
 </Project>

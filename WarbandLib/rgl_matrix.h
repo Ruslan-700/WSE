@@ -11,9 +11,9 @@ namespace rgl
 
 	struct orientation
 	{
-		vector4 s;
-		vector4 f;
-		vector4 u;
+		vector4 s; //x
+		vector4 f; //y
+		vector4 u; //z
 		
 		bool operator ==(const orientation &r) const;
 		bool operator !=(const orientation &r) const;
