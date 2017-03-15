@@ -94,6 +94,8 @@ int lGetRegHandler(lua_State *L)
 		lua_pushinteger(L, (lua_Integer)warband->basic_game.registers[index]);
 	else if (typeId == 1)
 		lua_pushstring(L, warband->basic_game.string_registers[index]);
+	else if (typeId == 2)
+		lPushPos(L, warband->basic_game.position_registers[index]);
 
 	return 1;
 }
@@ -126,6 +128,10 @@ int lSetRegHandler(lua_State *L)
 			warband->basic_game.string_registers[index] = lua_tostring(L, 3);
 		else
 			luaL_error(L, "val is not string");
+	}
+	else if (typeId == 2)
+	{
+		warband->basic_game.position_registers[index] = lGetPos(L, 3);
 	}
 
 	return 0;

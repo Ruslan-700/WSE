@@ -192,3 +192,111 @@ void checkStackIndex(WSELuaOperationsContext *context, int index)
 	if (index == 0 || abs(index) > lua_gettop(context->luaState))
 		context->ScriptError("invalid stack index: %d", index);
 }
+
+rgl::vector4 lGetVec3(lua_State *L, int index)
+{
+	lua_getfield(L, index, "x");
+	float x = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "y");
+	float y = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "z");
+	float z = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	return rgl::vector4(x, y, z);
+}
+
+rgl::matrix lGetPos(lua_State *L, int index)
+{
+	rgl::matrix pos;
+
+	lua_getfield(L, index, "o");
+	pos.o = lGetVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "rot");
+
+	lua_getfield(L, -1, "s");
+	pos.rot.s = lGetVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "f");
+	pos.rot.f = lGetVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, -1, "u");
+	pos.rot.u = lGetVec3(L, -1);
+	lua_pop(L, 2);
+
+	return pos;
+}
+
+void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
+{
+	if (strlen(nameSpace))
+	{
+		lua_getglobal(L, nameSpace);
+		lua_getfield(L, -1, name);
+
+		lua_getfield(L, -1, "mt");
+		lua_insert(L, -3);
+		lua_pop(L, 2);
+	}
+	else
+	{
+		lua_getglobal(L, name);
+
+		lua_getfield(L, -1, "mt");
+		lua_insert(L, -2);
+		lua_pop(L, 1);
+	}	
+}
+
+void lPushVec3(lua_State *L, const rgl::vector4 &vec)
+{
+	lua_newtable(L);
+	lua_pushnumber(L, (lua_Number)vec.z);
+	lua_pushnumber(L, (lua_Number)vec.y);
+	lua_pushnumber(L, (lua_Number)vec.x);
+
+	lua_setfield(L, -4, "x");
+	lua_setfield(L, -3, "y");
+	lua_setfield(L, -2, "z");
+
+	lPushWSEMt(L, "vector3", "");
+	lua_setmetatable(L, -2);
+}
+
+void lPushRot(lua_State *L, const rgl::orientation &rot)
+{
+	lua_newtable(L);
+	lPushVec3(L, rot.u);
+	lPushVec3(L, rot.f);
+	lPushVec3(L, rot.s);
+
+	lua_setfield(L, -4, "s");
+	lua_setfield(L, -3, "f");
+	lua_setfield(L, -2, "u");
+
+	lPushWSEMt(L, "rotation");
+	lua_setmetatable(L, -2);
+}
+
+void lPushPos(lua_State *L, const rgl::matrix &pos)
+{
+	lua_newtable(L);
+
+	lPushVec3(L, pos.o);
+	lPushRot(L, pos.rot);
+
+	lua_setfield(L, -3, "rot");
+	lua_setfield(L, -2, "o");
+
+	lPushWSEMt(L, "pos");
+	//gPrint(lua_typename(L, lua_type(L, -1)));
+	lua_setmetatable(L, -2);
+}

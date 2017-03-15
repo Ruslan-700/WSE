@@ -1,4 +1,39 @@
 R"(
+------------helpers------------
+
+function table.shallow_copy(t, copyMetatable)
+	local t2 = {}
+	for k,v in pairs(t) do
+		t2[k] = v
+	end
+
+	if copyMetatable then
+		setmetatable(t2, getmetatable(t))
+	end
+
+	return t2
+end
+
+function table.recursive_copy(t, copyMetatables)
+	local t2 = {}
+	for k,v in pairs(t) do
+		if type(v) == "table" then
+			t2[k] = table.recursive_copy(v)
+			if copyMetatables then setmetatable(t2[k], getmetatable(v)) end
+		else
+			t2[k] = v
+		end
+	end
+
+	if copyMetatables then
+		setmetatable(t2, getmetatable(t))
+	end
+
+	return t2
+end
+
+------------access to module operations------------
+
 game.mt = {}
 game.mt.__index = function(table, key)
 	return function(...)
@@ -6,6 +41,9 @@ game.mt.__index = function(table, key)
 	end
 end
 setmetatable(game, game.mt)
+
+
+------------registers------------
 
 game.regMt = {}
 game.regMt.__index = function(table, key)
@@ -18,4 +56,259 @@ end
 game.reg = setmetatable({typeId = 0}, game.regMt)
 game.sreg = setmetatable({typeId = 1}, game.regMt)
 game.preg = setmetatable({typeId = 2}, game.regMt)
+
+------------iterators------------
+
+game.partiesI  = function()
+	local itRef = game.partiesIterInit()
+
+	return function()
+		game.iterNext(itRef)
+	end
+end
+
+game.agentsI = function(posReg, radius)
+	local itRef
+
+	if posReg ~= nil and radius ~= nil then
+		itRef = game.agentsIterInit(posReg, radius)
+	else
+		itRef = game.agentsIterInit()
+	end
+
+  	return function()
+  		return game.iterNext(itRef)
+  	end
+end
+
+game.propInstI = function(scenePropId)
+	local itRef
+
+	if scenePropId ~= nil then
+		itRef = game.propInstIterInit(scenePropId)
+	else
+		itRef = game.propInstIterInit()
+	end
+
+	return function()
+		return game.iterNext(itRef)
+	end
+end
+
+game.playersI = function(skipServer)
+	local itRef
+
+	if skipServer ~= nil then
+		itRef = game.playersIterInit(skipServer)
+	else
+		itRef = game.playersIterInit()
+	end
+
+	return function()
+		return game.iterNext(itRef)
+	end
+end
+
+------------vector3------------
+
+vector3 = {}
+vector3.prototype = 
+{
+	x = 0,
+	y = 0,
+	z = 0,
+
+	len = function(self)
+		return math.sqrt(self.x^2 + self.y^2 + self.z^2)
+	end
+}
+vector3.mt = 
+{
+	__index = vector3.prototype,
+
+	__add = function(lhs, rhs)
+		local res = 
+		{
+			x = lhs.x + rhs.x,
+			y = lhs.y + rhs.y,
+			z = lhs.z + rhs.z
+		}
+		return setmetatable(res, vector3.mt)
+	end,
+
+	__sub = function (lhs,rhs)
+		local res = 
+		{
+			x = lhs.x - rhs.x,
+			y = lhs.y - rhs.y,
+			z = lhs.z - rhs.z
+		}
+		return setmetatable(res, vector3.mt)
+	end,
+
+	__mul = function (lhs,rhs)
+		local res = 
+		{
+			x = lhs.x * rhs,
+			y = lhs.y * rhs,
+			z = lhs.z * rhs
+		}
+		return setmetatable(res, vector3.mt)
+	end,
+
+	__eq = function(lhs, rhs)
+		return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z
+	end
+}
+vector3.new = function(obj)
+	local newObj
+	if obj == nil then
+		newObj = {}
+	else
+		newObj = table.shallow_copy(obj)
+	end
+	
+	return setmetatable(newObj, vector3.mt)
+end
+
+------------rotation------------
+
+game.rotation = {}
+game.rotation.prototype =
+{
+	s = vector3.new({x = 1}), --x axis
+	f = vector3.new({y = 1}), --forwards/y axis
+	u = vector3.new({z = 1}),  --up/z axis
+
+	getRot = function(self)
+		local fwX = self.f.x
+		local fwY = self.f.y
+		local fwZ = self.f.z
+
+		local uX = self.u.x
+		local uY = self.u.y
+		local uZ = self.u.z
+		local uLen = self.u:len()
+
+		local yaw = -math.deg(math.atan2(fwX, fwY))
+		local pitch = math.deg(math.atan2(fwZ, math.sqrt(fwX^2 + fwY^2)))
+
+
+		local ypRot = game.rotation.new() --yaw+pitch only rotation
+		ypRot:rotate({z = yaw, x = pitch})
+
+		local ypuX = ypRot.u.x
+		local ypuY = ypRot.u.y
+		local ypuZ = ypRot.u.z
+		local ypuLen = ypRot.u:len()
+
+		local cos = math.max(math.min((uX*ypuX + uY*ypuY + uZ*ypuZ) / (uLen*ypuLen), 1), -1)
+		local roll =  math.deg(math.acos(cos))
+
+		return {yaw = yaw, pitch = pitch, roll = roll}
+	end,
+
+	rotX = function(self, angle)
+		local cos = math.cos(math.rad(angle))
+		local sin = math.sin(math.rad(angle))
+
+		local bOld = vector3.new(self.f)
+		local cOld = vector3.new(self.u)
+
+		self.f = cOld * sin + bOld * cos
+		self.u = cOld * cos - bOld * sin --
+	end,
+
+	rotY = function(self, angle)
+		local cos = math.cos(math.rad(angle))
+		local sin = math.sin(math.rad(angle))
+
+		local aOld = vector3.new(self.s)
+		local cOld = vector3.new(self.u)
+
+		self.s = aOld * cos - cOld * sin --
+		self.u = aOld * sin + cOld * cos
+	end,
+
+	rotZ = function(self, angle)
+		local cos = math.cos(math.rad(angle))
+		local sin = math.sin(math.rad(angle))
+
+		local aOld = vector3.new(self.s)
+		local bOld = vector3.new(self.f)
+
+		self.s = bOld * sin + aOld * cos
+		self.f = bOld * cos - aOld * sin
+	end,
+
+	rotate = function(self, rotVec3)
+		if rotVec3.z ~= nil then self:rotZ(rotVec3.z) end
+		if rotVec3.x ~= nil then self:rotX(rotVec3.x) end
+		if rotVec3.y ~= nil then self:rotY(rotVec3.y) end
+	end
+}
+game.rotation.mt = 
+{
+	__index = game.rotation.prototype
+}
+game.rotation.new = function(obj)
+	local newObj
+	if obj == nil then
+		newObj = {}
+	else
+		newObj = table.recursive_copy(obj)
+	end
+	
+	return setmetatable(newObj, game.rotation.mt)
+end
+
+------------positions------------
+
+game.pos = {}
+game.pos.prototype = 
+{
+	o = vector3.new(),
+	rot = game.rotation.new(),
+
+	getRot = function(self)
+		return self.rot:getRot()
+	end,
+
+	rotX = function(self, angle)
+		self.rot:rotX(angle)
+	end,
+
+	rotY = function(self, angle)
+		self.rot:rotY(angle)
+	end,
+
+	rotZ = function(self, angle)
+		self.rot:rotZ(angle)
+	end,
+
+	rotate = function(self, rotVec3)
+		self.rot:rotate(rotVec3)
+	end
+}
+
+game.pos.mt = 
+{
+	__index = game.pos.prototype
+}
+
+game.pos.new = function(obj)
+	local newObj
+	if obj == nil then
+		newObj = {}
+	else
+		newObj = table.recursive_copy(obj)
+	end
+
+	if newObj.rot == nil then newObj.rot = {} end
+	
+	setmetatable(newObj, game.pos.mt)
+	setmetatable(newObj.rot, game.rotation.mt)
+
+	return newObj
+end
 )"

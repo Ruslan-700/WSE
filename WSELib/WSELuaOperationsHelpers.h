@@ -39,3 +39,9 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...);
 int getTemplateNo(const char *id);
 void printStack(lua_State *L);
 void checkStackIndex(WSELuaOperationsContext *context, int index);
+
+rgl::vector4 lGetVec3(lua_State *L, int index);
+rgl::matrix lGetPos(lua_State *L, int index);
+void lPushVec3(lua_State *L, const rgl::vector4 &vec);
+void lPushRot(lua_State *L, const rgl::orientation &rot);
+void lPushPos(lua_State *L, const rgl::matrix &pos);
