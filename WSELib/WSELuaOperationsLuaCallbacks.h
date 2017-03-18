@@ -9,6 +9,7 @@ int lSetRegHandler(lua_State *L);
 int lGetScriptNo(lua_State *L);
 int lGetCurTemplateId(lua_State *L);
 int lAddTrigger(lua_State *L);
+int lRemoveTrigger(lua_State *L);
 
 int lPartiesIterInit(lua_State *L);
 int lAgentsIterInit(lua_State *L);

@@ -210,11 +210,33 @@ int lAddTrigger(lua_State *L)
 	int tNo = getTemplateNo(tId);
 
 	if (tNo < 0)
-		luaL_error(WSE->LuaOperations.luaState, "invalid template id: %s", tId);
-	else
-		warband->mission_templates[tNo].addTrigger(newT, tNo);
+		luaL_error(L, "invalid template id: %s", tId);
+	
+	int index = warband->mission_templates[tNo].addTrigger(newT, tNo);
 
-	return 0;
+	lua_pushinteger(L, index);
+	return 1;
+}
+
+int lRemoveTrigger(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 2, 2, lStr, lNum);
+
+	const char *tId = lua_tostring(L, 1);
+	int index = lua_tointeger(L, 2);
+
+	int tNo = getTemplateNo(tId);
+	if (tNo < 0)
+		luaL_error(WSE->LuaOperations.luaState, "invalid template id: %s", tId);
+
+	bool succ = warband->mission_templates[tNo].removeTrigger(index);
+
+	if (succ)
+		lua_pushboolean(L, 1);
+	else
+		lua_pushboolean(L, 0);
+
+	return 1;
 }
 
 /***********

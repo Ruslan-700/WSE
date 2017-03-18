@@ -34,5 +34,6 @@ namespace wb
 		trigger_manager triggers;
 
 		int addTrigger(const trigger &newTrigger, int templateNo);
+		bool removeTrigger(int index);
 	};
 }

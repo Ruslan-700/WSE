@@ -8,7 +8,7 @@ sandbox = {
 			collectgarbage
 			]],
 
-		tables = 
+		tables =
 		{
 			coroutine = [[
 				create resume running status
@@ -39,6 +39,45 @@ sandbox = {
 		}
 	},
 
+	safeIO = 
+	{
+		close = _G.io.close,
+		flush = _G.io.flush,
+		type = _G.io.type,
+		tmpfile = _G.io.tmpfile,
+		read = _G.io.read,
+		write = _G.io.write,
+
+		input = function(file)
+			if file and not _G.io.type(file) then
+				file = sandbox.makeSafePath(file)
+			end
+
+			return _G.io.input(file)
+		end,
+		
+		output = function(file)
+			if file and not _G.io.type(file) then
+				file = sandbox.makeSafePath(file)
+			end
+
+			return _G.io.output(file)
+		end,
+
+		lines = function(fileName)
+			if fileName then
+				fileName = sandbox.makeSafePath(fileName)
+			end
+
+			return _G.io.lines(fileName)
+		end,
+
+		open = function(fileName, mode)
+			fileName = sandbox.makeSafePath(fileName)
+			return _G.io.open(fileName, mode)
+		end
+	},
+
 	userDir = "",
 
 	isProtectedTable = function(table)
@@ -49,6 +88,8 @@ sandbox = {
 	end,
 
 	makeSafePath = function(path)
+		if type(path) ~= "string" then return nil end
+
 		local curLvl = 0
 		local curPart = ""
 		
@@ -167,13 +208,13 @@ sandbox = {
 		getfenv = function(f)
 			local env = _G.getfenv(f)
 			if env == _G then return nil end
-			return end
+			return env
 		end,
 
 		setfenv = function(f, table)
 			if _G.getfenv(f) == _G or table == _G then return nil end
 			return _G.setfenv(f, table)
-		end			
+		end
 	},
 
 	init = function(usrDir)
@@ -199,6 +240,13 @@ sandbox = {
 		  	})
 		end
 
+		sandbox.env.io = setmetatable({}, {
+			__index = sandbox.safeIO,
+			__newindex = function(...)
+				error("Sorry, can't modify " .. "io")
+			end
+		})
+
 		sandbox.env._G = sandbox.env
 	end,
 
@@ -207,16 +255,7 @@ sandbox = {
 
 		setfenv(f, sandbox.env)
 		return f(...)
-	end,
-
-	envAdd = function(table, tableName)
-		sandbox.env[tableName] = setmetatable({}, {
-			__index = table,
-			__newindex = function(...)
-				error("Sorry, can't modify " .. tableName)
-			end
-		})
-	end	
+	end
 }
 
 -- easier access from C++

@@ -248,10 +248,15 @@ void WSELuaOperationsContext::OnUnload()
 	lua_close(luaState);
 }
 
-void WSELuaOperationsContext::printLastError()
+void WSELuaOperationsContext::printLastError(const char *fileName)
 {
-	const char* msg = lua_tostring(luaState, -1);
-	gPrintf("Lua error: %s", msg);
+	const char *msg = lua_tostring(luaState, -1);
+
+	if (fileName)
+		gPrintf("Lua error in %s: %s", fileName, msg);
+	else
+		gPrintf("Lua error: %s", msg);
+
 	lua_pop(luaState, 1);
 }
 
@@ -457,13 +462,13 @@ inline void WSELuaOperationsContext::initLGameTable() //rename
 		;
 
 	if (luaL_dostring(luaState, sandbox))
-		printLastError();
+		printLastError("LuaSandbox");
 
 	lua_getglobal(luaState, "sandboxInit");
 	lua_pushstring(luaState, getLuaScriptDir().c_str());
 
 	if (lua_pcall(luaState, 1, 0, 0))
-		printLastError();
+		printLastError("LuaSandbox");
 
 
 	lua_newtable(luaState);
@@ -485,6 +490,9 @@ inline void WSELuaOperationsContext::initLGameTable() //rename
 
 	lua_pushcfunction(luaState, lAddTrigger);
 	lua_setfield(luaState, -2, "addTrigger");
+
+	lua_pushcfunction(luaState, lRemoveTrigger);
+	lua_setfield(luaState, -2, "removeTrigger");
 
 	lua_pushcfunction(luaState, lPartiesIterInit);
 	lua_setfield(luaState, -2, "partiesIterInit");
@@ -509,7 +517,7 @@ inline void WSELuaOperationsContext::initLGameTable() //rename
 
 	if (luaL_dostring(luaState, globals))
 	{
-		printLastError();
+		printLastError("LuaGlobals");
 	}
 }
 

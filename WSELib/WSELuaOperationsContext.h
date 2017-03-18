@@ -39,7 +39,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 
 	public:
 		WSELuaOperationsContext();
-		void printLastError();
+		void printLastError(const char *fileName = NULL);
 		int gIteratorAdd(const gameIterator &it);
 		gameIterator *getGiterator(size_t itNo);
 

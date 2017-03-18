@@ -1,6 +1,5 @@
 R"(
 sandbox.env.game = game
-
 sandbox.run(function()
 
 ------------helpers------------

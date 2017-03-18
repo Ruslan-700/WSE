@@ -14,3 +14,8 @@ int mission_template::addTrigger(const trigger &newTrigger, int templateNo)
 
 	return tIndex;
 }
+
+bool mission_template::removeTrigger(int index)
+{
+	return this->triggers.removeTrigger(index);
+}
