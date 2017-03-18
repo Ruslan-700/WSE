@@ -525,7 +525,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WSELuaOperationsLuaCode.txt" />
+    <None Include="LuaGlobals.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LuaSandbox.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

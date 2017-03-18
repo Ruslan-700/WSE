@@ -193,7 +193,67 @@ void checkStackIndex(WSELuaOperationsContext *context, int index)
 		context->ScriptError("invalid stack index: %d", index);
 }
 
-rgl::vector4 lGetVec3(lua_State *L, int index)
+bool lIsVec3(lua_State *L, int index)
+{
+	if (lua_type(L, index) == LUA_TTABLE)
+	{
+		lua_getfield(L, index, "x");
+		int b1 = lua_isnumber(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "y");
+		int b2 = lua_isnumber(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "z");
+		int b3 = lua_isnumber(L, -1);
+		lua_pop(L, 1);
+
+		return b1 && b2 && b3;
+	}
+	return false;
+}
+
+bool lIsRot(lua_State *L, int index)
+{
+	if (lua_type(L, index) == LUA_TTABLE)
+	{
+		lua_getfield(L, index, "s");
+		bool b1 = lIsVec3(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "f");
+		bool b2 = lIsVec3(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "u");
+		bool b3 = lIsVec3(L, -1);
+		lua_pop(L, 1);
+
+		return b1 && b2 && b3;
+	}
+	return false;
+}
+
+bool lIsPos(lua_State *L, int index)
+{
+	if (lua_type(L, index) == LUA_TTABLE)
+	{
+		lua_getfield(L, index, "o");
+		bool b1 = lIsVec3(L, -1);
+		lua_pop(L, 1);
+
+		lua_getfield(L, index, "rot");
+		bool b2 = lIsVec3(L, -1);
+		lua_pop(L, 1);
+
+		return b1 && b2;
+	}
+	
+	return false;
+}
+
+rgl::vector4 lToVec3(lua_State *L, int index)
 {
 	lua_getfield(L, index, "x");
 	float x = (float)lua_tonumber(L, -1);
@@ -210,49 +270,61 @@ rgl::vector4 lGetVec3(lua_State *L, int index)
 	return rgl::vector4(x, y, z);
 }
 
-rgl::matrix lGetPos(lua_State *L, int index)
+rgl::orientation lToRot(lua_State *L, int index)
+{
+	rgl::orientation rot;
+
+	lua_getfield(L, index, "s");
+	rot.s = lToVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "f");
+	rot.f = lToVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, index, "u");
+	rot.u = lToVec3(L, -1);
+	lua_pop(L, 1);
+
+	return rot;
+}
+
+rgl::matrix lToPos(lua_State *L, int index)
 {
 	rgl::matrix pos;
 
 	lua_getfield(L, index, "o");
-	pos.o = lGetVec3(L, -1);
+	pos.o = lToVec3(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "rot");
-
-	lua_getfield(L, -1, "s");
-	pos.rot.s = lGetVec3(L, -1);
+	pos.rot = lToRot(L, -1);
 	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "f");
-	pos.rot.f = lGetVec3(L, -1);
-	lua_pop(L, 1);
-
-	lua_getfield(L, -1, "u");
-	pos.rot.u = lGetVec3(L, -1);
-	lua_pop(L, 2);
 
 	return pos;
 }
 
 void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
 {
+	lua_getglobal(L, "sandbox");
+	lua_getfield(L, -1, "sandboxEnv");
+
 	if (strlen(nameSpace))
 	{
-		lua_getglobal(L, nameSpace);
+		lua_getfield(L, -1, nameSpace);
 		lua_getfield(L, -1, name);
 
 		lua_getfield(L, -1, "mt");
-		lua_insert(L, -3);
-		lua_pop(L, 2);
+		lua_insert(L, -5);
+		lua_pop(L, 4);
 	}
 	else
 	{
-		lua_getglobal(L, name);
+		lua_getfield(L, -1, name);
 
 		lua_getfield(L, -1, "mt");
-		lua_insert(L, -2);
-		lua_pop(L, 1);
+		lua_insert(L, -4);
+		lua_pop(L, 3);
 	}	
 }
 

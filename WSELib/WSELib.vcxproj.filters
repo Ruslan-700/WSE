@@ -51,6 +51,9 @@
     <Filter Include="Source Files\operations\WSELuaOperationsContext">
       <UniqueIdentifier>{17bbd24b-64f3-4f91-9f62-9e838c78baab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\LuaScripts">
+      <UniqueIdentifier>{6f96886b-cf7c-4093-9271-55e17059d899}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -471,8 +474,13 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="WSELuaOperationsLuaCode.txt">
-      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    <None Include="LuaGlobals.txt">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="LuaSandbox.txt">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
+    </Text>
   </ItemGroup>
 </Project>

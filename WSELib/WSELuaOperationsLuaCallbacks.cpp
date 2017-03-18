@@ -30,6 +30,7 @@ int lGameExecOperationHandler(lua_State *L)
 	__int64 locals[1];
 
 	int curStrReg = NUM_REGISTERS;
+	int curPosReg = NUM_REGISTERS;
 
 	int curLArgIndex = 2;
 	int curOperandIndex = 0;
@@ -50,6 +51,11 @@ int lGameExecOperationHandler(lua_State *L)
 		{
 			warband->basic_game.string_registers[--curStrReg] = lua_tostring(L, curLArgIndex);
 			wop.operands[curOperandIndex] = curStrReg;
+		}
+		else if (curLArgType == LUA_TTABLE && lIsPos(L, curLArgIndex))
+		{
+			warband->basic_game.position_registers[--curPosReg] = lToPos(L, curLArgIndex);
+			wop.operands[curOperandIndex] = curPosReg;
 		}
 		else
 			luaL_error(L, "invalid operand #%d", curOperandIndex);
@@ -131,7 +137,10 @@ int lSetRegHandler(lua_State *L)
 	}
 	else if (typeId == 2)
 	{
-		warband->basic_game.position_registers[index] = lGetPos(L, 3);
+		if (lIsPos(L, 3))
+			warband->basic_game.position_registers[index] = lToPos(L, 3);
+		else
+			luaL_error(L, "val is not pos");
 	}
 
 	return 0;

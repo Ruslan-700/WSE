@@ -1,0 +1,225 @@
+R"(
+sandbox = {
+	safeList = 
+	{
+		base = [[
+			_VERSION assert error print ipairs next pairs
+			pcall select tonumber tostring type unpack xpcall
+			collectgarbage
+			]],
+
+		tables = 
+		{
+			coroutine = [[
+				create resume running status
+				wrap   yield
+				]],
+
+			math = [[
+				abs   acos asin  atan atan2 ceil
+				cos   cosh deg   exp  fmod  floor
+				frexp huge ldexp log  log10 max
+				min   modf pi    pow  rad   random
+				sin   sinh sqrt  tan  tanh
+				]],
+
+			os = [[
+				clock difftime time
+				]],
+
+			string = [[
+				byte char  find  format gmatch
+				gsub len   lower match  reverse
+				sub  upper rep   dump
+				]],
+
+			table = [[
+				insert maxn remove sort
+				]]
+		}
+	},
+
+	userDir = "",
+
+	isProtectedTable = function(table)
+		for tableName in pairs(sandbox.safeList.tables) do
+			if sandbox.env[tableName] == table then return true end
+		end
+		return false
+	end,
+
+	makeSafePath = function(path)
+		local curLvl = 0
+		local curPart = ""
+		
+		for i = 1, path:len() do
+			local c = path:sub(i,i)
+			
+			if(c == [[\]] or c == "/" or i == path:len()) then
+			  if i == path:len() then curPart = curPart .. c end
+			  
+			  if curPart == ".." then
+			    curLvl = curLvl - 1
+			    
+			    if curLvl < 0 then return nil end
+			  else
+		      if curPart ~= "" then curLvl = curLvl + 1 end
+		    end
+			  
+			  curPart = ""
+			else
+			  curPart = curPart .. c
+			end
+	  	end
+
+	  	return sandbox.userDir .. path
+	end,
+
+	env = {
+		getmetatable = function(obj)
+			if(type(obj) == "string") then 
+				return nil
+			end
+
+			if(type(obj) == "table" and sandbox.isProtectedTable(obj)) then
+				return nil
+			end
+
+			return _G.getmetatable(obj)
+		end,
+
+		setmetatable = function(table, metatable)
+			if not sandbox.isProtectedTable(table) then
+				_G.setmetatable(table, metatable)
+			end
+		end,
+
+		load = function(getF, chunkname)
+			local firstPiece = getF()
+			if type(firstPiece) == "string" and firstPiece:byte(1) == 27 then
+				return nil, "bytecode prohibited"
+			end
+
+			local useFirst = true
+
+			local getFWrapper = function()
+				if useFirst then
+					useFirst = false
+					return firstPiece
+				else
+					return getF()
+				end
+			end
+
+			local f, msg = _G.load(getFWrapper, chunkname)
+			if not f then
+				return f, msg
+			end
+
+			_G.setfenv(f, sandbox.env)
+			return f
+		end,
+
+		loadstring = function(s, chunkname)
+			if s:byte(1) == 27 then
+				return nil, "bytecode prohibited" 
+			end
+
+			local f, msg = _G.loadstring(s, chunkname)
+			if not f then
+				return f, msg
+			end
+
+			_G.setfenv(f, sandbox.env)
+			return f
+		end,
+
+		loadfile = function(fileName)
+			safeFileName = makeSafePath(fileName)
+			local f = _G.io.open(safeFileName, "rb")
+
+			if f then
+				local b = f:read(1):byte(1)
+				f:close()
+				if b == 27 then
+					return nil, "bytecode prohibited"
+				end
+
+				func, msg = _G.loadfile(safeFileName)
+
+				if not func then
+					return func, msg 
+				end
+
+				_G.setfenv(func, sandbox.env)
+				return func
+			else
+				return nil, "file does not exist"
+			end
+		end,
+
+		dofile = function(fileName)
+			if fileName then
+				sandbox.env.loadfile(fileName)()
+			end
+		end,
+
+		getfenv = function(f)
+			local env = _G.getfenv(f)
+			if env == _G then return nil end
+			return end
+		end,
+
+		setfenv = function(f, table)
+			if _G.getfenv(f) == _G or table == _G then return nil end
+			return _G.setfenv(f, table)
+		end			
+	},
+
+	init = function(usrDir)
+		sandbox.userDir = usrDir
+
+		------ basic lib
+		sandbox.safeList.base:gsub("%S+", function(id)
+			sandbox.env[id] = _G[id]
+		end)
+
+		------ other lib funcs
+		for tableName, tableList in pairs(sandbox.safeList.tables) do
+			local table = {}
+			tableList:gsub("%S+", function(id)
+				table[id] = _G[tableName][id]
+			end)
+
+			sandbox.env[tableName] = setmetatable({}, {
+			    __index = table,
+			    __newindex = function(...)
+				      error("Sorry, can't modify " .. tableName)
+				    end
+		  	})
+		end
+
+		sandbox.env._G = sandbox.env
+	end,
+
+	run = function(f, ...)
+		if type(f) == "string" then f = sandbox.env[f] end
+
+		setfenv(f, sandbox.env)
+		return f(...)
+	end,
+
+	envAdd = function(table, tableName)
+		sandbox.env[tableName] = setmetatable({}, {
+			__index = table,
+			__newindex = function(...)
+				error("Sorry, can't modify " .. tableName)
+			end
+		})
+	end	
+}
+
+-- easier access from C++
+sandboxInit = sandbox.init
+sandboxRun = sandbox.run
+)"

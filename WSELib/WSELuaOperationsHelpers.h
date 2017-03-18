@@ -40,8 +40,14 @@ int getTemplateNo(const char *id);
 void printStack(lua_State *L);
 void checkStackIndex(WSELuaOperationsContext *context, int index);
 
-rgl::vector4 lGetVec3(lua_State *L, int index);
-rgl::matrix lGetPos(lua_State *L, int index);
+bool lIsVec3(lua_State *L, int index);
+bool lIsRot(lua_State *L, int index);
+bool lIsPos(lua_State *L, int index);
+
+rgl::vector4 lToVec3(lua_State *L, int index);
+rgl::orientation lToRot(lua_State *L, int index);
+rgl::matrix lToPos(lua_State *L, int index);
+
 void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);
 void lPushPos(lua_State *L, const rgl::matrix &pos);

@@ -29,6 +29,24 @@ void opInsert(WSELuaOperationsContext *context)
 	lua_insert(context->luaState, index);
 }
 
+void opRemove(WSELuaOperationsContext *context)
+{
+	int index;
+	context->ExtractValue(index);
+
+	checkStackIndex(context, index);
+
+	lua_remove(context->luaState, index);
+}
+
+void opPop(WSELuaOperationsContext *context)
+{
+	int n;
+	context->ExtractValue(n);
+
+	lua_pop(context->luaState, n);
+}
+
 int opToInt(WSELuaOperationsContext *context)
 {
 	int index;
@@ -55,6 +73,20 @@ void opToStr(WSELuaOperationsContext *context)
 		warband->basic_game.string_registers[sreg] = str;
 }
 
+void opToPos(WSELuaOperationsContext *context)
+{
+	int index, preg;
+	context->ExtractRegister(preg);
+	context->ExtractValue(index);
+
+	checkStackIndex(context, index);
+
+	if (!lIsPos(context->luaState, index))
+		context->ScriptError("value at index %i is not a valid position", index);
+	else
+		warband->basic_game.position_registers[preg] = lToPos(context->luaState, index);
+}
+
 void opPushInt(WSELuaOperationsContext *context)
 {
 	int val;
@@ -71,12 +103,12 @@ void opPushStr(WSELuaOperationsContext *context)
 	lua_pushstring(context->luaState, val.c_str());
 }
 
-void opPop(WSELuaOperationsContext *context)
+void opPushPos(WSELuaOperationsContext *context)
 {
-	int n;
-	context->ExtractValue(n);
+	int preg;
+	context->ExtractRegister(preg);
 
-	lua_pop(context->luaState, n);
+	lPushPos(context->luaState, warband->basic_game.position_registers[preg]);
 }
 
 int opGetType(WSELuaOperationsContext *context)
@@ -89,7 +121,7 @@ int opGetType(WSELuaOperationsContext *context)
 	return lua_type(context->luaState, index);
 }
 
-void opCall(WSELuaOperationsContext *context)
+void opCall(WSELuaOperationsContext *context)//TEST
 {
 	std::string funcName;
 	int numArgs;
@@ -102,12 +134,16 @@ void opCall(WSELuaOperationsContext *context)
 	if (stackSize < numArgs)
 		context->ScriptError("not enough arguments on stack");
 
-	lua_getglobal(context->luaState, funcName.c_str());
+	lua_getglobal(context->luaState, "sandboxRun");
+	lua_pushstring(context->luaState, funcName.c_str());
 
 	if (numArgs)
+	{
+		lua_insert(context->luaState, stackSize - numArgs + 2);
 		lua_insert(context->luaState, stackSize - numArgs + 1);
+	}
 
-	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
+	if (lua_pcall(context->luaState, numArgs + 1, LUA_MULTRET, 0))
 		context->printLastError();
 }
 
@@ -150,13 +186,21 @@ void WSELuaOperationsContext::OnLoad()
 		"Stores the index of the top element in the lua stack into <0>. The result also is equal to the number of elements in the stack.",
 		"destination");
 
-	RegisterOperation("lua_settop", opSetTop, Both, None, 1, 1,
+	RegisterOperation("lua_set_top", opSetTop, Both, None, 1, 1,
 		"Sets the top of the stack to <0>. Setting it to 0 just clears the entire stack.",
 		"index");
 
 	RegisterOperation("lua_insert", opInsert, Both, None, 1, 1,
 		"Moves the stacks top element into <0>, shifting up the elements above <0> to open space.",
 		"index");
+
+	RegisterOperation("lua_remove", opRemove, Both, None, 1, 1,
+		"Removes the element at the given <0>, shifting down the elements above <0> to fill the gap.",
+		"index");
+
+	RegisterOperation("lua_pop", opPop, Both, None, 1, 1,
+		"Pops <0> values from the lua stack.",
+		"value");
 
 	RegisterOperation("lua_to_int", opToInt, Both, Lhs, 2, 2,
 		"Retrieves the value at <1> from the lua stack and stores it in <0>",
@@ -166,6 +210,10 @@ void WSELuaOperationsContext::OnLoad()
 		"Retrieves the string at <1> from the lua stack and stores it in <0>",
 		"string_register", "index");
 
+	RegisterOperation("lua_to_pos", opToPos, Both, None, 2, 2,
+		"Retrieves the position at <1> from the lua stack and stores it in <0>",
+		"pos_register", "index");
+
 	RegisterOperation("lua_push_int", opPushInt, Both, None, 1, 1,
 		"Pushes <0> onto the lua stack.",
 		"value");
@@ -174,11 +222,11 @@ void WSELuaOperationsContext::OnLoad()
 		"Pushes <0> onto the lua stack.",
 		"string_1");
 
-	RegisterOperation("lua_pop", opPop, Both, None, 1, 1,
-		"Pops <0> values from the lua stack.",
-		"value");
+	RegisterOperation("lua_push_pos", opPushPos, Both, None, 1, 1,
+		"Pushes the position in <0> onto the lua stack.",
+		"pos_register");
 
-	RegisterOperation("lua_gettype", opGetType, Both, Lhs, 1, 1,
+	RegisterOperation("lua_get_type", opGetType, Both, Lhs, 1, 1,
 		"Stores the type of the value at <1> in the stack into <0>. Return types can be found in header_common(_addon).py (LUA_T*)",
 		"destination", "index");
 
@@ -192,6 +240,7 @@ void WSELuaOperationsContext::OnLoad()
 		"reference");
 
 	initLua();
+	gIterators.reserve(3);
 }
 
 void WSELuaOperationsContext::OnUnload()
@@ -401,8 +450,22 @@ inline void WSELuaOperationsContext::loadOperations()
 	}
 }
 
-inline void WSELuaOperationsContext::initLGameTable()
+inline void WSELuaOperationsContext::initLGameTable() //rename
 {
+	const char *sandbox =
+		#include "LuaSandbox.txt"
+		;
+
+	if (luaL_dostring(luaState, sandbox))
+		printLastError();
+
+	lua_getglobal(luaState, "sandboxInit");
+	lua_pushstring(luaState, getLuaScriptDir().c_str());
+
+	if (lua_pcall(luaState, 1, 0, 0))
+		printLastError();
+
+
 	lua_newtable(luaState);
 	
 	lua_pushcfunction(luaState, lGameExecOperationHandler);
@@ -423,8 +486,6 @@ inline void WSELuaOperationsContext::initLGameTable()
 	lua_pushcfunction(luaState, lAddTrigger);
 	lua_setfield(luaState, -2, "addTrigger");
 
-	gIterators.reserve(3);
-
 	lua_pushcfunction(luaState, lPartiesIterInit);
 	lua_setfield(luaState, -2, "partiesIterInit");
 
@@ -442,12 +503,14 @@ inline void WSELuaOperationsContext::initLGameTable()
 
 	lua_setglobal(luaState, "game");
 
-	const char *s =
-		#include "WSELuaOperationsLuaCode.txt"
+	const char *globals =
+		#include "LuaGlobals.txt"
 		;
 
-	if (luaL_dostring(luaState, s))
+	if (luaL_dostring(luaState, globals))
+	{
 		printLastError();
+	}
 }
 
 inline void WSELuaOperationsContext::doMainScript()
@@ -456,16 +519,16 @@ inline void WSELuaOperationsContext::doMainScript()
 
 	if (fileExists(mainFile))
 	{
-		int result = luaL_loadfile(luaState, mainFile.c_str());
+		lua_getglobal(luaState, "sandboxRun");
 
-		if (result)
+		if (luaL_loadfile(luaState, mainFile.c_str()))
 		{
 			printLastError();
+			lua_pop(luaState, 1);
 		}
 		else
 		{
-			result = lua_pcall(luaState, 0, LUA_MULTRET, 0);
-			if (result)
+			if (lua_pcall(luaState, 1, 0, 0))
 				printLastError();
 		}
 	}
