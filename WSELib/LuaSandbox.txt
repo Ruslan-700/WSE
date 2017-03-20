@@ -87,34 +87,25 @@ sandbox = {
 		return false
 	end,
 
-	makeSafePath = function(path)
-		if type(path) ~= "string" then return nil end
+    makeSafePath = function(path)
+        if type(path) ~= "string" then return nil end
+        path = path:gsub([[\]], "/")
 
-		local curLvl = 0
-		local curPart = ""
-		
-		for i = 1, path:len() do
-			local c = path:sub(i,i)
-			
-			if(c == [[\]] or c == "/" or i == path:len()) then
-			  if i == path:len() then curPart = curPart .. c end
-			  
-			  if curPart == ".." then
-			    curLvl = curLvl - 1
-			    
-			    if curLvl < 0 then return nil end
-			  else
-		      if curPart ~= "" then curLvl = curLvl + 1 end
-		    end
-			  
-			  curPart = ""
-			else
-			  curPart = curPart .. c
-			end
-	  	end
+        if path:match("^[^/]+:") then
+            error("absolute path not allowed")
+        end
 
-	  	return sandbox.userDir .. path
-	end,
+        local segments = {}
+        for segment in path:gmatch("[^/]+") do
+            if segment == ".." then
+                table.remove(segments)
+            elseif segment ~= "." then
+                table.insert(segments, segment)
+            end
+        end
+
+        return sandbox.userDir .. table.concat(segments, '/')
+    end,
 
 	env = {
 		getmetatable = function(obj)
@@ -251,10 +242,30 @@ sandbox = {
 	end,
 
 	run = function(f, ...)
-		if type(f) == "string" then f = sandbox.env[f] end
+		local selfArg = nil
+    
+		if type(f) == "string" then 
+			local name = f
+			f = sandbox.env
+		  
+			for segment, separator in name:gmatch("([^.:]+)([.:]*)") do
+				f = f[segment]
+	      
+				if separator == ":" then
+					selfArg = f
+				elseif separator == "." then
+					selfArg = nil
+				end
+			end
+		end
 
 		setfenv(f, sandbox.env)
-		return f(...)
+		
+		if selfArg then
+			return f(selfArg, ...)
+		else
+			return f(...)
+		end
 	end
 }
 
