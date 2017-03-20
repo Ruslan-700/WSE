@@ -92,7 +92,7 @@ sandbox = {
         path = path:gsub([[\]], "/")
 
         if path:match("^[^/]+:") then
-            error("absolute path not allowed")
+            error("absolute path not allowed", 2)
         end
 
         local segments = {}
@@ -167,7 +167,7 @@ sandbox = {
 		end,
 
 		loadfile = function(fileName)
-			safeFileName = makeSafePath(fileName)
+			safeFileName = sandbox.makeSafePath(fileName)
 			local f = _G.io.open(safeFileName, "rb")
 
 			if f then
@@ -224,24 +224,18 @@ sandbox = {
 			end)
 
 			sandbox.env[tableName] = setmetatable({}, {
-			    __index = table,
-			    __newindex = function(...)
-				      error("Sorry, can't modify " .. tableName)
-				    end
+			    __index = table
 		  	})
 		end
 
 		sandbox.env.io = setmetatable({}, {
-			__index = sandbox.safeIO,
-			__newindex = function(...)
-				error("Sorry, can't modify " .. "io")
-			end
+			__index = sandbox.safeIO
 		})
 
 		sandbox.env._G = sandbox.env
 	end,
 
-	run = function(f, ...)
+	run = function(f, ...)		
 		local selfArg = nil
     
 		if type(f) == "string" then 
@@ -258,6 +252,8 @@ sandbox = {
 				end
 			end
 		end
+
+		if type(f) ~= "function" then error("sandbox.run error: could not find function to run") end
 
 		setfenv(f, sandbox.env)
 		

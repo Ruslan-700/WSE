@@ -139,7 +139,7 @@ void opCall(WSELuaOperationsContext *context)//TEST
 
 	if (numArgs)
 	{
-		lua_insert(context->luaState, stackSize - numArgs + 2);
+		lua_insert(context->luaState, stackSize - numArgs + 1);
 		lua_insert(context->luaState, stackSize - numArgs + 1);
 	}
 
