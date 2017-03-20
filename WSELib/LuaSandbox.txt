@@ -1,4 +1,4 @@
-R"(
+R"rrr(
 sandbox = {
 	safeList = 
 	{
@@ -272,4 +272,4 @@ sandbox = {
 -- easier access from C++
 sandboxInit = sandbox.init
 sandboxRun = sandbox.run
-)"
+)rrr"
