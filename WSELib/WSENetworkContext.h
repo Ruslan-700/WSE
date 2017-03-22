@@ -54,6 +54,7 @@ protected:
 	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
 
 public:
+	virtual bool http_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout);
 	bool IsNetworkCompatible() const;
 	virtual void ReceiveMultiplayerMessage(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
 	void PopulateServerOptionsServerEvent(wb::multiplayer_event *evt);

@@ -4,7 +4,7 @@
 #include "fmod.h"
 #include "WSE.h"
 
-bool http_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout)
+bool WSENetworkContext::http_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout)
 {
 	bool error = true;
 	int hostIndex = url.index_of("//");
@@ -88,7 +88,7 @@ DWORD WINAPI HTTPRequestThread(LPVOID param)
 {
 	HTTPConnection *conn = (HTTPConnection *)param;
 	
-	conn->m_failed = http_request(conn->m_url, conn->m_response, conn->m_user_agent, conn->m_timeout * 1000);
+	conn->m_failed = WSE->Network.http_request(conn->m_url, conn->m_response, conn->m_user_agent, conn->m_timeout * 1000);
 	EnterCriticalSection(&WSE->Network.m_http_critical_section);
 	WSE->Network.m_http_connections.push_back(conn);
 	LeaveCriticalSection(&WSE->Network.m_http_critical_section);
