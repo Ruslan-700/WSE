@@ -457,12 +457,20 @@ inline void WSELuaOperationsContext::loadOperations()
 
 inline void WSELuaOperationsContext::initLGameTable() //rename
 {
-	const char *sandbox =
+	std::string sandbox = getLuaScriptDir() + "sandbox.lua";
+
+	if (luaL_dofile(luaState, sandbox.c_str()))
+	{
+		printLastError();
+	}
+
+	/*const char *sandbox =
 		#include "LuaSandbox.txt"
 		;
 
 	if (luaL_dostring(luaState, sandbox))
-		printLastError("LuaSandbox");
+		printLastError("LuaSandbox");*/
+
 
 	lua_getglobal(luaState, "sandboxInit");
 	lua_pushstring(luaState, getLuaScriptDir().c_str());

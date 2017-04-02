@@ -35,6 +35,10 @@ sandbox = {
 
 			table = [[
 				insert maxn remove sort
+				]],
+
+			debug = [[
+				traceback getinfo
 				]]
 		}
 	},
@@ -78,36 +82,7 @@ sandbox = {
 		end
 	},
 
-	userDir = "",
-
-	isProtectedTable = function(table)
-		for tableName in pairs(sandbox.safeList.tables) do
-			if sandbox.env[tableName] == table then return true end
-		end
-		return false
-	end,
-
-    makeSafePath = function(path)
-        if type(path) ~= "string" then return nil end
-        path = path:gsub([[\]], "/")
-
-        if path:match("^[^/]+:") then
-            error("absolute path not allowed", 2)
-        end
-
-        local segments = {}
-        for segment in path:gmatch("[^/]+") do
-            if segment == ".." then
-                table.remove(segments)
-            elseif segment ~= "." then
-                table.insert(segments, segment)
-            end
-        end
-
-        return sandbox.userDir .. table.concat(segments, '/')
-    end,
-
-	env = {
+	safeBase = {
 		getmetatable = function(obj)
 			if(type(obj) == "string") then 
 				return nil
@@ -122,7 +97,7 @@ sandbox = {
 
 		setmetatable = function(table, metatable)
 			if not sandbox.isProtectedTable(table) then
-				_G.setmetatable(table, metatable)
+				return _G.setmetatable(table, metatable)
 			end
 		end,
 
@@ -192,21 +167,73 @@ sandbox = {
 
 		dofile = function(fileName)
 			if fileName then
-				sandbox.env.loadfile(fileName)()
+				return sandbox.safeBase.loadfile(fileName)()
 			end
 		end,
 
 		getfenv = function(f)
+			if type(f) == "number" then 
+				if f < 1 then f = 1 end
+				f = f + 3
+			end
+
 			local env = _G.getfenv(f)
 			if env == _G then return nil end
 			return env
 		end,
 
 		setfenv = function(f, table)
-			if _G.getfenv(f) == _G or table == _G then return nil end
+			if type(f) == "number" then 
+				if f < 1 then f = 1 end
+				f = f + 3
+			end
+
+			game.execOperation("display_message", "func name: " .. tostring(debug.getinfo(f, "n").name))
+			game.execOperation("display_message", "|||traceback:|||" .. debug.traceback() .. "|||")
+			--game.execOperation("display_message", "sandbox.env: " .. tostring(sandbox.env))
+			--game.execOperation("display_message", "stack lvl: " .. tostring(f) .. ", func environment: " .. tostring(_G.getfenv(f)) .. ", wanna set to: " .. tostring(table))
+			
+			if _G.getfenv(f) == _G then
+				error("Can't change environment of function outside sandbox")
+			elseif table == _G then
+				error("Please stop it")
+			end
+
 			return _G.setfenv(f, table)
 		end
 	},
+
+	env = {},
+
+	userDir = "",
+
+	isProtectedTable = function(table)
+		for tableName in pairs(sandbox.safeList.tables) do
+			if sandbox.env[tableName] == table then return true end
+		end
+		return false
+	end,
+
+    makeSafePath = function(path)
+        if type(path) ~= "string" then return nil end
+		game.display_message(path)
+        path = path:gsub([[\]], "/")
+
+        if path:match("^[^/]+:") then
+            error("absolute path not allowed", 2)
+        end
+
+        local segments = {}
+        for segment in path:gmatch("[^/]+") do
+            if segment == ".." then
+                table.remove(segments)
+            elseif segment ~= "." then
+                table.insert(segments, segment)
+            end
+        end
+
+        return sandbox.userDir .. table.concat(segments, '/')
+    end,
 
 	init = function(usrDir)
 		sandbox.userDir = usrDir
@@ -228,14 +255,37 @@ sandbox = {
 		  	})
 		end
 
-		sandbox.env.io = setmetatable({}, {
-			__index = sandbox.safeIO
-		})
+		------ safeBase
+		for k, v in pairs(sandbox.safeBase) do
+			sandbox.env[k] = function(...)
+				local res = {pcall(v, ...)}
+				if res[1] then 
+					table.remove(res, 1)
+					return unpack(res)
+				else
+					error(res[2], 2)
+				end
+			end
+		end
+
+		------ safeIO
+		sandbox.env.io = {}
+		for k, v in pairs(sandbox.safeIO) do
+			sandbox.env.io[k] = function(...)
+				local res = {pcall(v, ...)}
+				if res[1] then 
+					table.remove(res, 1)
+					return unpack(res)
+				else
+					error(res[2], 2)
+				end
+			end
+		end
 
 		sandbox.env._G = sandbox.env
 	end,
 
-	run = function(f, ...)		
+	run = function(f, ...)
 		local selfArg = nil
     
 		if type(f) == "string" then 

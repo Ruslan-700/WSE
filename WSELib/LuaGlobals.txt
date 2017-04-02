@@ -309,4 +309,5 @@ game.pos.new = function(obj)
 end
 
 end)
+		game.execOperation("display_message", "_G at globals: " ..tostring(_G))
 )"

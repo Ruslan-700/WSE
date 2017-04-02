@@ -244,7 +244,7 @@ bool lIsPos(lua_State *L, int index)
 		lua_pop(L, 1);
 
 		lua_getfield(L, index, "rot");
-		bool b2 = lIsVec3(L, -1);
+		bool b2 = lIsRot(L, -1);
 		lua_pop(L, 1);
 
 		return b1 && b2;
@@ -307,7 +307,7 @@ rgl::matrix lToPos(lua_State *L, int index)
 void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
 {
 	lua_getglobal(L, "sandbox");
-	lua_getfield(L, -1, "sandboxEnv");
+	lua_getfield(L, -1, "env");
 
 	if (strlen(nameSpace))
 	{
