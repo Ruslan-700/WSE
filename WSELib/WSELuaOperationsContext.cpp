@@ -259,6 +259,7 @@ void WSELuaOperationsContext::printLastError(const char *fileName)
 inline void WSELuaOperationsContext::initLua()
 {
 	luaState = luaL_newstate();
+	lua_setUserDir(luaState, getLuaScriptDir().c_str());
 	luaL_openlibs(luaState);
 
 	loadOperations();

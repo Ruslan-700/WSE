@@ -1198,3 +1198,7 @@ LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud)
   g->allocf = f;
 }
 
+LUA_API void lua_setUserDir(lua_State *L, const char* dir) /* wse mod */
+{
+	L->userDir = getStrCopy(dir);
+}

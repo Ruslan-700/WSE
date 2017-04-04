@@ -322,7 +322,7 @@ void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
 
 		lua_insert(L, -2);
 		lua_pop(L, 1);
-	}	
+	}
 }
 
 void lPushVec3(lua_State *L, const rgl::vector4 &vec)

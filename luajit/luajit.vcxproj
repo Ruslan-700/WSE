@@ -63,7 +63,7 @@ if exist lastSrcState.txt (
 goto:eof
 
 :build
-  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.dll" "$(SolutionDir)\WSEBuild\lua51.dll"
+  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.dll" "$(SolutionDir)\WSEBuild\lua51.dll" &amp; copy ".\luajit\src\lua51.dll" ".\Release\lua51.dll" &amp; copy ".\luajit\src\lua51.lib" ".\Release\lua51.lib" &amp; copy ".\luajit\src\lua51.exp" ".\Release\lua51.exp"
 goto:eof
 
 :writeSrcState
@@ -110,7 +110,7 @@ if exist lastSrcState.txt (
 goto:eof
 
 :build
-  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat debug &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.dll" "$(SolutionDir)\WSEBuild\lua51.dll" &amp; copy ".\luajit\src\lua51.pdb" "$(SolutionDir)\WSEBuild\lua51.pdb"
+  call "$(DevEnvDir)..\Tools\VsDevCmd.bat" &amp; cd "$(ProjectDir)luajit\src\" &amp; msvcbuild.bat debug &amp; cd "$(ProjectDir)" &amp; copy ".\luajit\src\lua51.dll" "$(SolutionDir)\WSEBuild\lua51.dll" &amp; copy ".\luajit\src\lua51.pdb" "$(SolutionDir)\WSEBuild\lua51.pdb" &amp; copy ".\luajit\src\lua51.dll" ".\Debug\lua51.dll" &amp; copy ".\luajit\src\lua51.lib" ".\Debug\lua51.lib" &amp; copy ".\luajit\src\lua51.exp" ".\Debug\lua51.exp"
 goto:eof
 
 :writeSrcState

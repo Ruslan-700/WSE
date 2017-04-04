@@ -7,6 +7,7 @@
 #define _LJ_STR_H
 
 #include <stdarg.h>
+#include <stdio.h> /* wse mod */
 
 #include "lj_obj.h"
 
@@ -46,5 +47,11 @@ LJ_FUNC char *lj_str_needbuf(lua_State *L, SBuf *sb, MSize sz);
   ((sb)->buf = (char *)lj_mem_realloc(L, (sb)->buf, (sb)->sz, (size)), \
    (sb)->sz = (size))
 #define lj_str_freebuf(g, sb)	lj_mem_free(g, (void *)(sb)->buf, (sb)->sz)
+
+/* wse mod */
+LJ_FUNC void replaceChar(char *str, char c, char repl);
+LJ_FUNC char *getStrCopy(const char *str);
+LJ_FUNC char *makeSafePath(const char *rootDir, const char *path);
+LJ_FUNC FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode);
 
 #endif

@@ -88,10 +88,12 @@ LUALIB_API int luaL_loadfilex(lua_State *L, const char *filename,
   int status;
   const char *chunkname;
   if (filename) {
-    ctx.fp = fopen(filename, "rb");
-    if (ctx.fp == NULL) {
-      lua_pushfstring(L, "cannot open %s: %s", filename, strerror(errno));
-      return LUA_ERRFILE;
+	/*wse mod*/
+	//ctx.fp = fopen(filename, "rb");
+	ctx.fp = fopenInUserDir(L, filename, "rb");
+	if (ctx.fp == NULL) {
+		lua_pushfstring(L, "cannot open %s: %s", filename, strerror(errno));
+		return LUA_ERRFILE;
     }
     chunkname = lua_pushfstring(L, "@%s", filename);
   } else {
