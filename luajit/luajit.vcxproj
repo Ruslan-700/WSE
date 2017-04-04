@@ -68,6 +68,9 @@ goto:eof
 
 :writeSrcState
   if exist "%1" del "%1"
+
+  echo release &gt; "%1"
+
   set Line=
   for /f "delims=" %%a in ('dir /s luajit') do (
     if not "!Line!"=="" &gt;&gt;"%1" echo.!Line!
@@ -112,6 +115,9 @@ goto:eof
 
 :writeSrcState
   if exist "%1" del "%1"
+
+  echo debug &gt; "%1"
+
   set Line=
   for /f "delims=" %%a in ('dir /s luajit') do (
     if not "!Line!"=="" &gt;&gt;"%1" echo.!Line!

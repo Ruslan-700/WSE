@@ -134,16 +134,12 @@ void opCall(WSELuaOperationsContext *context)//TEST
 	if (stackSize < numArgs)
 		context->ScriptError("not enough arguments on stack");
 
-	lua_getglobal(context->luaState, "sandboxRun");
-	lua_pushstring(context->luaState, funcName.c_str());
+	lua_getglobal(context->luaState, funcName.c_str());
 
 	if (numArgs)
-	{
 		lua_insert(context->luaState, stackSize - numArgs + 1);
-		lua_insert(context->luaState, stackSize - numArgs + 1);
-	}
 
-	if (lua_pcall(context->luaState, numArgs + 1, LUA_MULTRET, 0))
+	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
 		context->printLastError();
 }
 
@@ -457,28 +453,6 @@ inline void WSELuaOperationsContext::loadOperations()
 
 inline void WSELuaOperationsContext::initLGameTable() //rename
 {
-	std::string sandbox = getLuaScriptDir() + "sandbox.lua";
-
-	if (luaL_dofile(luaState, sandbox.c_str()))
-	{
-		printLastError();
-	}
-
-	/*const char *sandbox =
-		#include "LuaSandbox.txt"
-		;
-
-	if (luaL_dostring(luaState, sandbox))
-		printLastError("LuaSandbox");*/
-
-
-	lua_getglobal(luaState, "sandboxInit");
-	lua_pushstring(luaState, getLuaScriptDir().c_str());
-
-	if (lua_pcall(luaState, 1, 0, 0))
-		printLastError("LuaSandbox");
-
-
 	lua_newtable(luaState);
 	
 	lua_pushcfunction(luaState, lGameExecOperationHandler);
@@ -535,16 +509,13 @@ inline void WSELuaOperationsContext::doMainScript()
 
 	if (fileExists(mainFile))
 	{
-		lua_getglobal(luaState, "sandboxRun");
-
 		if (luaL_loadfile(luaState, mainFile.c_str()))
 		{
 			printLastError();
-			lua_pop(luaState, 1);
 		}
 		else
 		{
-			if (lua_pcall(luaState, 1, 0, 0))
+			if (lua_pcall(luaState, 0, 0, 0))
 				printLastError();
 		}
 	}

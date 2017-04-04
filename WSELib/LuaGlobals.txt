@@ -1,7 +1,4 @@
 R"(
-sandbox.env.game = game
-sandbox.run(function()
-
 ------------helpers------------
 function tableShallowCopy(t, copyMetatable)
 	local t2 = {}
@@ -307,7 +304,4 @@ game.pos.new = function(obj)
 
 	return newObj
 end
-
-end)
-		game.execOperation("display_message", "_G at globals: " ..tostring(_G))
 )"

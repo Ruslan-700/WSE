@@ -228,8 +228,8 @@ Global
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.Release|Win32.Build.0 = Release|Win32
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.Release|x86.ActiveCfg = Release|Win32
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.Release|x86.Build.0 = Release|Win32
-		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Mixed Platforms.ActiveCfg = Debug|Win32
-		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Mixed Platforms.Build.0 = Debug|Win32
+		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Mixed Platforms.ActiveCfg = Release|Win32
+		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Mixed Platforms.Build.0 = Release|Win32
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Win32.ActiveCfg = Release|Win32
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|Win32.Build.0 = Release|Win32
 		{257E7228-F248-4080-BA69-197D9A45E6BF}.ReleaseDedicated|x86.ActiveCfg = Release|Win32

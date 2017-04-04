@@ -306,25 +306,22 @@ rgl::matrix lToPos(lua_State *L, int index)
 
 void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
 {
-	lua_getglobal(L, "sandbox");
-	lua_getfield(L, -1, "env");
-
 	if (strlen(nameSpace))
 	{
-		lua_getfield(L, -1, nameSpace);
+		lua_getfield(L, LUA_GLOBALSINDEX, nameSpace);
 		lua_getfield(L, -1, name);
-
 		lua_getfield(L, -1, "mt");
-		lua_insert(L, -5);
-		lua_pop(L, 4);
+
+		lua_insert(L, -3);
+		lua_pop(L, 2);
 	}
 	else
 	{
-		lua_getfield(L, -1, name);
-
+		lua_getfield(L, LUA_GLOBALSINDEX, name);
 		lua_getfield(L, -1, "mt");
-		lua_insert(L, -4);
-		lua_pop(L, 3);
+
+		lua_insert(L, -2);
+		lua_pop(L, 1);
 	}	
 }
 
