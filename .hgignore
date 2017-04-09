@@ -31,3 +31,5 @@ luajit\Debug\lua51.exp
 luajit\Debug\lua51.lib
 luajit\Release\lua51.exp
 luajit\Debug\lua51.dll
+luajit\Release\luajit.Build.CppClean.log
+luajit\Debug\luajit.Build.CppClean.log
