@@ -252,6 +252,9 @@
     <ClInclude Include="luajit\src\lualib.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="luajit\src\userDir.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="luajit\src\host\buildvm.c">
@@ -282,9 +285,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="luajit\src\lib_debug.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="luajit\src\lib_ffi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="luajit\src\lib_init.c">
@@ -461,10 +461,39 @@
     <ClCompile Include="luajit\src\luajit.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="luajit\src\lib_ffi.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="luajit\src\msvcbuild.bat">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="luajit\src\host\genminilua.lua" />
+    <None Include="luajit\dynasm\dasm_arm.lua" />
+    <None Include="luajit\dynasm\dasm_mips.lua" />
+    <None Include="luajit\dynasm\dasm_ppc.lua" />
+    <None Include="luajit\dynasm\dasm_x64.lua" />
+    <None Include="luajit\dynasm\dasm_x86.lua" />
+    <None Include="luajit\dynasm\dynasm.lua" />
+    <None Include="luajit\etc\luajit.1" />
+    <None Include="luajit\etc\luajit.pc" />
+    <None Include="luajit\src\jit\bc.lua" />
+    <None Include="luajit\src\jit\bcsave.lua" />
+    <None Include="luajit\src\jit\dis_arm.lua" />
+    <None Include="luajit\src\jit\dis_mips.lua" />
+    <None Include="luajit\src\jit\dis_mipsel.lua" />
+    <None Include="luajit\src\jit\dis_ppc.lua" />
+    <None Include="luajit\src\jit\dis_x64.lua" />
+    <None Include="luajit\src\jit\dis_x86.lua" />
+    <None Include="luajit\src\jit\dump.lua" />
+    <None Include="luajit\src\jit\v.lua" />
+    <None Include="luajit\src\jit\vmdef.lua" />
+    <None Include="luajit\src\lj.supp" />
+    <None Include="luajit\src\vm_arm.dasc" />
+    <None Include="luajit\src\vm_mips.dasc" />
+    <None Include="luajit\src\vm_ppc.dasc" />
+    <None Include="luajit\src\vm_ppcspe.dasc" />
+    <None Include="luajit\src\vm_x86.dasc" />
   </ItemGroup>
 </Project>

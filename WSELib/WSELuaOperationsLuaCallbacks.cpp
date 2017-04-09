@@ -52,7 +52,7 @@ int lGameExecOperationHandler(lua_State *L)
 			warband->basic_game.string_registers[--curStrReg] = lua_tostring(L, curLArgIndex);
 			wop.operands[curOperandIndex] = curStrReg;
 		}
-		else if (curLArgType == LUA_TTABLE && lIsPos(L, curLArgIndex))
+		else if (lIsPos(L, curLArgIndex))
 		{
 			warband->basic_game.position_registers[--curPosReg] = lToPos(L, curLArgIndex);
 			wop.operands[curOperandIndex] = curPosReg;
@@ -302,16 +302,31 @@ int lAgentsIterInit(lua_State *L)
 	it.advance = lAgentsIterAdvance;
 	it.curValIsValid = lAgentsIterCurValIsValid;
 
-	if (checkLArgs(L, 0, 2, lNum, lNum))
+	if (checkLArgs(L, 0, 2, lNum|lPos, lNum))
 	{
+		if (lua_gettop(L) < 2)
+			luaL_error(L, "not enough arguments");
+
 		it.usePos = true;
-		/*if (warband->cur_mission->grid.initialize_iterator(it.grid_iterator, POS, radius))
+		rgl::matrix pos;
+
+		if (lua_isnumber(L, 1))
 		{
-		it.curVal = it.grid_iterator.agent_obj->agent->no;
-		it.gridItSucc = true;
+			int preg = lua_tointeger(L, 1);
+			if (preg < 0 || preg >= NUM_REGISTERS)
+				luaL_error(L, "index out of range");
+			pos = warband->basic_game.position_registers[preg];
 		}
 		else
-		it.gridItSucc = false;*/
+			pos = lToPos(L, 1);
+
+		if (warband->cur_mission->grid.initialize_iterator(it.grid_iterator, pos.o, (float)lua_tonumber(L, 2)))
+		{
+			it.curVal = it.grid_iterator.agent_obj->agent->no;
+			it.gridItSucc = true;
+		}
+		else
+			it.gridItSucc = false;
 	}
 	else
 	{

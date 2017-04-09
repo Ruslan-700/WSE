@@ -7,7 +7,7 @@ function tableShallowCopy(t, copyMetatable)
 	end
 
 	if copyMetatable then
-		setmetatable(t2, getmetatable(t))
+		setmetatable(t2, tableShallowCopy(getmetatable(t)))
 	end
 
 	return t2
@@ -18,7 +18,7 @@ function tableRecursiveCopy(t, copyMetatables)
 	for k,v in pairs(t) do
 		if type(v) == "table" then
 			t2[k] = tableRecursiveCopy(v)
-			if copyMetatables then setmetatable(t2[k], getmetatable(v)) end
+			if copyMetatables then setmetatable(t2[k], tableRecursiveCopy(getmetatable(v))) end
 		else
 			t2[k] = v
 		end
@@ -199,7 +199,7 @@ game.rotation.prototype =
 		local cos = math.max(math.min((uX*ypuX + uY*ypuY + uZ*ypuZ) / (uLen*ypuLen), 1), -1)
 		local roll =  math.deg(math.acos(cos))
 
-		return {yaw = yaw, pitch = pitch, roll = roll}
+		return vector3.new({z = yaw, x = pitch, y = roll})
 	end,
 
 	rotX = function(self, angle)

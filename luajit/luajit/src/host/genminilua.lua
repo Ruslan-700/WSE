@@ -42,13 +42,13 @@ local LUA_FILES = {
 "lbaselib.c", "ltablib.c", "liolib.c", "loslib.c", "lstrlib.c", "linit.c",
 }
 
-local REMOVE_LIB = {}
+local REMOVE_LIB = {} -- /* wse mod */
 gsub([[
 collectgarbage dofile gcinfo getfenv getmetatable load print rawequal rawset
 select tostring xpcall
 foreach foreachi getn maxn setn
-popen tmpfile seek setvbuf __tostring
-clock date difftime execute getenv rename setlocale time tmpname
+tmpfile seek setvbuf __tostring
+clock date difftime rename setlocale time
 dump gfind len reverse
 LUA_LOADLIBNAME LUA_MATHLIBNAME LUA_DBLIBNAME
 ]], "%S+", function(name)

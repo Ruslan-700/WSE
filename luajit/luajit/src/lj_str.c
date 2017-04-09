@@ -358,6 +358,12 @@ char *getStrCopy(const char *str)
 
 char *makeSafePath(const char *rootDir, const char *path)
 {
+	if (path == NULL)
+		return NULL;
+
+	if (rootDir == NULL)
+		return getStrCopy(path);
+
 	int curLevel = 0;
 	int points = 0;
 	int others = 0;
@@ -365,7 +371,7 @@ char *makeSafePath(const char *rootDir, const char *path)
 	size_t i = 0;
 	while (i < strlen(path))
 	{
-		if (path[i] == ':')
+		if (path[i] == ':' || path[i] == '!')
 			return NULL;
 
 		if (path[i] == '.')

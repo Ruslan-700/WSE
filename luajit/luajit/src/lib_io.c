@@ -407,28 +407,8 @@ LJLIB_CF(io_open)
   return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
 }
 
-/*
-LJLIB_CF(io_popen)
-{
-#if LJ_TARGET_POSIX || LJ_TARGET_WINDOWS
-  const char *fname = strdata(lj_lib_checkstr(L, 1));
-  GCstr *s = lj_lib_optstr(L, 2);
-  const char *mode = s ? strdata(s) : "r";
-  IOFileUD *iof = io_file_new(L);
-  iof->type = IOFILE_TYPE_PIPE;
-#if LJ_TARGET_POSIX
-  fflush(NULL);
-  iof->fp = popen(fname, mode);
-#else
-  iof->fp = _popen(fname, mode);
-#endif
-  return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
-#else
-  return luaL_error(L, LUA_QL("popen") " not supported");
-#endif
-}
-*/
-
+/* wse mod */
+/* removed io_popen */
 
 LJLIB_CF(io_tmpfile)
 {

@@ -81,6 +81,21 @@ goto:eof
     echo luajit.vcxproj %%~ta %%~za &gt;&gt; "%1"
   )
 goto:eof</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>cd "$(ProjectDir)luajit\src\"
+
+del *.obj
+del *.exe
+del *.dll
+del *.lib
+del *.exp
+
+del .\host\buildvm_arch.h
+del .\jit\vmdef.lua
+del lj_bcdef.h
+del lj_ffdef.h
+del lj_folddef.h
+del lj_libdef.h
+del lj_recdef.h</NMakeCleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakeOutput>luajit.exe</NMakeOutput>
@@ -128,6 +143,21 @@ goto:eof
     echo luajit.vcxproj %%~ta %%~za &gt;&gt; "%1"
   )
 goto:eof</NMakeBuildCommandLine>
+    <NMakeCleanCommandLine>cd "$(ProjectDir)luajit\src\"
+
+del *.obj
+del *.exe
+del *.dll
+del *.lib
+del *.exp
+
+del .\host\buildvm_arch.h
+del .\jit\vmdef.lua
+del lj_bcdef.h
+del lj_ffdef.h
+del lj_folddef.h
+del lj_libdef.h
+del lj_recdef.h</NMakeCleanCommandLine>
   </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
@@ -213,6 +243,7 @@ goto:eof</NMakeBuildCommandLine>
     <ClInclude Include="luajit\src\luaconf.h" />
     <ClInclude Include="luajit\src\luajit.h" />
     <ClInclude Include="luajit\src\lualib.h" />
+    <ClInclude Include="luajit\src\userDir.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="luajit\src\host\buildvm.c" />
@@ -286,7 +317,33 @@ goto:eof</NMakeBuildCommandLine>
     <ClCompile Include="luajit\src\luajit.c" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="luajit\dynasm\dasm_arm.lua" />
+    <None Include="luajit\dynasm\dasm_mips.lua" />
+    <None Include="luajit\dynasm\dasm_ppc.lua" />
+    <None Include="luajit\dynasm\dasm_x64.lua" />
+    <None Include="luajit\dynasm\dasm_x86.lua" />
+    <None Include="luajit\dynasm\dynasm.lua" />
+    <None Include="luajit\etc\luajit.1" />
+    <None Include="luajit\etc\luajit.pc" />
+    <None Include="luajit\src\host\genminilua.lua" />
+    <None Include="luajit\src\jit\bc.lua" />
+    <None Include="luajit\src\jit\bcsave.lua" />
+    <None Include="luajit\src\jit\dis_arm.lua" />
+    <None Include="luajit\src\jit\dis_mips.lua" />
+    <None Include="luajit\src\jit\dis_mipsel.lua" />
+    <None Include="luajit\src\jit\dis_ppc.lua" />
+    <None Include="luajit\src\jit\dis_x64.lua" />
+    <None Include="luajit\src\jit\dis_x86.lua" />
+    <None Include="luajit\src\jit\dump.lua" />
+    <None Include="luajit\src\jit\v.lua" />
+    <None Include="luajit\src\jit\vmdef.lua" />
+    <None Include="luajit\src\lj.supp" />
     <None Include="luajit\src\msvcbuild.bat" />
+    <None Include="luajit\src\vm_arm.dasc" />
+    <None Include="luajit\src\vm_mips.dasc" />
+    <None Include="luajit\src\vm_ppc.dasc" />
+    <None Include="luajit\src\vm_ppcspe.dasc" />
+    <None Include="luajit\src\vm_x86.dasc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

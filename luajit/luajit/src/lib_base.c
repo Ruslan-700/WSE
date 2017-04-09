@@ -377,8 +377,17 @@ LJLIB_CF(loadfile)
   GCstr *mode = lj_lib_optstr(L, 2);
   int status;
   lua_settop(L, 3);  /* Ensure env arg exists. */
-  status = luaL_loadfilex(L, fname ? strdata(fname) : NULL,
-			  mode ? strdata(mode) : NULL);
+
+  /*wse mod*/
+  if (L->userDir && fname)
+  {
+	  char *path = makeSafePath(L->userDir, strdata(fname));
+	  status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
+	  free(path);
+  }
+  else
+	  status = luaL_loadfilex(L, fname ? strdata(fname) : NULL, mode ? strdata(mode) : NULL);
+
   return load_aux(L, status, 3);
 }
 
@@ -430,8 +439,20 @@ LJLIB_CF(dofile)
   GCstr *fname = lj_lib_optstr(L, 1);
   setnilV(L->top);
   L->top = L->base+1;
-  if (luaL_loadfile(L, fname ? strdata(fname) : NULL) != 0)
+
+  /* wse mod */
+  char *path;
+  if (fname)
+	  path = makeSafePath(L->userDir, strdata(fname));
+  else
+	  path = NULL;
+
+  int res = luaL_loadfile(L, path);
+  free(path);
+
+  if (res)
     lua_error(L);
+
   lua_call(L, 0, LUA_MULTRET);
   return (int)(L->top - L->base) - 1;
 }

@@ -14,7 +14,8 @@
 @if not defined INCLUDE goto :FAIL
 
 @setlocal
-@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE
+@rem /* wse mod */
+@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /DLUAJIT_DISABLE_FFI
 @set LJLINK=link /nologo
 @set LJMT=mt /nologo
 @set LJLIB=lib /nologo /nodefaultlib
@@ -31,11 +32,13 @@
 if exist minilua.exe.manifest^
   %LJMT% -manifest minilua.exe.manifest -outputresource:minilua.exe
 
-@set DASMFLAGS=-D WIN -D JIT -D FFI -D P64
+@rem /* wse mod */
+@set DASMFLAGS=-D WIN -D JIT -D P64
 @set LJARCH=x64
 @minilua
 @if errorlevel 8 goto :X64
-@set DASMFLAGS=-D WIN -D JIT -D FFI
+@rem /* wse mod */
+@set DASMFLAGS=-D WIN -D JIT
 @set LJARCH=x86
 :X64
 minilua %DASM% -LN %DASMFLAGS% -o host\buildvm_arch.h vm_x86.dasc

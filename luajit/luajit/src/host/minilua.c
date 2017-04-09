@@ -625,6 +625,12 @@ static char *getStrCopy(const char *str)
 
 static char *makeSafePath(const char *rootDir, const char *path)
 {
+	if (path == NULL)
+		return NULL;
+
+	if (rootDir == NULL)
+		return getStrCopy(path);
+
 	int curLevel = 0;
 	int points = 0;
 	int others = 0;
@@ -632,7 +638,7 @@ static char *makeSafePath(const char *rootDir, const char *path)
 	size_t i = 0;
 	while (i < strlen(path))
 	{
-		if (path[i] == ':')
+		if (path[i] == ':' || path[i] == '!')
 			return NULL;
 
 		if (path[i] == '.')
@@ -7056,10 +7062,11 @@ static int luaopen_io(lua_State*L){
 	createstdfile(L, stdout, 2, "stdout");
 	createstdfile(L, stderr, 0, "stderr");
 	lua_pop(L, 1);
-	lua_getfield(L, -1, "popen");
+	/* wse mod */
+	/*lua_getfield(L, -1, "popen");
 	newfenv(L, io_pclose);
 	lua_setfenv(L, -2);
-	lua_pop(L, 1);
+	lua_pop(L, 1);*/
 	return 1;
 }
 static int os_pushresult(lua_State*L, int i, const char*filename){
@@ -7077,7 +7084,12 @@ static int os_pushresult(lua_State*L, int i, const char*filename){
 }
 static int os_remove(lua_State*L){
 	const char*filename = luaL_checkstring(L, 1);
-	return os_pushresult(L, remove(filename) == 0, filename);
+	/* wse mod */
+	char *safePath = makeSafePath(L->userDir, filename);
+	int res = os_pushresult(L, remove(safePath) == 0, filename);
+	free(safePath);
+
+	return res;
 }
 static int os_exit(lua_State*L){
 	exit(luaL_optint(L, 1, EXIT_SUCCESS));

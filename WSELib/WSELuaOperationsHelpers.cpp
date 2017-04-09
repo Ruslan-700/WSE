@@ -136,6 +136,8 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...)
 			continue;
 		else if (a & lThread && lua_isthread(L, i))
 			continue;
+		else if (a % lPos && lIsPos(L, i))
+			continue;
 
 		std::string errorType = "";
 
@@ -157,6 +159,8 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...)
 			errorType += "|LUA_TUSERDATA";
 		if (a & lThread)
 			errorType += "|LUA_TTHREAD";
+		if (a & lPos)
+			errorType += "|LUA_WSE_POS";
 
 		errorType.erase(0, 1);
 

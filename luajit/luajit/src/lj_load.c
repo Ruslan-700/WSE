@@ -34,6 +34,14 @@ static TValue *cpparser(lua_State *L, lua_CFunction dummy, void *ud)
   UNUSED(dummy);
   cframe_errfunc(L->cframe) = -1;  /* Inherit error function. */
   bc = lj_lex_setup(L, ls);
+
+  /* wse mod */
+  if (bc)
+  {
+	  setstrV(L, L->top++, lj_err_str(L, LJ_ERR_BCPRHT));
+	  lj_err_throw(L, LUA_ERRSYNTAX);
+  }
+
   if (ls->mode && !strchr(ls->mode, bc ? 'b' : 't')) {
     setstrV(L, L->top++, lj_err_str(L, LJ_ERR_XMODE));
     lj_err_throw(L, LUA_ERRSYNTAX);
@@ -88,9 +96,7 @@ LUALIB_API int luaL_loadfilex(lua_State *L, const char *filename,
   int status;
   const char *chunkname;
   if (filename) {
-	/*wse mod*/
-	//ctx.fp = fopen(filename, "rb");
-	ctx.fp = fopenInUserDir(L, filename, "rb");
+	ctx.fp = fopen(filename, "rb");
 	if (ctx.fp == NULL) {
 		lua_pushfstring(L, "cannot open %s: %s", filename, strerror(errno));
 		return LUA_ERRFILE;

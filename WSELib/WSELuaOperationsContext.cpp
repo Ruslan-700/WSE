@@ -227,7 +227,7 @@ void WSELuaOperationsContext::OnLoad()
 		"destination", "index");
 
 	RegisterOperation("lua_call", opCall, Both, None, 2, 2,
-		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values.",
+		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.",
 		"func_name", "num_args");
 	
 	callTriggerOpcode = getOpcodeRangeCur();

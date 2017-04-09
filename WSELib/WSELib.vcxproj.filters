@@ -478,9 +478,4 @@
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Text Include="LuaSandbox.txt">
-      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
-    </Text>
-  </ItemGroup>
 </Project>

@@ -152,6 +152,8 @@ ERRDEF(XGSCOPE,	"<goto %s> jumps into the scope of local " LUA_QS)
 /* Bytecode reader errors. */
 ERRDEF(BCFMT,	"cannot load incompatible bytecode")
 ERRDEF(BCBAD,	"cannot load malformed bytecode")
+/* wse mod */
+ERRDEF(BCPRHT, "bytecode prohibited")
 
 #if LJ_HASFFI
 /* FFI errors. */

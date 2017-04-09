@@ -14,7 +14,8 @@ enum lArgT
 	lTable = 0x20,
 	lFunc = 0x40,
 	lUserData = 0x80,
-	lThread = 0x100
+	lThread = 0x100,
+	lPos = 0x200
 };
 
 void gPrint(const char *msg);
