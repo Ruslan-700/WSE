@@ -143,9 +143,9 @@ vector3.mt =
 	__mul = function (lhs,rhs)
 		local res = 
 		{
-			x = lhs.x * rhs,
-			y = lhs.y * rhs,
-			z = lhs.z * rhs
+			x = lhs.x * rhs.x,
+			y = lhs.y * rhs.y,
+			z = lhs.z * rhs.z
 		}
 		return setmetatable(res, vector3.mt)
 	end,
