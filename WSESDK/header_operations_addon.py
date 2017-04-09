@@ -336,6 +336,21 @@ array_ge            = 5020 #(array_ge, <arrayID>, <value_1>, <Index 0>, [<Index 
 array_lt            = 5021 #(array_lt, <arrayID>, <value_1>, <Index 0>, [<Index 1>], [<Index 2>], [<Index 3>], [<Index 4>], [<Index 5>], [<Index 6>], [<Index 7>], [<Index 8>], [<Index 9>], [<Index 10>], [<Index 11>], [<Index 12>], [<Index 13>]), #Fails if the specified value in the array with <arrayID> is not lower than <value_1>. Works for int and str. Strings are compared alphabetically, upper before lower case.
 array_le            = 5022 #(array_le, <arrayID>, <value_1>, <Index 0>, [<Index 1>], [<Index 2>], [<Index 3>], [<Index 4>], [<Index 5>], [<Index 6>], [<Index 7>], [<Index 8>], [<Index 9>], [<Index 10>], [<Index 11>], [<Index 12>], [<Index 13>]), #Fails if the specified value in the array with <arrayID> is not lower or equal to <value_1>. Works for int and str. Strings are compared alphabetically, upper before lower case.
 
+lua_get_top         = 5100 #(lua_get_top, <destination>), #Stores the index of the top element in the lua stack into <destination>. The result also is equal to the number of elements in the stack.
+lua_set_top         = 5101 #(lua_set_top, <index>), #Sets the top of the stack to <index>. Setting it to 0 just clears the entire stack.
+lua_insert          = 5102 #(lua_insert, <index>), #Moves the stacks top element into <index>, shifting up the elements above <index> to open space.
+lua_remove          = 5103 #(lua_remove, <index>), #Removes the element at the given <index>, shifting down the elements above <index> to fill the gap.
+lua_pop             = 5104 #(lua_pop, <value>), #Pops <value> values from the lua stack.
+lua_to_int          = 5105 #(lua_to_int, <destination>, <index>), #Retrieves the value at <index> from the lua stack and stores it in <destination>
+lua_to_str          = 5106 #(lua_to_str, <string_register>, <index>), #Retrieves the string at <index> from the lua stack and stores it in <string_register>
+lua_to_pos          = 5107 #(lua_to_pos, <pos_register>, <index>), #Retrieves the position at <index> from the lua stack and stores it in <pos_register>
+lua_push_int        = 5108 #(lua_push_int, <value>), #Pushes <value> onto the lua stack.
+lua_push_str        = 5109 #(lua_push_str, <string_1>), #Pushes <string_1> onto the lua stack.
+lua_push_pos        = 5110 #(lua_push_pos, <pos_register>), #Pushes the position in <pos_register> onto the lua stack.
+lua_get_type        = 5111 #(lua_get_type, <destination>), #Stores the type of the value at <1> in the stack into <destination>. Return types can be found in header_common(_addon).py (LUA_T*)
+lua_call            = 5112 #(lua_call, <func_name>, <num_args>), #Calls the lua function with name <func_name>, using the lua stack to pass <num_args> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.
+lua_triggerCallback = 5113 #(lua_triggerCallback, <reference>), #Calls the lua trigger callback with <reference>. This operation is utilized internally and should not be used, unless you know what you are doing.
+
 lhs_operations += [
 	store_trigger_param,
 	val_shr,
@@ -414,6 +429,9 @@ lhs_operations += [
 	array_get_dim_size,
 	array_get_dim_count,
 	array_get_type_id,
+	lua_get_top,
+	lua_to_int,
+	lua_get_type,
 ]
 
 can_fail_operations += [
@@ -459,4 +477,5 @@ can_fail_operations += [
 	array_ge,
 	array_lt,
 	array_le,
+	lua_triggerCallback,
 ]

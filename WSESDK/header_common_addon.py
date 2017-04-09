@@ -242,3 +242,14 @@ sort_m_str_cs_asc  = 0
 sort_m_str_cs_desc = sort_f_desc
 sort_m_str_ci_asc  = sort_f_ci
 sort_m_str_ci_desc = sort_f_ci | sort_f_desc
+
+LUA_TNONE			= -1
+LUA_TNIL			= 0
+LUA_TBOOLEAN		= 1
+LUA_TLIGHTUSERDATA	= 2
+LUA_TNUMBER			= 3
+LUA_TSTRING			= 4
+LUA_TTABLE			= 5
+LUA_TFUNCTION		= 6
+LUA_TUSERDATA		= 7
+LUA_TTHREAD			= 8
