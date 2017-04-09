@@ -27,3 +27,7 @@ luajit\luajit\src\lua51.pdb
 luajit\luajit\src\luajit.ilk
 luajit\luajit\src\luajit.pdb
 luajit\luajit\src\vc120.pdb
+luajit\Debug\lua51.exp
+luajit\Debug\lua51.lib
+luajit\Release\lua51.exp
+luajit\Debug\lua51.dll
