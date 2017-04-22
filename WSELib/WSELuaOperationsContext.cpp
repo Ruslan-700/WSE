@@ -6,6 +6,10 @@
 #include "WSELuaOperationsHelpers.h"
 #include "WSELuaOperationsLuaCallbacks.h"
 
+/************************/
+/*    MS operations    */
+/************************/
+
 int opGetTop(WSELuaOperationsContext *context)
 {
 	return lua_gettop(context->luaState);
@@ -171,8 +175,11 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 	return b != 0 ? true : false;
 }
 
+/************************/
+/*    MS ops end       */
+/************************/
 
-WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("array", 5100, 5199)
+WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
 }
 
@@ -329,7 +336,7 @@ inline void WSELuaOperationsContext::loadOperations()
 
 	std::smatch curMatches;
 
-	std::regex opRegEx( R"((\w+)=((0x)?\d+).*)" );
+	std::regex opRegEx( R"((\w+)=(((0x)[\da-fA-F]+)|(\d+)).*)" );
 	std::regex opOrRegEx( R"((\w+)=(\w+)\|(\w+).*)" );
 	std::regex listStartRegEx( R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?).*)" );
 
@@ -349,7 +356,7 @@ inline void WSELuaOperationsContext::loadOperations()
 			gameOperation newOp;
 			newOp.flags = 0;
 
-			if (curMatches.str(3).length())
+			if (curMatches.str(4).length())
 				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 16);
 			else
 				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 10);
@@ -452,7 +459,20 @@ inline void WSELuaOperationsContext::loadOperations()
 	}
 }
 
-inline void WSELuaOperationsContext::initLGameTable() //rename
+inline void WSELuaOperationsContext::addGameConstants()
+{
+	lua_newtable(luaState);
+
+	addConstantsFromFileToTable("header_triggers.py", luaState, "ti");
+
+#if defined WARBAND //neccessary?
+	addConstantsFromFileToTable("header_presentations.py", luaState, "prsnt");
+#endif
+
+	lua_setfield(luaState, -2, "const");
+}
+
+inline void WSELuaOperationsContext::initLGameTable()
 {
 	lua_newtable(luaState);
 	
@@ -477,6 +497,14 @@ inline void WSELuaOperationsContext::initLGameTable() //rename
 	lua_pushcfunction(luaState, lRemoveTrigger);
 	lua_setfield(luaState, -2, "removeTrigger");
 
+#if defined WARBAND
+	lua_pushcfunction(luaState, lAddPrsnt);
+	lua_setfield(luaState, -2, "addPrsnt");
+
+	lua_pushcfunction(luaState, lRemovePrsnt);
+	lua_setfield(luaState, -2, "removePrsnt");
+#endif
+
 	lua_pushcfunction(luaState, lPartiesIterInit);
 	lua_setfield(luaState, -2, "partiesIterInit");
 
@@ -491,6 +519,8 @@ inline void WSELuaOperationsContext::initLGameTable() //rename
 
 	lua_pushcfunction(luaState, lIterNext);
 	lua_setfield(luaState, -2, "iterNext");
+
+	addGameConstants();
 
 	lua_setglobal(luaState, "game");
 

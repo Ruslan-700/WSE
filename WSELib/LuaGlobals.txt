@@ -104,6 +104,18 @@ game.playersI = function(skipServer)
 	end
 end
 
+------------game constants------------
+game.const.mt = {
+	__index = function(table, key)
+		for k, v in pairs(table) do
+			if type(v) == "table" and v[key] then
+				return v[key]
+			end
+		end
+	end
+}
+setmetatable(game.const, game.const.mt)
+
 ------------vector3------------
 vector3 = {}
 vector3.prototype = 

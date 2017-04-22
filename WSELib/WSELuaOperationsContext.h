@@ -55,6 +55,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 
 		void applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile);
 		inline void loadOperations();
+		inline void addGameConstants();
 		inline void initLGameTable();
 		inline void doMainScript();
 };

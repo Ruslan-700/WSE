@@ -757,5 +757,8 @@
     <ClCompile Include="mission_template.cpp">
       <Filter>Source Files\wb</Filter>
     </ClCompile>
+    <ClCompile Include="presentation.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

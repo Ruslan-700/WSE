@@ -20,5 +20,8 @@ namespace wb
 		presentation *presentations;
 		int num_presentations;
 		int mapped_presentations[NUM_MAPPED_PRESENTATIONS];
+
+		int addPresentation(const presentation &newPresentation);
+		bool removePresentation(int index);
 	};
 }

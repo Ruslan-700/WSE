@@ -249,6 +249,7 @@
     <ClCompile Include="network_server.cpp" />
     <ClCompile Include="operation.cpp" />
     <ClCompile Include="particle_system.cpp" />
+    <ClCompile Include="presentation.cpp" />
     <ClCompile Include="rgl.cpp" />
     <ClCompile Include="rgl_addresses.cpp" />
     <ClCompile Include="rgl_body_part.cpp" />

@@ -231,13 +231,89 @@ int lRemoveTrigger(lua_State *L)
 
 	bool succ = warband->mission_templates[tNo].removeTrigger(index);
 
-	if (succ)
-		lua_pushboolean(L, 1);
-	else
-		lua_pushboolean(L, 0);
-
+	lua_pushboolean(L, succ ? 1 : 0);
 	return 1;
 }
+
+#if defined WARBAND
+int lAddPrsnt(lua_State *L)
+{
+	checkTableStructure(L, 1, "{id=str, [flags]={(val=num)}, [mesh]=num, triggers={(key=num, val=func, min=1)} }");
+
+	wb::presentation newP = *rgl::_new<wb::presentation>();
+
+	lua_getfield(L, 1, "id");
+	newP.id.initialize();
+	newP.id = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	newP.mesh_no = 0;
+	lua_getfield(L, 1, "mesh");
+	if (lua_type(L, -1))
+		newP.mesh_no = lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	newP.flags = 0;
+	lua_getfield(L, 1, "flags");
+	if (lua_type(L, -1))
+	{
+		lua_pushnil(L);
+		while (lua_next(L, -2))
+		{
+			newP.flags |= lua_tointeger(L, -1);
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "triggers");
+
+	int numTriggers = 0;
+	lua_pushnil(L);
+	while (lua_next(L, -2))
+	{
+		numTriggers++;
+		lua_pop(L, 1);
+	}
+
+	newP.simple_triggers.num_simple_triggers = numTriggers;
+	newP.simple_triggers.simple_triggers = (wb::simple_trigger*)malloc(sizeof(wb::simple_trigger) * numTriggers);
+
+	int i = 0;
+	lua_pushnil(L);
+	while (lua_next(L, -2))
+	{
+		wb::simple_trigger &curTrigger = newP.simple_triggers.simple_triggers[i];
+
+		curTrigger.interval = (float)lua_tonumber(L, -2);
+		curTrigger.interval_timer = rgl::timer(2);
+		
+		curTrigger.operations.id.initialize();
+		curTrigger.operations.num_operations = 1;
+		curTrigger.operations.operations = rgl::_new<wb::operation>(1);
+		curTrigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+		curTrigger.operations.operations[0].num_operands = 1;	
+		curTrigger.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX); //pops val
+
+		i++;
+	}
+	lua_pop(L, 1);
+
+	int index = warband->presentation_manager.addPresentation(newP);
+	lua_pushinteger(L, index);
+	return 1;
+}
+
+int lRemovePrsnt(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 1, 1, lNum);
+
+	bool succ = warband->presentation_manager.removePresentation(lua_tointeger(L, 1));
+
+	lua_pushboolean(L, succ ? 1 : 0);
+	return 1;
+}
+#endif
 
 /***********
 **Iterators
