@@ -797,6 +797,17 @@ void StrRegexReplace(WSEStringOperationsContext *context)
 	}
 }
 
+void StrDecodeUrl(WSEStringOperationsContext *context)
+{
+	int sreg;
+	std::string str1;
+
+	context->ExtractRegister(sreg);
+	context->ExtractString(str1);
+
+	warband->basic_game.string_registers[sreg] = UriDecode(str1);
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -982,6 +993,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_regex_replace", StrRegexReplace, Both, None, 4, 4,
 		"Stores <1> into <0>, replacing occurrences of <2> with <3>",
 		"string_register", "string_1", "string_regex", "string_2");
+
+	RegisterOperation("str_decode_url", StrDecodeUrl, Both, None, 2, 2,
+		"Decode url encoded <1> and stores it into <0>",
+		"string_register", "string_1");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)

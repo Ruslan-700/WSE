@@ -4,6 +4,7 @@
 #include <string>
 #include <rgl_matrix.h>
 #include "json/json.h"
+#include "WSEUtils.h"
 
 #define WSE_DICT_MAGIC 0x57534544
 #define WSE_DICT_VERSION 2
@@ -16,6 +17,8 @@ public:
 	void Save(const std::string &file) const;
 	void LoadJson(const std::string &file, const int &mode = 0);
 	void SaveJson(const std::string &file) const;
+	void FromUrlEncodedJson(const std::string &string, const int &mode = 0);
+	const std::string ToUrlEncodedJson() const;
 	void Clear();
 	bool Has(const std::string &key) const;
 	int GetSize() const;

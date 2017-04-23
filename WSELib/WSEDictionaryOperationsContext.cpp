@@ -88,6 +88,32 @@ void DictSaveJson(WSEDictionaryOperationsContext *context)
 	dict->SaveJson(context->CreateFile(path, "json"));
 }
 
+void DictFromUrlEncodedJson(WSEDictionaryOperationsContext *context)
+{
+	int id, mode;
+	std::string string;
+
+	context->ExtractValue(id);
+	context->ExtractString(string);
+	context->ExtractValue(mode);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	dict->FromUrlEncodedJson(string, mode);
+}
+
+void DictToUrlEncodedJson(WSEDictionaryOperationsContext *context)
+{
+	int sreg, id;
+
+	context->ExtractValue(sreg);
+	context->ExtractValue(id);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	warband->basic_game.string_registers[sreg] = dict->ToUrlEncodedJson();
+}
+
 void DictClear(WSEDictionaryOperationsContext *context)
 {
 	int id;
@@ -343,6 +369,14 @@ void WSEDictionaryOperationsContext::OnLoad()
 	RegisterOperation("dict_save_json", DictSaveJson, Both, None, 2, 2,
 		"Saves <0> into a json file. For security reasons, <1> is just a name, not a full path, and will be stored into a WSE managed directory",
 		"dict", "file");
+
+	RegisterOperation("dict_from_url_encoded_json", DictFromUrlEncodedJson, Both, None, 2, 3,
+		"Loads a url encoded json <1> into <0>. <2>: see above",
+		"dict", "string", "mode");
+
+	RegisterOperation("dict_to_url_encoded_json", DictToUrlEncodedJson, Both, None, 2, 2,
+		"Saves <1> into a url encoded json and stores into <0>",
+		"string_register", "dict");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

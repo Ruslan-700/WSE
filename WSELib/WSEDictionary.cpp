@@ -145,6 +145,43 @@ void WSEDictionary::SaveJson(const std::string &file) const
 	stream.close();
 }
 
+void WSEDictionary::FromUrlEncodedJson(const std::string &string, const int &mode)
+{
+	if (mode == 0)
+		m_values.clear();
+
+	Json::Value root;
+	Json::Reader reader;
+
+	bool parsingSuccessful = reader.parse(UriDecode(string), root);
+	if (!parsingSuccessful)
+		return;
+
+	if (!root.isObject())
+		return;
+
+	for (Json::Value::iterator it = root.begin(); it != root.end(); ++it)
+	{
+		std::string key = it.key().asString();
+		std::string value = (*it).asString();
+
+		if (mode != 2 || m_values.find(key) == m_values.end())
+			m_values[key] = value;
+	}
+}
+
+const std::string WSEDictionary::ToUrlEncodedJson() const
+{
+	Json::Value root;
+	for (std::map<std::string, std::string>::const_iterator it = m_values.begin(); it != m_values.end(); ++it)
+	{
+		root[it->first] = it->second;
+	}
+
+	Json::StyledWriter writer;
+	return UriEncode(writer.write(root));
+}
+
 void WSEDictionary::Clear()
 {
 	m_values.clear();
