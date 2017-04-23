@@ -326,7 +326,7 @@ void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std
 
 inline void WSELuaOperationsContext::loadOperations()
 {
-	std::string opFile = getLuaScriptDir() + "header_operations.py";
+	std::string opFile = getLuaScriptDir() + "msfiles\\" + "header_operations.py";
 	if (!fileExists(opFile))
 		return;
 
@@ -461,13 +461,38 @@ inline void WSELuaOperationsContext::loadOperations()
 
 inline void WSELuaOperationsContext::addGameConstants()
 {
+	WIN32_FIND_DATA ffd;
+	std::string constDir = getLuaScriptDir() + "msfiles\\*";
+
+	HANDLE hFind = FindFirstFile(constDir.c_str(), &ffd);
+
+	if (hFind == INVALID_HANDLE_VALUE)
+		return;
+
 	lua_newtable(luaState);
 
+	std::smatch curMatches;
+	std::regex fnRegEx(R"(^(header|ID)_(\w+)\.py$)");
+
+	do
+	{
+		gPrint(ffd.cFileName);
+		std::string s = ffd.cFileName;
+		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && std::regex_match(s, curMatches, fnRegEx) && s != "header_operations.py")
+		{
+			addConstantsFromFileToTable(getLuaScriptDir() + "msfiles\\" + s, luaState, curMatches.str(2));
+		}
+	} 
+	while (FindNextFile(hFind, &ffd));
+	FindClose(hFind);
+
+	/*
 	addConstantsFromFileToTable("header_triggers.py", luaState, "ti");
 
 #if defined WARBAND //neccessary?
 	addConstantsFromFileToTable("header_presentations.py", luaState, "prsnt");
 #endif
+	*/
 
 	lua_setfield(luaState, -2, "const");
 }

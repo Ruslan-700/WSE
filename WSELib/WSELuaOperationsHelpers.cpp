@@ -383,9 +383,8 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 	lua_setmetatable(L, -2);
 }
 
-void addConstantsFromFileToTable(std::string fileName, lua_State *L, std::string name)
+void addConstantsFromFileToTable(std::string filePath, lua_State *L, std::string name)
 {
-	std::string filePath = getLuaScriptDir() + fileName;
 	std::vector<gameConst> constants;
 
 	if (!fileExists(filePath))
@@ -438,7 +437,7 @@ void addConstantsFromFileToTable(std::string fileName, lua_State *L, std::string
 		}
 		else
 		{
-			gPrintf("WSELuaOperationsContext: Error reading %s, line %i: could not process line", filePath.c_str(), curLineNum);
+			gPrintf("WSELuaOperationsContext: Warning reading %s, line %i: could not process line", filePath.c_str(), curLineNum);
 			continue;
 		}
 
