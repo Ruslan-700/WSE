@@ -22,5 +22,3 @@ int lPartiesIterInit(lua_State *L);
 int lAgentsIterInit(lua_State *L);
 int lPropInstIterInit(lua_State *L);
 int lPlayersIterInit(lua_State *L);
-
-int lIterNext(lua_State *L);

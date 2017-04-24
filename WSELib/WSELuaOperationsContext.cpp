@@ -243,7 +243,6 @@ void WSELuaOperationsContext::OnLoad()
 		"reference");
 
 	initLua();
-	gIterators.reserve(3);
 }
 
 void WSELuaOperationsContext::OnUnload()
@@ -272,38 +271,6 @@ inline void WSELuaOperationsContext::initLua()
 	loadOperations();
 	initLGameTable();
 	doMainScript();
-}
-
-int WSELuaOperationsContext::gIteratorAdd(const gameIterator &it)
-{
-	size_t i = 0;
-	while (i < gIterators.size())
-	{
-		if (!gIterators[i].valid)
-		{
-			gIterators[i] = it;
-			return i;
-		}
-
-		i++;
-	}
-
-	if (i < maxGiterators)
-	{
-		gIterators.push_back(it);
-		return i;
-	}
-	else
-		return -1;
-
-}
-
-gameIterator *WSELuaOperationsContext::getGiterator(size_t itNo)
-{
-	if (itNo < 0 || itNo >= gIterators.size() || !gIterators[itNo].valid)
-		return NULL;
-
-	return &gIterators[itNo];
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
@@ -476,7 +443,6 @@ inline void WSELuaOperationsContext::addGameConstants()
 
 	do
 	{
-		gPrint(ffd.cFileName);
 		std::string s = ffd.cFileName;
 		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && std::regex_match(s, curMatches, fnRegEx) && s != "header_operations.py")
 		{
@@ -531,19 +497,19 @@ inline void WSELuaOperationsContext::initLGameTable()
 #endif
 
 	lua_pushcfunction(luaState, lPartiesIterInit);
-	lua_setfield(luaState, -2, "partiesIterInit");
+	lua_setfield(luaState, -2, "partiesI");
 
 	lua_pushcfunction(luaState, lAgentsIterInit);
-	lua_setfield(luaState, -2, "agentsIterInit");
+	lua_setfield(luaState, -2, "agentsI");
 
 	lua_pushcfunction(luaState, lPropInstIterInit);
-	lua_setfield(luaState, -2, "propInstIterInit");
+	lua_setfield(luaState, -2, "propInstI");
 
 	lua_pushcfunction(luaState, lPlayersIterInit);
-	lua_setfield(luaState, -2, "playersIterInit");
+	lua_setfield(luaState, -2, "playersI");
 
-	lua_pushcfunction(luaState, lIterNext);
-	lua_setfield(luaState, -2, "iterNext");
+	//lua_pushcfunction(luaState, lIterNext);
+	//lua_setfield(luaState, -2, "iterNext");
 
 	addGameConstants();
 

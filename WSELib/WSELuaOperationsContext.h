@@ -12,24 +12,6 @@ struct gameOperation
 	unsigned short flags;
 };
 
-#define maxGiterators 256
-
-struct gameIterator
-{
-	bool valid;
-
-	void(*advance)(gameIterator *it);
-	bool(*curValIsValid)(gameIterator *it);
-
-	int curVal;
-
-	bool usePos;
-	bool gridItSucc;
-	wb::mission_grid_iterator grid_iterator;
-
-	int subKindNo;
-};
-
 class WSELuaOperationsContext : public WSEOperationContext
 {
 	public:
@@ -40,11 +22,6 @@ class WSELuaOperationsContext : public WSEOperationContext
 	public:
 		WSELuaOperationsContext();
 		void printLastError(const char *fileName = NULL);
-		int gIteratorAdd(const gameIterator &it);
-		gameIterator *getGiterator(size_t itNo);
-
-	protected:
-		std::vector<gameIterator> gIterators;
 
 	protected:
 		virtual void OnLoad();

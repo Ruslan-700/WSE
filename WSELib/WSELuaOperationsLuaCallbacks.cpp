@@ -318,6 +318,52 @@ int lRemovePrsnt(lua_State *L)
 /***********
 **Iterators
 ***********/
+struct gameIterator
+{
+	bool valid;
+
+	void(*advance)(gameIterator *it);
+	bool(*curValIsValid)(gameIterator *it);
+
+	int curVal;
+
+	bool usePos;
+	bool gridItSucc;
+	wb::mission_grid_iterator grid_iterator;
+
+	int subKindNo;
+};
+
+int lIterNext(lua_State *L)
+{
+	gameIterator *it = (gameIterator*)lua_touserdata(L, lua_upvalueindex(1));
+
+	if (it && it->curValIsValid(it))
+	{
+		lua_pushnumber(L, it->curVal);
+
+		it->advance(it);
+	}
+	else
+	{
+		if (it)
+			it->valid = false;
+
+		lua_pushnil(L);
+	}
+
+	return 1;
+}
+
+int lPushIterator(lua_State *L, const gameIterator &it)
+{
+	gameIterator *ud = (gameIterator*)lua_newuserdata(L, sizeof(gameIterator));
+	*ud = it;
+
+	lua_pushcclosure(L, lIterNext, 1);
+	return 1;
+}
+
 void lPartiesIterAdvance(gameIterator *it)
 {
 	it->curVal = warband->cur_game->parties.get_next_valid_index(it->curVal);
@@ -337,12 +383,7 @@ int lPartiesIterInit(lua_State *L)
 
 	it.curVal = warband->cur_game->parties.get_first_valid_index();
 
-	int index = WSE->LuaOperations.gIteratorAdd(it);
-	if (index == -1)
-		luaL_error(L, "exceeded max game iterator limit (%d)", maxGiterators);
-
-	lua_pushinteger(L, index);
-	return 1;
+	return lPushIterator(L, it);
 }
 
 void lAgentsIterAdvance(gameIterator *it)
@@ -410,12 +451,7 @@ int lAgentsIterInit(lua_State *L)
 		it.curVal = warband->cur_mission->agents.get_first_valid_index();
 	}
 
-	int index = WSE->LuaOperations.gIteratorAdd(it);
-	if (index == -1)
-		luaL_error(L, "exceeded max game iterator limit (%d)", maxGiterators);
-
-	lua_pushinteger(L, index);
-	return 1;
+	return lPushIterator(L, it);
 }
 
 void lPropInstIterAdvance(gameIterator *it)
@@ -456,12 +492,7 @@ int lPropInstIterInit(lua_State *L)
 			break;
 	}
 
-	int index = WSE->LuaOperations.gIteratorAdd(it);
-	if (index == -1)
-		luaL_error(L, "exceeded max game iterator limit (%d)", maxGiterators);
-
-	lua_pushinteger(L, index);
-	return 1;
+	return lPushIterator(L, it);
 }
 
 void lPlayersIterAdvance(gameIterator *it)
@@ -497,36 +528,7 @@ int lPlayersIterInit(lua_State *L)
 			break;
 	}
 
-	int index = WSE->LuaOperations.gIteratorAdd(it);
-	if (index == -1)
-		luaL_error(L, "exceeded max game iterator limit (%d)", maxGiterators);
-
-	lua_pushinteger(L, index);
-	return 1;
-}
-
-int lIterNext(lua_State *L)
-{
-	checkLArgs(L, 1, 1, lNum);
-	int itNo = lua_tointeger(L, 1);
-
-	gameIterator *it = WSE->LuaOperations.getGiterator(itNo);
-
-	if (it && it->curValIsValid(it))
-	{
-		lua_pushnumber(L, it->curVal);
-
-		it->advance(it);
-	}
-	else
-	{
-		if (it)
-			it->valid = false;
-
-		lua_pushnil(L);
-	}
-
-	return 1;
+	return lPushIterator(L, it);
 }
 
 /**************

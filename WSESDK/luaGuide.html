@@ -115,9 +115,13 @@
 		<p>Notice that the argument type matters. For example, if an operation expects an integer, you cannot pass a string that contains a number.</p>
 		<p>Lhs operations ("left hand side", operations that return a value) are written as</p>
 		<div class="example">
-			<p>result = game.lhs_operation(lhs_arg, arg1, arg2, ...)</p>
+			<p>intResult = game.lhs_operation(lhs_arg, arg1, arg2, ...)</p>
 		</div>
 		<p>While most Lhs operations don't require an actual value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
+		<p>Real-world lhs_operation example:</p>
+		<div class="example">
+			<p>local gold = game.player_get_gold(0, playerId)</p>
+		</div>
 		<p>Return values are:</p>
 		<div class="example">
 			<div style="display: inline-block; margin-right: 5px;">
@@ -133,6 +137,7 @@
 				<p>=&nbsp;&nbsp;game.operation(arg1, arg2, ...) for all other operations</p>
 			</div>
 		</div>
+		<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
 		<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
 	</div>
 

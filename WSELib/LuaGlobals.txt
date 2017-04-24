@@ -53,57 +53,6 @@ game.reg = setmetatable({typeId = 0}, game.regMt)
 game.sreg = setmetatable({typeId = 1}, game.regMt)
 game.preg = setmetatable({typeId = 2}, game.regMt)
 
-------------iterators------------
-game.partiesI  = function()
-	local itRef = game.partiesIterInit()
-
-	return function()
-		game.iterNext(itRef)
-	end
-end
-
-game.agentsI = function(posReg, radius)
-	local itRef
-
-	if posReg ~= nil and radius ~= nil then
-		itRef = game.agentsIterInit(posReg, radius)
-	else
-		itRef = game.agentsIterInit()
-	end
-
-  	return function()
-  		return game.iterNext(itRef)
-  	end
-end
-
-game.propInstI = function(scenePropId)
-	local itRef
-
-	if scenePropId ~= nil then
-		itRef = game.propInstIterInit(scenePropId)
-	else
-		itRef = game.propInstIterInit()
-	end
-
-	return function()
-		return game.iterNext(itRef)
-	end
-end
-
-game.playersI = function(skipServer)
-	local itRef
-
-	if skipServer ~= nil then
-		itRef = game.playersIterInit(skipServer)
-	else
-		itRef = game.playersIterInit()
-	end
-
-	return function()
-		return game.iterNext(itRef)
-	end
-end
-
 ------------game constants------------
 game.const.mt = {
 	__index = function(table, key)
