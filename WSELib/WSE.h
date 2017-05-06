@@ -127,7 +127,7 @@ public:
 	void Load(HINSTANCE module_handle);
 	void Unload();
 	void AddContext(WSEContext *context, bool load);
-	void SendContextEvent(WSEContext *sender, WSEEvent evt);
+	void SendContextEvent(WSEContext *sender, WSEEvent evt, void *data = NULL);
 
 private:
 	HINSTANCE m_instance;

@@ -264,4 +264,14 @@ game.pos.new = function(obj)
 
 	return newObj
 end
+
+print = function(...)
+	local s = ""
+	for i = 1, select("#", ...) do
+		s = s .. tostring(select(i, ...)) .. "     "
+	end
+	s = s .. "\n"
+
+	_print(s)
+end
 )"

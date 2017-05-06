@@ -76,7 +76,7 @@ void WSEScriptingContext::OnUnload()
 	}
 }
 
-void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{

@@ -21,12 +21,15 @@ class WSELuaOperationsContext : public WSEOperationContext
 
 	public:
 		WSELuaOperationsContext();
-		void printLastError(const char *fileName = NULL);
+		void printLastError(const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
+
+	protected:
+		bool luaStateIsReady = false;
 
 	protected:
 		virtual void OnLoad();
 		virtual void OnUnload();
-
+		virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 		inline void initLua();
 

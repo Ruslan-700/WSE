@@ -14,7 +14,7 @@ public:
 
 protected:
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	void Prepare(wb::operation *operation, WSEOperationDescriptor *descriptor, int context_flags, int *operand_types, __int64 *operand_values, __int64 *locals);

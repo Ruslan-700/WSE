@@ -26,7 +26,7 @@ public:
 protected:
 	virtual void OnLoad();
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	void StartProfilingBlock(wb::operation_manager *manager);

@@ -137,7 +137,7 @@ void WSENetworkContext::OnUnload()
 #endif
 }
 
-void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{

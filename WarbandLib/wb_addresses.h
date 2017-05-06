@@ -184,6 +184,10 @@ namespace wb
 		
 		static unsigned int temp_ban_time_dbl_ptr;
 
+		static unsigned int write_to_rgl_log_file_handle_base_var;
+		static unsigned int write_to_rgl_log;
+		static unsigned int write_to_rgl_log_exit;
+
 		static unsigned int game_data_ptr;
 	};
 }

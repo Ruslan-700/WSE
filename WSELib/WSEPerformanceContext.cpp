@@ -86,7 +86,7 @@ void WSEPerformanceContext::OnUnload()
 	m_optimizer_thread_handle = nullptr;
 }
 
-void WSEPerformanceContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEPerformanceContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{

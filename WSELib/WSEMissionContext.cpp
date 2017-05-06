@@ -57,7 +57,7 @@ void WSEMissionContext::OnLoad()
 #endif	
 }
 
-void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{

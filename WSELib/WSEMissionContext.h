@@ -12,7 +12,7 @@ public:
 	
 protected:
 	virtual void OnLoad();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	rgl::strategic_entity *GetTriggerEntity(int trigger_no) const;

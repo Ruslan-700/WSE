@@ -534,3 +534,18 @@ int lPlayersIterInit(lua_State *L)
 /**************
 **Iterators end
 ***************/
+
+int lPrint(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lStr);
+
+	#if defined WARBAND
+		warband->window_manager.display_message(lua_tostring(L, 1), 0xFFFF5555, 0);
+	#else
+		const char *str = lua_tostring(L, 1);
+		DWORD a = 0;
+		WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), str, strlen(str), &a, NULL);
+	#endif
+
+	return 0;
+}

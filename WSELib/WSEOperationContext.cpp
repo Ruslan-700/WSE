@@ -17,7 +17,7 @@ void WSEOperationContext::OnUnload()
 	m_opcode_range_cur = m_opcode_range;
 }
 
-void WSEOperationContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEOperationContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{

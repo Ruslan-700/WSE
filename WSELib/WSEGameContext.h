@@ -11,6 +11,12 @@
 #define WSE_SCRIPT_WINDOW_OPENED 5
 #define WSE_NUM_SCRIPTS 6
 
+struct rglLogWriteData
+{
+	HANDLE hFile;
+	char *str;
+};
+
 class WSEGameContext : public WSEContext
 {
 protected:
@@ -29,6 +35,7 @@ private:
 	bool OnConsoleCommandReceived(rgl::string *text, rgl::string *result);
 	bool OnConfigManagerChooseNumberOfEffectiveCorpses();
 	void OnOpenWindow(int window_no);
+	void OnRglLogWrite(HANDLE hFile, const char *str, int numChars);
 
 private:
 	int m_mapped_script_nos[WSE_NUM_SCRIPTS];

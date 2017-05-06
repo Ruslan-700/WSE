@@ -96,7 +96,7 @@ public:
 protected:
 	virtual void OnLoad();
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	bool ExecuteStatementBlock(wb::operation_manager *operation_manager, int context_flags, int depth, int &num_parameters, __int64 *parameters);

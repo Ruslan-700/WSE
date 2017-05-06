@@ -31,7 +31,7 @@ void WSEContext::Unload()
 	m_loaded = false;
 }
 
-void WSEContext::Event(WSEContext *sender, WSEEvent evt)
+void WSEContext::Event(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{
@@ -40,7 +40,7 @@ void WSEContext::Event(WSEContext *sender, WSEEvent evt)
 		break;
 	}
 
-	OnEvent(sender, evt);
+	OnEvent(sender, evt, data);
 }
 
 bool WSEContext::IsLoaded() const
@@ -56,6 +56,6 @@ void WSEContext::OnUnload()
 {
 }
 
-void WSEContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 }

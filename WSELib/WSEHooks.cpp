@@ -1008,3 +1008,29 @@ void __declspec(naked) AgentTurnHook()
 		jmp[wb::addresses::agent_Turn_exit]
 	}
 }
+
+void __declspec(naked) RglLogHook()
+{
+	_asm
+	{
+		mov eax, [esi]
+		push[edi + eax]
+
+		FREEZE_REGS
+		mov eax, [wb::addresses::write_to_rgl_log_file_handle_base_var]
+		mov eax, [eax]
+		mov eax, [eax + 0x10]
+
+		cmp eax, [ebp+8]
+		jne continue_exec
+
+		push [esp+8]
+		push [esp+8]
+		push [esp+8]
+		CALL_CONTEXT_FUNC(Game, OnRglLogWrite)
+
+	continue_exec:
+		RESTORE_REGS
+		jmp[wb::addresses::write_to_rgl_log_exit]
+	}
+}

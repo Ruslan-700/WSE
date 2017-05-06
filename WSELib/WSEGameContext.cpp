@@ -10,6 +10,8 @@ void WSEGameContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::game_ReadModuleFiles_entry, GameReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ReadModuleFiles_entry, ReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::write_to_rgl_log, RglLogHook);
+
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
@@ -306,4 +308,19 @@ void WSEGameContext::OnOpenWindow(int window_no)
 	warband->game_screen.game_windows[window_no]->open();
 	warband->window_manager.set_show_cursor(warband->game_screen.game_windows[window_no]->has_cursor());
 #endif
+}
+
+void WSEGameContext::OnRglLogWrite(HANDLE hFile, const char *buf, int numChars)
+{
+	rglLogWriteData data;
+
+	data.str = (char*)malloc(numChars + 1);
+	memcpy(data.str, buf, numChars);
+	data.str[numChars] = '\0';
+
+	data.hFile = hFile;
+
+	WSE->SendContextEvent(this, OnRglLogMsg, &data);
+
+	free(data.str);
 }

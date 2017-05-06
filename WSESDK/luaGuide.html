@@ -12,7 +12,7 @@
 			padding-left: 10px;
 			padding-right: 10px;
 			display: inline-block;
-			line-height: 8px;
+			line-height: 2.3em;
 			white-space: nowrap;
 			overflow: auto;
 		}
@@ -91,24 +91,16 @@
 			margin-top: 4px;
 		}
 
-		.tab{
-			margin-left: 2em;
-		}
-
-		.tab2{
-			margin-left: 4em;
-		}
-
-		.tab3{
-			margin-left: 6em;
-		}
-
 		ul{
 			line-height: 1.5em;
 		}
 
 		p{
 			line-height: 1.5em;
+		}
+
+		h1, h2{
+			color: #003366;
 		}
 	</style>
 
@@ -164,6 +156,37 @@
 		}
 	</style>
 
+		<style> /* hardcore theme */
+		body{
+			background-color: black;
+			color: #00FF00;
+		}
+
+		.button_hide{
+			background-color: rgb(0,140,0);
+		}
+
+		h1, h2{
+			color: #005500;
+		}
+
+		.content_block_caption{
+			color: green;
+		}
+
+		.keyword{
+			background-color: #2A2A2A;
+		}
+
+		.example{
+			background-color: #002000;
+		}
+
+		.comment{
+			color: rgb(0,120,0);
+		}
+	</style>
+
 	<script>
 		var forceHide = false;
 
@@ -203,14 +226,24 @@
 			forceHide = false;
 		}
 
-		var curTheme = 1;
+		curTheme = 1;
 		var themeNames = [
 			"",
 			"Dark",
-			"Light"
+			"Light",
+			"Hardcore"
 		];
+		function updateBtnThemeSwitchText()
+		{
+			var nextTheme = curTheme + 1;
+			if(nextTheme >= document.styleSheets.length){
+				nextTheme = 1;
+			}
+			document.getElementById("btnThemeSwitch").innerHTML = themeNames[nextTheme];
+		}
 		function switchTheme()
 		{
+			document.getElementById('bd').style.backgroundImage = "";
 			document.styleSheets[curTheme].disabled = true;
 
 			curTheme++;
@@ -219,15 +252,12 @@
 			}
 
 			document.styleSheets[curTheme].disabled = false;
-
-			var nextTheme = curTheme + 1;
-			if(nextTheme >= document.styleSheets.length){
-				nextTheme = 1;
-			}
-			document.getElementById("btnThemeSwitch").innerHTML = themeNames[nextTheme];
+			updateBtnThemeSwitchText();
 		}
-		for(var i = 2; i < document.styleSheets.length; i++){
-			document.styleSheets[i].disabled = true;
+		for(var i = 1; i < document.styleSheets.length; i++){
+			if(i != curTheme){
+				document.styleSheets[i].disabled = true;
+			}
 		}
 	</script>
 </head>
@@ -239,13 +269,13 @@
 		<button onclick="minimizeAll()">Minimize all</button>
 	</div>
 
-	<h1 id="ee" style="color: #5e9ca0; text-align: center; transition: transform 4s;" onclick='var a=document.getElementById("ee");if(a.style.transform != ""){a.style.transform=""}else{a.style.transform="rotate(4320deg)"}'><span style="color: #003366;">How to use WSE/LUA</span></h1>
+	<h1 id="ee" style="text-align: center; transition: transform 4s;" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)';}}">How to use WSE/LUA</h1>
 
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	<p>WSE/LUA uses a modified version of LuaJIT 2.0.4, which is based on and ABI compatible to Lua 5.1</p>
 	<p>&nbsp;</p>
-	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span style="color: #003366;">BASIC SETUP</span></h2>
+	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASIC SETUP</span></h2>
 	<hr/>
 	<div id="setup_content">
 		<ul>
@@ -259,7 +289,7 @@
 	</div>
 
 
-	<h2><div id="game_table_button" class="button_hide" onclick="toggleHide('game_table')">&nbsp;</div><span style="color: #003366;">THE "GAME" TABLE<br /></span></h2>
+	<h2><div id="game_table_button" class="button_hide" onclick="toggleHide('game_table')">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
 	<hr/>
 	<div id="game_table_content">
 		<p style="margin-left: 20px;"><em>The game table is a predefined global table that allows you access to the game from lua.</em></p>
@@ -288,7 +318,7 @@
 				<p>While most Lhs operations don't require an actual value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
 				<p>Real-world lhs_operation example:</p>
 				<div class="example">
-					<p>local gold = game.player_get_gold(0, playerId)</p>
+					local gold = game.player_get_gold(0, playerId)
 				</div>
 				<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
 				<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
@@ -302,22 +332,22 @@
 				<p>To access registers, use <span class="keyword">game.reg[n]</span> , <span class="keyword">game.sreg[n]</span> and <span class="keyword">game.preg[n]</span></p>
 				<p style="padding-left: 30px;">Example:</p>
 				<div class="example">
-					<p>game.reg[0] = 123</p>
-					<p>local i = game.reg[0]</p>
-					<p>game.sreg[0] = "test string"</p>
-					<p>local s = game.sreg[0]</p>
-					<p>game.preg[0] = game.pos.new()</p>
-					<p>local pos = game.preg[0]</p>
+					game.reg[0] = 123\n
+					local i = game.reg[0]\n
+					game.sreg[0] = "test string"\n
+					local s = game.sreg[0]\n
+					game.preg[0] = game.pos.new()\n
+					local pos = game.preg[0]\n
 				</div>
 				<p>As of the current version, registers are copied by value instead of by reference. So doing things like:</p>
 				<div class="example">
-					<p>game.preg[0]:rotX(30)</p>
+					game.preg[0]:rotX(30)
 				</div>
 				<p>Does not change the actual game register. This is likely going to be improved in a future version. What you have to do instead for now is:</p>
 				<div class="example">
-					<p>local p = game.preg[0]</p>
-					<p>p:rotX(30)</p>
-					<p>game.preg[0] = p</p>
+					local p = game.preg[0]\n
+					p:rotX(30)\n
+					game.preg[0] = p\n
 				</div>
 			</div>
 		</div>
@@ -329,8 +359,8 @@
 				<p>This table will be filled with all the constants from that file.</p>
 				<p>As of the current version, only lines that match one of the two following regexes (regular expressions) will be accepted:</p>
 				<div class="example">
-					<p>^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$</p>
-					<p>^(\w+)=(\w+)$</p>
+					^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$\n
+					^(\w+)=(\w+)$\n
 				</div>
 				<p>This probably looks intimidating to you, but really all it says is that your constant must either be a number, a hex number, or another constant (from the same file, currently).</p>
 				<p>In other words: <span class="keyword">constant = num|hexNum|otherConstant</span>
@@ -338,13 +368,13 @@
 				<p>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
 				<p>So let's say you want to add a deathmatch trigger for <span class="keyword">ti_on_agent_hit</span>. Instead of this:</p>
 				<div class="example">
-					<p>game.addTrigger("mst_multiplayer_dm", -28, 0, 0, condCB)</p>
+					game.addTrigger("mst_multiplayer_dm", -28, 0, 0, condCB)\n
 				</div>
 				<p>You could copy header_triggers.py to your msfiles folder and do:</p>
 				<div class="example">
-					<p>game.addTrigger("mst_multiplayer_dm", game.const.ti_on_agent_hit, 0, 0, condCB)</p>
-					<p class="comment">--or if you like to be specific:</p>
-					<p>game.addTrigger("mst_multiplayer_dm", game.const.triggers.ti_on_agent_hit, 0, 0, condCB)</p>
+					game.addTrigger("mst_multiplayer_dm", game.const.ti_on_agent_hit, 0, 0, condCB)\n
+					<span class="comment">--or if you like to be specific:</span>\n
+					game.addTrigger("mst_multiplayer_dm", game.const.triggers.ti_on_agent_hit, 0, 0, condCB)\n
 				</div>
 			</div>
 		</div>
@@ -357,11 +387,11 @@
 				<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 				<p style="padding-left: 30px;">Example:</p>
 				<div class="example">
-					<p>function condCB()</p>
-					<p class="tab">doStuff()</p>
-					<p class="tab">return true</p>
-					<p>end</p>
-					<p>game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)</p>
+					function condCB()\n
+					<span class="tab">doStuff()</span>\n
+					<span class="tab">return true</span>\n
+					end\n
+					game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)\n
 				</div>
 				<p>addTrigger returns an integer that is the index of the added trigger.</p>
 				<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
@@ -376,9 +406,9 @@
 				<p>These work exactly like module system iterators and take the same arguments.</p>
 				<p style="padding-left: 30px;">Example:</p>
 				<div class="example">
-					<p>for curAgent in game.playersI(true) do <span class="comment">--skip server</span></p>
-					<p class="tab">foo(curAgent)</p>
-					<p>end</p>
+					for curAgent in game.playersI(true) do <span class="comment">--skip server</span>\n
+					<span class="tab">foo(curAgent)</span>\n
+					end\n
 				</div>
 			</div>
 		</div>
@@ -391,10 +421,10 @@
 				<p>The MS multiplier is essentially a way of specifying the current unit of length.</p>
 				<p style="padding-left: 30px;">MS Example:</p>
 				<div class="example">
-					<p>set_fixed_point_multiplier(1),</p>
-					<p>position_get_x(":x", 0), <span class="comment">#get pos0_x in meters</span></p>
-					<p>set_fixed_point_multiplier(100),</p>
-					<p>position_get_x(":x", 0), <span class="comment">#get pos0_x in centimeters</span></p>
+					set_fixed_point_multiplier(1),\n
+					position_get_x(":x", 0), <span class="comment">#get pos0_x in meters</span>\n
+					set_fixed_point_multiplier(100),\n
+					position_get_x(":x", 0), <span class="comment">#get pos0_x in centimeters</span>\n
 				</div>
 				<p>Consider the lua counterpart to "always have a fixed point multiplier of 1".</p>
 
@@ -408,14 +438,14 @@
 							<li>
 								<p><span class="keyword">game.rotation.prototype</span></p>
 								<div class="example">
-									<p>s = vector3.new({x = 1}) <span class="comment">--x axis</span></p>
-									<p>f = vector3.new({y = 1}) <span class="comment">--forwards/y axis</span></p>
-									<p>u = vector3.new({z = 1})  <span class="comment">--up/z axis</span></p>
-									<p>function getRot(self) <span class="comment">--returns vector3.new({z = yaw, x = pitch, y = roll})</span></p>
-									<p>function rotX(self, angle) <span class="comment">--rotate around x axis, angle in degrees</span></p>
-									<p>function rotY(self, angle) <span class="comment">--rotate around y axis, angle in degrees</span></p>
-									<p>function rotZ(self, angle) <span class="comment">--rotate around z axis, angle in degrees</span></p>
-									<p>function rotate(self, rotVec3) <span class="comment">--rotate around all axis, zxy order, angle in degrees</span></p>
+									s = vector3.new({x = 1}) <span class="comment">--x axis</span>\n
+									f = vector3.new({y = 1}) <span class="comment">--forwards/y axis</span>\n
+									u = vector3.new({z = 1})  <span class="comment">--up/z axis</span>\n
+									function getRot(self) <span class="comment">--returns vector3.new({z = yaw, x = pitch, y = roll})</span>\n
+									function rotX(self, angle) <span class="comment">--rotate around x axis, angle in degrees</span>\n
+									function rotY(self, angle) <span class="comment">--rotate around y axis, angle in degrees</span>\n
+									function rotZ(self, angle) <span class="comment">--rotate around z axis, angle in degrees</span>\n
+									function rotate(self, rotVec3) <span class="comment">--rotate around all axis, zxy order, angle in degrees</span>\n
 								</div>
 							</li>
 						</ul>
@@ -429,16 +459,15 @@
 							<li>
 								<p><span class="keyword">game.pos.prototype</span></p>
 								<div class="example">
-									<p>o = vector3.new() <span class="comment">--position in the world</span></p>
-									<p>rot = game.rotation.new() <span class="comment">--rotation, or heading of the pos if you like</span></p>
-									
-									<p style="padding-left: 90px;">&nbsp;</p>
-									<p><span class="comment">--see game.rotation.prototype for these</span></p>
-									<p>function getRot(self)</p>
-									<p>function rotX(self, angle)</p>
-									<p>function rotY(self, angle)</p>
-									<p>function rotZ(self, angle)</p>
-									<p>function rotate(self, rotVec3)</p>
+									o = vector3.new() <span class="comment">--position in the world</span>\n
+									rot = game.rotation.new() <span class="comment">--rotation, or heading of the pos if you like</span>\n
+									\n
+									<span class="comment">--see game.rotation.prototype for these</span>\n
+									function getRot(self)\n
+									function rotX(self, angle)\n
+									function rotY(self, angle)\n
+									function rotZ(self, angle)\n
+									function rotate(self, rotVec3)\n
 								</div>
 							</li>
 						</ul>
@@ -447,11 +476,11 @@
 
 				<p style="padding-left: 30px;">Example:</p>
 				<div class="example">
-					<p>local pos0 = game.preg[0]</p>
-					<p>local newRot = game.rotation.new(pos0.rot)</p>
-					<p>local newPos = game.pos.new({rot = newRot})</p>
-					<p>newPos:rotX(45)</p>
-					<p>newPos:rotate({x = 90, z = 180})</p>
+					local pos0 = game.preg[0]\n
+					local newRot = game.rotation.new(pos0.rot)\n
+					local newPos = game.pos.new({rot = newRot})\n
+					newPos:rotX(45)\n
+					newPos:rotate({x = 90, z = 180})\n
 				</div>
 			</div>
 		</div>
@@ -463,11 +492,11 @@
 				<p>You can add presentations using <span class="keyword">game.addPrsnt(tablePrsnt)</span></p>
 				<p>tablePrsnt must have the following format</p>
 				<div class="example">
-					<p>tablePrsnt = {</p>
-						<p class="tab">id = strID,</p>
-						<p class="tab">[flags] = {intFlag1, ...},</p>
-						<p class="tab">[mesh] = intMesh,</p>
-						<p class="tab">triggers = {[numTriggerConst] = func, ...}</p>
+					tablePrsnt = {\n
+						\tabid = strID,\n
+						\tab[flags] = {intFlag1, ...},\n
+						\tab[mesh] = intMesh,\n
+						\tabtriggers = {[numTriggerConst] = func, ...}\n
 					<p>}</p>
 				</div>
 				<p><span class="keyword">[flags]</span> can be omited and defaults to no flags at all. If you copied header_presentation.py to your msfiles folder, you can use the flags defined there.</p>
@@ -475,30 +504,30 @@
 				<p><span class="keyword">triggers</span> must have at least one element, the key being a number and the value being a function. If you copied header_triggers.py to your msfiles folder, you can use the trigger values defined there.</p>
 				<p>Basic example:</p>
 				<div class="example">
-					<p class="comment">--copy header_presentations.py, header_triggers.py and ID_meshes.py to your msfiles folder for this example.</p>
-					<p>local index = game.addPrsnt({</p>
-					<p class="tab">id = "myPrsnt",</p>
-					<p class="tab">flags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},</p>
-					<p class="tab comment">--you can initialize an array like this, without keys - they don't matter here anyway.</p>
-					<p class="tab">mesh = game.const.mesh_cb_ui_main,</p>
-					<p class="tab">triggers = {</p>
-						<p class="tab2">[game.const.ti_on_presentation_load] = function ()</p>
-							<p class="tab2 comment">--The const inside the [] declares a number key, similar to keyName = 123 for string keys.</p>
-							<p class="tab3">game.presentation_set_duration(9999999)</p>
-							<p class="tab3">local overlay = game.create_mesh_overlay(0, game.const.mesh_mp_ingame_menu)</p>
-							<p>&nbsp;</p>
-							<p class="tab3">local position = game.pos.new()</p>
-							<p class="tab3">position.o.x = 0.3</p>
-							<p class="tab3">position.o.y = 0.3</p>
-							<p class="tab3">game.overlay_set_position(overlay, position)</p>
-							<p>&nbsp;</p>
-							<p class="tab3">position.o.x = 0.5</p>
-							<p class="tab3">position.o.y = 0.8</p>
-							<p class="tab3">game.overlay_set_size(overlay, position)</p>
-						<p class="tab2">end
-					<p class="tab">}</p>
-					<p>})</p>
-					<p>game.start_presentation(index)</p>
+					<span class="comment">--copy header_presentations.py, header_triggers.py and ID_meshes.py to your msfiles folder for this example.</span>\n
+					local index = game.addPrsnt({\n
+					\tabid = "myPrsnt",\n
+					\tabflags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},\n
+					<span class="tab comment">--you can initialize an array like this, without keys - they don't matter here anyway.</span>\n
+					\tabmesh = game.const.mesh_cb_ui_main,\n
+					\tabtriggers = {\n
+						\tab2[game.const.ti_on_presentation_load] = function ()\n
+						<span class="tab2 comment">--The const inside the [] declares a number key, similar to keyName = 123 for string keys.</span>\n
+							\tab3game.presentation_set_duration(9999999)\n
+							\tab3local overlay = game.create_mesh_overlay(0, game.const.mesh_mp_ingame_menu)\n
+							\n
+							\tab3local position = game.pos.new()\n
+							\tab3position.o.x = 0.3\n
+							\tab3position.o.y = 0.3\n
+							\tab3game.overlay_set_position(overlay, position)\n
+							\n
+							\tab3position.o.x = 0.5\n
+							\tab3position.o.y = 0.8\n
+							\tab3game.overlay_set_size(overlay, position)\n
+						\tab2end\n
+					\tab}\n
+					})\n
+					game.start_presentation(index)\n
 				</div>
 			</div>
 		</div>
@@ -510,17 +539,25 @@
 				<ul>
 					<li>
 						<div>
-							<p style="padding-left: 20px;">game.getScriptNo(script_name), use in conjunction with game.call_script(scriptNo, ...)</p>
+							<p style="padding-left: 20px;"><span class="keyword">game.getScriptNo(script_name)</span>, use in conjunction with game.call_script(scriptNo, ...)</p>
 							<p style="padding-left: 30px;">Example:</p>
 							<div class="example">
-								<p>local no = game.getScriptNo("game_start")</p>
-								<p>game.call_script(no)</p>
+								local no = game.getScriptNo("game_start")\n
+								game.call_script(no)\n
 							</div>
 						</div>
 					</li>
 					<li>
 						<div>
-							<p style="padding-left: 20px;">game.getCurTemplateId(), returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.</p>
+							<p style="padding-left: 20px;"><span class="keyword">game.getCurTemplateId()</span>, returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.</p>
+						</div>
+					</li>
+					<li>
+						<div>
+							<p style="padding-left: 20px;"><span class="keyword">game.OnRglLogWrite(str)</span>, this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.\n
+							A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.\n
+							Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
+							</p>
 						</div>
 					</li>
 				</ul>
@@ -536,7 +573,7 @@
 	</div>
 
 
-	<h2><div id="miscellaneous_button" class="button_hide" onclick="toggleHide('miscellaneous')">&nbsp;</div><span style="color: #003366;">MISCELLANEOUS<br /></span></h2>
+	<h2><div id="miscellaneous_button" class="button_hide" onclick="toggleHide('miscellaneous')">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
 	<hr />
 	<div id="miscellaneous_content">
 		<div class="content_block">
@@ -550,10 +587,10 @@
 							<li>
 								<p style="padding-left: 20px; padding-top: 10px;"><span class="keyword">vector3.prototype</span></p>
 								<div class="example">
-									<p>x = 0</p>
-									<p>y = 0</p>
-									<p>z = 0</p>
-									<p>function len(self) <span class="comment">--returns the length of the vector</span></p>
+									x = 0\n
+									y = 0\n
+									z = 0\n
+									function len(self) <span class="comment">--returns the length of the vector</span>\n
 								</div>
 							</li>
 							<li>
@@ -565,19 +602,19 @@
 							<li>
 							<p style="padding-left: 20px;">Example:</p>
 								<div class="example">
-									<p>local vecA = vector3.new({x = 60, y = 30})</p>
-									<p>local vecB = vector3.new()</p>
-									<p>&nbsp;</p>
-									<p>game.display_message(tostring(vecA:len())) <span class="comment">--67.08...</span></p>
-									<p>&nbsp;</p>
-									<p>if vecA == vecB then</p>
-									<p class="tab"><span class="comment">--will not happen</span></p>
-									<p>end</p>
-									<p>&nbsp;</p>
-									<p>vecA = vecA * vecB --{60*0, 30*0, 0*0}</p>
-									<p>if vecA == vecB then</p>
-									<p class="tab"><span class="comment">--will happen</span></p>
-									<p>end</p>
+									local vecA = vector3.new({x = 60, y = 30})\n
+									local vecB = vector3.new()\n
+									\n
+									game.display_message(tostring(vecA:len())) <span class="comment">--67.08...</span>\n
+									\n
+									if vecA == vecB then\n
+									\tab<span class="comment">--will not happen</span>\n
+									end\n
+									\n
+									vecA = vecA * vecB --{60*0, 30*0, 0*0}\n
+									if vecA == vecB then\n
+									\tab<span class="comment">--will happen</span>\n
+									end\n
 								</div>
 							</li>
 						</ul>
@@ -626,5 +663,51 @@
 		for(var i = 0; i < hideBtns.length; i++){
 			hideBtns[i].innerHTML = "</div><div class='button_hide_inner button_hide_plus'></div><div class='button_hide_inner button_hide_minus'>";
 		}
+
+		updateBtnThemeSwitchText();
+
+		for(var i = 1; i <= 10; i++){
+			var className = "tab"
+			if(i > 1){
+				className += i;
+			}
+
+			var insert = "";
+			for(var j = 0; j < i; j++){
+				insert += "&emsp;&emsp;";
+			}
+
+			var tabbedElems = document.getElementsByClassName(className);
+			for(var j = 0; j < tabbedElems.length; j++){
+				tabbedElems[j].innerHTML = insert + tabbedElems[j].innerHTML;
+			}
+		}
+
+		var bd = document.getElementById("bd");
+		bd.innerHTML = bd.innerHTML.replace(/\\+n/g, function(x){
+			if(x == "\\n"){
+				return "<br>";
+			}else{
+				return x;
+			}
+		}).replace(/\\+tab\d*/g, function(x){
+			if(!x.match(/^\\tab\d*$/)){
+				return x;
+			}
+
+			var num = x.match(/\d+/);
+			if(!num){
+				num = 1;
+			}else{
+				num = num[0];
+			}
+
+			var insert = "";
+			for(var i = 0; i < num; i++){
+				insert += "&emsp;&emsp;";
+			}
+
+			return insert;
+		})
 	</script>
 </body>

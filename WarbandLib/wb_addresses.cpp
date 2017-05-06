@@ -243,6 +243,10 @@ unsigned int addresses::agent_SetAiBehavior = 0x004D0340;
 
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x008150E8;
 
+unsigned int addresses::write_to_rgl_log_file_handle_base_var = 0x00868564;
+unsigned int addresses::write_to_rgl_log = 0x00636C0E;
+unsigned int addresses::write_to_rgl_log_exit = write_to_rgl_log + 5;
+
 //unsigned int addresses::game_data_ptr = 0x0094F118;
 unsigned int addresses::game_data_ptr = 0x008681C0;
 #elif defined WARBAND_STEAM
@@ -653,6 +657,10 @@ unsigned int addresses::DXUtil_Timer = 0x00401040;
 unsigned int addresses::agent_SetAiBehavior = 0x00470FF0;
 
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x0069F688;
+
+unsigned int addresses::write_to_rgl_log_file_handle_base_var = 0x006E5F14;
+unsigned int addresses::write_to_rgl_log = 0x0050C9BD;
+unsigned int addresses::write_to_rgl_log_exit = write_to_rgl_log + 5;
 
 //unsigned int addresses::game_data_ptr = 0x006D8428;
 unsigned int addresses::game_data_ptr = 0x006E4430;

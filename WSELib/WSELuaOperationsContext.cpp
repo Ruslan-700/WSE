@@ -250,16 +250,68 @@ void WSELuaOperationsContext::OnUnload()
 	lua_close(luaState);
 }
 
-void WSELuaOperationsContext::printLastError(const char *fileName)
+void WSELuaOperationsContext::printLastError(const char *fileName, HANDLE hFile)
 {
 	const char *msg = lua_tostring(luaState, -1);
+	std::string errMsg;
 
 	if (fileName)
-		gPrintf("Lua error in %s: %s", fileName, msg);
+	{
+		errMsg = "Lua error in ";
+		errMsg += fileName;
+		errMsg += ": ";
+		errMsg += msg;
+	}
 	else
-		gPrintf("Lua error: %s", msg);
+	{
+		errMsg = "Lua error: ";
+		errMsg += msg;
+	}
+
+	if (hFile == INVALID_HANDLE_VALUE)
+		gPrint(errMsg);
+	else
+	{
+		errMsg += "\r\n";
+		DWORD a = 0;
+		WriteFile(hFile, errMsg.c_str(), errMsg.length(), &a, NULL);
+	}
 
 	lua_pop(luaState, 1);
+}
+
+void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
+{
+	WSEOperationContext::OnEvent(sender, evt, data);
+
+	if (luaStateIsReady && evt == OnRglLogMsg)
+	{
+		lua_getglobal(luaState, "game");
+		lua_pushstring(luaState, "OnRglLogWrite");
+		lua_rawget(luaState, -2);
+
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		{
+			rglLogWriteData *dt = (rglLogWriteData*)data;
+
+			lua_pushstring(luaState, dt->str);
+			if (lua_pcall(luaState, 1, 0, 0))
+			{
+				#if defined WARBAND
+					warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
+				#else
+					lua_pushvalue(luaState, -1);
+					printLastError(NULL, GetStdHandle(STD_OUTPUT_HANDLE));
+				#endif
+
+				printLastError(NULL, dt->hFile);
+			}
+
+			lua_pop(luaState, 1);
+		}
+		else
+			lua_pop(luaState, 2);
+	}
 }
 
 inline void WSELuaOperationsContext::initLua()
@@ -271,6 +323,8 @@ inline void WSELuaOperationsContext::initLua()
 	loadOperations();
 	initLGameTable();
 	doMainScript();
+
+	luaStateIsReady = true;
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
@@ -508,12 +562,12 @@ inline void WSELuaOperationsContext::initLGameTable()
 	lua_pushcfunction(luaState, lPlayersIterInit);
 	lua_setfield(luaState, -2, "playersI");
 
-	//lua_pushcfunction(luaState, lIterNext);
-	//lua_setfield(luaState, -2, "iterNext");
-
 	addGameConstants();
 
 	lua_setglobal(luaState, "game");
+
+	lua_pushcfunction(luaState, lPrint);
+	lua_setglobal(luaState, "_print");
 
 	const char *globals =
 		#include "LuaGlobals.txt"

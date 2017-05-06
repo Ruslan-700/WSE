@@ -378,7 +378,7 @@ void WSEEnvironment::AddContext(WSEContext *context, bool load)
 		context->Load();
 }
 
-void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt)
+void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	if (!sender->IsLoaded())
 		return;
@@ -387,6 +387,6 @@ void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt)
 
 	for (it = m_contexts.begin(); it != m_contexts.end(); ++it)
 	{
-		(*it)->Event(sender, evt);
+		(*it)->Event(sender, evt, data);
 	}
 }

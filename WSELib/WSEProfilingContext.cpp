@@ -21,7 +21,7 @@ void WSEProfilingContext::OnUnload()
 	Stop();
 }
 
-void WSEProfilingContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEProfilingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{
