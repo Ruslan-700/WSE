@@ -18,7 +18,7 @@ int lGameExecOperationHandler(lua_State *L)
 	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
 
 	if (opEntry == WSE->LuaOperations.operationMap.end())
-		luaL_error(L, "undefined operation: [%s]", opName.c_str());
+		luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
 
 	gameOperation op = opEntry->second;
 

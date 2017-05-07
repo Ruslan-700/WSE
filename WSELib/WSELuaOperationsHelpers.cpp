@@ -173,7 +173,7 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...)
 
 		errorType.erase(0, 1);
 
-		luaL_error(L, "arg %d must be of type %s", i, errorType.c_str());
+		luaL_error(L, "arg %d must have type %s but is %s", i, errorType.c_str(), lua_typename(L, lua_type(L, i)));
 	}
 	va_end(args);
 

@@ -257,9 +257,11 @@ game.pos.new = function(obj)
 		newObj = tableRecursiveCopy(obj)
 	end
 
+	if newObj.o == nil then newObj.o = {} end
 	if newObj.rot == nil then newObj.rot = {} end
 	
 	setmetatable(newObj, game.pos.mt)
+	setmetatable(newObj.o, vector3.mt)
 	setmetatable(newObj.rot, game.rotation.mt)
 
 	return newObj

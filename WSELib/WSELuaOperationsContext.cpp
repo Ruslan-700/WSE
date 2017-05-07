@@ -125,7 +125,7 @@ int opGetType(WSELuaOperationsContext *context)
 	return lua_type(context->luaState, index);
 }
 
-void opCall(WSELuaOperationsContext *context)//TEST
+void opCall(WSELuaOperationsContext *context)
 {
 	std::string funcName;
 	int numArgs;

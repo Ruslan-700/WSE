@@ -17,6 +17,13 @@
 			overflow: auto;
 		}
 
+		.example2
+		{
+			margin-left: 0;
+			line-height: 1.5em;
+			margin-top: 10px;
+		}
+
 		.keyword
 		{
 			padding: 3px;
@@ -274,6 +281,7 @@
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
 	<p>WSE/LUA uses a modified version of LuaJIT 2.0.4, which is based on and ABI compatible to Lua 5.1</p>
+	<p>There is some example code at the end of this file that can help you to get started.</p>
 	<p>&nbsp;</p>
 	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASIC SETUP</span></h2>
 	<hr/>
@@ -639,6 +647,93 @@
 		</div>
 	</div>
 
+	<h2><div id="examples_button" class="button_hide" onclick="toggleHide('examples')">&nbsp;</div><span>EXAMPLES</span></h2>
+	<hr/>
+	<div id="examples_content">
+		<div class="content_block">
+			<div class="content_block_caption">Simple custom log</div>
+			<div class="example example2">
+				myLog = io.open("custom_log.txt", "a")\n
+				myLog:write("Server started at " .. os.date("%Y.%m.%d, %X") .. "\\n")\n
+				myLog:flush()\n
+				\n
+				function getTriggerParam(index)\n
+					\tabreturn game.store_trigger_param(0, index)\n
+				end\n
+				\n
+				function playerJoinedCallback()\n
+					\tablocal playerNo = getTriggerParam(1)\n
+					\n
+					\tabgame.str_store_player_username(0, playerNo)\n
+					\tabgame.str_store_player_ip(1, playerNo)\n
+					\n
+					\tabmyLog:write(game.sreg[0] .. " joined with IP " .. game.sreg[1] ..\n
+							\tab2" at " .. os.date("%Y.%m.%d, %X") .. "\\n")\n
+					\tabmyLog:flush()\n
+					\tabreturn false\n
+				end\n
+				\n
+				templates = {\n
+					\tab"dm",\n
+					\tab"tdm",\n
+					\tab"cf", <span class="comment">--capture the flag</span>\n
+					\tab"sg", <span class="comment">--siege</span>\n
+					\tab"bt", <span class="comment">--battle</span>\n
+					\tab"fd", <span class="comment">--fight and destroy</span>\n
+					\tab"ccoop", <span class="comment">--invasion</span>\n
+					\tab"duel"\n
+				}\n
+				\n
+				<span class="comment">--add triggers to all multiplayer templates</span>\n
+				for k,v in pairs(templates) do\n
+				\tabgame.addTrigger("mst_multiplayer_" .. v, game.const.ti_server_player_joined, 0, 0, playerJoinedCallback)\n
+				end\n
+			</div>
+		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">Squad spawner</div>
+			<p>This function spawns agents in a square at the specified position.</p>
+			<div class="example example2">
+				function spawnSquad(troop, amount, position)\n
+					\tablocal sideLen = math.floor(math.sqrt(amount))\n
+					\tablocal leftovers = amount - sideLen * sideLen\n
+					\tabposition.o.x = position.o.x - math.floor(sideLen/2) * spawnSpreadDistance\n
+					\tabposition.o.y = position.o.y - math.floor(sideLen/2) * spawnSpreadDistance\n
+					\n
+					\tabfor i=1, sideLen do\n
+						\tab2for j=1, sideLen do\n
+							\tab3game.set_spawn_position(position)\n
+							\tab3game.spawn_agent(troop)\n
+							\tab3position.o.x = position.o.x + spawnSpreadDistance\n
+						\tab2end\n
+						\tab2position.o.x = position.o.x - spawnSpreadDistance * sideLen\n
+						\tab2position.o.y = position.o.y + spawnSpreadDistance\n
+					\tabend\n
+				end\n
+			</div>
+			<p>You could call it like:</p>
+			<div class="example example2">
+				local pos = game.pos.new({o = {x=100,y=100}})\n
+				spawnSquad(game.const.trp_bandit, 10, pos)\n
+			</div>
+		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">Quickly reload main.lua when typing "reloadMain" in server console</div>
+			<div class="example example2">
+				("wse_console_command_received", [ <span class="comment">--this is a script that WSE adds</span>\n
+					\tab(store_script_param, ":command_type", 1),\n
+					\n
+					\tab(str_equals, s0, "@reloadMain"),\n
+					\tab(lua_push_str, "@main.lua"),\n
+					\tab(lua_call, "@dofile", 1),\n
+					\tab(set_trigger_result, 1),\n
+				]),\n
+			</div>
+		</div>
+	</div>
+
 	<script>	
 		var contentCaptions = document.getElementsByClassName("content_block_caption");
 		for(var i = 0; i < contentCaptions.length; i++){
@@ -688,11 +783,12 @@
 			if(x == "\\n"){
 				return "<br>";
 			}else{
-				return x;
+				return "\\n";
 			}
 		}).replace(/\\+tab\d*/g, function(x){
-			if(!x.match(/^\\tab\d*$/)){
-				return x;
+			var deTab = x.match(/^\\\\tab\d*$/);
+			if(deTab){
+				return x[0];
 			}
 
 			var num = x.match(/\d+/);
