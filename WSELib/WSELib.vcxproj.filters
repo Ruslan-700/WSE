@@ -281,6 +281,9 @@
     <ClInclude Include="WSELuaOperationsLuaCallbacks.h">
       <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
     </ClInclude>
+    <ClInclude Include="WSELib.rc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -477,5 +480,9 @@
     <None Include="LuaGlobals.txt">
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
+    <None Include="..\luaLanes\src\lanes.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WSELib.rc" />
   </ItemGroup>
 </Project>

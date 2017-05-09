@@ -177,16 +177,17 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibDebug.dll"</Command>
@@ -200,13 +201,14 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibSteamDebug.dll"</Command>
@@ -220,13 +222,14 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibDedicatedDebug.dll"</Command>
@@ -238,7 +241,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -253,9 +256,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELib.dll"</Command>
@@ -267,11 +271,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;WARBAND_NOSSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -282,9 +286,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibNoSSE.dll"</Command>
@@ -296,7 +301,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -311,9 +316,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibSteam.dll"</Command>
@@ -325,7 +331,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -340,9 +346,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibSteamNoSSE.dll"</Command>
@@ -354,7 +361,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -369,9 +376,10 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;psapi.lib;Dbghelp.lib;Winhttp.lib;$(SolutionDir)luajit\release\lua51.lib;$(SolutionDir)BuildFiles\$(Configuration)\luaLanes.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(SolutionDir)WSEExternal\lib</AdditionalLibraryDirectories>
       <MinimumRequiredVersion />
+      <EmbedManagedResourceFile>WSELib.rc;%(EmbedManagedResourceFile)</EmbedManagedResourceFile>
     </Link>
     <PostBuildEvent>
       <Command>copy "$(TargetPath)" "$(SolutionDir)WSEBuild\WSELibDedicated.dll"</Command>
@@ -380,6 +388,7 @@
   <ItemGroup>
     <ClInclude Include="json\json-forwards.h" />
     <ClInclude Include="json\json.h" />
+    <ClInclude Include="WSELib.rc.h" />
     <ClInclude Include="WSELuaOperationsLuaCallbacks.h" />
     <ClInclude Include="mup\muParser.h" />
     <ClInclude Include="mup\muParserBase.h" />
@@ -520,12 +529,19 @@
     <ClCompile Include="WSEUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\luaLanes\luaLanes.vcxproj">
+      <Project>{6ea1766d-106d-416a-a47e-44d4402ba850}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\WarbandLib\WarbandLib.vcxproj">
       <Project>{7ed16498-7641-4f22-96ad-e071603a5658}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\luaLanes\src\lanes.lua" />
     <None Include="LuaGlobals.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="WSELib.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
