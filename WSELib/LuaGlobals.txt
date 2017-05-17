@@ -102,11 +102,43 @@ vector3.mt =
 	end,
 
 	__mul = function (lhs,rhs)
+		local _lhs = lhs
+		local _rhs = rhs
+
+		if type(lhs) == "number" then
+			_lhs = {x = lhs, y = lhs, z = lhs}
+		end
+
+		if type(rhs) == "number" then
+			_rhs = {x = rhs, y = rhs, z = rhs}
+		end
+
 		local res = 
 		{
-			x = lhs.x * rhs.x,
-			y = lhs.y * rhs.y,
-			z = lhs.z * rhs.z
+			x = _lhs.x * _rhs.x,
+			y = _lhs.y * _rhs.y,
+			z = _lhs.z * _rhs.z
+		}
+		return setmetatable(res, vector3.mt)
+	end,
+
+	__div = function (lhs,rhs)
+		local _lhs = lhs
+		local _rhs = rhs
+
+		if type(lhs) == "number" then
+			_lhs = {x = lhs, y = lhs, z = lhs}
+		end
+
+		if type(rhs) == "number" then
+			_rhs = {x = rhs, y = rhs, z = rhs}
+		end
+
+		local res = 
+		{
+			x = _lhs.x / _rhs.x,
+			y = _lhs.y / _rhs.y,
+			z = _lhs.z / _rhs.z
 		}
 		return setmetatable(res, vector3.mt)
 	end,
@@ -117,10 +149,10 @@ vector3.mt =
 }
 vector3.new = function(obj)
 	local newObj
-	if obj == nil then
-		newObj = {}
-	else
+	if obj then
 		newObj = tableShallowCopy(obj)
+	else
+		newObj = {}
 	end
 	
 	return setmetatable(newObj, vector3.mt)
@@ -207,11 +239,15 @@ game.rotation.mt =
 }
 game.rotation.new = function(obj)
 	local newObj
-	if obj == nil then
-		newObj = {}
-	else
+	if obj then
 		newObj = tableRecursiveCopy(obj)
+	else
+		newObj = {}
 	end
+
+	if newObj.s then newObj.s = vector3.new(newObj.s) end
+	if newObj.f then newObj.f = vector3.new(newObj.f) end
+	if newObj.u then newObj.u = vector3.new(newObj.u) end
 	
 	return setmetatable(newObj, game.rotation.mt)
 end
@@ -241,6 +277,24 @@ game.pos.prototype =
 
 	rotate = function(self, rotVec3)
 		self.rot:rotate(rotVec3)
+	end,
+
+	moveX = function(self, val)
+		self.o = self.o + (self.rot.s * val / self.rot.s:len())
+	end,
+
+	moveY = function(self, val)
+		self.o = self.o + (self.rot.f * val / self.rot.f:len())
+	end,
+
+	moveZ = function(self, val)
+		self.o = self.o + (self.rot.u * val / self.rot.u:len())
+	end,
+
+	move = function(self, val)
+		if val.x then self:moveX(val.x) end
+		if val.y then self:moveY(val.y) end
+		if val.z then self:moveZ(val.z) end
 	end
 }
 
@@ -251,20 +305,16 @@ game.pos.mt =
 
 game.pos.new = function(obj)
 	local newObj
-	if obj == nil then
-		newObj = {}
-	else
+	if obj then
 		newObj = tableRecursiveCopy(obj)
+	else
+		newObj = {}
 	end
 
-	if newObj.o == nil then newObj.o = {} end
-	if newObj.rot == nil then newObj.rot = {} end
-	
-	setmetatable(newObj, game.pos.mt)
-	setmetatable(newObj.o, vector3.mt)
-	setmetatable(newObj.rot, game.rotation.mt)
+	if newObj.o then newObj.o = vector3.new(newObj.o) end
+	if newObj.rot then newObj.rot = game.rotation.new(newObj.rot) end
 
-	return newObj
+	return setmetatable(newObj, game.pos.mt)
 end
 
 print = function(...)

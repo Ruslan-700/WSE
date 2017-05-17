@@ -518,41 +518,47 @@ inline void WSELuaOperationsContext::loadOperations()
 	}
 }
 
-inline void WSELuaOperationsContext::addGameConstants()
+inline void WSELuaOperationsContext::addGameConstants(const std::string &dir, bool first)
 {
 	WIN32_FIND_DATA ffd;
-	std::string constDir = getLuaScriptDir() + "msfiles\\*";
 
-	HANDLE hFind = FindFirstFile(constDir.c_str(), &ffd);
+	HANDLE hFind = FindFirstFile((dir + "*").c_str(), &ffd);
 
 	if (hFind == INVALID_HANDLE_VALUE)
 		return;
 
-	lua_newtable(luaState);
+	if(first)
+		lua_newtable(luaState);
 
 	std::smatch curMatches;
-	std::regex fnRegEx(R"(^(header|ID)_(\w+)\.py$)");
+	std::regex fnRegEx(R"(^(header|ID|module)_(\w+)\.[^\.]+$)");
 
 	do
 	{
 		std::string s = ffd.cFileName;
-		if (!(ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) && std::regex_match(s, curMatches, fnRegEx) && s != "header_operations.py")
+
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && s != "." && s != "..")
 		{
-			addConstantsFromFileToTable(getLuaScriptDir() + "msfiles\\" + s, luaState, curMatches.str(2));
+			addGameConstants(dir + s + "\\", false);
+		}
+		else if(s != "header_operations.py")
+		{
+			if (std::regex_match(s, curMatches, fnRegEx))
+				addConstantsFromFileToTable(dir + s, luaState, curMatches.str(2));
+			else
+			{
+					std::string s2;
+					size_t lastdot = s.find_last_of(".");
+
+					addConstantsFromFileToTable(dir + s, luaState, lastdot == std::string::npos ? s : s.substr(0, lastdot));
+			}
 		}
 	} 
 	while (FindNextFile(hFind, &ffd));
 	FindClose(hFind);
 
-	/*
-	addConstantsFromFileToTable("header_triggers.py", luaState, "ti");
-
-#if defined WARBAND //neccessary?
-	addConstantsFromFileToTable("header_presentations.py", luaState, "prsnt");
-#endif
-	*/
-
-	lua_setfield(luaState, -2, "const");
+	if (first)
+		lua_setfield(luaState, -2, "const");
 }
 
 inline void WSELuaOperationsContext::initLGameTable()
@@ -600,7 +606,7 @@ inline void WSELuaOperationsContext::initLGameTable()
 	lua_pushcfunction(luaState, lPlayersIterInit);
 	lua_setfield(luaState, -2, "playersI");
 
-	addGameConstants();
+	addGameConstants(getLuaScriptDir() + "msfiles\\", true);
 
 	lua_setglobal(luaState, "game");
 

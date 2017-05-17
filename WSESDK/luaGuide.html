@@ -163,7 +163,7 @@
 		}
 	</style>
 
-		<style> /* hardcore theme */
+	<style> /* hardcore theme */
 		body{
 			background-color: black;
 			color: #00FF00;
@@ -200,26 +200,30 @@
 		function toggleHide(ID)
 		{
 			var bElem = document.getElementById(ID + "_button");
-			var cElem = document.getElementById(ID + "_content");
+			var cElems = document.getElementsByClassName(ID + "_content");
 
-			if(cElem.style.display == "none" && !forceHide) //unhide
-			{
-				cElem.style.display = "";
+			var hide = cElems[0].style.display == "" || forceHide;
 
-				bElem.firstChild.style.opacity = "0";
-				bElem.firstChild.style.transform = "";
-				
-				bElem.childNodes[1].style.opacity = "1";
-				bElem.childNodes[1].style.transform = "";
+			for(var i = 0; i < cElems.length; i++){
+				if(hide){
+					cElems[i].style.display = "none";
+				}else{
+					cElems[i].style.display = "";
+				}
 			}
-			else{ //hide
-				cElem.style.display = "none";
 
+			if(hide){
 				bElem.firstChild.style.opacity = "1";
 				bElem.firstChild.style.transform = "rotate(90deg)";
 
 				bElem.childNodes[1].style.opacity = "0";
 				bElem.childNodes[1].style.transform = "rotate(90deg)";
+			}else{
+				bElem.firstChild.style.opacity = "0";
+				bElem.firstChild.style.transform = "";
+				
+				bElem.childNodes[1].style.opacity = "1";
+				bElem.childNodes[1].style.transform = "";
 			}
 		}
 
@@ -285,7 +289,7 @@
 	<p>&nbsp;</p>
 	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASIC SETUP</span></h2>
 	<hr/>
-	<div id="setup_content">
+	<div class="setup_content">
 		<ul>
 			<li>Create "[warband_dir]\Modules\[module_name]\lua\", [module_name] should be e.g. Native</li>
 			<li>Create main.lua inside it. This file, if it exists, gets loaded and executed by WSE at startup, before any of the module system code.</li>
@@ -299,7 +303,7 @@
 
 	<h2><div id="game_table_button" class="button_hide" onclick="toggleHide('game_table')">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
 	<hr/>
-	<div id="game_table_content">
+	<div class="game_table_content">
 		<p style="margin-left: 20px;"><em>The game table is a predefined global table that allows you access to the game from lua.</em></p>
 		<div class="content_block">
 			<div class="content_block_caption">Operations</div>
@@ -414,8 +418,8 @@
 				<p>These work exactly like module system iterators and take the same arguments.</p>
 				<p style="padding-left: 30px;">Example:</p>
 				<div class="example">
-					for curAgent in game.playersI(true) do <span class="comment">--skip server</span>\n
-					<span class="tab">foo(curAgent)</span>\n
+					for curPlayer in game.playersI(true) do <span class="comment">--skip server</span>\n
+					<span class="tab">foo(curPlayer)</span>\n
 					end\n
 				</div>
 			</div>
@@ -583,7 +587,7 @@
 
 	<h2><div id="miscellaneous_button" class="button_hide" onclick="toggleHide('miscellaneous')">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
 	<hr />
-	<div id="miscellaneous_content">
+	<div class="miscellaneous_content">
 		<div class="content_block">
 			<div class="content_block_caption">Globals</div>
 			<div>
@@ -619,7 +623,7 @@
 									\tab<span class="comment">--will not happen</span>\n
 									end\n
 									\n
-									vecA = vecA * vecB --{60*0, 30*0, 0*0}\n
+									vecA = vecA * vecB <span class="comment">--{60*0, 30*0, 0*0}</span>\n
 									if vecA == vecB then\n
 									\tab<span class="comment">--will happen</span>\n
 									end\n
@@ -649,7 +653,7 @@
 
 	<h2><div id="examples_button" class="button_hide" onclick="toggleHide('examples')">&nbsp;</div><span>EXAMPLES</span></h2>
 	<hr/>
-	<div id="examples_content">
+	<div class="examples_content">
 		<div class="content_block">
 			<div class="content_block_caption">Simple custom log</div>
 			<div class="example example2">
@@ -722,12 +726,12 @@
 		<div class="content_block">
 			<div class="content_block_caption">Quickly reload main.lua when typing "reloadMain" in server console</div>
 			<div class="example example2">
-				("wse_console_command_received", [ <span class="comment">--this is a script that WSE adds</span>\n
+				("wse_console_command_received", [ <span class="comment">#this is a script that WSE adds</span>\n
 					\tab(store_script_param, ":command_type", 1),\n
 					\n
 					\tab(str_equals, s0, "@reloadMain"),\n
 					\tab(lua_push_str, "@main.lua"),\n
-					\tab(lua_call, "@dofile", 1),\n
+					\tab(lua_call, "@dofile", 1), <span class="comment">#one param, the string we pushed</span>\n
 					\tab(set_trigger_result, 1),\n
 				]),\n
 			</div>
@@ -737,12 +741,17 @@
 	<script>	
 		var contentCaptions = document.getElementsByClassName("content_block_caption");
 		for(var i = 0; i < contentCaptions.length; i++){
-			var elemCount = 0;
+			var nodeCount = 0;
 			for(var j = 0; j < contentCaptions[i].parentNode.childNodes.length; j++){
-				if(contentCaptions[i].parentNode.childNodes[j].nodeType == 1){
-					elemCount++;
-					if(elemCount == 2){
-						contentCaptions[i].parentNode.childNodes[j].id = "content_block_" + i + "_content";
+
+				var curNode = contentCaptions[i].parentNode.childNodes[j];
+				if(curNode.nodeType == 1){
+					nodeCount++;
+					if(nodeCount >= 2){
+						if(curNode.className != ""){
+							curNode.className += " ";
+						}
+						curNode.className += "content_block_" + i + "_content";
 					}
 				}
 			}
