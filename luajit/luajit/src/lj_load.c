@@ -36,7 +36,7 @@ static TValue *cpparser(lua_State *L, lua_CFunction dummy, void *ud)
   bc = lj_lex_setup(L, ls);
 
   /* wse mod */
-  if (bc)
+  if (bc && !ls->allowBC)
   {
 	  setstrV(L, L->top++, lj_err_str(L, LJ_ERR_BCPRHT));
 	  lj_err_throw(L, LUA_ERRSYNTAX);
@@ -54,7 +54,7 @@ static TValue *cpparser(lua_State *L, lua_CFunction dummy, void *ud)
 }
 
 LUA_API int lua_loadx(lua_State *L, lua_Reader reader, void *data,
-		      const char *chunkname, const char *mode)
+		      const char *chunkname, const char *mode, int allowBC)
 {
   LexState ls;
   int status;
@@ -62,6 +62,8 @@ LUA_API int lua_loadx(lua_State *L, lua_Reader reader, void *data,
   ls.rdata = data;
   ls.chunkarg = chunkname ? chunkname : "?";
   ls.mode = mode;
+  /* wse mod */
+  ls.allowBC = allowBC;
   lj_str_initbuf(&ls.sb);
   status = lj_vm_cpcall(L, NULL, &ls, cpparser);
   lj_lex_cleanup(L, &ls);
@@ -72,7 +74,8 @@ LUA_API int lua_loadx(lua_State *L, lua_Reader reader, void *data,
 LUA_API int lua_load(lua_State *L, lua_Reader reader, void *data,
 		     const char *chunkname)
 {
-  return lua_loadx(L, reader, data, chunkname, NULL);
+  /* wse mod */
+  return lua_loadx(L, reader, data, chunkname, NULL, 0);
 }
 
 typedef struct FileReaderCtx {
@@ -106,7 +109,8 @@ LUALIB_API int luaL_loadfilex(lua_State *L, const char *filename,
     ctx.fp = stdin;
     chunkname = "=stdin";
   }
-  status = lua_loadx(L, reader_file, &ctx, chunkname, mode);
+  /* wse mod */
+  status = lua_loadx(L, reader_file, &ctx, chunkname, mode, 0);
   if (ferror(ctx.fp)) {
     L->top -= filename ? 2 : 1;
     lua_pushfstring(L, "cannot read %s: %s", chunkname+1, strerror(errno));
@@ -143,18 +147,19 @@ static const char *reader_string(lua_State *L, void *ud, size_t *size)
 }
 
 LUALIB_API int luaL_loadbufferx(lua_State *L, const char *buf, size_t size,
-				const char *name, const char *mode)
+				const char *name, const char *mode, int allowBC)
 {
   StringReaderCtx ctx;
   ctx.str = buf;
   ctx.size = size;
-  return lua_loadx(L, reader_string, &ctx, name, mode);
+  /* wse mod */
+  return lua_loadx(L, reader_string, &ctx, name, mode, allowBC);
 }
 
 LUALIB_API int luaL_loadbuffer(lua_State *L, const char *buf, size_t size,
 			       const char *name)
 {
-  return luaL_loadbufferx(L, buf, size, name, NULL);
+  return luaL_loadbufferx(L, buf, size, name, NULL, 0);
 }
 
 LUALIB_API int luaL_loadstring(lua_State *L, const char *s)

@@ -419,12 +419,13 @@ LJLIB_CF(load)
     GCstr *s = lj_lib_checkstr(L, 1);
     lua_settop(L, 4);  /* Ensure env arg exists. */
     status = luaL_loadbufferx(L, strdata(s), s->len, strdata(name ? name : s),
-			      mode ? strdata(mode) : NULL);
+			      mode ? strdata(mode) : NULL, 0);
   } else {
     lj_lib_checkfunc(L, 1);
     lua_settop(L, 5);  /* Reserve a slot for the string from the reader. */
+	/* wse mod */
     status = lua_loadx(L, reader_func, NULL, name ? strdata(name) : "=(load)",
-		       mode ? strdata(mode) : NULL);
+		       mode ? strdata(mode) : NULL, 0);
   }
   return load_aux(L, status, 4);
 }

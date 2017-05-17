@@ -346,8 +346,9 @@ LUA_API void lua_setUserDir(lua_State *L, const char* dir); /* wse mod */
 /* From Lua 5.2. */
 LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);
 LUA_API void lua_upvaluejoin (lua_State *L, int idx1, int n1, int idx2, int n2);
+/* wse mod */
 LUA_API int lua_loadx (lua_State *L, lua_Reader reader, void *dt,
-		       const char *chunkname, const char *mode);
+		       const char *chunkname, const char *mode, int allowBC);
 
 
 struct lua_Debug {

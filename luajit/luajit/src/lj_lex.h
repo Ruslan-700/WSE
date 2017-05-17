@@ -72,6 +72,8 @@ typedef struct LexState {
   BCInsLine *bcstack;	/* Stack for bytecode instructions/line numbers. */
   MSize sizebcstack;	/* Size of bytecode stack. */
   uint32_t level;	/* Syntactical nesting level. */
+  /* wse mod */
+  int allowBC; //ALLOW BYTECODE
 } LexState;
 
 LJ_FUNC int lj_lex_setup(lua_State *L, LexState *ls);

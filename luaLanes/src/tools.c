@@ -1239,7 +1239,7 @@ static void inter_copy_func( struct s_Universe* U, lua_State* L2, uint_t L2_cach
 			//
 			// TBD: Can we get the function's original name through, as well?
 			//
-			if( luaL_loadbuffer( L2, s, sz, name) != 0)                                                // ... {cache} ... p function
+			if( luaL_loadbufferx( L2, s, sz, name, NULL, 1) != 0)                                                // ... {cache} ... p function
 			{
 				// chunk is precompiled so only LUA_ERRMEM can happen
 				// "Otherwise, it pushes an error message"
