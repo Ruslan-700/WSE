@@ -12,16 +12,28 @@ struct gameOperation
 	unsigned short flags;
 };
 
+struct gameConst
+{
+	std::string name;
+	float val;
+};
+
+struct gameConstTable
+{
+	std::string name;
+	std::vector<gameConst> constants;
+};
+
 class WSELuaOperationsContext : public WSEOperationContext
 {
 	public:
 		lua_State *luaState;
 		int callTriggerOpcode;
 		std::unordered_map<std::string, gameOperation> operationMap;
+		std::vector<gameConstTable> gameConstTables;
 
 	public:
 		WSELuaOperationsContext();
-		void printLastError(const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
 
 	protected:
 		bool luaStateIsReady = false;
@@ -34,8 +46,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		inline void initLua();
 
 		void applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile);
+		void loadGameConstants(const std::string &dir);
 		inline void loadOperations();
-		inline void addGameConstants(const std::string &dir, bool first);
-		inline void initLGameTable();
 		inline void doMainScript();
 };

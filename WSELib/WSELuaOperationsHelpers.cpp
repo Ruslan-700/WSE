@@ -1,5 +1,6 @@
 #include <regex>
 #include <string>
+#include <sstream>
 #include "WSELuaOperationsHelpers.h"
 
 const char *const lShortTypeNames[] = {
@@ -43,6 +44,36 @@ void gPrintf(const std::string &format, ...)
 	va_start(args, format);
 	gPrintf(format.c_str(), args);
 	va_end(args);
+}
+
+void printLastLuaError(lua_State *L, const char *fileName, HANDLE hFile)
+{
+	const char *msg = lua_tostring(L, -1);
+	std::string errMsg;
+
+	if (fileName)
+	{
+		errMsg = "Lua error in ";
+		errMsg += fileName;
+		errMsg += ": ";
+		errMsg += msg;
+	}
+	else
+	{
+		errMsg = "Lua error: ";
+		errMsg += msg;
+	}
+
+	if (hFile == INVALID_HANDLE_VALUE)
+		gPrint(errMsg);
+	else
+	{
+		errMsg += "\r\n";
+		DWORD a = 0;
+		WriteFile(hFile, errMsg.c_str(), errMsg.length(), &a, NULL);
+	}
+
+	lua_pop(L, 1);
 }
 
 bool fileExists(const std::string& name)
@@ -317,24 +348,18 @@ rgl::matrix lToPos(lua_State *L, int index)
 	return pos;
 }
 
-void lPushWSEMt(lua_State *L, const char *name, const char *nameSpace = "game")
+void lPushChild(lua_State *L, const std::string &name)
 {
-	if (strlen(nameSpace))
-	{
-		lua_getfield(L, LUA_GLOBALSINDEX, nameSpace);
-		lua_getfield(L, -1, name);
-		lua_getfield(L, -1, "mt");
+	std::stringstream ss;
+	std::string curPart;
 
-		lua_insert(L, -3);
-		lua_pop(L, 2);
-	}
-	else
-	{
-		lua_getfield(L, LUA_GLOBALSINDEX, name);
-		lua_getfield(L, -1, "mt");
+	ss.str(name);
 
-		lua_insert(L, -2);
-		lua_pop(L, 1);
+	lua_getfield(L, LUA_GLOBALSINDEX, "_G");
+	while (std::getline(ss, curPart, '.'))
+	{
+		lua_getfield(L, -1, curPart.c_str());
+		lua_remove(L, -2);
 	}
 }
 
@@ -349,7 +374,7 @@ void lPushVec3(lua_State *L, const rgl::vector4 &vec)
 	lua_setfield(L, -3, "y");
 	lua_setfield(L, -2, "z");
 
-	lPushWSEMt(L, "vector3", "");
+	lPushChild(L, "vector3.mt");
 	lua_setmetatable(L, -2);
 }
 
@@ -364,7 +389,7 @@ void lPushRot(lua_State *L, const rgl::orientation &rot)
 	lua_setfield(L, -3, "f");
 	lua_setfield(L, -2, "u");
 
-	lPushWSEMt(L, "rotation");
+	lPushChild(L, "game.rotation.mt");
 	lua_setmetatable(L, -2);
 }
 
@@ -378,14 +403,14 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 	lua_setfield(L, -3, "rot");
 	lua_setfield(L, -2, "o");
 
-	lPushWSEMt(L, "pos");
-	//gPrint(lua_typename(L, lua_type(L, -1)));
+	lPushChild(L, "game.pos.mt");
 	lua_setmetatable(L, -2);
 }
 
-void addConstantsFromFileToTable(std::string filePath, lua_State *L, std::string name)
+void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name)
 {
-	std::vector<gameConst> constants;
+	gameConstTable constTable;
+	std::vector<gameConst> &constants = constTable.constants;
 
 	if (!fileExists(filePath))
 		return;
@@ -446,15 +471,23 @@ void addConstantsFromFileToTable(std::string filePath, lua_State *L, std::string
 
 	if (constants.size())
 	{
-		lua_newtable(L);
+		constTable.name = name;
 
-		for (size_t i = 0; i < constants.size(); i++)
+		size_t i = 0;
+		size_t suffix = 1;
+		while (i < gameConstTables.size())
 		{
-			lua_pushnumber(L, (lua_Number)constants[i].val);
-			lua_setfield(L, -2, constants[i].name.c_str());
+			if (constTable.name == gameConstTables[i].name)
+			{
+				i = 0;
+				constTable.name = name + "_" + std::to_string(suffix);
+				suffix++;
+			}
+			else
+				i++;
 		}
 
-		lua_setfield(L, -2, name.c_str());
+		gameConstTables.push_back(constTable);
 	}
 }
 

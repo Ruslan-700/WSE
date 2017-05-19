@@ -148,7 +148,7 @@ void opCall(WSELuaOperationsContext *context)
 		lua_insert(context->luaState, stackSize - numArgs + 1);
 
 	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
-		context->printLastError();
+		printLastLuaError(context->luaState);
 }
 
 bool opTriggerCallback(WSELuaOperationsContext *context)
@@ -160,7 +160,7 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	if (lua_pcall(context->luaState, 0, 1, 0))
 	{
-		context->printLastError();
+		printLastLuaError(context->luaState);
 		return false;
 	}
 
@@ -180,8 +180,130 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 }
 
 /************************/
-/*    MS ops end       */
-/************************/
+
+
+/***********************/
+/* init main lua state */
+/***********************/
+
+inline void addGameConstantsToLState(lua_State *L)
+{
+	std::vector<gameConstTable> &constTables = WSE->LuaOperations.gameConstTables;
+
+	if (constTables.size())
+	{
+		lua_newtable(L);
+
+		for (size_t i = 0; i < constTables.size(); i++)
+		{
+			lua_newtable(L);
+			for (size_t j = 0; j < constTables[i].constants.size(); j++)
+			{
+				lua_pushnumber(L, (lua_Number)constTables[i].constants[j].val);
+				lua_setfield(L, -2, constTables[i].constants[j].name.c_str());
+			}
+			lua_setfield(L, -2, constTables[i].name.c_str());
+		}
+
+		lua_setfield(L, -2, "const");
+	}
+}
+
+void initLGameTable(lua_State *L)
+{
+	lua_newtable(L);
+
+	lua_pushcfunction(L, lGameExecOperationHandler);
+	lua_setfield(L, -2, "execOperation");
+
+	lua_pushcfunction(L, lGetRegHandler);
+	lua_setfield(L, -2, "getReg");
+
+	lua_pushcfunction(L, lSetRegHandler);
+	lua_setfield(L, -2, "setReg");
+
+	lua_pushcfunction(L, lGetScriptNo);
+	lua_setfield(L, -2, "getScriptNo");
+
+	lua_pushcfunction(L, lGetCurTemplateId);
+	lua_setfield(L, -2, "getCurTemplateId");
+
+	lua_pushcfunction(L, lAddTrigger);
+	lua_setfield(L, -2, "addTrigger");
+
+	lua_pushcfunction(L, lRemoveTrigger);
+	lua_setfield(L, -2, "removeTrigger");
+
+#if defined WARBAND
+	lua_pushcfunction(L, lAddPrsnt);
+	lua_setfield(L, -2, "addPrsnt");
+
+	lua_pushcfunction(L, lRemovePrsnt);
+	lua_setfield(L, -2, "removePrsnt");
+#endif
+
+	lua_pushcfunction(L, lPartiesIterInit);
+	lua_setfield(L, -2, "partiesI");
+
+	lua_pushcfunction(L, lAgentsIterInit);
+	lua_setfield(L, -2, "agentsI");
+
+	lua_pushcfunction(L, lPropInstIterInit);
+	lua_setfield(L, -2, "propInstI");
+
+	lua_pushcfunction(L, lPlayersIterInit);
+	lua_setfield(L, -2, "playersI");
+
+	addGameConstantsToLState(L);
+
+	lua_setglobal(L, "game");
+
+	lua_pushcfunction(L, lPrint);
+	lua_setglobal(L, "_print");
+
+	const char *globals =
+		#include "LuaGlobals.txt"
+		;
+
+	if (luaL_dostring(L, globals))
+		printLastLuaError(L, "LuaGlobals");
+}
+
+int loadLanesLua(lua_State *L)
+{
+#if defined WARBAND_DEDICATED
+	HMODULE handle = GetModuleHandle("wselibdedicated.dll");
+#elif defined WARBAND
+	HMODULE handle = GetModuleHandle("wselib.dll");
+#elif defined WARBAND_NOSSE
+	HMODULE handle = GetModuleHandle("wselibnosse.dll");
+#endif
+
+	HRSRC rc = FindResource(handle, MAKEINTRESOURCE(IDR_LUA_LANES),
+		MAKEINTRESOURCE(TEXTFILE));
+	HGLOBAL rcData = LoadResource(handle, rc);
+	DWORD size = SizeofResource(handle, rc);
+	const char *data = static_cast<const char*>(::LockResource(rcData));
+
+	char *lanes = (char*)malloc(size + 1);
+	memcpy_s(lanes, size + 1, data, size);
+	lanes[size] = '\0';
+
+	if (luaL_dostring(L, lanes))
+		printLastLuaError(L, "lanes");
+
+	free(lanes);
+	return 1;
+}
+
+void initLaneState(lua_State *L)
+{
+	lua_setUserDir(L, getLuaScriptDir().c_str());
+	initLGameTable(L);
+}
+
+/***************************/
+
 
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
@@ -240,7 +362,7 @@ void WSELuaOperationsContext::OnLoad()
 	RegisterOperation("lua_call", opCall, Both, None, 2, 2,
 		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.",
 		"func_name", "num_args");
-	
+
 	callTriggerOpcode = getOpcodeRangeCur();
 	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 1, 1,
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
@@ -252,36 +374,6 @@ void WSELuaOperationsContext::OnLoad()
 void WSELuaOperationsContext::OnUnload()
 {
 	lua_close(luaState);
-}
-
-void WSELuaOperationsContext::printLastError(const char *fileName, HANDLE hFile)
-{
-	const char *msg = lua_tostring(luaState, -1);
-	std::string errMsg;
-
-	if (fileName)
-	{
-		errMsg = "Lua error in ";
-		errMsg += fileName;
-		errMsg += ": ";
-		errMsg += msg;
-	}
-	else
-	{
-		errMsg = "Lua error: ";
-		errMsg += msg;
-	}
-
-	if (hFile == INVALID_HANDLE_VALUE)
-		gPrint(errMsg);
-	else
-	{
-		errMsg += "\r\n";
-		DWORD a = 0;
-		WriteFile(hFile, errMsg.c_str(), errMsg.length(), &a, NULL);
-	}
-
-	lua_pop(luaState, 1);
 }
 
 void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
@@ -296,19 +388,19 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			rglLogWriteData *dt = (rglLogWriteData*)data;
+			rglLogWriteEventData *dt = (rglLogWriteEventData*)data;
 
 			lua_pushstring(luaState, dt->str);
 			if (lua_pcall(luaState, 1, 0, 0))
 			{
-				#if defined WARBAND
-					warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
-				#else
-					lua_pushvalue(luaState, -1);
-					printLastError(NULL, GetStdHandle(STD_OUTPUT_HANDLE));
-				#endif
+#if defined WARBAND
+				warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
+#else
+				lua_pushvalue(luaState, -1);
+				printLastLuaError(this->luaState, NULL, GetStdHandle(STD_OUTPUT_HANDLE));
+#endif
 
-				printLastError(NULL, dt->hFile);
+				printLastLuaError(this->luaState, NULL, dt->hFile);
 			}
 
 			lua_pop(luaState, 1);
@@ -316,53 +408,6 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 		else
 			lua_pop(luaState, 2);
 	}
-}
-
-/***********************/
-/* init main lua state */
-/***********************/
-
-int loadLanesLua(lua_State* L)
-{
-	#if defined WARBAND_DEDICATED
-		HMODULE handle = GetModuleHandle("wselibdedicated.dll");
-	#elif defined WARBAND
-		HMODULE handle = GetModuleHandle("wselib.dll");
-	#elif defined WARBAND_NOSSE
-		HMODULE handle = GetModuleHandle("wselibnosse.dll");
-	#endif
-
-	HRSRC rc = FindResource(handle, MAKEINTRESOURCE(IDR_LUA_LANES),
-		MAKEINTRESOURCE(TEXTFILE));
-	HGLOBAL rcData = LoadResource(handle, rc);
-	DWORD size = SizeofResource(handle, rc);
-	const char *data = static_cast<const char*>(::LockResource(rcData));
-
-	char *lanes = (char*)malloc(size + 1);
-	memcpy_s(lanes, size + 1, data, size);
-	lanes[size] = '\0';
-
-	if(luaL_dostring(L, lanes))
-		WSE->LuaOperations.printLastError("lanes");
-
-	free(lanes);
-	return 1;
-}
-
-inline void WSELuaOperationsContext::initLua()
-{
-	luaState = luaL_newstate();
-	lua_setUserDir(luaState, getLuaScriptDir().c_str());
-	luaL_openlibs(luaState);
-
-	luaopen_lanes_embedded(luaState, loadLanesLua);
-	lua_pop(luaState, 1);
-
-	loadOperations();
-	initLGameTable();
-	doMainScript();
-
-	luaStateIsReady = true;
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
@@ -395,9 +440,9 @@ inline void WSELuaOperationsContext::loadOperations()
 
 	std::smatch curMatches;
 
-	std::regex opRegEx( R"((\w+)=(((0x)[\da-fA-F]+)|(\d+)).*)" );
-	std::regex opOrRegEx( R"((\w+)=(\w+)\|(\w+).*)" );
-	std::regex listStartRegEx( R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?).*)" );
+	std::regex opRegEx(R"((\w+)=(((0x)[\da-fA-F]+)|(\d+)).*)");
+	std::regex opOrRegEx(R"((\w+)=(\w+)\|(\w+).*)");
+	std::regex listStartRegEx(R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?).*)");
 
 	std::unordered_map<std::string, std::vector<std::string>*> flagLists;
 
@@ -408,7 +453,7 @@ inline void WSELuaOperationsContext::loadOperations()
 
 		if (curLine.length() == 0 || curLine[0] == '#')
 			continue;
-		
+
 		if (std::regex_match(curLine, curMatches, opRegEx))
 		{
 
@@ -441,7 +486,7 @@ inline void WSELuaOperationsContext::loadOperations()
 			}
 			else
 			{
-				if (l == flagLists.end()) 
+				if (l == flagLists.end())
 				{
 					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: trying to extend a non-existing list", opFile.c_str(), curLineNum);
 					continue;
@@ -474,13 +519,13 @@ inline void WSELuaOperationsContext::loadOperations()
 				curKeysStr += curLine;
 			}
 
-			if (curKeysStr.length()) 
+			if (curKeysStr.length())
 			{
 				std::vector<std::string> curKeys = split(curKeysStr, ',', true);
 
 				for (size_t i = 0; i < curKeys.size(); i++)
 					flagLists[listName]->push_back(curKeys[i]);
-			}			
+			}
 		}
 		else if (std::regex_match(curLine, curMatches, opOrRegEx))
 		{
@@ -518,7 +563,7 @@ inline void WSELuaOperationsContext::loadOperations()
 	}
 }
 
-inline void WSELuaOperationsContext::addGameConstants(const std::string &dir, bool first)
+void WSELuaOperationsContext::loadGameConstants(const std::string &dir)
 {
 	WIN32_FIND_DATA ffd;
 
@@ -527,9 +572,6 @@ inline void WSELuaOperationsContext::addGameConstants(const std::string &dir, bo
 	if (hFind == INVALID_HANDLE_VALUE)
 		return;
 
-	if(first)
-		lua_newtable(luaState);
-
 	std::smatch curMatches;
 	std::regex fnRegEx(R"(^(header|ID|module)_(\w+)\.[^\.]+$)");
 
@@ -537,88 +579,42 @@ inline void WSELuaOperationsContext::addGameConstants(const std::string &dir, bo
 	{
 		std::string s = ffd.cFileName;
 
-		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && s != "." && s != "..")
+		if (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
 		{
-			addGameConstants(dir + s + "\\", false);
+			if (s != "." && s != "..")
+				loadGameConstants(dir + s + "\\");
 		}
-		else if(s != "header_operations.py")
+		else if (s != "header_operations.py")
 		{
 			if (std::regex_match(s, curMatches, fnRegEx))
-				addConstantsFromFileToTable(dir + s, luaState, curMatches.str(2));
+				loadGameConstantsFromFile(dir + s, gameConstTables, curMatches.str(2));
 			else
 			{
-					std::string s2;
-					size_t lastdot = s.find_last_of(".");
+				size_t lastdot = s.find_last_of(".");
 
-					addConstantsFromFileToTable(dir + s, luaState, lastdot == std::string::npos ? s : s.substr(0, lastdot));
+				loadGameConstantsFromFile(dir + s, gameConstTables, lastdot == std::string::npos ? s : s.substr(0, lastdot));
 			}
 		}
-	} 
-	while (FindNextFile(hFind, &ffd));
+	} while (FindNextFile(hFind, &ffd));
 	FindClose(hFind);
-
-	if (first)
-		lua_setfield(luaState, -2, "const");
 }
 
-inline void WSELuaOperationsContext::initLGameTable()
+inline void WSELuaOperationsContext::initLua()
 {
-	lua_newtable(luaState);
-	
-	lua_pushcfunction(luaState, lGameExecOperationHandler);
-	lua_setfield(luaState, -2, "execOperation");
+	luaState = luaL_newstate();
+	lua_setUserDir(luaState, getLuaScriptDir().c_str());
+	luaL_openlibs(luaState);
 
-	lua_pushcfunction(luaState, lGetRegHandler);
-	lua_setfield(luaState, -2, "getReg");
+	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
+	lua_pop(luaState, 1);
 
-	lua_pushcfunction(luaState, lSetRegHandler);
-	lua_setfield(luaState, -2, "setReg");
+	loadOperations();
+	loadGameConstants(getLuaScriptDir() + "msfiles\\");
 
-	lua_pushcfunction(luaState, lGetScriptNo);
-	lua_setfield(luaState, -2, "getScriptNo");
+	initLGameTable(luaState);
+	doMainScript();
 
-	lua_pushcfunction(luaState, lGetCurTemplateId);
-	lua_setfield(luaState, -2, "getCurTemplateId");
-
-	lua_pushcfunction(luaState, lAddTrigger);
-	lua_setfield(luaState, -2, "addTrigger");
-
-	lua_pushcfunction(luaState, lRemoveTrigger);
-	lua_setfield(luaState, -2, "removeTrigger");
-
-#if defined WARBAND
-	lua_pushcfunction(luaState, lAddPrsnt);
-	lua_setfield(luaState, -2, "addPrsnt");
-
-	lua_pushcfunction(luaState, lRemovePrsnt);
-	lua_setfield(luaState, -2, "removePrsnt");
-#endif
-
-	lua_pushcfunction(luaState, lPartiesIterInit);
-	lua_setfield(luaState, -2, "partiesI");
-
-	lua_pushcfunction(luaState, lAgentsIterInit);
-	lua_setfield(luaState, -2, "agentsI");
-
-	lua_pushcfunction(luaState, lPropInstIterInit);
-	lua_setfield(luaState, -2, "propInstI");
-
-	lua_pushcfunction(luaState, lPlayersIterInit);
-	lua_setfield(luaState, -2, "playersI");
-
-	addGameConstants(getLuaScriptDir() + "msfiles\\", true);
-
-	lua_setglobal(luaState, "game");
-
-	lua_pushcfunction(luaState, lPrint);
-	lua_setglobal(luaState, "_print");
-
-	const char *globals =
-		#include "LuaGlobals.txt"
-		;
-
-	if (luaL_dostring(luaState, globals))
-		printLastError("LuaGlobals");
+	luaStateIsReady = true;
 }
 
 inline void WSELuaOperationsContext::doMainScript()
@@ -629,16 +625,12 @@ inline void WSELuaOperationsContext::doMainScript()
 	{
 		if (luaL_loadfile(luaState, mainFile.c_str()))
 		{
-			printLastError();
+			printLastLuaError(luaState);
 		}
 		else
 		{
 			if (lua_pcall(luaState, 0, 0, 0))
-				printLastError();
+				printLastLuaError(luaState);
 		}
 	}
 }
-
-/***********************/
-/* init main lua state end */
-/***********************/

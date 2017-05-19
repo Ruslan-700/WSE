@@ -21,17 +21,12 @@ enum lTypeF
 	lAny			= 0xFFFF,
 };
 
-struct gameConst
-{
-	std::string name;
-	float val;
-};
-
 void gPrint(const char *msg);
 void gPrint(const char *msg);
 void gPrint(const std::string &s);
 void gPrintf(const char *format, ...);
 void gPrintf(const std::string &format, ...);
+void printLastLuaError(lua_State *L, const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
 
 bool fileExists(const std::string& name);
 
@@ -62,6 +57,6 @@ void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);
 void lPushPos(lua_State *L, const rgl::matrix &pos);
 
-void addConstantsFromFileToTable(std::string fileName, lua_State *L, std::string name);
+void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name);
 
 void checkTableStructure(lua_State *L, int sIndex, std::string structure);

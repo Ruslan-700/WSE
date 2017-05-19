@@ -92,6 +92,9 @@ THE SOFTWARE.
 #include "keeper.h"
 #include "lanes.h"
 
+/*wse mod */
+WSECallback laneNewCallback;
+
 #if !(defined( PLATFORM_XBOX) || defined( PLATFORM_WIN32) || defined( PLATFORM_POCKETPC))
 # include <sys/time.h>
 #endif
@@ -2205,6 +2208,9 @@ LUAG_FUNC( lane_new)
 
 	// populate with selected libraries at the same time
 	L2 = luaG_newstate( U, L, libs_str);                     // L                                                                              // L2
+	
+	/* wse mod */
+	laneNewCallback(L2);
 
 	STACK_GROW( L2, nargs + 3);                                                                                                                //
 	STACK_CHECK( L2);
@@ -3310,8 +3316,11 @@ static int default_luaopen_lanes( lua_State* L)
 }
 
 // call this instead of luaopen_lanes_core() when embedding Lua and Lanes in a custom application
-void LANES_API luaopen_lanes_embedded( lua_State* L, lua_CFunction _luaopen_lanes)
+void LANES_API luaopen_lanes_embedded( lua_State* L, WSECallback laneNewCB, lua_CFunction _luaopen_lanes)
 {
+	/* wse mod */
+	laneNewCallback = laneNewCB;
+
 	STACK_CHECK(L);
 	// pre-require lanes.core so that when lanes.lua calls require "lanes.core" it finds it is already loaded
 	luaL_requiref( L, "lanes.core", luaopen_lanes_core, 0);                                       // ... lanes.core
