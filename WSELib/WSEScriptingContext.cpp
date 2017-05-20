@@ -877,7 +877,30 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 
 bool WSEScriptingContext::OnOperationExecute(wb::operation *operation, int *operand_types, __int64 *operand_values, bool *continue_loop, __int64 *locals, int context_flags)
 {
-	WSEOperationDescriptor *descriptor = m_descriptors[operation->opcode & 0xFFFFFFF];
+	int opcode = operation->opcode & 0xFFFFFFF;
+
+	int lRef = WSE->LuaOperations.operationHooks[opcode];
+	if (lRef != LUA_NOREF)
+	{
+		try
+		{
+			bool setRetVal;
+			long long retVal;
+
+			bool cont = WSE->LuaOperations.OnOperationExecute(lRef, operation->num_operands, operand_types, operand_values, continue_loop, setRetVal, retVal);
+
+			if (setRetVal)
+				operation->set_return_value(locals, retVal);
+
+			if (!cont)
+				return false;
+		}
+		catch (...)
+		{
+		}
+	}
+
+	WSEOperationDescriptor *descriptor = m_descriptors[opcode];
 	
 	if (!descriptor)
 		return true;

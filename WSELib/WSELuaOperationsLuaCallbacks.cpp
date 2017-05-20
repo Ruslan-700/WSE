@@ -539,6 +539,17 @@ int lPrint(lua_State *L)
 {
 	checkLArgs(L, 1, 1, lStr);
 
+	/*gPrintf("pointer to multiplayer_data.players: %p", (void*)&warband->multiplayer_data.players);
+
+	for(int i = 0; i < warband->multiplayer_data.num_players; i++)
+	{
+		wb::network_player *curPlayer = &warband->multiplayer_data.players[i];
+		//if (curPlayer->status == wb::nps_active && curPlayer->ready)
+		//{
+			gPrintf("pointer to player %d events vector: %p", i, (void*)&curPlayer->events);
+		//}
+	}*/
+
 	#if defined WARBAND
 		warband->window_manager.display_message(lua_tostring(L, 1), 0xFFFF5555, 0);
 	#else
@@ -546,6 +557,34 @@ int lPrint(lua_State *L)
 		DWORD a = 0;
 		WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), str, strlen(str), &a, NULL);
 	#endif
+
+	return 0;
+}
+
+int lHookOperation(lua_State *L)
+{
+	checkLArgs(L, 2, 2, lNum|lStr, lFunc);
+
+	int opcode;
+	if (lua_type(L, 1) == LUA_TNUMBER)
+	{
+		opcode = lua_tointeger(L, 1);
+
+		if (opcode < 0 || opcode >= WSE_MAX_NUM_OPERATIONS)
+			luaL_error(L, "opcode %d out of range", opcode);
+	}
+	else
+	{
+		std::string opName = lua_tostring(L, 1);
+
+		auto opEntry = WSE->LuaOperations.operationMap.find(opName);
+
+		if (opEntry == WSE->LuaOperations.operationMap.end())
+			luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
+
+		opcode = opEntry->second.opcode;
+	}
+	WSE->LuaOperations.operationHooks[opcode] = luaL_ref(L, LUA_REGISTRYINDEX);
 
 	return 0;
 }

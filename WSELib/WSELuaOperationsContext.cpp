@@ -254,6 +254,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lPlayersIterInit);
 	lua_setfield(L, -2, "playersI");
 
+	lua_pushcfunction(L, lHookOperation);
+	lua_setfield(L, -2, "hookOperation");
+
 	addGameConstantsToLState(L);
 
 	lua_setglobal(L, "game");
@@ -307,6 +310,8 @@ void initLaneState(lua_State *L)
 
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
+	for (size_t i = 0; i < WSE_MAX_NUM_OPERATIONS; i++)
+		operationHooks[i] = LUA_NOREF;
 }
 
 void WSELuaOperationsContext::OnLoad()
@@ -408,6 +413,82 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 		else
 			lua_pop(luaState, 2);
 	}
+}
+
+bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
+{
+	setRetVal = false;
+	
+	int oldTop = lua_gettop(luaState);
+	lua_rawgeti(luaState, LUA_REGISTRYINDEX, lRef);
+
+	for (int i = 0; i < num_operands; i++)
+	{
+		int val = (int)operand_values[i];
+		int type = operand_types[i];
+
+		if (type == 3 || type == 22) //string or quickstring
+		{
+			rgl::string str;
+			rgl::string temp;
+
+			warband->string_manager.get_operand_string(temp, val, type);
+			warband->basic_game.parse_string(str, temp);
+
+			lua_pushstring(luaState, str.c_str());
+		}
+		else
+		{
+			lua_pushinteger(luaState, (lua_Integer)val);
+		}
+	}
+
+	if (lua_pcall(luaState, num_operands, LUA_MULTRET, 0))
+	{
+		printLastLuaError(luaState);
+		return true;
+	}
+
+	int nResults = lua_gettop(luaState) - oldTop;
+
+	if (nResults == 0)
+		return true;
+	
+	if (nResults == 2)
+	{
+		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN)
+			*continue_loop = lua_toboolean(luaState, 2 + oldTop) != 0;
+		else if (lua_type(luaState, 2 + oldTop) == LUA_TNUMBER)
+		{
+			setRetVal = true;
+			retVal = (long long)lua_tointeger(luaState, 2 + oldTop);
+		}
+		else
+		{
+			gPrint("invalid return value #2 type, must be bool or num");
+			lua_settop(luaState, oldTop);
+			return true;
+		}
+	}
+	else if (nResults == 3 + oldTop)
+	{
+		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN && lua_type(luaState, 3 + oldTop) == LUA_TNUMBER)
+		{
+			*continue_loop = lua_toboolean(luaState, 2 + oldTop) != 0;
+			setRetVal = true;
+			retVal = (long long)lua_tointeger(luaState, 3 + oldTop);
+		}
+		else
+		{
+			gPrint("invalid return values #2 and #3, must be bool and num");
+			lua_settop(luaState, oldTop);
+			return true;
+		}
+	}
+
+	bool cont = lua_toboolean(luaState, 1 + oldTop) != 0;
+	lua_settop(luaState, oldTop);
+	return cont;
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)

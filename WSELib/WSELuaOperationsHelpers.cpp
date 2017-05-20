@@ -225,9 +225,9 @@ void printStack(lua_State *L)
 	int size = lua_gettop(L);
 	gPrintf("Stack top: %i", size);
 
-	for (int i = 1; i <= size; i++)
+	for (int i = lua_gettop(L); i >= 1; i--)
 	{
-		gPrintf("arg%i: %s", i, lua_typename(L, lua_type(L, i)));
+		gPrintf("slot%i: %s", i, lua_typename(L, lua_type(L, i)));
 	}
 }
 

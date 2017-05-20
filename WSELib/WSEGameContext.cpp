@@ -36,6 +36,19 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	params[2] = param_3;
 	params[3] = param_4;
 
+	int lRef = WSE->LuaOperations.operationHooks[wb::opcodes::call_script];
+	if (lRef != LUA_NOREF)
+	{
+		bool contLoop;
+		bool setRetVal;
+		long long retVal;
+		__int64 operands[5] = { m_mapped_script_nos[script_no], param_1, param_2, param_3, param_4 };
+		int types[5] = { 0, 0, 0, 0, 0 };
+
+		if (!WSE->LuaOperations.OnOperationExecute(lRef, num_params + 1, types, operands, &contLoop, setRetVal, retVal))
+			return true;
+	}
+
 	return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
 }
 
@@ -312,7 +325,7 @@ void WSEGameContext::OnOpenWindow(int window_no)
 
 void WSEGameContext::OnRglLogWrite(HANDLE hFile, const char *buf, int numChars)
 {
-	rglLogWriteData data;
+	rglLogWriteEventData data;
 
 	data.str = (char*)malloc(numChars + 1);
 	memcpy(data.str, buf, numChars);

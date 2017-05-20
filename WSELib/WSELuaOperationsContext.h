@@ -31,9 +31,11 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int callTriggerOpcode;
 		std::unordered_map<std::string, gameOperation> operationMap;
 		std::vector<gameConstTable> gameConstTables;
+		int operationHooks[WSE_MAX_NUM_OPERATIONS];
 
 	public:
 		WSELuaOperationsContext();
+		bool OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal);
 
 	protected:
 		bool luaStateIsReady = false;

@@ -11,7 +11,7 @@
 #define WSE_SCRIPT_WINDOW_OPENED 5
 #define WSE_NUM_SCRIPTS 6
 
-struct rglLogWriteData
+struct rglLogWriteEventData
 {
 	HANDLE hFile;
 	char *str;
