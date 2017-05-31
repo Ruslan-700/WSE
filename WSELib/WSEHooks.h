@@ -9,6 +9,7 @@ void ReadModuleFilesHook();
 void GameReadModuleFilesHook();
 void ParseConsoleCommandHook();
 void SaveHook();
+void LoadSaveHook();
 void CheckUrlRepliesHook();
 void ClientNetworkMessageReceivedHook();
 void ServerNetworkMessageReceivedHook();

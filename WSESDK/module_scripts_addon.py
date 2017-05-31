@@ -13,6 +13,11 @@
 ("wse_game_saved", [
 ]),
 
+#script_wse_savegame_loaded
+# Called each time after savegame is loaded successfully
+("wse_savegame_loaded", [
+]),
+
 #script_wse_chat_message_received
 # Called each time a chat message is received (both for servers and clients)
 # INPUT

@@ -36,6 +36,9 @@ unsigned int addresses::ExecuteConsoleCommand_entry = 0;
 //unsigned int addresses::Save_entry = 0x00606612;
 unsigned int addresses::Save_entry = 0x0054D8F6;
 
+unsigned int addresses::LoadSave_entry = 0x0061747C;
+unsigned int addresses::LoadSave_exit = LoadSave_entry + 5;
+
 //unsigned int addresses::CheckUrlReplies_entry = 0x005B293C;
 //unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
 unsigned int addresses::CheckUrlReplies_entry = 0x0056F7AE;
@@ -271,6 +274,9 @@ unsigned int addresses::ExecuteConsoleCommand_entry = 0;
 
 unsigned int addresses::Save_entry = 0x0060AC12;
 
+unsigned int addresses::LoadSave_entry = 0x0061747C;
+unsigned int addresses::LoadSave_exit = LoadSave_entry + 5;
+
 unsigned int addresses::CheckUrlReplies_entry = 0x005B712C;
 unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;
 
@@ -458,6 +464,9 @@ unsigned int addresses::ParseConsoleCommand_exit_2 = ParseConsoleCommand_entry +
 unsigned int addresses::ExecuteConsoleCommand_entry = 0x004E9DF0;
 
 unsigned int addresses::Save_entry = 0;
+
+unsigned int addresses::LoadSave_entry = 0;
+unsigned int addresses::LoadSave_exit = 0;
 
 //unsigned int addresses::CheckUrlReplies_entry = 0x004DBEDC;
 //unsigned int addresses::CheckUrlReplies_exit = CheckUrlReplies_entry + 6;

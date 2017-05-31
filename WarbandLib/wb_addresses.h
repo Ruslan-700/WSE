@@ -28,7 +28,10 @@ namespace wb
 		static unsigned int ExecuteConsoleCommand_entry;
 	
 		static unsigned int Save_entry;
-	
+
+		static unsigned int LoadSave_entry;
+		static unsigned int LoadSave_exit;
+
 		static unsigned int CheckUrlReplies_entry;
 		static unsigned int CheckUrlReplies_exit;
 		static unsigned int CheckUrlReplies_call;

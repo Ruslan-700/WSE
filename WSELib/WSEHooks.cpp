@@ -208,6 +208,20 @@ void __declspec(naked) SaveHook()
 #endif
 }
 
+void __declspec(naked) LoadSaveHook()
+{
+#if defined WARBAND
+	_asm
+	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Game, OnLoadSave)
+		RESTORE_REGS
+		push 0x008287EC
+		jmp[wb::addresses::LoadSave_exit]
+	}
+#endif
+}
+
 void __declspec(naked) CheckUrlRepliesHook()
 {
 	_asm

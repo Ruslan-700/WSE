@@ -9,7 +9,8 @@
 #define WSE_SCRIPT_MULTIPLAYER_MESSAGE_RECEIVED 3
 #define WSE_SCRIPT_GET_AGENT_SCALE 4
 #define WSE_SCRIPT_WINDOW_OPENED 5
-#define WSE_NUM_SCRIPTS 6
+#define WSE_SCRIPT_SAVEGAME_LOADED 6
+#define WSE_NUM_SCRIPTS 7
 
 class WSEGameContext : public WSEContext
 {
@@ -26,6 +27,7 @@ private:
 	void OnReadModuleFiles();
 	void OnReadGameFiles();
 	void OnSave();
+	void OnLoadSave();
 	bool OnConsoleCommandReceived(rgl::string *text, rgl::string *result);
 	bool OnConfigManagerChooseNumberOfEffectiveCorpses();
 	void OnOpenWindow(int window_no);

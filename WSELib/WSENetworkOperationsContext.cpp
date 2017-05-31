@@ -192,7 +192,7 @@ int GetServerOptionAtConnect(WSENetworkOperationsContext *context)
 	return -1;
 }
 
-void ServerSetPasswordRcon(WSECoreOperationsContext *context)
+void ServerSetPasswordRcon(WSENetworkOperationsContext *context)
 {
 #if defined WARBAND_DEDICATED
 	std::string str;
@@ -209,7 +209,7 @@ void ServerSetPasswordRcon(WSECoreOperationsContext *context)
 #endif
 }
 
-void ExecuteServerConsoleCommand(WSECoreOperationsContext *context)
+void ExecuteServerConsoleCommand(WSENetworkOperationsContext *context)
 {
 #if defined WARBAND_DEDICATED
 	int sreg;

@@ -12,6 +12,7 @@ void WSEGameContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::LoadSave_entry, LoadSaveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry, ConfigManagerChooseNumberOfEffectiveCorpsesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::game_screen_OpenWindow_entry, OpenWindowHook);
 #endif
@@ -89,6 +90,7 @@ void WSEGameContext::OnReadModuleFiles()
 	mapped_script_ids[WSE_SCRIPT_MULTIPLAYER_MESSAGE_RECEIVED] = "wse_multiplayer_message_received";
 	mapped_script_ids[WSE_SCRIPT_GET_AGENT_SCALE] = "wse_get_agent_scale";
 	mapped_script_ids[WSE_SCRIPT_WINDOW_OPENED] = "wse_window_opened";
+	mapped_script_ids[WSE_SCRIPT_SAVEGAME_LOADED] = "wse_savegame_loaded";
 
 	for (int i = 0; i < WSE_NUM_SCRIPTS; ++i)
 	{
@@ -202,6 +204,11 @@ void WSEGameContext::OnReadGameFiles()
 void WSEGameContext::OnSave()
 {
 	ExecuteScript(WSE_SCRIPT_GAME_SAVED, 0);
+}
+
+void WSEGameContext::OnLoadSave()
+{
+	ExecuteScript(WSE_SCRIPT_SAVEGAME_LOADED, 0);
 }
 
 bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *result)
