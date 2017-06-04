@@ -19,7 +19,7 @@ void WSEPluginWrapperContext::OnUnload()
 		m_info->m_unload_func();
 }
 
-void WSEPluginWrapperContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEPluginWrapperContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	if (m_info->m_event_func)
 		m_info->m_event_func(sender, evt);

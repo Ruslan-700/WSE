@@ -14,7 +14,7 @@ public:
 
 protected:
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	void Prepare(wb::operation *operation, WSEOperationDescriptor *descriptor, int context_flags, int *operand_types, __int64 *operand_values, __int64 *locals);
@@ -58,12 +58,14 @@ public:
 	void ExtractOverlayNo(int &value);
 	void ExtractMissileNo(int &value);
 	void ExtractAnimationNo(int &value);
-	void ExtractVector(std::vector<int> &vector, int maxDims);
+	void ExtractVector(std::vector<int> &vector, int maxCount);
 	int GetCurrentTrigger() const;
 	void ScriptError(std::string format, ...) const;
 	void WindowsAPIError(std::string message, ...) const;
+	std::string CreateStorageDir();
 	std::string CreateFile(const std::string &file, const std::string &extension);
 	std::string CreateScreenshot(const std::string &file, const std::string &extension);
+	int getOpcodeRangeCur();
 
 protected:
 	void DefineOperation(int opcode, const std::string &name, unsigned int flags, short min_operands, short max_operands, std::string description, ...);

@@ -62,7 +62,7 @@ namespace wb
 	{
 		operation *operations;
 		int num_operations;
-		bool analyzed;
+		int analyzed;
 		rgl::string id;
 		
 		operation_manager();

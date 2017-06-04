@@ -6,7 +6,7 @@
 #include "WSEContext.h"
 #include "warband.h"
 
-#define WSE_MAX_NUM_OPERATIONS 5100
+#define WSE_MAX_NUM_OPERATIONS 5200
 #define WSE_FIRST_WARBAND_OPCODE 31
 //#define WSE_LAST_WARBAND_OPCODE 2392
 #define WSE_LAST_WARBAND_OPCODE 2767
@@ -96,7 +96,7 @@ public:
 protected:
 	virtual void OnLoad();
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	bool ExecuteStatementBlock(wb::operation_manager *operation_manager, int context_flags, int depth, int &num_parameters, __int64 *parameters);

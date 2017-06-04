@@ -273,6 +273,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	AddContext(&StringOperations, false);
 	AddContext(&TroopOperations, false);
 	AddContext(&ArrayOperations, false);
+	AddContext(&LuaOperations, false);
 	
 	WIN32_FIND_DATA data;
 	HANDLE handle = FindFirstFile((m_path + "\\*WSE*Plugin*.dll").c_str(), &data);
@@ -377,7 +378,7 @@ void WSEEnvironment::AddContext(WSEContext *context, bool load)
 		context->Load();
 }
 
-void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt)
+void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	if (!sender->IsLoaded())
 		return;
@@ -386,6 +387,6 @@ void WSEEnvironment::SendContextEvent(WSEContext *sender, WSEEvent evt)
 
 	for (it = m_contexts.begin(); it != m_contexts.end(); ++it)
 	{
-		(*it)->Event(sender, evt);
+		(*it)->Event(sender, evt, data);
 	}
 }

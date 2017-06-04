@@ -108,7 +108,7 @@ void WSEBitStream::WriteString(const rgl::string &value)
 {
 	WriteU32(value.length(), 12);
 
-	for (size_t i = 0; i < value.length(); ++i)
+	for (int i = 0; i < value.length(); ++i)
 	{
 		WriteU32(value[i], 8);
 	}

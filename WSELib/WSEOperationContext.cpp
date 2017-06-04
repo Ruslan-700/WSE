@@ -17,7 +17,7 @@ void WSEOperationContext::OnUnload()
 	m_opcode_range_cur = m_opcode_range;
 }
 
-void WSEOperationContext::OnEvent(WSEContext *sender, WSEEvent evt)
+void WSEOperationContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	switch (evt)
 	{
@@ -397,14 +397,15 @@ void WSEOperationContext::ExtractAnimationNo(int &value)
 		ScriptError("invalid animation no %d", value);
 }
 
-void WSEOperationContext::ExtractVector(std::vector<int> &vector, int maxDims)
+void WSEOperationContext::ExtractVector(std::vector<int> &vector, int maxCount)
 {
 	int curVal;
 
-	while (HasMoreOperands() && maxDims != 0){
+	while (HasMoreOperands() && maxCount)
+	{
 		ExtractValue(curVal);
 		vector.push_back(curVal);
-		maxDims--;
+		maxCount--;
 	}
 }
 
@@ -458,7 +459,7 @@ void WSEOperationContext::WindowsAPIError(std::string format, ...) const
 	throw 0;
 }
 
-std::string WSEOperationContext::CreateFile(const std::string &file, const std::string &extension)
+std::string WSEOperationContext::CreateStorageDir()
 {
 	std::string path = WSE->SettingsIni.String("wse", "storage_path");
 
@@ -489,7 +490,14 @@ std::string WSEOperationContext::CreateFile(const std::string &file, const std::
 	if (!CreateDirectory(path.c_str(), nullptr) && GetLastError() != ERROR_ALREADY_EXISTS)
 		WindowsAPIError("CreateDirectory failed for path %s", path.c_str());
 
-	path += "\\" + file + "." + extension;
+	return path + "\\";
+}
+
+std::string WSEOperationContext::CreateFile(const std::string &file, const std::string &extension)
+{
+	std::string path = CreateStorageDir();
+
+	path += file + "." + extension;
 
 	return path;
 }
@@ -617,4 +625,9 @@ unsigned __int64 WSEOperationContext::GetNextOperandRaw(unsigned __int64 def)
 	}
 
 	return m_operand_values[m_cur_operand++];
+}
+
+int WSEOperationContext::getOpcodeRangeCur()
+{
+	return this->m_opcode_range_cur;
 }

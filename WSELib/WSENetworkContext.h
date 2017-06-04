@@ -51,7 +51,7 @@ public:
 protected:
 	virtual void OnLoad();
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
 	virtual bool http_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout);

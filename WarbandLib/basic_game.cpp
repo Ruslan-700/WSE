@@ -14,7 +14,7 @@ bool basic_game::is_safe_string(const rgl::string &str)
 	if (str.length() >= 50)
 		return false;
 
-	for (size_t i = 0; i < str.length(); ++i)
+	for (int i = 0; i < str.length(); ++i)
 	{
 		char c = str[i];
 

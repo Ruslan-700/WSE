@@ -10,6 +10,8 @@ void WSEGameContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::game_ReadModuleFiles_entry, GameReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ReadModuleFiles_entry, ReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::write_to_rgl_log, RglLogHook);
+
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::LoadSave_entry, LoadSaveHook);
@@ -34,6 +36,19 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	params[1] = param_2;
 	params[2] = param_3;
 	params[3] = param_4;
+
+	int lRef = WSE->LuaOperations.operationHooks[wb::opcodes::call_script];
+	if (lRef != LUA_NOREF)
+	{
+		bool contLoop;
+		bool setRetVal;
+		long long retVal;
+		__int64 operands[5] = { m_mapped_script_nos[script_no], param_1, param_2, param_3, param_4 };
+		int types[5] = { 0, 0, 0, 0, 0 };
+
+		if (!WSE->LuaOperations.OnOperationExecute(lRef, num_params + 1, types, operands, &contLoop, setRetVal, retVal))
+			return true;
+	}
 
 	return warband->script_manager.scripts[m_mapped_script_nos[script_no]].execute(num_params, params);
 }
@@ -313,4 +328,19 @@ void WSEGameContext::OnOpenWindow(int window_no)
 	warband->game_screen.game_windows[window_no]->open();
 	warband->window_manager.set_show_cursor(warband->game_screen.game_windows[window_no]->has_cursor());
 #endif
+}
+
+void WSEGameContext::OnRglLogWrite(HANDLE hFile, const char *buf, int numChars)
+{
+	rglLogWriteEventData data;
+
+	data.str = (char*)malloc(numChars + 1);
+	memcpy(data.str, buf, numChars);
+	data.str[numChars] = '\0';
+
+	data.hFile = hFile;
+
+	WSE->SendContextEvent(this, OnRglLogMsg, &data);
+
+	free(data.str);
 }

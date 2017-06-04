@@ -83,5 +83,7 @@ namespace wb
 		int timer_no;
 
 		void execute(int context);
+		int addTrigger(const trigger &newTrigger);
+		bool removeTrigger(int index);
 	};
 }

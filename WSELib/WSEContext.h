@@ -9,6 +9,7 @@ enum WSEEvent
 	ModuleLoad,
 	GameLoad,
 	OnFrame,
+	OnRglLogMsg,
 };
 
 class WSEContext
@@ -18,13 +19,13 @@ public:
 	virtual ~WSEContext();
 	void Load();
 	void Unload();
-	void Event(WSEContext *sender, WSEEvent evt);
+	void Event(WSEContext *sender, WSEEvent evt, void *data);
 	bool IsLoaded() const;
 
 protected:
 	virtual void OnLoad();
 	virtual void OnUnload();
-	virtual void OnEvent(WSEContext *sender, WSEEvent evt);
+	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 private:
 	bool m_loaded;

@@ -834,6 +834,7 @@ void *WSEArrayOperationsContext::GetArray(int id)
 	}
 
 	ScriptError("operand [%i] is not a valid array", id);
+	return NULL;
 }
 
 
