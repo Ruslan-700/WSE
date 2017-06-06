@@ -411,7 +411,9 @@ FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
 	{
 		char *safePath = makeSafePath(L->userDir, filename);
 		if (!safePath)
+		{
 			return NULL;
+		}
 
 		FILE *res = fopen(safePath, mode);
 		free(safePath);
