@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include "WSELuaOperationsLuaCallbacks.h"
 #include "WSELuaOperationsHelpers.h"
 
@@ -584,7 +586,46 @@ int lHookOperation(lua_State *L)
 
 		opcode = opEntry->second.opcode;
 	}
-	WSE->LuaOperations.operationHooks[opcode] = luaL_ref(L, LUA_REGISTRYINDEX);
+
+	WSE->LuaOperations.hookOperation(L, opcode, luaL_ref(L, LUA_REGISTRYINDEX));
 
 	return 0;
+}
+
+int lUnhookOperation(lua_State *L)
+{
+	checkLArgs(L, 2, 2, lNum | lStr);
+
+	int opcode;
+	if (lua_type(L, 1) == LUA_TNUMBER)
+	{
+		opcode = lua_tointeger(L, 1);
+
+		if (opcode < 0 || opcode >= WSE_MAX_NUM_OPERATIONS)
+			luaL_error(L, "opcode %d out of range", opcode);
+	}
+	else
+	{
+		std::string opName = lua_tostring(L, 1);
+
+		auto opEntry = WSE->LuaOperations.operationMap.find(opName);
+
+		if (opEntry == WSE->LuaOperations.operationMap.end())
+			luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
+
+		opcode = opEntry->second.opcode;
+	}
+	if (!WSE->LuaOperations.unhookOperation(L, opcode))
+		luaL_error(L, "Unable to unhook opcode [%d].", opcode);
+
+	return 0;
+}
+
+int lGetTime(lua_State *L)
+{
+	using namespace std::chrono;
+	uint64_t t = duration_cast<milliseconds>(steady_clock::now() - WSE->LuaOperations.tStart).count();
+	lua_pushinteger(L, (LUA_INTEGER)t);
+
+	return 1;
 }

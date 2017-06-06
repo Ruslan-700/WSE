@@ -37,6 +37,12 @@ void WSEHook::Write(const unsigned char *data) const
 	VirtualProtect(m_address, m_num_bytes, prot_old, &prot_new);
 }
 
+void WSEHook::getBackup(unsigned int numChars, unsigned char *buf, unsigned int bufSize)
+{
+	if (numChars <= sizeof(m_backup))
+		memcpy_s(buf, bufSize, m_backup, numChars);
+}
+
 
 WSEFunctionHook::WSEFunctionHook(WSEContext *context, unsigned int address, WSEHookCallback callback) : WSEHook(context, (void *)address, 5)
 {
@@ -160,4 +166,12 @@ void WSEHookManager::UnhookAll(WSEContext *context)
 		delete m_hooks[hooks[i]];
 		m_hooks.erase(hooks[i]);
 	}
+}
+
+void WSEHookManager::getHookBackup(unsigned int address, unsigned int numChars, unsigned char *buf, unsigned int bufSize)
+{
+	WSEHookMap::const_iterator it = m_hooks.find(address);
+
+	if (m_hooks.find(address) != m_hooks.end())
+		it->second->getBackup(numChars, buf, bufSize);
 }

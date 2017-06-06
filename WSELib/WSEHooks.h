@@ -3,6 +3,7 @@
 void DebugHook();
 void OperationManagerExecuteHook();
 void OperationExecuteHook();
+void LuaOperationJumptableHook();
 void ChatMessageReceivedHook();
 void TeamChatMessageReceivedHook();
 void ReadModuleFilesHook();

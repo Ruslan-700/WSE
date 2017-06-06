@@ -26,3 +26,6 @@ int lPlayersIterInit(lua_State *L);
 int lPrint(lua_State *L);
 
 int lHookOperation(lua_State *L);
+int lUnhookOperation(lua_State *L);
+
+int lGetTime(lua_State *L);

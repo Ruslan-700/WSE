@@ -36,7 +36,7 @@ bool WSEGameContext::ExecuteScript(int script_no, int num_params, int param_1, i
 	params[2] = param_3;
 	params[3] = param_4;
 
-	int lRef = WSE->LuaOperations.operationHooks[wb::opcodes::call_script];
+	int lRef = WSE->LuaOperations.operationHookLuaRefs[wb::opcodes::call_script];
 	if (lRef != LUA_NOREF)
 	{
 		bool contLoop;

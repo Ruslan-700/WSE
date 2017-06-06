@@ -93,6 +93,61 @@ continue_exec:
 	}
 }
 
+void __declspec(naked) LuaOperationJumptableHook() //not lua_operations, the hook is used for lua
+{
+	_asm
+	{
+		FREEZE_REGS
+			mov eax, esp
+			mov edx, [ebp + 12]
+			mov edx, [edx]
+			push edx
+			push[ebp + 8]
+			mov edx, eax
+#if defined WARBAND
+			//add edx, 15
+			add edx, 47
+			push edx
+			mov edx, eax
+			add edx, 48
+			push edx
+			mov edx, eax
+			add edx, 376
+			push edx
+			//push edi
+			push ebx
+#elif defined WARBAND_DEDICATED
+			/*
+			add edx, 31
+			push edx
+			mov edx, eax
+			add edx, 40
+			push edx
+			mov edx, eax
+			add edx, 400
+			*/
+			add edx, 23
+			push edx
+			mov edx, eax
+			add edx, 48
+			push edx
+			mov edx, eax
+			add edx, 376
+			push edx
+			push ebx
+#endif
+			CALL_CONTEXT_FUNC(LuaOperations, OnOperationJumptableExecute)
+			test eax, eax
+			jnz jmp_original
+			RESTORE_REGS
+			jmp[wb::addresses::operation_Execute_exit_1]
+		jmp_original:
+			push eax
+			RESTORE_REGS
+			ret
+	}
+}
+
 void __declspec(naked) ChatMessageReceivedHook()
 {
 	_asm

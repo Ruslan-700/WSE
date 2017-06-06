@@ -190,23 +190,20 @@ inline void addGameConstantsToLState(lua_State *L)
 {
 	std::vector<gameConstTable> &constTables = WSE->LuaOperations.gameConstTables;
 
-	if (constTables.size())
+	lua_newtable(L);
+
+	for (size_t i = 0; i < constTables.size(); i++)
 	{
 		lua_newtable(L);
-
-		for (size_t i = 0; i < constTables.size(); i++)
+		for (size_t j = 0; j < constTables[i].constants.size(); j++)
 		{
-			lua_newtable(L);
-			for (size_t j = 0; j < constTables[i].constants.size(); j++)
-			{
-				lua_pushnumber(L, (lua_Number)constTables[i].constants[j].val);
-				lua_setfield(L, -2, constTables[i].constants[j].name.c_str());
-			}
-			lua_setfield(L, -2, constTables[i].name.c_str());
+			lua_pushnumber(L, (lua_Number)constTables[i].constants[j].val);
+			lua_setfield(L, -2, constTables[i].constants[j].name.c_str());
 		}
-
-		lua_setfield(L, -2, "const");
+		lua_setfield(L, -2, constTables[i].name.c_str());
 	}
+
+	lua_setfield(L, -2, "const");
 }
 
 void initLGameTable(lua_State *L)
@@ -257,12 +254,18 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lHookOperation);
 	lua_setfield(L, -2, "hookOperation");
 
+	lua_pushcfunction(L, lUnhookOperation);
+	lua_setfield(L, -2, "unhookOperation");
+
 	addGameConstantsToLState(L);
 
 	lua_setglobal(L, "game");
 
 	lua_pushcfunction(L, lPrint);
 	lua_setglobal(L, "_print");
+
+	lua_pushcfunction(L, lGetTime);
+	lua_setglobal(L, "getTime");
 
 	const char *globals =
 		#include "LuaGlobals.txt"
@@ -310,8 +313,10 @@ void initLaneState(lua_State *L)
 
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
+	tStart = std::chrono::steady_clock::now();
+
 	for (size_t i = 0; i < WSE_MAX_NUM_OPERATIONS; i++)
-		operationHooks[i] = LUA_NOREF;
+		operationHookLuaRefs[i] = LUA_NOREF;
 }
 
 void WSELuaOperationsContext::OnLoad()
@@ -415,6 +420,31 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 	}
 }
 
+void WSELuaOperationsContext::hookOperation(lua_State *L, int opcode, int lRef)
+{
+	if (operationHookLuaRefs[opcode] != LUA_NOREF)
+		unhookOperation(L, opcode);
+
+	operationHookLuaRefs[opcode] = lRef;
+
+	if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
+		WSE->Hooks.HookJumptable(this, wb::addresses::operation_Execute_jumptable, opcode - 30, LuaOperationJumptableHook);
+}
+
+bool WSELuaOperationsContext::unhookOperation(lua_State *L, int opcode)
+{
+	if (operationHookLuaRefs[opcode] == LUA_NOREF)
+		return false;
+
+	luaL_unref(L, LUA_REGISTRYINDEX, operationHookLuaRefs[opcode]);
+	operationHookLuaRefs[opcode] = LUA_NOREF;
+
+	if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
+		WSE->Hooks.UnhookJumptable(this, wb::addresses::operation_Execute_jumptable, opcode - 30);
+
+	return true;
+}
+
 bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
 {
 	setRetVal = false;
@@ -470,7 +500,7 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 			return true;
 		}
 	}
-	else if (nResults == 3 + oldTop)
+	else if (nResults == 3) //?
 	{
 		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN && lua_type(luaState, 3 + oldTop) == LUA_TNUMBER)
 		{
@@ -489,6 +519,36 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 	bool cont = lua_toboolean(luaState, 1 + oldTop) != 0;
 	lua_settop(luaState, oldTop);
 	return cont;
+}
+
+void *WSELuaOperationsContext::OnOperationJumptableExecute(wb::operation *operation, int *operand_types, __int64 *operand_values, bool *continue_loop, __int64 *locals, int context_flags)
+{
+	int opcode = operation->opcode & 0xFFFFFFF;
+
+	try
+	{
+		bool setRetVal;
+		long long retVal;
+
+		bool cont = this->OnOperationExecute(operationHookLuaRefs[opcode], operation->num_operands, operand_types, operand_values, continue_loop, setRetVal, retVal);
+
+		if (setRetVal)
+			operation->set_return_value(locals, retVal);
+
+		if (cont)
+		{
+			void *addr;
+			WSE->Hooks.getHookBackup(wb::addresses::operation_Execute_jumptable + (opcode - 30) * 4, 4, (unsigned char*)&addr, 4);
+			return addr;
+		}
+
+		return NULL;
+	}
+	catch (...)
+	{
+	}
+
+	return NULL;
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)

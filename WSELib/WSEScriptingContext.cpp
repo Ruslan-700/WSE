@@ -879,7 +879,7 @@ bool WSEScriptingContext::OnOperationExecute(wb::operation *operation, int *oper
 {
 	int opcode = operation->opcode & 0xFFFFFFF;
 
-	int lRef = WSE->LuaOperations.operationHooks[opcode];
+	int lRef = WSE->LuaOperations.operationHookLuaRefs[opcode];
 	if (lRef != LUA_NOREF)
 	{
 		try

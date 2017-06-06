@@ -10,6 +10,7 @@ public:
 	~WSEHook();
 	void Restore() const;
 	bool IsOwnedBy(WSEContext *context) const;
+	void getBackup(unsigned int numChars, unsigned char *buf, unsigned int bufSize);
 
 protected:
 	unsigned char m_asm[8];
@@ -57,6 +58,7 @@ public:
 	virtual void HookFunctionConditional(WSEContext *context, bool condition, unsigned int address, WSEHookCallback callback);
 	virtual void HookJumptableConditional(WSEContext *context, bool condition, unsigned int address, unsigned int index, WSEHookCallback callback);
 	virtual void UnhookAll(WSEContext *context = nullptr);
+	virtual void getHookBackup(unsigned int address, unsigned int numChars, unsigned char *buf, unsigned int bufSize);
 
 private:
 	WSEHookMap m_hooks;
