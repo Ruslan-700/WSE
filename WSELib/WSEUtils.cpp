@@ -205,3 +205,13 @@ std::string UriEncode(const std::string & sSrc)
 	delete[] pStart;
 	return sResult;
 }
+
+std::string replaceString(std::string subject, std::string const & search, std::string const & replace) 
+{
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+	return subject;
+}

@@ -153,7 +153,9 @@ void WSEDictionary::FromUrlEncodedJson(const std::string &string, const int &mod
 	Json::Value root;
 	Json::Reader reader;
 
-	bool parsingSuccessful = reader.parse(UriDecode(string), root);
+	std::string replaced = replaceString(string, "+", " ");
+	
+	bool parsingSuccessful = reader.parse(UriDecode(replaced), root);
 	if (!parsingSuccessful)
 		return;
 
@@ -178,7 +180,7 @@ const std::string WSEDictionary::ToUrlEncodedJson() const
 		root[it->first] = it->second;
 	}
 
-	Json::StyledWriter writer;
+	Json::FastWriter writer;
 	return UriEncode(writer.write(root));
 }
 

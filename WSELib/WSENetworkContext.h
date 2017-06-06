@@ -31,6 +31,8 @@ struct HTTPConnection
 	int m_timeout;
 	bool m_failed;
 	bool m_raw;
+	bool m_post;
+	rgl::string m_post_data;
 };
 
 enum WSENetworkEventType
@@ -55,6 +57,7 @@ protected:
 
 public:
 	virtual bool http_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout);
+	virtual bool http_post_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout, rgl::string &post_data);
 	bool IsNetworkCompatible() const;
 	virtual void ReceiveMultiplayerMessage(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
 	void PopulateServerOptionsServerEvent(wb::multiplayer_event *evt);

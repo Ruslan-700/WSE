@@ -84,11 +84,104 @@ bool WSENetworkContext::http_request(const rgl::string &url, rgl::string &respon
 	return error;
 }
 
+bool WSENetworkContext::http_post_request(const rgl::string &url, rgl::string &response, rgl::string &user_agent, int timeout, rgl::string &post_data)
+{
+	bool error = true;
+	int hostIndex = url.index_of("//");
+
+	if (hostIndex >= 0)
+		hostIndex += 2;
+	else
+		hostIndex = 0;
+
+	int hostEndIndex;
+	int pathIndex = url.index_of('/', hostIndex);
+
+	if (pathIndex >= 0)
+	{
+		hostEndIndex = pathIndex;
+		pathIndex += 1;
+	}
+	else
+	{
+		pathIndex = url.length();
+		hostEndIndex = pathIndex;
+	}
+
+	wchar_t *host = url.substr(hostIndex, hostEndIndex).to_utf8();
+	wchar_t *path = url.substr(pathIndex, url.length()).to_utf8();
+	wchar_t *userAgent = user_agent.to_utf8();
+	HINTERNET session = NULL;
+	HINTERNET connect = NULL;
+	HINTERNET request = NULL;
+
+	session = WinHttpOpen(userAgent, WINHTTP_ACCESS_TYPE_NO_PROXY, NULL, NULL, 0);
+
+	if (session)
+		connect = WinHttpConnect(session, host, INTERNET_DEFAULT_PORT, 0);
+
+	if (connect)
+		request = WinHttpOpenRequest(connect, L"POST", path, NULL, WINHTTP_NO_REFERER, NULL, 0);
+
+	if (request)
+	{
+		WinHttpSetTimeouts(request, timeout, timeout, timeout, timeout);
+
+		LPCWSTR additionalHeaders = L"Content-Type: application/x-www-form-urlencoded\r\n";
+		DWORD headersLength = -1;
+		LPSTR data = const_cast<char *>(post_data.c_str());
+		DWORD data_len = strlen(data);
+
+		if (WinHttpSendRequest(request, additionalHeaders, headersLength, (LPVOID)data, data_len, data_len, NULL) && WinHttpReceiveResponse(request, NULL))
+		{
+			DWORD numBytesAvailable = 0;
+
+			do
+			{
+				if (WinHttpQueryDataAvailable(request, &numBytesAvailable))
+				{
+					error = false;
+
+					if (numBytesAvailable > 0)
+					{
+						rgl::string dataRead;
+						DWORD numBytesRead = 0;
+
+						if (WinHttpReadData(request, dataRead.get_buffer(numBytesAvailable), numBytesAvailable, &numBytesRead))
+						{
+							dataRead.release_buffer(numBytesRead);
+							response += dataRead;
+						}
+					}
+				}
+			} while (numBytesAvailable);
+		}
+
+		WinHttpCloseHandle(request);
+		rgl::_delete_vec(data);
+	}
+
+	WinHttpCloseHandle(connect);
+	WinHttpCloseHandle(session);
+	rgl::_delete_vec(userAgent);
+	rgl::_delete_vec(path);
+	rgl::_delete_vec(host);
+	return error;
+}
+
 DWORD WINAPI HTTPRequestThread(LPVOID param)
 {
 	HTTPConnection *conn = (HTTPConnection *)param;
 	
-	conn->m_failed = WSE->Network.http_request(conn->m_url, conn->m_response, conn->m_user_agent, conn->m_timeout * 1000);
+	if (conn->m_post)
+	{
+		conn->m_failed = WSE->Network.http_post_request(conn->m_url, conn->m_response, conn->m_user_agent, conn->m_timeout * 1000, conn->m_post_data);
+	}
+	else
+	{
+		conn->m_failed = WSE->Network.http_request(conn->m_url, conn->m_response, conn->m_user_agent, conn->m_timeout * 1000);
+	}
+	
 	EnterCriticalSection(&WSE->Network.m_http_critical_section);
 	WSE->Network.m_http_connections.push_back(conn);
 	LeaveCriticalSection(&WSE->Network.m_http_critical_section);

@@ -995,7 +995,7 @@ void WSEStringOperationsContext::OnLoad()
 		"string_register", "string_1", "string_regex", "string_2");
 
 	RegisterOperation("str_decode_url", StrDecodeUrl, Both, None, 2, 2,
-		"Decode url encoded <1> and stores it into <0>",
+		"Decode url encoded <1> and stores it into <0>. Note that it doesn't convert +'s to spaces(as per the spec)",
 		"string_register", "string_1");
 }
 

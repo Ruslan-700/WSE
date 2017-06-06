@@ -15,6 +15,7 @@ rgl::string format(const char *format, ...);
 void game_memcpy_s(void *dest, const unsigned char *src, int num_bytes);
 std::string UriDecode(const std::string & sSrc);
 std::string UriEncode(const std::string & sSrc);
+std::string replaceString(std::string subject, std::string const & search, std::string const & replace);
 
 template <typename T>
 std::string join(const std::string &separator, T *values, size_t size)

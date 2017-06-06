@@ -270,6 +270,24 @@ void SendMessageToUrlAdvanced(WSECoreOperationsContext *context)
 	context->ExtractValue(conn->m_failure_script_no, -1);
 	context->ExtractBoolean(conn->m_raw);
 	context->ExtractValue(conn->m_timeout, 10);
+	conn->m_post_data = "";
+	conn->m_post = false;
+
+	CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
+}
+
+void SendPostMessageToUrlAdvanced(WSECoreOperationsContext *context)
+{
+	HTTPConnection *conn = new HTTPConnection;
+
+	context->ExtractString(conn->m_url);
+	context->ExtractString(conn->m_user_agent);
+	context->ExtractString(conn->m_post_data);
+	context->ExtractValue(conn->m_success_script_no, -1);
+	context->ExtractValue(conn->m_failure_script_no, -1);
+	context->ExtractBoolean(conn->m_raw);
+	context->ExtractValue(conn->m_timeout, 10);
+	conn->m_post = true;
 
 	CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
 }
@@ -673,5 +691,9 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("make_screenshot", MakeScreenshot, Client, None, 2, 2,
 		"Make game screenshot. For security reasons, <1> will be saved into a Screenshots directory. Supported <0>s: BMP - 0, JPG - 1, TGA - 2, PNG - 3.",
 		"format", "file");
+
+	RegisterOperation("send_post_message_to_url_advanced", SendPostMessageToUrlAdvanced, Both, None, 3, 7,
+		"Sends a HTTP POST request to <0> with <1> and <2>. If the request succeeds, <3> will be called. The script will behave like game_receive_url_response, unless <5> is non-zero, in which case the script will receive no arguments and s0 will contain the full response. If the request fails, <4> will be called.",
+		"url_string", "user_agent_string", "post_data", "success_callback_script_no", "failure_callback_script_no", "skip_parsing", "timeout");
 	
 }
