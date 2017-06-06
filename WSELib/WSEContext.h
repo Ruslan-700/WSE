@@ -10,6 +10,7 @@ enum WSEEvent
 	GameLoad,
 	OnFrame,
 	OnRglLogMsg,
+	OnWSEScriptEvent,
 };
 
 class WSEContext

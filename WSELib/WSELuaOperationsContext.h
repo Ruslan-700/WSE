@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <unordered_map>
 #include <lua.hpp>
 
@@ -26,16 +27,20 @@ struct gameConstTable
 
 class WSELuaOperationsContext : public WSEOperationContext
 {
-	public:
+	public: //I really should write getters but meh...
 		lua_State *luaState;
 		int callTriggerOpcode;
 		std::unordered_map<std::string, gameOperation> operationMap;
 		std::vector<gameConstTable> gameConstTables;
-		int operationHooks[WSE_MAX_NUM_OPERATIONS];
+		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];
+		std::chrono::steady_clock::time_point tStart;
 
 	public:
 		WSELuaOperationsContext();
+		void hookOperation(lua_State *L, int opcode, int lRef);
+		bool unhookOperation(lua_State *L, int opcode);
 		bool OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal);
+		void *OnOperationJumptableExecute(wb::operation *operation, int *operand_types, __int64 *operand_values, bool *continue_loop, __int64 *locals, int context_flags);
 
 	protected:
 		bool luaStateIsReady = false;

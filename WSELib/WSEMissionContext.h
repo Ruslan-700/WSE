@@ -5,6 +5,13 @@
 #include "warband.h"
 #include <map>
 
+struct chatMessageReceivedEventData
+{
+	bool team_chat;
+	int player;
+	rgl::string *text;
+};
+
 class WSEMissionContext : public WSEContext
 {
 public:

@@ -239,6 +239,13 @@ int WSEMissionContext::GetTriggerBoneNo(int trigger_no) const
 
 bool WSEMissionContext::OnChatMessageReceived(bool team_chat, int player, rgl::string *text)
 {
+	chatMessageReceivedEventData data;
+	data.team_chat = team_chat;
+	data.player = player;
+	data.text = text;
+
+	WSE->SendContextEvent(this, OnWSEScriptEvent, &data);
+
 	if (!WSE->Game.HasScript(WSE_SCRIPT_CHAT_MESSAGE_RECEIVED))
 		return true;
 
@@ -463,6 +470,8 @@ void WSEMissionContext::OnMissionApplyBlow(wb::agent_blow *blow)
 
 void WSEMissionContext::OnAgentGetScale(wb::agent *agent)
 {
+	WSE->SendContextEvent(this, OnWSEScriptEvent, (void*)agent);
+
 	if (!WSE->Game.HasScript(WSE_SCRIPT_GET_AGENT_SCALE))
 		return;
 

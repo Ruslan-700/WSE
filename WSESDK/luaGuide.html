@@ -544,6 +544,56 @@
 			</div>
 		</div>
 
+		<div class="content_block">
+			<div class="content_block_caption">Module operation hooking</div>
+			<div>
+				<p>You can hook module operations using <span class="keyword">game.hookOperation(operation, funcCallback)</span>.</p>
+				<p>This means whenever the module system uses the operation, your callback will be executed <strong>first</strong>.</p>
+				<p><span class="keyword">operation</span> must be either the operation name as a string or an opcode.</p>
+				<p>&nbsp;</p>
+				<p>The return values of <span class="keyword">funcCallback</span> control further behaviour.</p>
+				<p>If it returns nothing or true, the module operation will be executed as usual.</p>
+				<p>If the first return value is false, the module operation will not be executed.</p>
+				<p>If the second return value is a bool, the module system will think it is executing a cf operation (so if the bool is false, it will break execution, like e.g. <span class="example" style="margin-left: 0;display: unset; padding: 3px;">(eq, 1, 0),</span>).</p>
+				<p>If the second return value is a number, the module system will think it is executing a lhs operation and try to set the return value</p>
+				<p>If the callback returns three values, the module system will think it is executing a cf/lhs operation. The 2nd return value must be the cf value and the 3rd the lhs value</p>
+				<p>In short, the variants are:</p>
+				<div class="example">
+					boolExecute\n
+					boolExecute, boolFail\n
+					boolExecute, numLhs\n
+					boolExecute, boolFail, numLhs\n
+				</div>
+				<p>The hook will not be triggered when calling operations from lua. However, this task can be achieved by overwritting the game metatable, which is defined as:</p>
+				<div class="example">
+					game.mt = {\n
+						\tab__index = function(table, key)\n
+							\tab2return function(...)\n
+								\tab3return game.execOperation(key,...)\n
+							\tab2end\n
+						\tabend\n
+					}\n
+				</div>
+				<p>One could, for example, do (NOT FINISHED YET):</p>
+				<div class="example">
+					game.mt = {\n
+						\tab__index = function(table, key)\n
+							\tab2If key == "player_get_gold" then\n
+								\tab3return myCustomGoldCalculation\n
+								\tab3<span class="comment">--return function that takes all args (...) and returns gold</span>\n
+								\tab3<span class="comment">--this function should, if neccessary, use game.execOperation("player_get_gold", args)</span>\n
+								\tab3<span class="comment">--instead of game.player_get_gold(args), for avoiding an infinite loop.</span>\n
+							\tab2end\n
+							\tab2return function(...)\n
+								\tab3return game.execOperation(key,...)\n
+							\tab2end\n
+						\tabend\n
+					}\n
+					setmetatable(game, game.mt)\n
+				</div>
+				<p>You could even go one step further and create a wrapper for <span class="keyword">game.hookOperation</span> that automates this process for you.</p>
+			</div>
+		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Other functions:</div>
