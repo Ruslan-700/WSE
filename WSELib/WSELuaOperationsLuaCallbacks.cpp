@@ -66,26 +66,45 @@ int lGameExecOperationHandler(lua_State *L)
 		curLArgIndex++;
 	}
 
-	int e = 0;
-
-	bool b = wop.execute(locals, 0, e);
-
-	int retCount = 1;
-	if (op.flags & WSEOperationType::CfOperation)
+	if (op.opcode == wb::opcodes::call_script)
 	{
-		lua_pushboolean(L, b);
-		retCount++;
+		if (wop.operands[0] >= 0 && wop.operands[0] < warband->script_manager.num_scripts)
+		{
+			lua_pushboolean(L, warband->script_manager.scripts[wop.operands[0]].execute(wop.num_operands - 1, &wop.operands[1]));
+			return 1;
+		}
+		else
+		{
+			char buf[1000];
+			sprintf_s(buf, "invalid script no %lld", wop.operands[0]);
+			luaL_error(L, buf);
+		}
+	}
+	else
+	{
+		int e = 0;
+		
+		bool b = wop.execute(locals, 0, e);
+
+		int retCount = 1;
+		if (op.flags & WSEOperationType::CfOperation)
+		{
+			lua_pushboolean(L, b);
+			retCount++;
+		}
+
+		if (op.flags & WSEOperationType::LhsOperation)
+		{
+			lua_pushinteger(L, (lua_Integer)locals[0]);
+			retCount++;
+		}
+
+		lua_pushinteger(L, e);
+
+		return retCount;
 	}
 
-	if (op.flags & WSEOperationType::LhsOperation)
-	{
-		lua_pushinteger(L, (lua_Integer)locals[0]);
-		retCount++;
-	}
-
-	lua_pushinteger(L, e);
-
-	return retCount;
+	return 0;
 }
 
 int lGetRegHandler(lua_State *L)
