@@ -125,6 +125,19 @@ void DictClear(WSEDictionaryOperationsContext *context)
 	dict->Clear();
 }
 
+void DictErase(WSEDictionaryOperationsContext *context)
+{
+	int id;
+	std::string key;
+
+	context->ExtractValue(id);
+	context->ExtractString(key);
+
+	WSEDictionary *dict = context->GetDictionary(id);
+
+	dict->Erase(key);
+}
+
 bool DictIsEmpty(WSEDictionaryOperationsContext *context)
 {
 	int id;
@@ -377,6 +390,11 @@ void WSEDictionaryOperationsContext::OnLoad()
 	RegisterOperation("dict_to_url_encoded_json", DictToUrlEncodedJson, Both, None, 2, 2,
 		"Saves <1> into a url encoded json and stores into <0>",
 		"string_register", "dict");
+
+	RegisterOperation("dict_erase", DictErase, Both, None, 2, 2,
+		"Removes value from <0> paired to <1>",
+		"dict", "key");
+
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

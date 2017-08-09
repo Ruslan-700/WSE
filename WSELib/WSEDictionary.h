@@ -20,6 +20,7 @@ public:
 	void FromUrlEncodedJson(const std::string &string, const int &mode = 0);
 	const std::string ToUrlEncodedJson() const;
 	void Clear();
+	void Erase(const std::string &key);
 	bool Has(const std::string &key) const;
 	int GetSize() const;
 	const std::string &GetString(const std::string &key, const std::string &def = "") const;

@@ -189,6 +189,11 @@ void WSEDictionary::Clear()
 	m_values.clear();
 }
 
+void WSEDictionary::Erase(const std::string &key)
+{
+	m_values.erase(key);
+}
+
 bool WSEDictionary::Has(const std::string &key) const
 {
 	return m_values.find(key) != m_values.end();
