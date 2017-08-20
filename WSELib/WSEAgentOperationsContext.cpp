@@ -3,6 +3,72 @@
 #include "WSE.h"
 #include "warband.h"
 
+int AgentGetDamageModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[0] * 100));
+}
+
+int AgentGetRangedDamageModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[1] * 100));
+}
+
+int AgentGetAccuracyModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[2] * 100));
+}
+
+int AgentGetSpeedModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[3] * 100));
+}
+
+int AgentGetReloadSpeedModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[4] * 100));
+}
+
+int AgentGetUseSpeedModifier(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return static_cast<int>(std::round(agent->modifiers[5] * 100));
+}
+
 int AgentGetItemModifier(WSEAgentOperationsContext *context)
 {
 	int agent_no;
@@ -375,6 +441,26 @@ WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("ag
 
 void WSEAgentOperationsContext::OnLoad()
 {
+	ReplaceOperation(2065, "agent_get_damage_modifier", AgentGetDamageModifier, Both, Lhs | Undocumented, 2, 2,
+		"Stores <1>'s damage modifier into <0>",
+		"destination", "agent_no");
+
+	ReplaceOperation(2066, "agent_get_accuracy_modifier", AgentGetAccuracyModifier, Both, Lhs | Undocumented, 2, 2,
+		"Stores <1>'s accuracy modifier into <0>",
+		"destination", "agent_no");
+
+	ReplaceOperation(2067, "agent_get_speed_modifier", AgentGetSpeedModifier, Both, Lhs | Undocumented, 2, 2,
+		"Stores <1>'s speed modifier into <0>",
+		"destination", "agent_no");
+
+	ReplaceOperation(2068, "agent_get_reload_speed_modifier", AgentGetReloadSpeedModifier, Both, Lhs | Undocumented, 2, 2,
+		"Stores <1>'s reload speed modifier into <0>",
+		"destination", "agent_no");
+
+	ReplaceOperation(2069, "agent_get_use_speed_modifier", AgentGetUseSpeedModifier, Both, Lhs | Undocumented, 2, 2,
+		"Stores <1>'s use speed modifier into <0>",
+		"destination", "agent_no");
+
 	RegisterOperation("agent_get_item_modifier", AgentGetItemModifier, Both, Lhs, 2, 2,
 		"Stores <1>'s horse item modifier (-1 if agent is not a horse) into <0>",
 		"destination", "agent_no");
@@ -475,4 +561,7 @@ void WSEAgentOperationsContext::OnLoad()
 		"Cancels <0>'s channel <2> animation",
 		"agent_no", "channel_no");
 
+	RegisterOperation("agent_get_ranged_damage_modifier", AgentGetRangedDamageModifier, Both, Lhs, 2, 2,
+		"Stores <1>'s ranged damage modifier into <0>",
+		"destination", "agent_no");
 }
