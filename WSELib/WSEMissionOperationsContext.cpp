@@ -452,7 +452,7 @@ void MissileGetPathPointPosition(WSEMissionOperationsContext *context)
 
 int GetWaterLevel(WSEMissionOperationsContext *context)
 {
-	return (int)(warband->cur_mission->water_level * warband->basic_game.fixed_point_multiplier);
+	return static_cast<int>(std::round(warband->cur_mission->water_level * warband->basic_game.fixed_point_multiplier));
 }
 /*
 bool CastRay(WSEMissionOperationsContext *context)

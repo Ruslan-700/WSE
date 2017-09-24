@@ -66,7 +66,7 @@ int FSt(WSEFloatingPointOperationsContext *context)
 	
 	context->ExtractRegister(freg);
 
-	return (int)(context->m_float_registers[freg] * warband->basic_game.fixed_point_multiplier);
+	return static_cast<int>(std::round(context->m_float_registers[freg] * warband->basic_game.fixed_point_multiplier));
 }
 
 void FCpy(WSEFloatingPointOperationsContext *context)

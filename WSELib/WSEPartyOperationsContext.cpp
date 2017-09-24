@@ -11,7 +11,7 @@ int PartyStackGetExperience(WSEPartyOperationsContext *context)
 	context->ExtractPartyNo(party_no);
 	context->ExtractPartyStackNo(party_stack_no, party_no);
 	
-	return (int)warband->cur_game->parties[party_no].stacks[party_stack_no].experience;
+	return static_cast<int>(std::round(warband->cur_game->parties[party_no].stacks[party_stack_no].experience));
 }
 
 int PartyStackGetNumUpgradeable(WSEPartyOperationsContext *context)

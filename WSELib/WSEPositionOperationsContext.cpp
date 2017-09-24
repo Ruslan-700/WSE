@@ -169,7 +169,7 @@ int PositionGetVectorToPosition(WSEPositionOperationsContext *context)
 	dest->rotate_z(-std::atan2(v.x, v.y));
 	dest->rotate_x(std::atan2(v.z, std::sqrt(v.x * v.x + v.y * v.y)));
 
-	return (int)(v.length() * warband->basic_game.fixed_point_multiplier);
+	return static_cast<int>(std::round(v.length() * warband->basic_game.fixed_point_multiplier));
 }
 
 void PositionAlignToGround(WSEPositionOperationsContext *context)

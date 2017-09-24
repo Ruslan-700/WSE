@@ -97,7 +97,7 @@ int AgentGetAnimationProgress(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(channel_no, 0, 2);
 
-	return (int)(warband->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f);
+	return static_cast<int>(std::round(warband->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f));
 }
 
 int AgentGetDna(WSEAgentOperationsContext *context)
@@ -207,7 +207,7 @@ int AgentGetScale(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	return (int)(warband->cur_mission->agents[agent_no].scale * warband->basic_game.fixed_point_multiplier);
+	return static_cast<int>(std::round(warband->cur_mission->agents[agent_no].scale * warband->basic_game.fixed_point_multiplier));
 }
 
 void AgentSetForcedLod(WSECoreOperationsContext *context)
