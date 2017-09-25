@@ -65,6 +65,8 @@ void WSEScriptingContext::OnLoad()
 {
 	WSE->Hooks.HookFunction(this, wb::addresses::operation_Execute_entry, OperationExecuteHook);
 	//WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StartProfilingBlock_entry, OperationManagerStartProfilingBlockHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StopProfilingBlock, OperationManagerStopProfilingBlockHook);
 }
 
 void WSEScriptingContext::OnUnload()

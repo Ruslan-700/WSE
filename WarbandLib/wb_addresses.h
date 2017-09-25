@@ -177,6 +177,10 @@ namespace wb
 
 		static unsigned int operation_manager_Execute;
 
+		static unsigned int operation_manager_StartProfilingBlock_entry;
+		static unsigned int operation_manager_StartProfilingBlock_exit;
+		static unsigned int operation_manager_StopProfilingBlock;
+
 		static unsigned int basic_game_ParseString;
 		
 		static unsigned int particle_system_manager_Create;

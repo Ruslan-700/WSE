@@ -232,6 +232,10 @@ unsigned int addresses::operation_Execute = 0x00517AE0;
 //unsigned int addresses::operation_manager_Execute = 0x0057CA40;
 unsigned int addresses::operation_manager_Execute = 0x00538060;
 
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x00538060;
+unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
+unsigned int addresses::operation_manager_StopProfilingBlock = 0x00538A94;
+
 //unsigned int addresses::basic_game_ParseString = 0x00517150;
 unsigned int addresses::basic_game_ParseString = 0x004D91B0;
 
@@ -425,6 +429,10 @@ unsigned int addresses::operation_Execute = 0x00563D30;
 
 unsigned int addresses::operation_manager_Execute = 0x00580940;
 
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x00538060;
+unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
+unsigned int addresses::operation_manager_StopProfilingBlock = 0x00538A94;
+
 unsigned int addresses::basic_game_ParseString = 0x0051AEF0;
 
 unsigned int addresses::particle_system_manager_Create = 0x00554C80;
@@ -449,6 +457,10 @@ unsigned int addresses::operation_Execute = 0x004AF660;
 
 //unsigned int addresses::operation_manager_Execute = 0x004C54E0;
 unsigned int addresses::operation_manager_Execute = 0x004C9F30;
+
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x004C9F30;
+unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
+unsigned int addresses::operation_manager_StopProfilingBlock = 0x004CA683;
 
 //unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x00438340;
 unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x00439680;

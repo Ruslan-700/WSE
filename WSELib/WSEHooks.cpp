@@ -23,6 +23,34 @@ void __declspec(naked) OperationManagerExecuteHook()
 	}
 }
 
+void __declspec(naked) OperationManagerStartProfilingBlockHook()
+{
+	_asm
+	{
+		push ecx
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Profiling, StartProfilingBlock)
+		RESTORE_REGS
+		push ebp
+		mov ebp, esp
+		and esp, 0xFFFFFFF8
+		jmp[wb::addresses::operation_manager_StartProfilingBlock_exit]
+	}
+}
+
+void __declspec(naked) OperationManagerStopProfilingBlockHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Profiling, StopProfilingBlock)
+		RESTORE_REGS
+		mov esp, ebp
+		pop ebp
+		retn 20
+	}
+}
+
 void __declspec(naked) OperationExecuteHook()
 {
 	_asm
