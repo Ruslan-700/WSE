@@ -57,6 +57,9 @@ unsigned int addresses::network_server_ReceiveMessage_entry = 0x0048CB61;
 unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0048E1FA;
 unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
 
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_entry = 0x0048DB22;
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_exit = network_server_ReceiveMessageServerJoinRequest_entry + 8;
+
 //unsigned int addresses::agent_ApplyAttackRecord_entry = 0x004F8850;
 //unsigned int addresses::agent_ApplyAttackRecord_exit = 0x004F8870;
 unsigned int addresses::agent_ApplyAttackRecord_entry = 0x004BBF94;
@@ -92,8 +95,13 @@ unsigned int addresses::missile_Dive_exit = 0x004DFDE1;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_entry = 0x0047E52D;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_exit = network_manager_PopulatePlayerInfoServerEvent_entry + 8;
 
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_entry = 0x00482858;
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_exit = network_manager_PopulatePlayerInfoClientEvent_entry + 8;
+
 //unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x004B40D0;
 unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x0047E220;
+
+unsigned int addresses::network_manager_GoldNumBits_entry = 0x00814B5C;
 
 //unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405360;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405500;
@@ -153,6 +161,18 @@ unsigned int addresses::mission_object_Hit_exit = mission_object_Hit_entry + 6;
 
 //unsigned int addresses::game_screen_OpenWindow_entry = 0x0058E7A0;
 unsigned int addresses::game_screen_OpenWindow_entry = 0x0054AD70;
+
+unsigned int addresses::game_screen_ProfileNumSkins_entry = 0x006122DF;
+
+unsigned int addresses::game_screen_NewProfileLoadSkinList_entry = 0x00612A74;
+unsigned int addresses::game_screen_NewProfileLoadSkinList_exit = game_screen_NewProfileLoadSkinList_entry + 5;
+
+unsigned int addresses::game_screen_NewProfileAllocateMemoryForSkins_entry = 0x006128CC;
+
+unsigned int addresses::game_screen_EditProfileLoadSkinList_entry = 0x00612C8F;
+unsigned int addresses::game_screen_EditProfileLoadSkinList_exit = game_screen_EditProfileLoadSkinList_entry + 5;
+
+unsigned int addresses::game_screen_EditProfileAllocateMemoryForSkins_entry = 0x00612AB8;
 
 //unsigned int addresses::item_kind_TransformHoldPosition_entry = 0x004D4F10;
 unsigned int addresses::item_kind_TransformHoldPosition_entry = 0x0049B150;
@@ -296,6 +316,9 @@ unsigned int addresses::network_server_ReceiveMessage_entry = 0x004C5031;
 unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x004C66E8;
 unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
 
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_entry = 0x0048DB22;
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_exit = network_server_ReceiveMessageServerJoinRequest_entry + 8;
+
 unsigned int addresses::agent_ApplyAttackRecord_entry = 0x004FC270;
 unsigned int addresses::agent_ApplyAttackRecord_exit = 0x004FC290;
 
@@ -320,7 +343,12 @@ unsigned int addresses::missile_Dive_exit = 0x005217B5;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_entry = 0x004B44BD;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_exit = network_manager_PopulatePlayerInfoServerEvent_entry + 8;
 
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_entry = 0x00482858;
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_exit = network_manager_PopulatePlayerInfoClientEvent_entry + 8;
+
 unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x004B41B0;
+
+unsigned int addresses::network_manager_GoldNumBits_entry = 0x00814B5C;
 
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405360;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = config_manager_ChooseNumberOfEffectiveCorpses_entry + 5;
@@ -360,6 +388,18 @@ unsigned int addresses::mission_object_Hit_entry = 0x0052D51E;
 unsigned int addresses::mission_object_Hit_exit = mission_object_Hit_entry + 6;
 
 unsigned int addresses::game_screen_OpenWindow_entry = 0x005926D0;
+
+unsigned int addresses::game_screen_ProfileNumSkins_entry = 0x006122DF;
+
+unsigned int addresses::game_screen_NewProfileLoadSkinList_entry = 0x00612A74;
+unsigned int addresses::game_screen_NewProfileLoadSkinList_exit = game_screen_NewProfileLoadSkinList_entry + 5;
+
+unsigned int addresses::game_screen_NewProfileAllocateMemoryForSkins_entry = 0x006128CC;
+
+unsigned int addresses::game_screen_EditProfileLoadSkinList_entry = 0x00612C8F;
+unsigned int addresses::game_screen_EditProfileLoadSkinList_exit = game_screen_EditProfileLoadSkinList_entry + 5;
+
+unsigned int addresses::game_screen_EditProfileAllocateMemoryForSkins_entry = 0x00612AB8;
 
 unsigned int addresses::item_kind_TransformHoldPosition_entry = 0x004D88A0;
 
@@ -507,6 +547,9 @@ unsigned int addresses::network_server_ReceiveMessage_entry = 0x0043A771;
 unsigned int addresses::network_server_ReceiveMessage_exit_1 = 0x0043BE71;
 unsigned int addresses::network_server_ReceiveMessage_exit_2 = network_server_ReceiveMessage_entry + 6;
 
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_entry = 0x0043B732;
+unsigned int addresses::network_server_ReceiveMessageServerJoinRequest_exit = network_server_ReceiveMessageServerJoinRequest_entry + 8;
+
 //unsigned int addresses::agent_ApplyAttackRecord_entry = 0x0046D5B5;
 //unsigned int addresses::agent_ApplyAttackRecord_exit = 0x0046D5D5;
 unsigned int addresses::agent_ApplyAttackRecord_entry = 0x0046F219;
@@ -542,8 +585,13 @@ unsigned int addresses::missile_Dive_exit = 0x00489EF2;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_entry = 0x0042E80D;
 unsigned int addresses::network_manager_PopulatePlayerInfoServerEvent_exit = network_manager_PopulatePlayerInfoServerEvent_entry + 8;
 
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_entry = 0;
+unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_exit = 0;
+
 //unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x0042CE80;
 unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x0042E500;
+
+unsigned int addresses::network_manager_GoldNumBits_entry = 0x0069F0F4;
 
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = 0;
@@ -597,6 +645,18 @@ unsigned int addresses::mission_object_Hit_entry = 0x00495B4D;
 unsigned int addresses::mission_object_Hit_exit = mission_object_Hit_entry + 6;
 
 unsigned int addresses::game_screen_OpenWindow_entry = 0;
+
+unsigned int addresses::game_screen_ProfileNumSkins_entry = 0;
+
+unsigned int addresses::game_screen_NewProfileLoadSkinList_entry = 0;
+unsigned int addresses::game_screen_NewProfileLoadSkinList_exit = 0;
+
+unsigned int addresses::game_screen_NewProfileAllocateMemoryForSkins_entry = 0;
+
+unsigned int addresses::game_screen_EditProfileLoadSkinList_entry = 0;
+unsigned int addresses::game_screen_EditProfileLoadSkinList_exit = 0;
+
+unsigned int addresses::game_screen_EditProfileAllocateMemoryForSkins_entry = 0;
 
 unsigned int addresses::item_kind_TransformHoldPosition_entry = 0;
 

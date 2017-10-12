@@ -91,6 +91,20 @@ void WSEGameContext::OnReadModuleFiles()
 	warband->basic_game.module_download_url = WSE->ModuleSettingsIni.String("", "module_download_url", "www.taleworlds.com/mb_warband_download_module.html");
 	warband->network_manager.server.port = WSE->SettingsIni.Int("listen_server", "port", 7240);
 	if (warband->network_manager.server.port < 1024 || warband->network_manager.server.port > 65535) warband->network_manager.server.port = 7240;
+
+	bool more_skins_support_for_multiplayer_profile = WSE->ModuleSettingsIni.Bool("", "more_skins_support_for_multiplayer_profile", 0);
+	if (more_skins_support_for_multiplayer_profile)
+	{
+		m_num_skins_for_multiplayer_profile = WSE->ModuleSettingsIni.Int("", "num_skins_for_multiplayer_profile", 2);
+		if (m_num_skins_for_multiplayer_profile < 2) m_num_skins_for_multiplayer_profile = 2;
+
+		int allocated_memory = sizeof(rgl::string) * m_num_skins_for_multiplayer_profile + 4;
+		WSE->Hooks.HookMemory(this, wb::addresses::game_screen_ProfileNumSkins_entry, m_num_skins_for_multiplayer_profile, 4);
+		WSE->Hooks.HookMemory(this, wb::addresses::game_screen_NewProfileAllocateMemoryForSkins_entry, allocated_memory, 4);
+		WSE->Hooks.HookMemory(this, wb::addresses::game_screen_EditProfileAllocateMemoryForSkins_entry, allocated_memory, 4);
+		WSE->Hooks.HookFunction(this, wb::addresses::game_screen_NewProfileLoadSkinList_entry, NewProfileLoadSkinListHook);
+		WSE->Hooks.HookFunction(this, wb::addresses::game_screen_EditProfileLoadSkinList_entry, EditProfileLoadSkinListHook);
+	}
 #elif defined WARBAND_DEDICATED
 	bool fix_bots_blocking_for_dedicated_server = WSE->ModuleSettingsIni.Bool("", "fix_bots_blocking_for_dedicated_server", true);
 	if (fix_bots_blocking_for_dedicated_server)
@@ -327,6 +341,20 @@ void WSEGameContext::OnOpenWindow(int window_no)
 	warband->game_screen.open_windows.push_back(window_no);
 	warband->game_screen.game_windows[window_no]->open();
 	warband->window_manager.set_show_cursor(warband->game_screen.game_windows[window_no]->has_cursor());
+#endif
+}
+
+void WSEGameContext::OnLoadSkinList()
+{
+#if defined WARBAND
+	wb::yes_no_window *window = (wb::yes_no_window *)warband->game_screen.game_windows[wb::gwt_yes_no];
+
+	std::string buf;
+	for (int i = 0; i < m_num_skins_for_multiplayer_profile; ++i)
+	{
+		buf = "str_skin_" + itostr(i);
+		window->combo_texts[i] = warband->language_manager.translate(buf.c_str());
+	}
 #endif
 }
 

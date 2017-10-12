@@ -387,6 +387,19 @@ continue_exec:
 	}
 }
 
+void __declspec(naked) ServerNetworkMessageReceivedServerJoinRequestHook()
+{
+	_asm
+	{
+#if defined WARBAND
+		mov dword ptr[esp + 36], 4
+#elif defined WARBAND_DEDICATED
+		mov dword ptr[esp + 48], 4
+#endif
+		jmp[wb::addresses::network_server_ReceiveMessageServerJoinRequest_exit]
+	}
+}
+
 void __declspec(naked) AgentApplyAttackRecHook()
 {
 	_asm
@@ -477,6 +490,15 @@ void __declspec(naked) NetworkManagerPopulatePlayerInfoServerEventHook()
 	{
 		mov dword ptr [esp+28], 4
 		jmp [wb::addresses::network_manager_PopulatePlayerInfoServerEvent_exit]
+	}
+}
+
+void __declspec(naked) NetworkManagerPopulatePlayerInfoClientEventHook()
+{
+	_asm
+	{
+		mov dword ptr [esp+32], 4
+		jmp[wb::addresses::network_manager_PopulatePlayerInfoClientEvent_exit]
 	}
 }
 
@@ -721,6 +743,30 @@ void __declspec(naked) OpenWindowHook()
 		CALL_CONTEXT_FUNC(Game, OnOpenWindow)
 		RESTORE_REGS
 		retn 4
+	}
+}
+
+void __declspec(naked) NewProfileLoadSkinListHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Game, OnLoadSkinList)
+		RESTORE_REGS
+		mov ecx, 0xE0CB40
+		jmp[wb::addresses::game_screen_NewProfileLoadSkinList_exit]
+	}
+}
+
+void __declspec(naked) EditProfileLoadSkinListHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Game, OnLoadSkinList)
+		RESTORE_REGS
+		mov ecx, 0xE0CB40
+		jmp[wb::addresses::game_screen_EditProfileLoadSkinList_exit]
 	}
 }
 

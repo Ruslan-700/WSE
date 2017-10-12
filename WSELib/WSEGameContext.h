@@ -38,7 +38,9 @@ private:
 	bool OnConfigManagerChooseNumberOfEffectiveCorpses();
 	void OnOpenWindow(int window_no);
 	void OnRglLogWrite(HANDLE hFile, const char *str, int numChars);
+	void OnLoadSkinList();
 
 private:
 	int m_mapped_script_nos[WSE_NUM_SCRIPTS];
+	int m_num_skins_for_multiplayer_profile = 2;
 };

@@ -253,6 +253,12 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		m_remote_scripting = WSE->SettingsIni.Bool("remote_debugging", "enabled", false);
 		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry, NetworkManagerPopulatePlayerInfoServerEventHook);
 		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry, NetworkManagerPopulateServerOptionsServerEventHook);
+		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_server_ReceiveMessageServerJoinRequest_entry, ServerNetworkMessageReceivedServerJoinRequestHook);
+#if defined WARBAND
+		WSE->Hooks.HookFunctionConditional(this, m_break_compat, wb::addresses::network_manager_PopulatePlayerInfoClientEvent_entry, NetworkManagerPopulatePlayerInfoClientEventHook);
+#endif
+		if (m_break_compat)
+			WSE->Hooks.HookMemory(this, wb::addresses::network_manager_GoldNumBits_entry, 30, 4);
 
 		break;
 	}
@@ -592,6 +598,21 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				player->face_keys.keys[3] = face_keys_4;
 			}
 			
+			return false;
+		}
+	case wb::mce_gold:
+		{
+			if (!m_break_compat)
+				return true;
+
+			int gold = nbuf->extract_uint32(30);
+
+			if (seq > cur_seq)
+			{
+				wb::multiplayer_data *data = &warband->multiplayer_data;
+				data->players[data->my_player_no].gold = gold;
+			}
+
 			return false;
 		}
 	case wb::mce_server_info_steam:

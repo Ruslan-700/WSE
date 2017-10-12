@@ -43,6 +43,9 @@ namespace wb
 		static unsigned int network_server_ReceiveMessage_entry;
 		static unsigned int network_server_ReceiveMessage_exit_1;
 		static unsigned int network_server_ReceiveMessage_exit_2;
+
+		static unsigned int network_server_ReceiveMessageServerJoinRequest_entry;
+		static unsigned int network_server_ReceiveMessageServerJoinRequest_exit;
 		
 		static unsigned int agent_ApplyAttackRecord_entry;
 		static unsigned int agent_ApplyAttackRecord_exit;
@@ -67,8 +70,13 @@ namespace wb
 		
 		static unsigned int network_manager_PopulatePlayerInfoServerEvent_entry;
 		static unsigned int network_manager_PopulatePlayerInfoServerEvent_exit;
+
+		static unsigned int network_manager_PopulatePlayerInfoClientEvent_entry;
+		static unsigned int network_manager_PopulatePlayerInfoClientEvent_exit;
 		
 		static unsigned int network_manager_PopulateServerOptionsServerEvent_entry;
+
+		static unsigned int network_manager_GoldNumBits_entry;
 		
 		static unsigned int config_manager_ChooseNumberOfEffectiveCorpses_entry;
 		static unsigned int config_manager_ChooseNumberOfEffectiveCorpses_exit;
@@ -108,6 +116,18 @@ namespace wb
 		static unsigned int mission_object_Hit_exit;
 		
 		static unsigned int game_screen_OpenWindow_entry;
+
+		static unsigned int game_screen_ProfileNumSkins_entry;
+
+		static unsigned int game_screen_NewProfileLoadSkinList_entry;
+		static unsigned int game_screen_NewProfileLoadSkinList_exit;
+
+		static unsigned int game_screen_NewProfileAllocateMemoryForSkins_entry;
+
+		static unsigned int game_screen_EditProfileLoadSkinList_entry;
+		static unsigned int game_screen_EditProfileLoadSkinList_exit;
+
+		static unsigned int game_screen_EditProfileAllocateMemoryForSkins_entry;
 		
 		static unsigned int item_kind_TransformHoldPosition_entry;
 		

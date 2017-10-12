@@ -75,6 +75,11 @@ int MultiplayerGetNumProfiles(WSEMultiplayerOperationsContext *context)
 {
 	return warband->multiplayer_data.profile_manager.profiles.size();
 }
+
+int MultiplayerCurProfileGetSkin(WSEMultiplayerOperationsContext *context)
+{
+	return warband->multiplayer_data.profile_manager.profiles[warband->multiplayer_data.profile_manager.cur_profile_no].gender_no;
+}
 /*
 void MultiplayerProfileGetFaceKeys(WSEMultiplayerOperationsContext *context)
 {
@@ -392,6 +397,9 @@ void WSEMultiplayerOperationsContext::OnLoad()
 		"Stores face keys from the current message register into <0>",
 		"face_keys_register");
 	*/
+	RegisterOperation("multiplayer_cur_profile_get_skin", MultiplayerCurProfileGetSkin, Both, Lhs, 1, 1,
+		"Stores current profile's skin into <0>",
+		"destination");
 }
 
 wb::network_buffer *WSEMultiplayerOperationsContext::GetCurrentNetworkBuffer()
