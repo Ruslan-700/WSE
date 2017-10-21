@@ -22,5 +22,7 @@ namespace wb
 
 		void execute(int context);
 		bool has_trigger(int trigger_no) const;
+
+		int addTrigger(const simple_trigger &newTrigger);
 	};
 }

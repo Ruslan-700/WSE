@@ -220,6 +220,15 @@ int getTemplateNo(const char *id)
 	return -1;
 }
 
+int getItemKindNo(const char *id)
+{
+	for (int i = 0; i < warband->num_item_kinds; i++)
+		if (warband->item_kinds[i].id == id)
+			return i;
+
+	return -1;
+}
+
 void printStack(lua_State *L)
 {
 	int size = lua_gettop(L);

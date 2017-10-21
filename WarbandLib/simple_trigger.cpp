@@ -41,3 +41,22 @@ bool simple_trigger_manager::has_trigger(int trigger_no) const
 
 	return false;
 }
+
+int simple_trigger_manager::addTrigger(const simple_trigger &newTrigger)
+{
+	size_t oldTriggersSize = this->num_simple_triggers * sizeof(simple_trigger);
+	size_t newTriggersSize = oldTriggersSize + sizeof(simple_trigger);
+
+	void *oldTriggers = (void*)this->simple_triggers;
+	void *newTriggers = malloc(newTriggersSize);
+
+	memcpy_s(newTriggers, newTriggersSize, oldTriggers, oldTriggersSize);
+	free(oldTriggers);
+	this->simple_triggers = (simple_trigger*)newTriggers;
+
+	this->simple_triggers[this->num_simple_triggers].operations.operations = rgl::_new<operation>();
+	this->simple_triggers[this->num_simple_triggers].operations.id.initialize();
+	this->simple_triggers[this->num_simple_triggers] = newTrigger;
+
+	return this->num_simple_triggers++;
+}

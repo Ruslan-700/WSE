@@ -256,6 +256,36 @@ int lRemoveTrigger(lua_State *L)
 	return 1;
 }
 
+int lAddItemTrigger(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 3, 3, lStr, lNum, lFunc);
+
+	const char *itmID = lua_tostring(L, 1);
+
+	wb::simple_trigger newT;
+
+	newT.interval = (float)lua_tonumber(L, 2);
+	newT.interval_timer = rgl::timer();
+
+	newT.operations.num_operations = 1;
+	newT.operations.operations = rgl::_new<wb::operation>(1);
+
+	newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+	newT.operations.operations[0].num_operands = 1;
+
+	newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+
+	int itmNo = getItemKindNo(itmID);
+
+	if (itmNo < 0)
+		luaL_error(L, "invalid item kind id: %s", itmID);
+
+	int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(newT);
+
+	lua_pushinteger(L, index);
+	return 1;
+}
+
 #if defined WARBAND
 int lAddPrsnt(lua_State *L)
 {
