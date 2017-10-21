@@ -13,6 +13,9 @@ int lGetCurTemplateId(lua_State *L);
 
 int lAddTrigger(lua_State *L);
 int lRemoveTrigger(lua_State *L);
+
+int lAddItemTrigger(lua_State *L);
+
 #if defined WARBAND
 int lAddPrsnt(lua_State *L);
 int lRemovePrsnt(lua_State *L);
