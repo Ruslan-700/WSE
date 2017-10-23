@@ -258,9 +258,23 @@ int lRemoveTrigger(lua_State *L)
 
 int lAddItemTrigger(lua_State *L)
 {
-	int numArgs = checkLArgs(L, 3, 3, lStr, lNum, lFunc);
+	int numArgs = checkLArgs(L, 3, 3, lStr|lNum, lNum, lFunc);
 
-	const char *itmID = lua_tostring(L, 1);
+	int itmNo;
+	if (lua_type(L, 1) == LUA_TSTRING)
+	{
+		const char *itmID = lua_tostring(L, 1);
+		itmNo = getItemKindNo(itmID);
+
+		if (itmNo < 0)
+			luaL_error(L, "invalid item kind id: %s", itmID);
+	}
+	else
+	{
+		itmNo = lua_tointeger(L, 1);
+		if (itmNo < 0 || itmNo >= warband->num_item_kinds)
+			luaL_error(L, "invalid item kind no: %d", itmNo);
+	}
 
 	wb::simple_trigger newT;
 
@@ -274,11 +288,6 @@ int lAddItemTrigger(lua_State *L)
 	newT.operations.operations[0].num_operands = 1;
 
 	newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-
-	int itmNo = getItemKindNo(itmID);
-
-	if (itmNo < 0)
-		luaL_error(L, "invalid item kind id: %s", itmID);
 
 	int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(newT);
 

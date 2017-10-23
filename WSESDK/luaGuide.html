@@ -275,7 +275,7 @@
 
 <body id="bd">
 	<div style="font-size: 11px">version from 26.04.2017, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(2px)';">AgentSmith</span></div>
-	<div style="right: 5px; top: 5px; position: absolute;">
+	<div style="right: 5px; top: 5px; position: fixed;">
 		<button id="btnThemeSwitch" onclick="switchTheme()">Light</button>
 		<button onclick="minimizeAll()">Minimize all</button>
 	</div>
@@ -394,7 +394,7 @@
 		<div class="content_block">
 			<div class="content_block_caption">Triggers</div>
 			<div>
-				<p>To add triggers, use <span class="keyword">game.addTrigger(strTemplateId, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
+				<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
 				<p>These work exactly like module system triggers. Times can be float values or values from header_triggers.py (the numbers, string names are not supported yet), just like you would do it in the MS. The callbacks <strong>must</strong> return a boolean. If conditionsCallback returns false, consequencesCallback will not be executed.</p>
 				<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 				<p style="padding-left: 30px;">Example:</p>
@@ -407,6 +407,14 @@
 				</div>
 				<p>addTrigger returns an integer that is the index of the added trigger.</p>
 				<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
+				<p>&nbsp;</p>
+				<p>You can also add item triggers with <span class="keyword">intTriggerNo = game.addItemTrigger(strItemID|intItemNo, numTriggerInterval, funcCallback)</span></p>
+				<p style="padding-left: 30px;">Example:</p>
+				<div class="example">
+					game.addItemTrigger("itm_fighting_pick", game.const.ti_on_weapon_attack, function()\n
+					<span class="tab">print("agent no " .. game.store_trigger_param_1(0) .. " swinged a fighting pick")</span>\n
+					end)\n
+				</div>
 			</div>
 		</div>
 
