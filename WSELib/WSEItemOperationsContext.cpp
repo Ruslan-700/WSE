@@ -299,6 +299,20 @@ void ItemSetMissileSpeed(WSEItemOperationsContext *context)
 	warband->item_kinds[item_kind_no].missile_speed = value;
 }
 
+void ItemSetHorseBloodParticles(WSEItemOperationsContext *context)
+{
+#if defined WARBAND
+	int item_kind_no, blood_particle_1_no, blood_particle_2_no;
+
+	context->ExtractItemKindNo(item_kind_no);
+	context->ExtractValue(blood_particle_1_no);
+	context->ExtractValue(blood_particle_2_no);
+
+	WSE->Mission.m_item_horse_blood_particles[item_kind_no].blood_particle_1_no = blood_particle_1_no;
+	WSE->Mission.m_item_horse_blood_particles[item_kind_no].blood_particle_1_no = blood_particle_2_no;
+#endif
+}
+
 WSEItemOperationsContext::WSEItemOperationsContext() : WSEOperationContext("item", 3800, 3899)
 {
 }
@@ -453,4 +467,8 @@ void WSEItemOperationsContext::OnLoad()
 	RegisterOperation("item_set_missile_speed", ItemSetMissileSpeed, Both, None, 2, 2,
 		"Sets <0>'s missile speed to <1>",
 		"item_kind_no", "value");
+
+	RegisterOperation("item_set_horse_blood_particles", ItemSetHorseBloodParticles, Client, None, 3, 3,
+		"Sets <0>'s horse blood <1> and <2>",
+		"item_kind_no", "particle_1_no", "particle_2_no");
 }

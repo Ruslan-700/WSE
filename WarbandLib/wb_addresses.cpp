@@ -242,6 +242,9 @@ unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8
 unsigned int addresses::agent_Turn_entry = 0x0049EEEC;
 unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 
+unsigned int addresses::agent_BloodParticles_entry = 0x004A6F23;
+unsigned int addresses::agent_BloodParticles_exit = agent_BloodParticles_entry + 59;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B3730;
@@ -460,6 +463,9 @@ unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8
 
 unsigned int addresses::agent_Turn_entry = 0x004A06BC;
 unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
+
+unsigned int addresses::agent_BloodParticles_entry = 0x004A6F23;
+unsigned int addresses::agent_BloodParticles_exit = agent_BloodParticles_entry + 59;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
@@ -723,6 +729,9 @@ unsigned int addresses::agent_BlockedAttack_exit = agent_BlockedAttack_entry + 8
 
 unsigned int addresses::agent_Turn_entry = 0x0044E7D9;
 unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
+
+unsigned int addresses::agent_BloodParticles_entry = 0;
+unsigned int addresses::agent_BloodParticles_exit = 0;
 
 unsigned int addresses::fixBotsBlocking_entry = 0x00460675;
 

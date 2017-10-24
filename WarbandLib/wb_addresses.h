@@ -189,6 +189,9 @@ namespace wb
 		static unsigned int agent_Turn_entry;
 		static unsigned int agent_Turn_exit;
 
+		static unsigned int agent_BloodParticles_entry;
+		static unsigned int agent_BloodParticles_exit;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;

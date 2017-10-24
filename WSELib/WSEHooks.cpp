@@ -1152,6 +1152,20 @@ void __declspec(naked) AgentTurnHook()
 	}
 }
 
+void __declspec(naked) AgentBloodParticlesHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push esi
+		CALL_CONTEXT_FUNC(Mission, OnAgentGetBloodParticles)
+		RESTORE_REGS
+		mov edi, ds:0x00AA2474
+		mov esi, ds:0x00AA2478
+		jmp[wb::addresses::agent_BloodParticles_exit]
+	}
+}
+
 void __declspec(naked) RglLogHook()
 {
 	_asm

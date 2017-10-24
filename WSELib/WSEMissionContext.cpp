@@ -54,6 +54,7 @@ void WSEMissionContext::OnLoad()
 	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCarry_entry, ItemKindShieldNoParryCarryHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloadingClient_entry, AgentStartReloadingClientHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_BloodParticles_entry, AgentBloodParticlesHook);
 #endif	
 }
 
@@ -778,4 +779,31 @@ void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
 
 	if (warband->basic_game.trigger_result >= 0)
 		*max_rotation_speed = warband->basic_game.trigger_result / (float)warband->basic_game.fixed_point_multiplier;
+}
+
+void WSEMissionContext::OnAgentGetBloodParticles(wb::agent *agent)
+{
+#if defined WARBAND
+	if (warband->face_generator.num_skins)
+	{
+		if (agent->type == wb::at_horse)
+		{
+			if (WSE->Mission.m_item_horse_blood_particles.find(agent->horse_item.item_no) != WSE->Mission.m_item_horse_blood_particles.end())
+			{
+				warband->particle_system_manager.mapped_particle_systems[2] = WSE->Mission.m_item_horse_blood_particles[agent->horse_item.item_no].blood_particle_1_no;
+				warband->particle_system_manager.mapped_particle_systems[3] = WSE->Mission.m_item_horse_blood_particles[agent->horse_item.item_no].blood_particle_2_no;
+			}
+			else
+			{
+				warband->particle_system_manager.mapped_particle_systems[2] = warband->face_generator.skins[0].blood_particle_1_no;
+				warband->particle_system_manager.mapped_particle_systems[3] = warband->face_generator.skins[0].blood_particle_2_no;
+			}
+		}
+		else
+		{
+			warband->particle_system_manager.mapped_particle_systems[2] = warband->face_generator.skins[agent->gender_no].blood_particle_1_no;
+			warband->particle_system_manager.mapped_particle_systems[3] = warband->face_generator.skins[agent->gender_no].blood_particle_2_no;
+		}	
+	}
+#endif
 }

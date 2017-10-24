@@ -66,4 +66,5 @@ void ItemKindShieldNoParryCouchedLanceHook();
 void ItemKindDisableAgentSoundsHorseShortHook();
 void AgentBlockedAttackHook();
 void AgentTurnHook();
+void AgentBloodParticlesHook();
 void RglLogHook();
