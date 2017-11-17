@@ -196,7 +196,7 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 		if (!warband->basic_game.trigger_result)
 			break;
 
-		sprintf_s(data->Rule.List[data->Rule.Count].Value, "%d", warband->basic_game.registers[0]);
+		sprintf_s(data->Rule.List[data->Rule.Count].Value, "%lld", warband->basic_game.registers[0]);
 
 		warband->basic_game.string_registers[0].clear();
 		warband->cur_game->execute_script(SCRIPT_GAME_MULTIPLAYER_SERVER_OPTION_FOR_MISSION_TEMPLATE_TO_STRING, warband->multiplayer_data.cur_mission_template_no, i, (int)warband->basic_game.registers[0]);

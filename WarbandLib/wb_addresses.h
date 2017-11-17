@@ -52,6 +52,8 @@ namespace wb
 		
 		static unsigned int CreateMbnetHost_entry;
 		static unsigned int DestroyMbnetHost_entry;
+
+		static unsigned int XmlGetServerInfo;
 		
 		static unsigned int mission_CheckCollision_entry;
 		static unsigned int mission_CheckCollision_exit;

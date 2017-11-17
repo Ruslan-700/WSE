@@ -392,6 +392,7 @@ struct gameIterator
 	wb::mission_grid_iterator grid_iterator;
 
 	int subKindNo;
+	int metaType;
 };
 
 int lIterNext(lua_State *L)
@@ -521,7 +522,7 @@ void lPropInstIterAdvance(gameIterator *it)
 	{
 		wb::mission_object *mission_object = &warband->cur_mission->mission_objects[it->curVal];
 
-		if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (it->subKindNo < 0 || mission_object->sub_kind_no == it->subKindNo))
+		if ((it->subKindNo <= 0 || mission_object->sub_kind_no == it->subKindNo) && (it->metaType <= 0 || mission_object->meta_type == it->metaType - 1))
 			break;
 	}
 }
@@ -538,17 +539,21 @@ int lPropInstIterInit(lua_State *L)
 	it.advance = lPropInstIterAdvance;
 	it.curValIsValid = lPropInstIterCurValIsValid;
 
-	if (checkLArgs(L, 0, 1, lNum))
+	it.subKindNo = 0;
+	it.metaType = 0;
+
+	if (checkLArgs(L, 0, 2, lNum))
+	{
 		it.subKindNo = lua_tointeger(L, 1);
-	else
-		it.subKindNo = -1;
+		it.metaType = lua_tointeger(L, 2);
+	}
 
 	it.curVal = warband->cur_mission->mission_objects.get_first_valid_index();
 	for (; it.curVal < warband->cur_mission->mission_objects.size(); it.curVal = warband->cur_mission->mission_objects.get_next_valid_index(it.curVal))
 	{
 		wb::mission_object *mission_object = &warband->cur_mission->mission_objects[it.curVal];
 
-		if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (it.subKindNo < 0 || mission_object->sub_kind_no == it.subKindNo))
+		if ((it.subKindNo <= 0 || mission_object->sub_kind_no == it.subKindNo) && (it.metaType <= 0 || mission_object->meta_type == it.metaType - 1))
 			break;
 	}
 

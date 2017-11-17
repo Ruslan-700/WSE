@@ -11,6 +11,7 @@ namespace wb
 		mt_scene_prop    = 0,
 		mt_entry_point   = 1,
 		mt_scene_item    = 2,
+		mt_baggage       = 3,
 		mt_plant         = 4,
 		mt_passage       = 5,
 		mt_spawned_item  = 6,

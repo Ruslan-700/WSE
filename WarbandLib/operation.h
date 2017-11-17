@@ -20,15 +20,15 @@ namespace wb
 		try_for_parties = 11,
 		try_for_agents = 12,
 		try_for_attached_parties = 15,
-		//try_for_active_players = 16,
 		try_for_prop_instances = 16,
-		//try_for_prop_instances = 17,
 		try_for_players = 17,
 		try_for_dict_keys = 18,
 		store_script_param_1 = 21,
 		store_script_param_2 = 22,
 		store_script_param = 23,
 		ge = 30,
+		player_set_is_admin = 429,
+		kick_player = 465,
 		ban_player = 466,
 	};
 
@@ -62,7 +62,7 @@ namespace wb
 	{
 		operation *operations;
 		int num_operations;
-		int analyzed;
+		bool analyzed;
 		rgl::string id;
 		
 		operation_manager();

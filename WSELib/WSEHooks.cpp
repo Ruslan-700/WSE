@@ -1191,3 +1191,15 @@ void __declspec(naked) RglLogHook()
 		jmp[wb::addresses::write_to_rgl_log_exit]
 	}
 }
+
+void __declspec(naked) XmlGetServerInfoHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push[esp + 4]
+		CALL_CONTEXT_FUNC(Network, XmlGetServerInfo)
+		RESTORE_REGS
+		retn 4
+	}
+}

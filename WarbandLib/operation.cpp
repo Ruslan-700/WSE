@@ -215,7 +215,6 @@ void operation_manager::analyze()
 		case try_for_range_backwards:
 		case try_for_parties:
 		case try_for_agents:
-		//case try_for_active_players:
 		case try_for_players:
 		case try_for_prop_instances:
 		case try_for_dict_keys:
@@ -227,7 +226,7 @@ void operation_manager::analyze()
 			{
 				char buf[512];
 
-				sprintf_s(buf, "Amount of nested loops in %s is greater than %d", 256);
+				sprintf_s(buf, "Amount of nested loops in %s is greater than %d", this->id.c_str(), 256);
 				wb::script::error(buf);
 			}
 

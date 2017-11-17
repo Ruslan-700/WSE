@@ -69,6 +69,8 @@ unsigned int addresses::agent_ApplyAttackRecord_exit = 0x004BBFB4;
 //unsigned int addresses::DestroyMbnetHost_entry = 0x004CE243;
 unsigned int addresses::CreateMbnetHost_entry = 0x004958D5;
 unsigned int addresses::DestroyMbnetHost_entry = 0x00495903;
+
+unsigned int addresses::XmlGetServerInfo = 0x0047CF50;
 		
 //unsigned int addresses::mission_CheckCollision_entry = 0x005206F1;
 unsigned int addresses::mission_CheckCollision_entry = 0x004E2E91;
@@ -327,6 +329,8 @@ unsigned int addresses::agent_ApplyAttackRecord_exit = 0x004FC290;
 
 unsigned int addresses::CreateMbnetHost_entry = 0x004CE725;
 unsigned int addresses::DestroyMbnetHost_entry = 0x004CE753;
+
+unsigned int addresses::XmlGetServerInfo = 0x0047CF50;
 		
 unsigned int addresses::mission_CheckCollision_entry = 0x00524491;
 unsigned int addresses::mission_CheckCollision_exit = mission_CheckCollision_entry + 15;
@@ -565,6 +569,8 @@ unsigned int addresses::agent_ApplyAttackRecord_exit = 0x0046F239;
 //unsigned int addresses::DestroyMbnetHost_entry = 0x00443863;
 unsigned int addresses::CreateMbnetHost_entry = 0x004449D5;
 unsigned int addresses::DestroyMbnetHost_entry = 0x00444A03;
+
+unsigned int addresses::XmlGetServerInfo = 0x0042D270;
 		
 //unsigned int addresses::mission_CheckCollision_entry = 0x00489FA1;
 unsigned int addresses::mission_CheckCollision_entry = 0x0048D0B1;

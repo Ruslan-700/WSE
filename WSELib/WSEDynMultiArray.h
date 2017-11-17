@@ -24,6 +24,10 @@ public:
 	{
 	}
 
+	virtual ~WSEBasicDynMultiArray() 
+	{
+	}
+
 	int getDimSize(int index) const
 	{
 		if (index < 0 || index >= (int)dimSizes.size()){

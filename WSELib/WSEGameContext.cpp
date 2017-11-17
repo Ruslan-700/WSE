@@ -11,7 +11,6 @@ void WSEGameContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::ReadModuleFiles_entry, ReadModuleFilesHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::ParseConsoleCommand_entry, ParseConsoleCommandHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::write_to_rgl_log, RglLogHook);
-
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::Save_entry, SaveHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::LoadSave_entry, LoadSaveHook);
@@ -120,6 +119,7 @@ void WSEGameContext::OnReadModuleFiles()
 	mapped_script_ids[WSE_SCRIPT_GET_AGENT_SCALE] = "wse_get_agent_scale";
 	mapped_script_ids[WSE_SCRIPT_WINDOW_OPENED] = "wse_window_opened";
 	mapped_script_ids[WSE_SCRIPT_SAVEGAME_LOADED] = "wse_savegame_loaded";
+	mapped_script_ids[WSE_SCRIPT_GET_SERVER_INFO] = "wse_get_server_info";
 
 	for (int i = 0; i < WSE_NUM_SCRIPTS; ++i)
 	{
@@ -146,14 +146,13 @@ void WSEGameContext::OnReadModuleFiles()
 		}
 	}
 	
-	
 	for (int i = 0; i < warband->num_scene_props; ++i)
 	{
 		for (int j = 0; j < warband->scene_props[i].simple_triggers.num_simple_triggers; ++j)
 		{
 			warband->scene_props[i].simple_triggers.simple_triggers[j].operations.id.format("Scene Prop [%d] %s Trigger [%d]", i, warband->scene_props[i].id.c_str(), j);
-			//rgl::_delete(warband->scene_props[i].body_part);
-			//warband->scene_props[i].body_part = NULL;
+			rgl::_delete(warband->scene_props[i].body_part);
+			warband->scene_props[i].body_part = NULL;
 		}
 	}
 
@@ -372,3 +371,4 @@ void WSEGameContext::OnRglLogWrite(HANDLE hFile, const char *buf, int numChars)
 
 	free(data.str);
 }
+

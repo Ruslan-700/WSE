@@ -92,3 +92,12 @@
 	(store_script_param, ":shooter_agent_no", 5),
 	(store_script_param, ":missile_no", 6),
 ]),
+
+#script_wse_get_server_info
+# Called each time a http request for server info received (http://server_ip:server_port/)
+# OUTPUT
+# trigger result = anything non-zero replace message text for response info 
+# result string =  message text for response info 
+("wse_get_server_info", [
+]),
+

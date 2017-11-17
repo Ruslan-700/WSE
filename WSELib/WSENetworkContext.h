@@ -79,6 +79,7 @@ private:
 	bool OnClientNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq);
 	bool OnServerNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq);
 	void OnPopulateServerOptionsServerEvent(wb::multiplayer_event *evt);
+	void XmlGetServerInfo(rgl::string &info);
 
 public:
 	wb::network_buffer *m_cur_nbuf;

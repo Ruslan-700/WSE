@@ -202,7 +202,7 @@ namespace wb
 		rgl::vector4 edit_mode_ai_mesh_face_placement_position;
 		int edit_mode_highlighted_mission_object_no;
 		stl::vector<int> edit_mode_selected_mission_object_nos;
-		int edit_mode_selection_changed;
+		bool edit_mode_selection_changed;
 		int edit_mode_changes_made;
 		int edit_mode_ai_mesh_selection_type;
 		int u12[6];

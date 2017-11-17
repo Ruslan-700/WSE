@@ -185,7 +185,7 @@ namespace stl
 			{
 				cur_node = items->prev;
 
-				for (size_t i = cur_size - 1; i > index; -i)
+				for (size_t i = cur_size - 1; i > index; --i)
 				{
 					cur_node = cur_node->prev;
 				}

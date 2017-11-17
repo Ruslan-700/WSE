@@ -525,13 +525,13 @@ void WSECoreOperationsContext::OnLoad()
 	DefineOperation(0, "go_to", Control, 1, 1,
 		"Jump to <0>",
 		"statement_no");
-
+	*/
 	DefineOperation(8, "break_loop", Control, 0, 0,
 		"Break out of a loop, no matter how deeply nested in try_begin blocks");
 
 	DefineOperation(9, "continue_loop", Control, 0, 0,
 		"Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks");
-	
+	/*
 	DefineOperation(12, "try_for_agents", Control | Lhs, 1, 3,
 		"Loops through agents in the scene. If <1> and <2> are defined, it will only loop through agents in the chosen area",
 		"cur_agent_no", "position_no", "radius_fixed_point");
@@ -547,11 +547,11 @@ void WSECoreOperationsContext::OnLoad()
 	DefineOperation(17, "try_for_prop_instances", Control | Lhs, 1, 2,
 		"Loops through scene prop instances of <1>. If <1> is not set it will loop through all scene prop instances in the scene",
 		"cur_instance_no", "scene_prop_kind_no");
-	
+	*/
 	DefineOperation(18, "try_for_dict_keys", Control, 2, 2,
 		"Loops through keys of <2>",
 		"cur_key_string_register", "dict");
-	*/
+	
 	ReplaceOperation(1004, "is_vanilla_warband", IsVanillaWarband, Both, Cf, 0, 0,
 		"Fails only when WSE is running");
 

@@ -245,7 +245,7 @@ void WSERCONServer::Listen()
 	m_state = RCONListening;
 	sockaddr_in sinRemote;
 	int nAddrSize = sizeof(sinRemote);
-	size_t clientsCnt = 0;
+	clientsCnt = 0;
 
 	while (m_state == RCONListening)
 	{

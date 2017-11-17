@@ -218,6 +218,7 @@ void WSENetworkContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::CreateMbnetHost_entry, CreateMbnetHostHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::DestroyMbnetHost_entry, DestroyMbnetHostHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::CheckUrlReplies_entry, CheckUrlRepliesHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::XmlGetServerInfo, XmlGetServerInfoHook);
 }
 
 void WSENetworkContext::OnUnload()
@@ -889,4 +890,107 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 void WSENetworkContext::OnPopulateServerOptionsServerEvent(wb::multiplayer_event *evt)
 {
 	PopulateServerOptionsServerEvent(evt);
+}
+
+void WSENetworkContext::XmlGetServerInfo(rgl::string &info)
+{
+	if (WSE->Game.HasScript(WSE_SCRIPT_GET_SERVER_INFO))
+	{
+		warband->basic_game.trigger_result = 0;
+		warband->basic_game.result_string.clear();
+		WSE->Game.ExecuteScript(WSE_SCRIPT_GET_SERVER_INFO, 0);
+		if (warband->basic_game.trigger_result)
+		{
+			info = warband->basic_game.result_string;
+			return;
+		}
+	}
+
+	tinyxml2::XMLPrinter printer;
+	printer.OpenElement("ServerStats");
+
+	printer.OpenElement("Name");
+	printer.PushText(warband->multiplayer_data.server_name.c_str());
+	printer.CloseElement();
+
+	printer.OpenElement("ModuleName");
+	printer.PushText(warband->cur_module_name.c_str());
+	printer.CloseElement();
+
+	printer.OpenElement("MultiplayerVersionNo");
+	printer.PushText(compatible_multiplayer_version_no);
+	printer.CloseElement();
+
+	printer.OpenElement("ModuleVersionNo");
+	printer.PushText(warband->module_version);
+	printer.CloseElement();
+
+	printer.OpenElement("MapID");
+	printer.PushText(warband->multiplayer_data.cur_site_no);
+	printer.CloseElement();
+
+	warband->basic_game.string_registers[0].clear();
+	warband->cur_game->execute_script(SCRIPT_GAME_GET_SCENE_NAME, warband->multiplayer_data.cur_site_no);
+	printer.OpenElement("MapName");
+	printer.PushText(warband->basic_game.string_registers[0].c_str());
+	printer.CloseElement();
+
+	printer.OpenElement("MapTypeID");
+	printer.PushText(warband->multiplayer_data.cur_mission_template_no);
+	printer.CloseElement();
+
+	warband->basic_game.string_registers[0].clear();
+	warband->cur_game->execute_script(SCRIPT_GAME_GET_MISSION_TEMPLATE_NAME, warband->multiplayer_data.cur_mission_template_no);
+	printer.OpenElement("MapTypeName");
+	printer.PushText(warband->basic_game.string_registers[0].c_str());
+	printer.CloseElement();
+
+	printer.OpenElement("NumberOfActivePlayers");
+	printer.PushText(warband->multiplayer_data.num_active_players);
+	printer.CloseElement();
+
+	printer.OpenElement("MaxNumberOfPlayers");
+	printer.PushText(warband->multiplayer_data.max_num_players);
+	printer.CloseElement();
+
+	printer.OpenElement("HasPassword");
+	printer.PushText((warband->multiplayer_data.server_password.length() > 0) ? "Yes" : "No");
+	printer.CloseElement();
+
+	printer.OpenElement("IsDedicated");
+#if defined WARBAND
+	printer.PushText("No");
+#elif defined WARBAND_DEDICATED
+	printer.PushText("Yes");
+#endif
+	printer.CloseElement();
+
+	printer.OpenElement("HasSteamAntiCheat");
+	printer.PushText((warband->network_manager.anti_cheat > 0) ? "Yes" : "No");
+	printer.CloseElement();
+
+	std::string module_setting;
+	int index = 0;
+	do
+	{
+		warband->basic_game.trigger_result = 0;
+		warband->cur_game->execute_script(SCRIPT_GAME_GET_MULTIPLAYER_SERVER_OPTION_FOR_MISSION_TEMPLATE, warband->multiplayer_data.cur_mission_template_no, index);
+
+		if (warband->basic_game.trigger_result)
+		{
+			module_setting = "ModuleSetting" + std::to_string(index);
+			printer.OpenElement(module_setting.c_str());
+			printer.PushText(warband->basic_game.registers[0]);
+			printer.CloseElement();
+		}
+		index++;
+
+	} while (warband->basic_game.trigger_result);
+
+	printer.CloseElement();
+
+	std::string xml = printer.CStr();
+	std::string response = "HTTP/1.1 200 OK\r\nVersion: HTTP/1.1\r\nContent-Type: text/xml; charset=utf-8\r\nContent-Length: " + std::to_string(xml.length()) + "\r\n\r\n" + xml;
+
+	info = response.c_str();
 }

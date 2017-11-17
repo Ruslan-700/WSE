@@ -10,7 +10,7 @@ namespace rgl
 	struct channel
 	{
 		float blend_progress;
-		int u1;
+		float u1;
 		unsigned __int64 enforced_bones;
 		unsigned __int64 rotated_bones;
 		float parameter;

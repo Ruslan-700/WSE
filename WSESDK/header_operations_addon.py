@@ -1,4 +1,7 @@
 #Add the following definitions to the end (!) of header_operations.py
+break_loop                   = 8 #(break_loop), #Break out of a loop, no matter how deeply nested in try_begin blocks (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)
+continue_loop                = 9 #(continue_loop), #Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)
+try_for_dict_keys            = 18 #(try_for_dict_keys, <cur_key_string_register>, <dict>), #Loops through keys of <2> (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)
 server_set_max_num_players   = 491 #(server_set_max_num_players, <max_players>, [<max_private_players>]), #Sets maximum players to <max_players> and maximum private players to [<max_private_players>] (default = same as <max_players>). Both values must be in the range 2-250, [<max_private_players>] can't be lower than <max_players>
 position_rotate_x            = 723 #(position_rotate_x, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the x-axis by <angle> degrees
 position_rotate_y            = 724 #(position_rotate_y, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the y-axis by <angle> degrees

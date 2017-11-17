@@ -68,3 +68,4 @@ void AgentBlockedAttackHook();
 void AgentTurnHook();
 void AgentBloodParticlesHook();
 void RglLogHook();
+void XmlGetServerInfoHook();

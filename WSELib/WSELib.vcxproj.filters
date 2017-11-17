@@ -54,6 +54,12 @@
     <Filter Include="Source Files\operations\WSELuaOperationsContext\LuaScripts">
       <UniqueIdentifier>{6f96886b-cf7c-4093-9271-55e17059d899}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\xml">
+      <UniqueIdentifier>{ebc8da6a-964f-4e16-bfaa-2b16f11e22d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\xml">
+      <UniqueIdentifier>{50f7dc67-0adb-48ea-9308-21c406229698}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -284,6 +290,9 @@
     <ClInclude Include="WSELib.rc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="xml\tinyxml2.h">
+      <Filter>Header Files\xml</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -474,6 +483,9 @@
     </ClCompile>
     <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp">
       <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    </ClCompile>
+    <ClCompile Include="xml\tinyxml2.cpp">
+      <Filter>Source Files\xml</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

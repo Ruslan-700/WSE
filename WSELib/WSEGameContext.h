@@ -2,6 +2,7 @@
 
 #include "WSEContext.h"
 #include "warband.h"
+#include "xml/tinyxml2.h"
 
 #define WSE_SCRIPT_CHAT_MESSAGE_RECEIVED 0
 #define WSE_SCRIPT_CONSOLE_COMMAND_RECEIVED 1
@@ -10,7 +11,8 @@
 #define WSE_SCRIPT_GET_AGENT_SCALE 4
 #define WSE_SCRIPT_WINDOW_OPENED 5
 #define WSE_SCRIPT_SAVEGAME_LOADED 6
-#define WSE_NUM_SCRIPTS 7
+#define WSE_SCRIPT_GET_SERVER_INFO 7
+#define WSE_NUM_SCRIPTS 8
 
 struct rglLogWriteEventData
 {

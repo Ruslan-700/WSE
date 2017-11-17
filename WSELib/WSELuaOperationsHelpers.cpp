@@ -541,7 +541,7 @@ size_t inline findClosingBracketIndex(const std::string &s, size_t start, size_t
 		}
 	}
 
-	std::string err = "Missing closing bracket for '" + bracketOpen;
+	std::string err = std::string("Missing closing bracket for '") + bracketOpen;
 	err += "' at position " + std::to_string(start);
 
 	throw std::logic_error(err);

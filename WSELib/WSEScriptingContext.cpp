@@ -64,9 +64,6 @@ WSEScriptingContext::WSEScriptingContext()
 void WSEScriptingContext::OnLoad()
 {
 	WSE->Hooks.HookFunction(this, wb::addresses::operation_Execute_entry, OperationExecuteHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StartProfilingBlock_entry, OperationManagerStartProfilingBlockHook);
-	WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StopProfilingBlock, OperationManagerStopProfilingBlockHook);
 }
 
 void WSEScriptingContext::OnUnload()
@@ -84,6 +81,18 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 	{
 	case ModuleLoad:
 		m_allow_unset_script_params = WSE->ModuleSettingsIni.Bool("", "allow_unset_script_params", false);
+		m_allow_wse_execute_statement_blocks = WSE->ModuleSettingsIni.Bool("", "allow_wse_execute_statement_blocks", false);
+
+		if (m_allow_wse_execute_statement_blocks)
+		{
+			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
+		}
+		else
+		{
+			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StartProfilingBlock_entry, OperationManagerStartProfilingBlockHook);
+			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StopProfilingBlock, OperationManagerStopProfilingBlockHook);
+		}
+
 		WSE->SendContextEvent(this, LoadOperations);
 		DumpOperationsHeader();
 		break;
@@ -131,6 +140,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	{
 		bool statement_success = true;
 		wb::operation *operation = &operation_manager->operations[operation_no];
+		
 		warband->cur_statement_no = operation_no;
 		warband->cur_opcode = operation->opcode & 0xFFFFFFF;
 		
@@ -242,6 +252,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 				if (loop_operation->opcode != wb::try_begin)
 				{
 					operation_no = loop_operation->end_statement;
+					loop_manager.EndLoop(i + 1);
 					found = true;
 				}
 			}
@@ -339,7 +350,6 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 	case wb::try_for_parties:
 		start_value = warband->cur_game->parties.get_first_valid_index();
 		break;
-	//case wb::try_for_active_players:
 	case wb::try_for_players:
 		{
 			start_value = (statement->num_operands > 1 && (int)statement->get_operand_value(local_variables, 1, operand_type)) ? 1 : 0;
@@ -356,17 +366,20 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 		break;
 	case wb::try_for_prop_instances:
 		{
-			int subKindNo = -1;
+			int subKindNo = 0;
+			int metaType = 0;
 
-			//if (statement->num_operands < 2)
 			if (statement->num_operands > 1)
 				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
+
+			if (statement->num_operands > 2)
+				metaType = (int)statement->get_operand_value(local_variables, 2, operand_type);
 
 			for (start_value = warband->cur_mission->mission_objects.get_first_valid_index(); start_value < warband->cur_mission->mission_objects.size(); start_value = warband->cur_mission->mission_objects.get_next_valid_index(start_value))
 			{
 				wb::mission_object *mission_object = &warband->cur_mission->mission_objects[start_value];
 
-				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
+				if ((subKindNo <= 0 || mission_object->sub_kind_no == subKindNo) && (metaType <= 0 || mission_object->meta_type == metaType - 1))
 					break;
 			}
 		}
@@ -465,7 +478,6 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 	case wb::try_for_parties:
 		value = warband->cur_game->parties.get_next_valid_index(value);
 		break;
-	//case wb::try_for_active_players:
 	case wb::try_for_players:
 		{
 			++value;
@@ -482,11 +494,14 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 		break;
 	case wb::try_for_prop_instances:
 		{
-			int subKindNo = -1;
+			int subKindNo = 0;
+			int metaType = 0;
 
-			//if (statement->num_operands < 2)
 			if (statement->num_operands > 1)
 				subKindNo = (int)statement->get_operand_value(local_variables, 1, operand_type);
+
+			if (statement->num_operands > 2)
+				metaType = (int)statement->get_operand_value(local_variables, 2, operand_type);
 
 			value = warband->cur_mission->mission_objects.get_next_valid_index(value);
 
@@ -494,7 +509,7 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			{
 				wb::mission_object *mission_object = &warband->cur_mission->mission_objects[value];
 
-				if ((mission_object->meta_type == wb::mt_scene_prop || mission_object->meta_type == wb::mt_spawned_prop) && (subKindNo < 0 || mission_object->sub_kind_no == subKindNo))
+				if ((subKindNo <= 0 || mission_object->sub_kind_no == subKindNo) && (metaType <= 0 || mission_object->meta_type == metaType - 1))
 					break;
 			}
 		}
@@ -565,7 +580,6 @@ bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __in
 			return value < warband->cur_mission->agents.size();
 	case wb::try_for_parties:
 		return value < warband->cur_game->parties.num_created;
-	//case wb::try_for_active_players:
 	case wb::try_for_players:
 		return value < NUM_NETWORK_PLAYERS;
 	case wb::try_for_dict_keys:
@@ -711,9 +725,9 @@ void WSEScriptingContext::DumpOperationsHeader()
 			char name[512];
 
 			if (descriptor->m_name.length())
-				sprintf_s(name, descriptor->m_name.c_str());
+				sprintf_s(name, "%s", descriptor->m_name.c_str());
 			else
-				sprintf_s(name, "op_%d", descriptor->m_opcode);
+				sprintf_s(name, "op_%u", descriptor->m_opcode);
 
 			int length = strlen(name);
 
@@ -741,9 +755,9 @@ void WSEScriptingContext::DumpOperationsHeader()
 			char name[512];
 
 			if (descriptor->m_name.length())
-				sprintf_s(name, descriptor->m_name.c_str());
+				sprintf_s(name, "%s", descriptor->m_name.c_str());
 			else
-				sprintf_s(name, "op_%d", descriptor->m_opcode);
+				sprintf_s(name, "op_%u", descriptor->m_opcode);
 
 			int length = strlen(name);
 
@@ -947,7 +961,7 @@ void WSEScriptingContext::ExecuteScriptOperation(int opcode)
 
 void WSEScriptingContext::ExecuteScriptOperation(int opcode, const std::vector<int> &operands)
 {
-	if (operands.size() < 0 || operands.size() > 16)
+	if (operands.size() > 16)
 		return;
 
 	wb::operation_manager mgr;

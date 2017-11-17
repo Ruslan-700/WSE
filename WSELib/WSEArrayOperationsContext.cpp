@@ -260,7 +260,7 @@ int ArrayLoadFromFile(WSEArrayOperationsContext *context)
 	std::string file = context->CreateFile(path, "wsearray");
 
 	if (!isArrayFile(file))
-		context->ScriptError("could not open as array file: %s", path);
+		context->ScriptError("could not open as array file: %s", path.c_str());
 
 	int version = getVersionFromFile(file);
 	if (version > WSE_ARRAY_VERSION)

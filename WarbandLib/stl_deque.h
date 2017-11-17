@@ -160,15 +160,16 @@ namespace stl
 			while (!this->empty())
 				this->pop_back();
 
-			for (size_t i = this->map_size - 1; i > 0; --i)
-			{
-				if (this->map[i])
-					rgl::_deallocate(this->map[i]);
-			}
-
 			if (this->map)
+			{
+				for (size_t i = this->map_size - 1; i > 0; --i)
+				{
+					if (this->map[i])
+						rgl::_deallocate(this->map[i]);
+				}
 				rgl::_deallocate(this->map);
-
+			}
+				
 			this->map_size = 0;
 			this->map = nullptr;
 		}

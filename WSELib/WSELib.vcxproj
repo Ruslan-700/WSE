@@ -462,6 +462,7 @@
     <ClInclude Include="WSEStringOperationsContext.h" />
     <ClInclude Include="WSETroopOperationsContext.h" />
     <ClInclude Include="WSEUtils.h" />
+    <ClInclude Include="xml\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="json\jsoncpp.cpp" />
@@ -527,6 +528,7 @@
     <ClCompile Include="WSEStringOperationsContext.cpp" />
     <ClCompile Include="WSETroopOperationsContext.cpp" />
     <ClCompile Include="WSEUtils.cpp" />
+    <ClCompile Include="xml\tinyxml2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\luaLanes\luaLanes.vcxproj">

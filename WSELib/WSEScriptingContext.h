@@ -122,4 +122,5 @@ private:
 	WSEOperationDescriptor *m_descriptors[WSE_MAX_NUM_OPERATIONS];
 	int m_trigger_params[16];
 	bool m_allow_unset_script_params;
+	bool m_allow_wse_execute_statement_blocks;
 };
