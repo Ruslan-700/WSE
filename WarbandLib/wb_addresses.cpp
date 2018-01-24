@@ -257,7 +257,7 @@ unsigned int addresses::operation_Execute = 0x00517AE0;
 //unsigned int addresses::operation_manager_Execute = 0x0057CA40;
 unsigned int addresses::operation_manager_Execute = 0x00538060;
 
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x00538060;
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
 unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
 unsigned int addresses::operation_manager_StopProfilingBlock = 0x00538A94;
 
@@ -479,7 +479,7 @@ unsigned int addresses::operation_Execute = 0x00563D30;
 
 unsigned int addresses::operation_manager_Execute = 0x00580940;
 
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x00538060;
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
 unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
 unsigned int addresses::operation_manager_StopProfilingBlock = 0x00538A94;
 
@@ -500,17 +500,6 @@ unsigned int addresses::operation_Execute_jumptable = 0x004C743C;
 unsigned int addresses::operation_Execute_entry = 0x004C73A9; //fallback for warbands "opcode out of range"
 unsigned int addresses::operation_Execute_exit_1 = 0x004C73D6; //dont continue (got wse operation)
 unsigned int addresses::operation_Execute_exit_2 = operation_Execute_entry + 8;
-
-
-//unsigned int addresses::operation_Execute = 0x004AD270;
-unsigned int addresses::operation_Execute = 0x004AF660;
-
-//unsigned int addresses::operation_manager_Execute = 0x004C54E0;
-unsigned int addresses::operation_manager_Execute = 0x004C9F30;
-
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = 0x004C9F30;
-unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
-unsigned int addresses::operation_manager_StopProfilingBlock = 0x004CA683;
 
 //unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x00438340;
 unsigned int addresses::network_server_ReceiveTeamChatEvent_entry = 0x00439680;
@@ -742,6 +731,16 @@ unsigned int addresses::agent_BloodParticles_exit = 0;
 unsigned int addresses::fixBotsBlocking_entry = 0x00460675;
 
 unsigned int addresses::makeScreenShot = 0;
+
+//unsigned int addresses::operation_Execute = 0x004AD270;
+unsigned int addresses::operation_Execute = 0x004AF660;
+
+//unsigned int addresses::operation_manager_Execute = 0x004C54E0;
+unsigned int addresses::operation_manager_Execute = 0x004C9F30;
+
+unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
+unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
+unsigned int addresses::operation_manager_StopProfilingBlock = 0x004CA683;
 
 //unsigned int addresses::basic_game_ParseString = 0x00481800;
 unsigned int addresses::basic_game_ParseString = 0x00484170;

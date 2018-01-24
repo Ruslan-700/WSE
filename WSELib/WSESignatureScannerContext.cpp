@@ -148,6 +148,9 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::Save_entry = FindSignature("\x81\xC4\x00\x00\x00\x00\xC3\x8B\x15\x00\x00\x00\x00\x8B\x42\x28", "xx????xxx????xxx");
 
+	wb::addresses::LoadSave_entry = FindSignature("\x68\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xFF\xD0\x01\x2F", "x????x????xxxx");
+	wb::addresses::LoadSave_exit = wb::addresses::LoadSave_entry + 5;
+
 	wb::addresses::CheckUrlReplies_entry = FindSignature("\xE8\x00\x00\x00\x00\x5B\x83\xC4\x1C", "x????xxxx");
 	wb::addresses::CheckUrlReplies_exit = wb::addresses::CheckUrlReplies_entry + 5;
 	wb::addresses::CheckUrlReplies_call = FindSignature("\x80\x7C\x24\x04\x00\x74\x0A\x89\x4C\x24\x04\xFF\x25\x00\x00\x00\x00\xC2\x04\x00\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x83\x79\x04\xFF", "xxxxxxxxxxxxx????xxxxxxxxxxxxxxxxxxx");
@@ -160,11 +163,16 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::network_server_ReceiveMessage_exit_1 = FindSignature("\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x8D\x8C\x24\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x8D\x8C\x24\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x5F\x5E\x5D\x5B\x81\xC4\x00\x00\x00\x00\xC2\x14\x00", "x????x????xxx????x????xxx????x????xxxxxx????xxx") + 34;
 	wb::addresses::network_server_ReceiveMessage_exit_2 = wb::addresses::network_server_ReceiveMessage_entry + 6;
 
+	wb::addresses::network_server_ReceiveMessageServerJoinRequest_entry = FindSignature("\xC7\x44\x24\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x68\x00\x00\x00\x00\x68\x00\x00\x00\x00\x8B\xCE\x89\x44\x24\x1C\xE8\x00\x00\x00\x00\x89\x44\x24\x4C", "xxx?????x????x????x????xxxxxxx????xxxx");
+	wb::addresses::network_server_ReceiveMessageServerJoinRequest_exit = wb::addresses::network_server_ReceiveMessageServerJoinRequest_entry + 8;
+
 	wb::addresses::agent_ApplyAttackRecord_entry = FindSignature("\x8B\x88\x00\x00\x00\x00\x8B\x15\x00\x00\x00\x00\x69\xC9\x00\x00\x00\x00\x6A\xE4", "xx????xx????xx????xx");
 	wb::addresses::agent_ApplyAttackRecord_exit = FindSignature("\x83\x3D\x00\x00\x00\x00\x00\x7C\x15\x7F\x09\x83\x3D\x00\x00\x00\x00\x00\x72\x0A\xDF\x2D\x00\x00\x00\x00\xD9\x5C\x24\x20", "xx?????xxxxxx?????xxxx????xxxx");
 
 	wb::addresses::CreateMbnetHost_entry = FindSignature("\x5F\x66\x89\x4E\x14", "xxxxx");
 	wb::addresses::DestroyMbnetHost_entry = FindSignature("\x83\xC4\x08\x5E\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x56", "xxxxxxxxxxxxxx");
+
+	wb::addresses::XmlGetServerInfo = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x56\x68\x00\x00\x00\x00\x8D\x4C\x24\x14\xE8\x00\x00\x00\x00", "xx????xxx????xxxxx????");
 
 	wb::addresses::mission_CheckCollision_entry = FindSignature("\x80\x3A\x00\xB9\x00\x00\x00\x00", "xxxx????");
 	wb::addresses::mission_CheckCollision_exit = wb::addresses::mission_CheckCollision_entry + 15;
@@ -184,7 +192,12 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry = FindSignature("\xC7\x44\x24\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x8B\x84\x24\x00\x00\x00\x00\x68\x00\x00\x00\x00\x68\x00\x00\x00\x00\x50", "xxx?????x????xxx????x????x????x");
 	wb::addresses::network_manager_PopulatePlayerInfoServerEvent_exit = wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry + 8;
 
+	wb::addresses::network_manager_PopulatePlayerInfoClientEvent_entry = FindSignature("\xC7\x44\x24\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x8B\x8C\x24\x00\x00\x00\x00\x68\x00\x00\x00\x00\x68\x00\x00\x00\x00\x51\x8D\x4C\x24\x2C", "xxx?????x????xxx????x????x????xxxxx");
+	wb::addresses::network_manager_PopulatePlayerInfoClientEvent_exit = wb::addresses::network_manager_PopulatePlayerInfoClientEvent_entry + 8;
+
 	wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry = FindSignature("\x81\xEC\x00\x00\x00\x00\x8B\x94\x24\x00\x00\x00\x00\xD9\xEE\x56\xDD\x9C\x24\x00\x00\x00\x00\x57\x8B\xBC\x24\x00\x00\x00\x00\xB8\x00\x00\x00\x00\x8D\x4C\x24\x1C", "xx????xxx????xxxxxx????xxxx????x????xxxx");
+
+	wb::addresses::network_manager_GoldNumBits_entry = FindSignature("\x11\x00\x00\x00\x00\x00\x00\x00\x11", "xxxxxxxxx");
 
 	wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = FindSignature("\x56\x8B\xF1\x8B\x06\x83\xF8\x05", "xxxxxxxx");
 	wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = wb::addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry + 5;
@@ -224,6 +237,18 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::mission_object_Hit_exit = wb::addresses::mission_object_Hit_entry + 6;
 
 	wb::addresses::game_screen_OpenWindow_entry = FindSignature("\x56\x57\x6A\x01\x8B\xF1\x6A\x00", "xxxxxxxx");
+
+	wb::addresses::game_screen_ProfileNumSkins_entry = FindSignature("\x00\x00\x00\x00\x84\xC3\x75\x0D", "????xxxx");
+
+	wb::addresses::game_screen_NewProfileLoadSkinList_entry = FindSignature("\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x8D\x8C\x24\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x5D\x5F\x5E\x5B", "x????x????xxx????x????xxxx");
+	wb::addresses::game_screen_NewProfileLoadSkinList_exit = wb::addresses::game_screen_NewProfileLoadSkinList_entry + 5;
+
+	wb::addresses::game_screen_NewProfileAllocateMemoryForSkins_entry = FindSignature("\x00\x00\x00\x00\xC7\x45\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x83\xC4\x04", "????xx?????x????xxx");
+
+	wb::addresses::game_screen_EditProfileLoadSkinList_entry = FindSignature("\xB9\x00\x00\x00\x00\xE9\x00\x00\x00\x00\x8B\x8E\x00\x00\x00\x00\x8B\x11\x8B\x42\x58\x68\x00\x00\x00\x00\xFF\xD0\x84\xC0\x0F\x84\x00\x00\x00\x00\x81\xC6\x00\x00\x00\x00", "x????x????xx????xxxxxx????xxxxxx????xx????");
+	wb::addresses::game_screen_EditProfileLoadSkinList_exit = wb::addresses::game_screen_EditProfileLoadSkinList_entry + 5;
+
+	wb::addresses::game_screen_EditProfileAllocateMemoryForSkins_entry = FindSignature("\x00\x00\x00\x00\x89\x44\x24\x1C\xC7\x00\x00\x00\x00\x00", "????xxxxxx????");
 
 	wb::addresses::item_kind_TransformHoldPosition_entry = FindSignature("\x83\xEC\x10\x53\x56\x8B\x74\x24\x1C\x57\x56", "xxxxxxxxxxx");
 
@@ -285,11 +310,18 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_Turn_entry = FindSignature("\xD9\x5C\x24\x18\xD9\x44\x24\x14\xD9\x86\x00\x00\x00\x00", "xxxxxxxxxx????");
 	wb::addresses::agent_Turn_exit = wb::addresses::agent_Turn_entry + 8;
 
+	wb::addresses::agent_BloodParticles_entry = FindSignature("\xA1\x00\x00\x00\x00\x8B\x0D\x00\x00\x00\x00\x85\xC0\x76\x08", "x????xx????xxxx");
+	wb::addresses::agent_BloodParticles_exit = wb::addresses::agent_BloodParticles_entry + 59;
+
 	wb::addresses::makeScreenShot = FindSignature("\x81\xEC\x00\x00\x00\x00\x80\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8B\x84\x24\x00\x00\x00\x00", "xx????xx?????xx????xxx????");
 
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");
 
 	wb::addresses::operation_manager_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x00\x00\x00\x00\x53\x56\x57\x8B\xF1\x33\xFF", "xxxxxxxx????xxxxxxx");
+
+	wb::addresses::operation_manager_StartProfilingBlock_entry = wb::addresses::operation_manager_Execute;
+	wb::addresses::operation_manager_StartProfilingBlock_exit = wb::addresses::operation_manager_StartProfilingBlock_entry + 6;
+	wb::addresses::operation_manager_StopProfilingBlock = FindSignature("\x8B\xE5\x5D\xC2\x14\x00\xCC\xCC\xCC\xCC\xCC\xCC\x8B", "xxxxxxxxxxxxx");
 
 	wb::addresses::basic_game_ParseString = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x8B\x9C\x24\x00\x00\x00\x00\x56\x89\x4C\x24\x0C", "xx????xxxx????xxxxx");
 
@@ -300,6 +332,10 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x32\xDB", "xxxxxxxxx????xx");
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
+
+	wb::addresses::write_to_rgl_log_file_handle_base_var = FindSignature("\x47\x61\x6D\x65\x5F\x77\x69\x6E\x64\x6F\x77\x40\x40\x00\x00\x00", "xxxxxxxxxxxxxxxx") - 780;
+	wb::addresses::write_to_rgl_log = FindSignature("\x81\xBD\x00\x00\x00\x00\x00\x00\x00\x00\x72\xC2", "xx????????xx") + 39;
+	wb::addresses::write_to_rgl_log_exit = wb::addresses::write_to_rgl_log + 5;
 
 	wb::addresses::game_data_ptr = FindSignature("\x2E\xBA\x00\x00\x00\x00\x00\x3F\x00\x00\x00\x00", "xx????xxxxxx") + 12;
 
@@ -333,11 +369,16 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::network_server_ReceiveMessage_exit_1 = FindSignature("\x5F\x5E\x5D\x5B\x81\xC4\x00\x00\x00\x00\xC2\x14\x00\x8B\xFF", "xxxxxx????xxxxx");
 	wb::addresses::network_server_ReceiveMessage_exit_2 = wb::addresses::network_server_ReceiveMessage_entry + 6;
 
+	wb::addresses::network_server_ReceiveMessageServerJoinRequest_entry = FindSignature("\xC7\x44\x24\x00\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x68\x00\x00\x00\x00\x68\x00\x00\x00\x00", "xxx?????x????x????x????");
+	wb::addresses::network_server_ReceiveMessageServerJoinRequest_exit = wb::addresses::network_server_ReceiveMessageServerJoinRequest_entry + 6;
+
 	wb::addresses::agent_ApplyAttackRecord_entry = FindSignature("\x8B\x88\x00\x00\x00\x00\x8B\x15\x00\x00\x00\x00\x69\xC9\x00\x00\x00\x00\x6A\xE4", "xx????xx????xx????xx");
 	wb::addresses::agent_ApplyAttackRecord_exit = FindSignature("\x83\x3D\x00\x00\x00\x00\x00\x7C\x15\x7F\x09\x83\x3D\x00\x00\x00\x00\x00\x72\x0A\xDF\x2D\x00\x00\x00\x00\xD9\x5C\x24\x20", "xx?????xxxxxx?????xxxx????xxxx");
 
 	wb::addresses::CreateMbnetHost_entry = FindSignature("\x5F\x66\x89\x4E\x14", "xxxxx");
 	wb::addresses::DestroyMbnetHost_entry = FindSignature("\x83\xC4\x08\x5E\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x56", "xxxxxxxxxxxxxx");
+
+	wb::addresses::XmlGetServerInfo = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x56\x68\x00\x00\x00\x00\x8D\x4C\x24\x14\xE8\x00\x00\x00\x00", "xx????xxx????xxxxx????");
 
 	wb::addresses::mission_CheckCollision_entry = FindSignature("\x80\x3A\x00\xB9\x00\x00\x00\x00", "xxxx????");
 	wb::addresses::mission_CheckCollision_exit = wb::addresses::mission_CheckCollision_entry + 15;
@@ -358,6 +399,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::network_manager_PopulatePlayerInfoServerEvent_exit = wb::addresses::network_manager_PopulatePlayerInfoServerEvent_entry + 8;
 
 	wb::addresses::network_manager_PopulateServerOptionsServerEvent_entry = FindSignature("\x81\xEC\x00\x00\x00\x00\x8B\x94\x24\x00\x00\x00\x00\xD9\xEE\x56\xDD\x9C\x24\x00\x00\x00\x00\x57\x8B\xBC\x24\x00\x00\x00\x00\xB8\x00\x00\x00\x00\x8D\x4C\x24\x1C", "xx????xxx????xxxxxx????xxxx????x????xxxx");
+
+	wb::addresses::network_manager_GoldNumBits_entry = FindSignature("\x11\x00\x00\x00\x00\x00\x00\x00\x11", "xxxxxxxxx");
 
 	wb::addresses::mission_CheckHit_Human_entry = FindSignature("\x8B\x08\x8B\x15\x00\x00\x00\x00\x8B\x52\x20", "xxxx????xxx");
 	wb::addresses::mission_CheckHit_Human_exit_1 = FindSignature("\xFF\x44\x24\x44\x83\x7C\x24\x70\x00", "xxxxxxxxx");
@@ -441,6 +484,10 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::operation_manager_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x00\x00\x00\x00\x53\x56\x57\x8B\xF1", "xxxxxxxx????xxxxx");
 
+	wb::addresses::operation_manager_StartProfilingBlock_entry = wb::addresses::operation_manager_Execute;
+	wb::addresses::operation_manager_StartProfilingBlock_exit = wb::addresses::operation_manager_StartProfilingBlock_entry + 6;
+	wb::addresses::operation_manager_StopProfilingBlock = FindSignature("\x8B\xE5\x5D\xC2\x14\x00\x8D\x54\x24\x10", "xxxxxxxxxx");
+
 	wb::addresses::basic_game_ParseString = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x8B\x9C\x24\x00\x00\x00\x00\x56\x89\x4C\x24\x0C", "xx????xxxx????xxxxx");
 
 	wb::addresses::DXUtil_Timer = FindSignature("\x83\xEC\x10\x55\x33\xED", "xxxxxx");
@@ -448,6 +495,10 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00", "xxxxxxxxx????");
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
+
+	wb::addresses::write_to_rgl_log_file_handle_base_var = FindSignature("\x00\x00\x00\x00\x00\x00\xE0\x3F\x70\x6F\x77\x00\x00\x00\x00\x00", "xxxxxxxxxxxxxxxx") - 1852;
+	wb::addresses::write_to_rgl_log = FindSignature("\x81\xBD\x00\x00\x00\x00\x00\x00\x00\x00\x72\xC2", "xx????????xx") + 39;
+	wb::addresses::write_to_rgl_log_exit = wb::addresses::write_to_rgl_log + 5;
 
 	wb::addresses::game_data_ptr = FindSignature("\x00\x00\x00\x00\x00\x00\x80\x40\x01\x00", "xxxxxxxxxx");
 #endif
