@@ -73,13 +73,11 @@ namespace wb
 		int uuuuu4;
 		config_manager options_config;
 #if defined WARBAND_VANILLA
-		//int uuuuu5[56529];
 		int uuuuu5[55561];
 #elif defined WARBAND_STEAM
 		int uuuuu5[10331];
 #elif defined WARBAND_DEDICATED
-		//int uuuuu5[9147];
-		int uuuuu5[9205];
+		int uuuuu5[9203];
 #endif
 		rgl::resource_manager resource_manager;
 		bool error;
@@ -268,20 +266,19 @@ namespace wb
 #endif
 		skeleton_manager skeleton_manager;
 		module_settings module_settings;
-		rgl::physics_manager physics_manager;
 #if defined WARBAND
 		particle_system_manager particle_system_manager;
 #else if defined WARBAND_DEDICATED
-		//unsigned int aaaa;
+		int u17;//1173 align
+#endif
+		rgl::physics_manager physics_manager;
+#if defined WARBAND
+		HANDLE game_started_mutex;
+#else if defined WARBAND_DEDICATED
 		unsigned int bbbb;
 #endif
 		rgl::ini_file resources_ini_file;
-#if defined WARBAND
-		//unsigned int aaaa;
-		HANDLE game_started_mutex;
-#else if defined WARBAND_DEDICATED
 		int u9; // align
-#endif
 		rgl::ini_file compatibility_resources_ini_file;
 		int u10; // align
 		rgl::ini_file game_variables_ini_file;

@@ -182,15 +182,15 @@ void Loader::Process(const CString &cmdLine)
 
 	switch (crc32)
 	{
-	case CRC32_WARBAND_1170:
+	case CRC32_WARBAND_1173:
 		type = 0;
 		dllName = L"WSELib";
 		break;
-	//case CRC32_WARBAND_STEAM_1170:
+	//case CRC32_WARBAND_STEAM_1173:
 		//type = 1;
 		//dllName = L"WSELibSteam";
 		//break;
-	case CRC32_WARBAND_DEDICATED_1170:
+	case CRC32_WARBAND_DEDICATED_1173:
 		type = 2;
 		dllName = L"WSELibDedicated";
 		break;

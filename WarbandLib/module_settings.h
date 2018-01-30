@@ -74,7 +74,6 @@ namespace wb
 		int horses_try_running_away;
 		int u6;//1166
 		float lance_pike_effect_speed;
-		//int lance_pike_effect_speed;
 		int no_friendly_fire_for_bots;
 		int sync_ragdoll_effects;
 		int can_adjust_camera_distance;
@@ -85,10 +84,13 @@ namespace wb
 		int has_tutorial;
 		int has_single_player;
 		int has_multiplayer;
+		int u33;//1173
 		int can_use_scene_props_in_single_player;
 		int disable_attack_while_jumping;
 		int disable_high_hdr;
 		int has_accessories_for_female;
+		int u34;//1173
+		float u35;//1173
 		int dont_load_regular_troop_inventories;
 		bool show_party_ids_instead_of_names;
 		int auto_create_note_indices;

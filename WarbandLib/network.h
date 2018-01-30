@@ -32,6 +32,8 @@ namespace wb
 		int changing_game_type_allowed;
 		int melee_friendly_fire;
 		int anti_cheat;
+		int u1; //1173
+		int u2; //1173
 		int num_bits_player;
 		int num_bits_team;
 		int num_bits_faction;

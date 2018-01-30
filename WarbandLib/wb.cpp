@@ -58,7 +58,7 @@ void wb::check_types()
 	assert_size<mission_template>(472, 472);
 	assert_size<mission_template_group>(132, 132);
 	//assert_size<module_settings>(524, 524);
-	assert_size<module_settings>(648, 648);
+	assert_size<module_settings>(660, 660);
 	assert_size<music_track>(160, -1);
 	assert_size<music_manager>(4248, -1);
 	assert_size<note_manager>(2376, 2376);
@@ -114,7 +114,7 @@ void wb::check_types()
 	assert_size<network_buffer>(1536, 1536);
 	assert_size<network_client>(344, -1);
 	//assert_size<network_manager>(16072, 16040);
-	assert_size<network_manager>(3760, 3728);
+	assert_size<network_manager>(3768, 3736);
 	assert_size<network_player>(66064, 66064);
 	//assert_size<network_server>(12416, 12728);
 	assert_size<network_server>(104, 416);
