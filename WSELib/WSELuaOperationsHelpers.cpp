@@ -142,7 +142,7 @@ void setOperandToLocalVar(__int64 &operand, int localsIndex)
 	operand = ((__int64)17 << 56) + localsIndex;
 }
 
-int checkLArgs(lua_State *L, int minCount, int maxCount, ...)
+int checkLArgs(lua_State *L, int minCount, int maxCount, ...) //TODO -- maxCount??
 {
 	int numArgs = lua_gettop(L);
 

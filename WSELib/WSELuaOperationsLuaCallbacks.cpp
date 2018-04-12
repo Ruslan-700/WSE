@@ -129,7 +129,7 @@ int lGetRegHandler(lua_State *L)
 
 int lSetRegHandler(lua_State *L)
 {
-	if (lua_gettop(L) != 3)
+	if (lua_gettop(L) != 3) //TODO -- why max?
 		luaL_error(L, "invalid arg count");
 
 	if (!lua_isnumber(L, 1) || !lua_isnumber(L, 2))
@@ -691,4 +691,10 @@ int lGetTime(lua_State *L)
 	lua_pushinteger(L, (LUA_INTEGER)t);
 
 	return 1;
+}
+
+int lFailMsCall(lua_State *L)
+{
+	WSE->LuaOperations.dontFailMsCall = false;
+	return 0;
 }

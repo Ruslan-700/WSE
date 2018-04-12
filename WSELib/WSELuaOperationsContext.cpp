@@ -129,7 +129,7 @@ int opGetType(WSELuaOperationsContext *context)
 	return lua_type(context->luaState, index);
 }
 
-void opCall(WSELuaOperationsContext *context)
+bool opCall(WSELuaOperationsContext *context)
 {
 	std::string funcName;
 	int numArgs;
@@ -147,8 +147,12 @@ void opCall(WSELuaOperationsContext *context)
 	if (numArgs)
 		lua_insert(context->luaState, stackSize - numArgs + 1);
 
+	context->dontFailMsCall = true;
+
 	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
 		printLastLuaError(context->luaState);
+
+	return context->dontFailMsCall;
 }
 
 bool opTriggerCallback(WSELuaOperationsContext *context)
@@ -166,7 +170,7 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	//printStack(context->luaState);
 
-	if (lua_gettop(context->luaState) != 1)
+	if (lua_gettop(context->luaState) != 1) //TODO
 	{
 		gPrint("Lua warning: callback needs to return true or false");
 		return false;
@@ -259,6 +263,9 @@ void initLGameTable(lua_State *L)
 
 	lua_pushcfunction(L, lUnhookOperation);
 	lua_setfield(L, -2, "unhookOperation");
+
+	lua_pushcfunction(L, lFailMsCall);
+	lua_setfield(L, -2,  "fail");
 
 	addGameConstantsToLState(L);
 
@@ -372,7 +379,7 @@ void WSELuaOperationsContext::OnLoad()
 		"Stores the type of the value at <1> in the stack into <0>. Return types can be found in header_common(_addon).py (LUA_T*)",
 		"destination", "index");
 
-	RegisterOperation("lua_call", opCall, Both, None, 2, 2,
+	RegisterOperation("lua_call", opCall, Both, Cf, 2, 2,
 		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.",
 		"func_name", "num_args");
 
