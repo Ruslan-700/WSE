@@ -160,6 +160,8 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 	int ref;
 	context->ExtractValue(ref);
 
+	int top = lua_gettop(context->luaState);
+
 	lua_rawgeti(context->luaState, LUA_REGISTRYINDEX, ref);
 
 	if (lua_pcall(context->luaState, 0, 1, 0))
@@ -170,15 +172,15 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	//printStack(context->luaState);
 
-	if (lua_gettop(context->luaState) != 1) //TODO
+	if (lua_gettop(context->luaState) <= top) //TODO
 	{
 		gPrint("Lua warning: callback needs to return true or false");
 		return false;
 	}
 
-	int b = lua_toboolean(context->luaState, 1);
+	int b = lua_toboolean(context->luaState, -1);
 
-	lua_settop(context->luaState, 0);
+	//lua_settop(context->luaState, 0);
 
 	return b != 0 ? true : false;
 }
