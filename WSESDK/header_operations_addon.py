@@ -496,4 +496,5 @@ can_fail_operations += [
 	array_lt,
 	array_le,
 	lua_triggerCallback,
+	lua_call,
 ]

@@ -34,7 +34,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		std::vector<gameConstTable> gameConstTables;
 		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];
 		std::chrono::steady_clock::time_point tStart;
-		bool dontFailMsCall;
+		std::vector<bool> lua_call_cfResults;
 
 	public:
 		WSELuaOperationsContext();

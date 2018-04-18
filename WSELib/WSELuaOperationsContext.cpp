@@ -147,12 +147,15 @@ bool opCall(WSELuaOperationsContext *context)
 	if (numArgs)
 		lua_insert(context->luaState, stackSize - numArgs + 1);
 
-	context->dontFailMsCall = true;
+	context->lua_call_cfResults.push_back(true);
 
 	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
 		printLastLuaError(context->luaState);
 
-	return context->dontFailMsCall;
+	bool cf = context->lua_call_cfResults.back();
+	context->lua_call_cfResults.pop_back();
+
+	return cf;
 }
 
 bool opTriggerCallback(WSELuaOperationsContext *context)

@@ -695,6 +695,6 @@ int lGetTime(lua_State *L)
 
 int lFailMsCall(lua_State *L)
 {
-	WSE->LuaOperations.dontFailMsCall = false;
+	WSE->LuaOperations.lua_call_cfResults.back() = false;
 	return 0;
 }
