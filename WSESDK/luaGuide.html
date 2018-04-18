@@ -630,6 +630,29 @@
 							</p>
 						</div>
 					</li>
+					<li>
+						<div>
+							<p style="padding-left: 20px;"><span class="keyword">game.fail()</span>, when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
+						</div>
+						<p style="padding-left: 30px;">Example:</p>
+						<div class="example">
+							(try_begin),\n
+								\tab(lua_push_int, 456),\n
+								\tab(lua_call, "@is123", 1),\n
+								\tab(display_message, "@Yes it is."),\n
+							(else_try),\n
+								\tab(display_message, "@Nah"),\n
+							(try_end),\n
+						</div>
+						<p></p>
+						<div class="example">
+							function is123(val)\n
+								\tabif val ~= 123 then\n
+									\tab2game.fail()\n
+								\tabend\n
+							end\n
+						</div>
+					</li>
 				</ul>
 				<p>&nbsp;</p>
 				<p style="padding-left: 10px">Other WSE LUA API functions - these could be useful for advanced users, but you should get along fine without ever using them.</p>
@@ -703,6 +726,16 @@
 					</li>
 					<li>
 						<p>Restrict dofile, loadfile and all IO operations to the lua directory</p>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<div class="content_block">
+			<div class="content_block_caption">Settings (wse_settings.ini, add [lua] section)</div>
+			<div>
+				<ul>
+					<li>
+						<p><span class="keyword">disable_game_const_warnings</span> - disables all warnings during msfiles\ game constants scanning</p>
 					</li>
 				</ul>
 			</div>
