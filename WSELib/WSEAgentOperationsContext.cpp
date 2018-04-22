@@ -435,6 +435,18 @@ void AgentCancelCurrentAnimation(WSEAgentOperationsContext *context)
 	agent->action_channels[channel_no].next_action_no = -1;
 }
 
+void AgentAddStun(WSEAgentOperationsContext *context)
+{
+	int agent_no, duration;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(duration);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	agent->add_stun(duration / (float)1000);
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -564,4 +576,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_get_ranged_damage_modifier", AgentGetRangedDamageModifier, Both, Lhs, 2, 2,
 		"Stores <1>'s ranged damage modifier into <0>",
 		"destination", "agent_no");
+
+	RegisterOperation("agent_add_stun", AgentAddStun, Both, None, 2, 2,
+		"Adds stun to <0> for <1> milliseconds.",
+		"agent_no", "duration");
 }

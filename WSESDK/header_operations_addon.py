@@ -115,6 +115,7 @@ agent_get_personal_animation                    = 3320 #(agent_get_personal_anim
 agent_set_default_animations                    = 3321 #(agent_set_default_animations, <agent_no>), #Removes <agent_no>'s personal animations
 agent_cancel_current_animation                  = 3322 #(agent_cancel_current_animation, <agent_no>, <channel_no>), #Cancels <agent_no>'s channel <2> animation
 agent_get_ranged_damage_modifier                = 3323 #(agent_get_ranged_damage_modifier, <destination>, <agent_no>), #Stores <agent_no>'s ranged damage modifier into <destination>
+agent_add_stun                                  = 3324 #(agent_add_stun, <agent_no>, <duration>), #Adds stun to <agent_no> for <duration> milliseconds.
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -495,6 +496,6 @@ can_fail_operations += [
 	array_ge,
 	array_lt,
 	array_le,
-	lua_triggerCallback,
 	lua_call,
+	lua_triggerCallback,
 ]

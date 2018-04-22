@@ -331,6 +331,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x32\xDB", "xxxxxxxxx????xx");
 
+	wb::addresses::agent_AddStun = FindSignature("\x81\xEC\x00\x00\x00\x00\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x8B\x0C\xC5", "xx????xxxxx????xxx");
+
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 
 	wb::addresses::write_to_rgl_log_file_handle_base_var = FindSignature("\x47\x61\x6D\x65\x5F\x77\x69\x6E\x64\x6F\x77\x40\x40\x00\x00\x00", "xxxxxxxxxxxxxxxx") - 780;
@@ -493,6 +495,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::DXUtil_Timer = FindSignature("\x83\xEC\x10\x55\x33\xED", "xxxxxx");
 
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86", "xxxxxxxxx");
+
+	wb::addresses::agent_AddStun = FindSignature("\x81\xEC\x00\x00\x00\x00\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x8B\x0C\xC5", "xx????xxxxx????xxx");
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 

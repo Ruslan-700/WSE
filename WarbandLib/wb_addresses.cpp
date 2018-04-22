@@ -273,6 +273,8 @@ unsigned int addresses::DXUtil_Timer = 0x0040E730;
 //unsigned int addresses::agent_SetAiBehavior = 0x0050EFC0;
 unsigned int addresses::agent_SetAiBehavior = 0x004D06D0;
 
+unsigned int addresses::agent_AddStun = 0x004B9E30;
+
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x008140B0;
 
 unsigned int addresses::write_to_rgl_log_file_handle_base_var = 0x00867564;
@@ -490,6 +492,8 @@ unsigned int addresses::particle_system_manager_Create = 0x00554C80;
 unsigned int addresses::DXUtil_Timer = 0x0040F660;
 
 unsigned int addresses::agent_SetAiBehavior = 0x00512D60;
+
+unsigned int addresses::agent_AddStun = 0x004B9E30;
 
 unsigned int addresses::game_data_ptr = 0x009463D0;
 #elif defined WARBAND_DEDICATED
@@ -751,6 +755,8 @@ unsigned int addresses::DXUtil_Timer = 0x00401040;
 
 //unsigned int addresses::agent_SetAiBehavior = 0x0046F3C0;
 unsigned int addresses::agent_SetAiBehavior = 0x00470F30;
+
+unsigned int addresses::agent_AddStun = 0x0046C1A0;
 
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x0069E670;
 

@@ -149,3 +149,9 @@ void agent::set_ai_behavior(int behavior)
 {
 	THISCALL1(wb::addresses::agent_SetAiBehavior, this, behavior);
 }
+
+void agent::add_stun(float duration)
+{
+	THISCALL1(wb::addresses::agent_AddStun, this, duration);
+}
+

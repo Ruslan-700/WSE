@@ -527,10 +527,10 @@ void WSECoreOperationsContext::OnLoad()
 		"statement_no");
 	*/
 	DefineOperation(8, "break_loop", Control, 0, 0,
-		"Break out of a loop, no matter how deeply nested in try_begin blocks");
+		"Break out of a loop, no matter how deeply nested in try_begin blocks (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)");
 
 	DefineOperation(9, "continue_loop", Control, 0, 0,
-		"Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks");
+		"Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)");
 	/*
 	DefineOperation(12, "try_for_agents", Control | Lhs, 1, 3,
 		"Loops through agents in the scene. If <1> and <2> are defined, it will only loop through agents in the chosen area",
@@ -549,7 +549,7 @@ void WSECoreOperationsContext::OnLoad()
 		"cur_instance_no", "scene_prop_kind_no");
 	*/
 	DefineOperation(18, "try_for_dict_keys", Control, 2, 2,
-		"Loops through keys of <2>",
+		"Loops through keys of <2> (requires allow_wse_execute_statement_blocks = 1 in wse_settings.ini)",
 		"cur_key_string_register", "dict");
 	
 	ReplaceOperation(1004, "is_vanilla_warband", IsVanillaWarband, Both, Cf, 0, 0,

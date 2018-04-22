@@ -381,5 +381,6 @@ namespace wb
 		rgl::entity *get_ground_entity() const;
 		bool is_couching() const;
 		void set_ai_behavior(int behavior);
+		void add_stun(float duration);
 	};
 }
