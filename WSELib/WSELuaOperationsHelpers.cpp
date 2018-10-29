@@ -46,6 +46,35 @@ void gPrintf(const std::string &format, ...)
 	va_end(args);
 }
 
+int traceback(lua_State *L)
+{
+	SYSTEMTIME stime;
+	//structure to store system time (in usual time format)
+	FILETIME ltime;
+	//structure to store local time (local time in 64 bits)
+	FILETIME ftTimeStamp;
+	char msg[1024];//to store TimeStamp information
+	GetSystemTimeAsFileTime(&ftTimeStamp); //Gets the current system time
+
+	FileTimeToLocalFileTime(&ftTimeStamp, &ltime);//convert in local time and store in ltime
+	FileTimeToSystemTime(&ltime, &stime);//convert in system time and store in stime
+
+	const char *err = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	sprintf_s(msg, "%s\n#Time: %d:%d:%d:%d", err, stime.wHour, stime.wMinute, stime.wSecond, stime.wMilliseconds);
+
+	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	lua_getfield(L, -1, "traceback");
+
+	lua_pushstring(L, msg);
+	lua_pushinteger(L, 2);
+
+	lua_call(L, 2, 1);
+	//fprintf(stderr, "%s\n", lua_tostring(L, -1));
+	return 1;
+}
+
 void printLastLuaError(lua_State *L, const char *fileName, HANDLE hFile)
 {
 	const char *msg = lua_tostring(L, -1);

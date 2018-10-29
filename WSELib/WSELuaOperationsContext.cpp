@@ -138,6 +138,7 @@ bool opCall(WSELuaOperationsContext *context)
 	context->ExtractValue(numArgs);
 
 	int stackSize = lua_gettop(context->luaState);
+	//gPrintf("lua_call top1: %i", stackSize);
 
 	if (stackSize < numArgs)
 		context->ScriptError("not enough arguments on stack");
@@ -147,27 +148,40 @@ bool opCall(WSELuaOperationsContext *context)
 	if (numArgs)
 		lua_insert(context->luaState, stackSize - numArgs + 1);
 
+	lua_pushcfunction(context->luaState, traceback);
+	lua_insert(context->luaState, stackSize - numArgs + 1);
+
 	context->lua_call_cfResults.push_back(true);
 
-	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, 0))
+	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, stackSize - numArgs + 1))
 		printLastLuaError(context->luaState);
 
 	bool cf = context->lua_call_cfResults.back();
 	context->lua_call_cfResults.pop_back();
 
+	//gPrintf("lua_call top2: %i", lua_gettop(context->luaState));
 	return cf;
 }
 
 bool opTriggerCallback(WSELuaOperationsContext *context)
 {
-	int ref;
+	int ref, part;
+	int results = 0;
+
 	context->ExtractValue(ref);
+	context->ExtractValue(part);
 
-	int top = lua_gettop(context->luaState);
+	//gPrintf("lua trigger called, stack top = %i", lua_gettop(context->luaState));
 
+	if (part == triggerPart::condition)
+	{
+		results = 1;
+	}
+
+	lua_pushcfunction(context->luaState, traceback);
 	lua_rawgeti(context->luaState, LUA_REGISTRYINDEX, ref);
 
-	if (lua_pcall(context->luaState, 0, 1, 0))
+	if (lua_pcall(context->luaState, 0, results, -2))
 	{
 		printLastLuaError(context->luaState);
 		return false;
@@ -175,17 +189,24 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	//printStack(context->luaState);
 
-	if (lua_gettop(context->luaState) <= top) //TODO
+	if (part == triggerPart::condition)
 	{
-		gPrint("Lua warning: callback needs to return true or false");
-		return false;
+		if (!lua_isboolean(context->luaState, -1))
+		{
+			gPrint("Lua warning: callback needs to return true or false");
+			lua_pop(context->luaState, 2);
+			return false;
+		}
+		
+		int b = lua_toboolean(context->luaState, -1);
+
+		lua_pop(context->luaState, 2);
+
+		return b != 0 ? true : false;
 	}
 
-	int b = lua_toboolean(context->luaState, -1);
-
-	//lua_settop(context->luaState, 0);
-
-	return b != 0 ? true : false;
+	lua_pop(context->luaState, 1);
+	return true;
 }
 
 /************************/
@@ -271,6 +292,9 @@ void initLGameTable(lua_State *L)
 
 	lua_pushcfunction(L, lFailMsCall);
 	lua_setfield(L, -2,  "fail");
+
+	lua_pushcfunction(L, lPrintStack);
+	lua_setfield(L, -2, "printStack");
 
 	addGameConstantsToLState(L);
 
@@ -389,9 +413,9 @@ void WSELuaOperationsContext::OnLoad()
 		"func_name", "num_args");
 
 	callTriggerOpcode = getOpcodeRangeCur();
-	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 1, 1,
+	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 2, 2,
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
-		"reference");
+		"reference", "triggerPart");
 
 	initLua();
 }
@@ -779,14 +803,18 @@ inline void WSELuaOperationsContext::doMainScript()
 
 	if (fileExists(mainFile))
 	{
+		lua_pushcfunction(luaState, traceback);
+
 		if (luaL_loadfile(luaState, mainFile.c_str()))
 		{
 			printLastLuaError(luaState);
 		}
 		else
 		{
-			if (lua_pcall(luaState, 0, 0, 0))
+			if (lua_pcall(luaState, 0, 0, -2))
 				printLastLuaError(luaState);
 		}
+
+		lua_pop(luaState, 1);
 	}
 }

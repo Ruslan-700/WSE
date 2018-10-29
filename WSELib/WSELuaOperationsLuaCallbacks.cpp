@@ -215,18 +215,20 @@ int lAddTrigger(lua_State *L)
 		newT.consequences.operations = rgl::_new<wb::operation>(1);
 
 		newT.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.consequences.operations[0].num_operands = 1;
+		newT.consequences.operations[0].num_operands = 2;
 
 		newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+		newT.consequences.operations[0].operands[1] = triggerPart::consequence;
 	}
 
 	newT.conditions.num_operations = 1;
 	newT.conditions.operations = rgl::_new<wb::operation>(1);
 
 	newT.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-	newT.conditions.operations[0].num_operands = 1;
+	newT.conditions.operations[0].num_operands = 2;
 
 	newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	newT.conditions.operations[0].operands[1] = triggerPart::condition;
 
 	int tNo = getTemplateNo(tId);
 
@@ -696,5 +698,11 @@ int lGetTime(lua_State *L)
 int lFailMsCall(lua_State *L)
 {
 	WSE->LuaOperations.lua_call_cfResults.back() = false;
+	return 0;
+}
+
+int lPrintStack(lua_State *L)
+{
+	printStack(L);
 	return 0;
 }
