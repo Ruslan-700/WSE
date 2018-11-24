@@ -219,7 +219,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::mission_CheckHit_Horse_exit_2 = FindSignature("\x8B\x7C\x24\x1C\x8B\x75\x18\xC6\x44\x24\x12\x00", "xxxxxxxxxxxx");
 
 	wb::addresses::mission_CheckHit_Prop_entry = FindSignature("\xD9\x44\x24\x44\xDC\x15", "xxxxxx");
-	wb::addresses::mission_CheckHit_Prop_exit_1 = FindSignature("\xD9\x05\x00\x00\x00\x00\x33\xFF\xD9\x5C\x24\x34", "xx????xxxxxx");
+	wb::addresses::mission_CheckHit_Prop_exit_1 = FindSignature("\xD9\x05\x00\x00\x00\x00\x8B\x44\x24\x70", "xx????xxxx");
 	wb::addresses::mission_CheckHit_Prop_exit_2 = FindSignature("\xD9\x44\x24\x14\x51\xDC\x25", "xxxxxxx");
 
 	wb::addresses::agent_HorseCharged_entry = FindSignature("\xE8\x00\x00\x00\x00\x84\xC0\x0F\x84\x00\x00\x00\x00\x83\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8D\x8C\x24", "x????xxxx????xx?????xx????xxx");
@@ -413,7 +413,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::mission_CheckHit_Horse_exit_2 = FindSignature("\x8B\x75\x18\x8B\x7C\x24\x1C\xC6\x44\x24\x12\x00", "xxxxxxxxxxxx");
 
 	wb::addresses::mission_CheckHit_Prop_entry = FindSignature("\xD9\x44\x24\x44\xDC\x15", "xxxxxx");
-	wb::addresses::mission_CheckHit_Prop_exit_1 = FindSignature("\xD9\x05\x00\x00\x00\x00\x33\xFF\xD9\x5C\x24\x34", "xx????xxxxxx");
+	wb::addresses::mission_CheckHit_Prop_exit_1 = FindSignature("\xD9\x05\x00\x00\x00\x00\x8B\x44\x24\x6C\x33\xC9", "xx????xxxxxx");
 	wb::addresses::mission_CheckHit_Prop_exit_2 = FindSignature("\xD9\x44\x24\x14\x51\xDC\x25", "xxxxxxx");
 
 	wb::addresses::agent_HorseCharged_entry = FindSignature("\xE8\x00\x00\x00\x00\x84\xC0\x0F\x84\x00\x00\x00\x00\x83\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8D\x8C\x24", "x????xxxx????xx?????xx????xxx");
@@ -500,7 +500,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 
-	wb::addresses::write_to_rgl_log_file_handle_base_var = FindSignature("\x90\x73\x69\x00\x00\x00\x00\x00\xAC\x55\x69", "xxxxxxxxxxx") + 940;
+	wb::addresses::write_to_rgl_log_file_handle_base_var = FindSignature("\x2E\x3F\x41\x56\x53\x69\x74\x65\x40\x40\x00", "xxxxxxxxxxx") - 776;
 	wb::addresses::write_to_rgl_log = FindSignature("\x81\xBD\x00\x00\x00\x00\x00\x00\x00\x00\x72\xC2", "xx????????xx") + 39;
 	wb::addresses::write_to_rgl_log_exit = wb::addresses::write_to_rgl_log + 5;
 

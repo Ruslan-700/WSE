@@ -106,7 +106,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x008FB428
-		push 0x008197D8
+		push 0x0081A7D0
 #elif defined WARBAND_STEAM
 		mov ecx, [edi]
 		push ecx
@@ -115,7 +115,7 @@ continue_exec:
 		mov ecx, [ebx]
 		push ecx
 		//push 0x00697958
-		push 0x006A21E0
+		push 0x006A31E0
 #endif
 		jmp [wb::addresses::operation_Execute_exit_2]
 	}
@@ -267,7 +267,7 @@ void __declspec(naked) ParseConsoleCommandHook()
 		jnz continue_exec
 		RESTORE_REGS
 		//push 0x0069DA84
-		push 0x006A8C0C
+		push 0x006A9C0C
 		jmp [wb::addresses::ParseConsoleCommand_exit_2]
 continue_exec:
 		RESTORE_REGS
@@ -299,7 +299,7 @@ void __declspec(naked) LoadSaveHook()
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Game, OnLoadSave)
 		RESTORE_REGS
-		push 0x008277FC
+		push 0x008287F4
 		jmp[wb::addresses::LoadSave_exit]
 	}
 #endif
@@ -754,7 +754,7 @@ void __declspec(naked) NewProfileLoadSkinListHook()
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Game, OnLoadSkinList)
 		RESTORE_REGS
-		mov ecx, 0xE0BB58
+		mov ecx, 0xE0CB58
 		jmp[wb::addresses::game_screen_NewProfileLoadSkinList_exit]
 	}
 #endif
@@ -768,7 +768,7 @@ void __declspec(naked) EditProfileLoadSkinListHook()
 		FREEZE_REGS
 		CALL_CONTEXT_FUNC(Game, OnLoadSkinList)
 		RESTORE_REGS
-		mov ecx, 0xE0BB58
+		mov ecx, 0xE0CB58
 		jmp[wb::addresses::game_screen_EditProfileLoadSkinList_exit]
 	}
 #endif
@@ -961,9 +961,9 @@ void _declspec(naked) MissionObjectWeaponKnockBackHook()
 		mov eax, [edx + 432]
 		imul eax, 240
 #if defined WARBAND
-		add eax, dword ptr ds:0x008EA5C4
+		add eax, dword ptr ds:0x008EB5C4
 #elif defined WARBAND_DEDICATED
-		add eax, dword ptr ds:0x00729BCC
+		add eax, dword ptr ds:0x0072ABCC
 #endif
 		push eax
 		CALL_CONTEXT_FUNC(Mission, OnMissionObjectWeaponKnockBack)
@@ -1165,8 +1165,8 @@ void __declspec(naked) AgentBloodParticlesHook()
 		push esi
 		CALL_CONTEXT_FUNC(Mission, OnAgentGetBloodParticles)
 		RESTORE_REGS
-		mov edi, ds:0x00AA13FC
-		mov esi, ds:0x00AA1400
+		mov edi, ds:0x00AA23FC
+		mov esi, ds:0x00AA2400
 		jmp[wb::addresses::agent_BloodParticles_exit]
 	}
 #endif
