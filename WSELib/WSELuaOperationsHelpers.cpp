@@ -445,6 +445,40 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 	lua_setmetatable(L, -2);
 }
 
+float hexStrToFloat(std::string s)
+{
+	size_t mul = 1;
+	float res = 0;
+
+	float sign = 1;
+	size_t start = 2;
+	if (s[0] == '-')
+	{
+		sign = -1;
+		start = 3;
+	}
+
+	for (size_t i = s.length() - 1; i >= start; i--)
+	{
+		char c = s[i];
+		int curVal = 0;
+
+		if (c >= '0' && c <= '9')
+		{
+			curVal = c - '0';
+		}
+		else if (c >= 'A' && c <= 'F')
+		{
+			curVal = c - 'A' + 10;
+		}
+
+		res += float(curVal * mul);
+		mul *= 16;
+	}
+
+	return res * sign;
+}
+
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name)
 {
 	gameConstTable constTable;
@@ -476,7 +510,16 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		if (std::regex_match(curLine, curMatches, numRegEx))
 		{
 			con.name = curMatches.str(1);
-			con.val = std::stof(curMatches.str(2), NULL);
+			
+			std::string &valStr = curMatches.str(2);
+			if (valStr[0] == '0' && valStr[1] == 'x')
+			{
+				con.val = hexStrToFloat(valStr);
+			}
+			else
+			{
+				con.val = std::stof(valStr, NULL);
+			}
 		}
 		else if (std::regex_match(curLine, curMatches, refRegEx))
 		{
