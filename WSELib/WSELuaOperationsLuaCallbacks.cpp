@@ -287,9 +287,10 @@ int lAddItemTrigger(lua_State *L)
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 
 	newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-	newT.operations.operations[0].num_operands = 1;
+	newT.operations.operations[0].num_operands = 2;
 
 	newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	newT.operations.operations[0].operands[1] = triggerPart::consequence;
 
 	int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(newT);
 
@@ -354,8 +355,9 @@ int lAddPrsnt(lua_State *L)
 		curTrigger.operations.num_operations = 1;
 		curTrigger.operations.operations = rgl::_new<wb::operation>(1);
 		curTrigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		curTrigger.operations.operations[0].num_operands = 1;	
+		curTrigger.operations.operations[0].num_operands = 2;	
 		curTrigger.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX); //pops val
+		curTrigger.operations.operations[0].operands[1] = triggerPart::consequence;
 
 		i++;
 	}
