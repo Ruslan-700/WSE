@@ -11,6 +11,7 @@ enum WSEEvent
 	OnFrame,
 	OnRglLogMsg,
 	OnWSEScriptEvent,
+	OnChatMessageReceived,
 };
 
 class WSEContext

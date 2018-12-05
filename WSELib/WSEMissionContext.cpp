@@ -240,29 +240,28 @@ int WSEMissionContext::GetTriggerBoneNo(int trigger_no) const
 
 bool WSEMissionContext::OnChatMessageReceived(bool team_chat, int player, rgl::string *text)
 {
+	warband->basic_game.trigger_result = 0;
+	warband->basic_game.result_string.clear();
+
+	if (WSE->Game.HasScript(WSE_SCRIPT_CHAT_MESSAGE_RECEIVED))
+	{
+		warband->basic_game.string_registers[0] = *text;
+		WSE->Game.ExecuteScript(WSE_SCRIPT_CHAT_MESSAGE_RECEIVED, 2, player, team_chat);
+	}
+
 	chatMessageReceivedEventData data;
 	data.team_chat = team_chat;
 	data.player = player;
 	data.text = text;
 
-	WSE->SendContextEvent(this, OnWSEScriptEvent, &data);
-
-	if (!WSE->Game.HasScript(WSE_SCRIPT_CHAT_MESSAGE_RECEIVED))
-		return true;
-
-	warband->basic_game.string_registers[0] = *text;
-	warband->basic_game.trigger_result = 0;
-	warband->basic_game.result_string.clear();
-
-	if (!WSE->Game.ExecuteScript(WSE_SCRIPT_CHAT_MESSAGE_RECEIVED, 2, player, team_chat))
-		return true;
+	WSE->SendContextEvent(this, WSEEvent::OnChatMessageReceived, &data);
 
 	if (warband->basic_game.trigger_result)
 		return false;
 
 	if (warband->basic_game.result_string.length() > 0)
 		*text = warband->basic_game.result_string;
-	
+
 	return true;
 }
 
