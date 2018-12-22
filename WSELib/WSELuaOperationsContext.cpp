@@ -465,7 +465,6 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 		}
 		else if (evt == WSEEvent::OnChatMessageReceived)
 		{
-			gPrint("lua context: onchat");
 			int top = lua_gettop(luaState);
 			lua_getglobal(luaState, "game");
 			lua_pushstring(luaState, "OnChatMessageReceived");

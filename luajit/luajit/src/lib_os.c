@@ -59,7 +59,7 @@ LJLIB_CF(os_rename)
   char *safeFromPath = makeSafePath(L->userDir, fromname);
   char *safeToPath = makeSafePath(L->userDir, toname);
 
-  int ret = luaL_fileresult(L, rename(fromname, toname) == 0, fromname);
+  int ret = luaL_fileresult(L, rename(safeFromPath, safeToPath) == 0, fromname);
 
   free(safeFromPath);
   free(safeToPath);
