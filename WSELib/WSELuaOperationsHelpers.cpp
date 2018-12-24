@@ -331,7 +331,7 @@ bool lIsPos(lua_State *L, int index)
 
 		return b1 && b2;
 	}
-	
+
 	return false;
 }
 
@@ -470,6 +470,10 @@ float hexStrToFloat(std::string s)
 		else if (c >= 'A' && c <= 'F')
 		{
 			curVal = c - 'A' + 10;
+		}
+		else if (c >= 'a' && c <= 'f')
+		{
+			curVal = c - 'a' + 10;
 		}
 
 		res += float(curVal * mul);
