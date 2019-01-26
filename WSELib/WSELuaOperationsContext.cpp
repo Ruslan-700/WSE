@@ -433,7 +433,7 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 	
 	if (luaStateIsReady)
 	{
-		if(evt == OnRglLogMsg)
+		if(evt == WSEEvent::OnRglLogMsg)
 		{
 			lua_getglobal(luaState, "game");
 			lua_pushstring(luaState, "OnRglLogWrite");
@@ -487,12 +487,12 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 					if (type == LUA_TNUMBER)
 					{
-						warband->basic_game.trigger_result = lua_tointeger(luaState, -2);
+						warband->basic_game.trigger_result = lua_tointeger(luaState, -1);
 					}
 					else if (type == LUA_TSTRING)
 					{
 						warband->basic_game.trigger_result = 0; //Explain why in luaGuide
-						warband->basic_game.result_string = rgl::string(lua_tostring(luaState, -2));
+						warband->basic_game.result_string = rgl::string(lua_tostring(luaState, -1));
 					}
 					else if (type != LUA_TNIL)
 					{
@@ -508,7 +508,13 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 			{
 				lua_pop(luaState, 2);
 			}
-			gPrintf("top before: %d, top now: %d", top, lua_gettop(luaState));
+		}
+		else if (evt == WSEEvent::OnFrame)
+		{
+			if (lua_gettop(this->luaState) > 100)
+			{
+				lua_settop(this->luaState, 0);
+			}
 		}
 	}
 }

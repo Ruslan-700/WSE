@@ -78,7 +78,11 @@ vector3.prototype =
 
 	len = function(self)
 		return math.sqrt(self.x^2 + self.y^2 + self.z^2)
-	end
+	end,
+
+	dist = function(self, vec2)
+		return math.sqrt( (self.x - vec2.x)^2 + (self.y - vec2.y)^2 + (self.z - vec2.z)^2 )
+	end,
 }
 vector3.mt = 
 {
@@ -148,7 +152,7 @@ vector3.mt =
 
 	__eq = function(lhs, rhs)
 		return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z
-	end
+	end,
 }
 vector3.new = function(obj)
 	local newObj
@@ -298,7 +302,15 @@ game.pos.prototype =
 		if val.x then self:moveX(val.x) end
 		if val.y then self:moveY(val.y) end
 		if val.z then self:moveZ(val.z) end
-	end
+	end,
+
+	dist = function(self, pos2)
+		return self.o:dist(pos2.o)
+	end,
+
+	isBehind = function(self, pos2)
+		return game.position_is_behind_position(self, pos2)
+	end,
 }
 
 game.pos.mt = 

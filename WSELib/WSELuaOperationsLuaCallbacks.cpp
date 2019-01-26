@@ -20,7 +20,7 @@ int lGameExecOperationHandler(lua_State *L)
 	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
 
 	if (opEntry == WSE->LuaOperations.operationMap.end())
-		luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
+		luaL_error(L, "undefined module system operation: '%s'", opName.c_str());
 
 	gameOperation op = opEntry->second;
 
@@ -60,7 +60,7 @@ int lGameExecOperationHandler(lua_State *L)
 			wop.operands[curOperandIndex] = curPosReg;
 		}
 		else
-			luaL_error(L, "invalid operand #%d", curOperandIndex);
+			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex, opName.c_str());
 
 		curOperandIndex++;
 		curLArgIndex++;
