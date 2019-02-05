@@ -257,10 +257,15 @@ bool WSEMissionContext::OnChatMessageReceived(bool team_chat, int player, rgl::s
 	WSE->SendContextEvent(this, WSEEvent::OnChatMessageReceived, &data);
 
 	if (warband->basic_game.trigger_result)
+	{
 		return false;
 
+	}
+
 	if (warband->basic_game.result_string.length() > 0)
+	{
 		*text = warband->basic_game.result_string;
+	}
 
 	return true;
 }

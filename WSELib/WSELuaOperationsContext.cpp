@@ -173,8 +173,6 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 	context->ExtractValue(ref);
 	context->ExtractValue(part);
 
-	//gPrintf("lua trigger called, stack top = %i", lua_gettop(context->luaState));
-
 	if (part == triggerPart::condition)
 	{
 		results = 1;
@@ -189,19 +187,15 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 		return false;
 	}
 
-	//printStack(context->luaState);
-
 	if (part == triggerPart::condition)
 	{
-		if (!lua_isboolean(context->luaState, -1))
+		int b = 1;
+
+		if (lua_isboolean(context->luaState, -1))
 		{
-			gPrint("Lua warning: callback needs to return true or false");
-			lua_pop(context->luaState, 2);
-			return false;
+			b = lua_toboolean(context->luaState, -1);
 		}
 		
-		int b = lua_toboolean(context->luaState, -1);
-
 		lua_pop(context->luaState, 2);
 
 		return b != 0 ? true : false;
@@ -485,13 +479,13 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 				{
 					int type = lua_type(luaState, -1);
 
-					if (type == LUA_TNUMBER)
+					if (type == LUA_TBOOLEAN)
 					{
-						warband->basic_game.trigger_result = lua_tointeger(luaState, -1);
+						warband->basic_game.trigger_result = (long long)lua_toboolean(luaState, -1);
 					}
 					else if (type == LUA_TSTRING)
 					{
-						warband->basic_game.trigger_result = 0; //Explain why in luaGuide
+						warband->basic_game.trigger_result = 0;
 						warband->basic_game.result_string = rgl::string(lua_tostring(luaState, -1));
 					}
 					else if (type != LUA_TNIL)

@@ -220,6 +220,10 @@ int lAddTrigger(lua_State *L)
 		newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
 		newT.consequences.operations[0].operands[1] = triggerPart::consequence;
 	}
+	else
+	{
+		newT.consequences.num_operations = 0;
+	}
 
 	newT.conditions.num_operations = 1;
 	newT.conditions.operations = rgl::_new<wb::operation>(1);
