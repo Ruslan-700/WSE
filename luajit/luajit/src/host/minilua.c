@@ -1177,7 +1177,7 @@ static CallInfo*growCI(lua_State*L){
 	else{
 		luaD_reallocCI(L, 2 * L->size_ci);
 		if (L->size_ci > 20000)
-			luaG_runerror(L, "stack overflow");
+			luaG_runerror(L, "stack overflow (minilua.c:1180)");
 	}
 	return++L->ci;
 }

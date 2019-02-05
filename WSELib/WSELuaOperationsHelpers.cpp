@@ -46,6 +46,35 @@ void gPrintf(const std::string &format, ...)
 	va_end(args);
 }
 
+int traceback(lua_State *L)
+{
+	SYSTEMTIME stime;
+	//structure to store system time (in usual time format)
+	FILETIME ltime;
+	//structure to store local time (local time in 64 bits)
+	FILETIME ftTimeStamp;
+	char msg[1024];//to store TimeStamp information
+	GetSystemTimeAsFileTime(&ftTimeStamp); //Gets the current system time
+
+	FileTimeToLocalFileTime(&ftTimeStamp, &ltime);//convert in local time and store in ltime
+	FileTimeToSystemTime(&ltime, &stime);//convert in system time and store in stime
+
+	const char *err = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	sprintf_s(msg, "%s\n#Time: %d:%d:%d:%d", err, stime.wHour, stime.wMinute, stime.wSecond, stime.wMilliseconds);
+
+	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+	lua_getfield(L, -1, "traceback");
+
+	lua_pushstring(L, msg);
+	lua_pushinteger(L, 2);
+
+	lua_call(L, 2, 1);
+	//fprintf(stderr, "%s\n", lua_tostring(L, -1));
+	return 1;
+}
+
 void printLastLuaError(lua_State *L, const char *fileName, HANDLE hFile)
 {
 	const char *msg = lua_tostring(L, -1);
@@ -302,7 +331,7 @@ bool lIsPos(lua_State *L, int index)
 
 		return b1 && b2;
 	}
-	
+
 	return false;
 }
 
@@ -416,6 +445,44 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 	lua_setmetatable(L, -2);
 }
 
+float hexStrToFloat(std::string s)
+{
+	size_t mul = 1;
+	float res = 0;
+
+	float sign = 1;
+	size_t start = 2;
+	if (s[0] == '-')
+	{
+		sign = -1;
+		start = 3;
+	}
+
+	for (size_t i = s.length() - 1; i >= start; i--)
+	{
+		char c = s[i];
+		int curVal = 0;
+
+		if (c >= '0' && c <= '9')
+		{
+			curVal = c - '0';
+		}
+		else if (c >= 'A' && c <= 'F')
+		{
+			curVal = c - 'A' + 10;
+		}
+		else if (c >= 'a' && c <= 'f')
+		{
+			curVal = c - 'a' + 10;
+		}
+
+		res += float(curVal * mul);
+		mul *= 16;
+	}
+
+	return res * sign;
+}
+
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name)
 {
 	gameConstTable constTable;
@@ -447,7 +514,16 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		if (std::regex_match(curLine, curMatches, numRegEx))
 		{
 			con.name = curMatches.str(1);
-			con.val = std::stof(curMatches.str(2), NULL);
+			
+			std::string &valStr = curMatches.str(2);
+			if (valStr[0] == '0' && valStr[1] == 'x')
+			{
+				con.val = hexStrToFloat(valStr);
+			}
+			else
+			{
+				con.val = std::stof(valStr, NULL);
+			}
 		}
 		else if (std::regex_match(curLine, curMatches, refRegEx))
 		{

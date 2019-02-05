@@ -26,6 +26,7 @@ void gPrint(const char *msg);
 void gPrint(const std::string &s);
 void gPrintf(const char *format, ...);
 void gPrintf(const std::string &format, ...);
+int traceback(lua_State *L);
 void printLastLuaError(lua_State *L, const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
 
 bool fileExists(const std::string& name);

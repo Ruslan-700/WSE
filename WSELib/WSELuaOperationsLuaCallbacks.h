@@ -3,6 +3,12 @@
 #include <lua.hpp>
 #include "WSE.h"
 
+enum triggerPart: int
+{
+	condition,
+	consequence
+};
+
 int lGameExecOperationHandler(lua_State *L);
 
 int lGetRegHandler(lua_State *L);
@@ -33,3 +39,5 @@ int lUnhookOperation(lua_State *L);
 
 int lGetTime(lua_State *L);
 int lFailMsCall(lua_State *L);
+
+int lPrintStack(lua_State *L);

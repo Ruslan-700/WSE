@@ -20,7 +20,7 @@ int lGameExecOperationHandler(lua_State *L)
 	auto opEntry = WSE->LuaOperations.operationMap.find(opName);
 
 	if (opEntry == WSE->LuaOperations.operationMap.end())
-		luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
+		luaL_error(L, "undefined module system operation: '%s'", opName.c_str());
 
 	gameOperation op = opEntry->second;
 
@@ -60,7 +60,7 @@ int lGameExecOperationHandler(lua_State *L)
 			wop.operands[curOperandIndex] = curPosReg;
 		}
 		else
-			luaL_error(L, "invalid operand #%d", curOperandIndex);
+			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex, opName.c_str());
 
 		curOperandIndex++;
 		curLArgIndex++;
@@ -215,18 +215,24 @@ int lAddTrigger(lua_State *L)
 		newT.consequences.operations = rgl::_new<wb::operation>(1);
 
 		newT.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.consequences.operations[0].num_operands = 1;
+		newT.consequences.operations[0].num_operands = 2;
 
 		newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+		newT.consequences.operations[0].operands[1] = triggerPart::consequence;
+	}
+	else
+	{
+		newT.consequences.num_operations = 0;
 	}
 
 	newT.conditions.num_operations = 1;
 	newT.conditions.operations = rgl::_new<wb::operation>(1);
 
 	newT.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-	newT.conditions.operations[0].num_operands = 1;
+	newT.conditions.operations[0].num_operands = 2;
 
 	newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	newT.conditions.operations[0].operands[1] = triggerPart::condition;
 
 	int tNo = getTemplateNo(tId);
 
@@ -285,9 +291,10 @@ int lAddItemTrigger(lua_State *L)
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 
 	newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-	newT.operations.operations[0].num_operands = 1;
+	newT.operations.operations[0].num_operands = 2;
 
 	newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	newT.operations.operations[0].operands[1] = triggerPart::consequence;
 
 	int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(newT);
 
@@ -352,8 +359,9 @@ int lAddPrsnt(lua_State *L)
 		curTrigger.operations.num_operations = 1;
 		curTrigger.operations.operations = rgl::_new<wb::operation>(1);
 		curTrigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		curTrigger.operations.operations[0].num_operands = 1;	
+		curTrigger.operations.operations[0].num_operands = 2;	
 		curTrigger.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX); //pops val
+		curTrigger.operations.operations[0].operands[1] = triggerPart::consequence;
 
 		i++;
 	}
@@ -696,5 +704,11 @@ int lGetTime(lua_State *L)
 int lFailMsCall(lua_State *L)
 {
 	WSE->LuaOperations.lua_call_cfResults.back() = false;
+	return 0;
+}
+
+int lPrintStack(lua_State *L)
+{
+	printStack(L);
 	return 0;
 }
