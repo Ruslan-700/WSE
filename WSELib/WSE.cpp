@@ -223,7 +223,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 		log_path = m_path + log_path;
 
 	Log.Open(log_path);
-	Log.Info("WSE v%s by cmpxchg8b, K700 (Build date: %s %s)", WSE_VERSION, __DATE__, __TIME__);
+	Log.Info("WSE v%s by cmpxchg8b, K700, AgentSmith (Build date: %s %s)", WSE_VERSION, __DATE__, __TIME__);
 	Log.Info("WSE path: %s", m_path.c_str());
 	Log.Info("WSE netcode version: %d", WSE_NETCODE_VERSION);
 	

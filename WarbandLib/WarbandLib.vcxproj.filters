@@ -760,5 +760,8 @@
     <ClCompile Include="presentation.cpp">
       <Filter>Source Files\wb</Filter>
     </ClCompile>
+    <ClCompile Include="network.cpp">
+      <Filter>Source Files\wb</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

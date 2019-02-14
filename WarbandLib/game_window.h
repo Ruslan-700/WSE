@@ -55,9 +55,9 @@ namespace wb
 
 		virtual ~game_window() = 0;
 		virtual void close() = 0;
-		virtual void unknown_1() = 0;
+		virtual void lose_focus() = 0;
 		virtual void open() = 0;
-		virtual void unknown_2() = 0;
+		virtual void obtainFocus() = 0;
 		virtual void run(float time) = 0;
 		virtual void reset() = 0;
 		virtual void save_state(const rgl::io_stream &stream) = 0;

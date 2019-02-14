@@ -117,7 +117,7 @@ void Loader::Process(const CString &cmdLine)
 		Write(MF_INFO | MF_QUIT, L"");
 	}
 	
-	Write(MF_INFO, L"WSE Loader by cmpxchg8b, K700 (Build date: %S %S)", __DATE__, __TIME__);
+	Write(MF_INFO, L"WSE Loader by cmpxchg8b, K700, AgentSmith (Build date: %S %S)", __DATE__, __TIME__);
 
 	OSVERSIONINFOEX osVersionInfo = { sizeof(OSVERSIONINFOEX), 0 };
 

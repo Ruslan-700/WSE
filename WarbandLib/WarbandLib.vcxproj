@@ -244,6 +244,7 @@
     <ClCompile Include="mission_template.cpp" />
     <ClCompile Include="multiplayer_event.cpp" />
     <ClCompile Include="multiplayer_server.cpp" />
+    <ClCompile Include="network.cpp" />
     <ClCompile Include="network_buffer.cpp" />
     <ClCompile Include="network_player.cpp" />
     <ClCompile Include="network_server.cpp" />

@@ -79,6 +79,8 @@ namespace wb
 		static unsigned int network_manager_PopulateServerOptionsServerEvent_entry;
 
 		static unsigned int network_manager_GoldNumBits_entry;
+
+		static unsigned int network_manager_ConnectToServer;
 		
 		static unsigned int config_manager_ChooseNumberOfEffectiveCorpses_entry;
 		static unsigned int config_manager_ChooseNumberOfEffectiveCorpses_exit;

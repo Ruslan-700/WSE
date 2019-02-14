@@ -66,5 +66,9 @@ namespace wb
 		int num_server_info_requests;
 		double last_server_info_request_check_time;
 		rgl::string main_server_reply;
+
+#if defined WARBAND
+		void connect_to_server(const unsigned __int64 &vac_id, const rgl::string &ip, const int &port, const rgl::string &password);
+#endif
 	};
 }

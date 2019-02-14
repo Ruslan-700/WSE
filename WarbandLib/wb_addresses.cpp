@@ -105,6 +105,8 @@ unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry =
 
 unsigned int addresses::network_manager_GoldNumBits_entry = 0x00814AFC;
 
+unsigned int addresses::network_manager_ConnectToServer = 0x00484DB0;
+
 //unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405360;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405560;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = config_manager_ChooseNumberOfEffectiveCorpses_entry + 5;
@@ -359,6 +361,8 @@ unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry =
 
 unsigned int addresses::network_manager_GoldNumBits_entry = 0x00814B5C;
 
+unsigned int addresses::network_manager_ConnectToServer = 0x00484DB0;
+
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0x00405360;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = config_manager_ChooseNumberOfEffectiveCorpses_entry + 5;
 
@@ -597,6 +601,8 @@ unsigned int addresses::network_manager_PopulatePlayerInfoClientEvent_exit = 0;
 unsigned int addresses::network_manager_PopulateServerOptionsServerEvent_entry = 0x0042E700;
 
 unsigned int addresses::network_manager_GoldNumBits_entry = 0x0069F0BC;
+
+unsigned int addresses::network_manager_ConnectToServer = 0;
 
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_entry = 0;
 unsigned int addresses::config_manager_ChooseNumberOfEffectiveCorpses_exit = 0;

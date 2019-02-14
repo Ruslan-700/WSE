@@ -30,6 +30,7 @@ namespace wb
 		player_set_is_admin = 429,
 		kick_player = 465,
 		ban_player = 466,
+		change_screen_quit = 2055,
 	};
 
 	/*struct operand
