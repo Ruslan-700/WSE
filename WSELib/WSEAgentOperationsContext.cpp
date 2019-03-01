@@ -127,7 +127,7 @@ int AgentGetGroundSceneProp(WSEAgentOperationsContext *context)
 	else
 		return -1;
 }
-/*
+
 int AgentGetItemSlotAmmo(WSEAgentOperationsContext *context)
 {
 	int agent_no, item_slot_no;
@@ -137,7 +137,7 @@ int AgentGetItemSlotAmmo(WSEAgentOperationsContext *context)
 
 	return warband->cur_mission->agents[agent_no].items[item_slot_no].get_ammo();
 }
-*/
+
 void AgentSetItemSlotAmmo(WSEAgentOperationsContext *context)
 {
 	int agent_no, item_slot_no, value;
@@ -453,6 +453,10 @@ WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("ag
 
 void WSEAgentOperationsContext::OnLoad()
 {
+	ReplaceOperation(1825, "agent_get_ammo_for_slot", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
+	"Stores <1>'s <2> ammo count into <0>",
+	"destination", "agent_no", "item_slot_no");
+
 	ReplaceOperation(2065, "agent_get_damage_modifier", AgentGetDamageModifier, Both, Lhs | Undocumented, 2, 2,
 		"Stores <1>'s damage modifier into <0>",
 		"destination", "agent_no");
@@ -492,11 +496,7 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_get_ground_scene_prop", AgentGetGroundSceneProp, Both, Lhs, 2, 2,
 		"Stores the prop instance on which <1> is standing into <0>",
 		"destination", "agent_no");
-	/*
-	RegisterOperation("agent_get_item_slot_ammo", AgentGetItemSlotAmmo, Both, Lhs, 3, 3,
-		"Stores <1>'s <2> ammo count into <0>",
-		"destination", "agent_no", "item_slot_no");
-	*/
+
 	RegisterOperation("agent_set_item_slot_ammo", AgentSetItemSlotAmmo, Both, None, 3, 3,
 		"Sets <0>'s <1> ammo count to <2>",
 		"agent_no", "item_slot_no", "value");
