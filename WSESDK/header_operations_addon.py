@@ -106,7 +106,7 @@ agent_get_item_slot_flags                       = 3311 #(agent_get_item_slot_fla
 agent_ai_get_move_target_position               = 3312 #(agent_ai_get_move_target_position, <position_register>, <agent_no>), #Stores <agent_no>'s move target position agent into <position_register>
 agent_set_horse                                 = 3313 #(agent_set_horse, <agent_no>, <horse_agent_no>), #Sets <agent_no>'s horse to <horse_agent_no> (-1 for no horse)
 agent_ai_set_simple_behavior                    = 3314 #(agent_ai_set_simple_behavior, <agent_no>, <simple_behavior>, [<guaranteed_time>]), #Sets <agent_no>'s behavior to <simple_behavior> and guarantees it won't be changed for [<guaranteed_time>] seconds. If [<guaranteed_time>] is not specified or <= 0, it won't be changed until agent_force_rethink is called
-agent_accelerate                                = 3315 #(agent_accelerate, <agent_no>, <position_register_no>), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>
+agent_accelerate                                = 3315 #(agent_accelerate, <agent_no>, <position_register_no>, [<movement_timer_fixed_point>]), #Uses x, y, z components of <position_register_no> to apply acceleration to <agent_no>. Specify [<movement_timer_fixed_point>] for ghosting time.
 agent_set_item_slot_modifier                    = 3316 #(agent_set_item_slot_modifier, <agent_no>, <item_slot_no>, <item_modifier_no>), #Sets <agent_no>'s <item_slot_no> modifier to <item_modifier_no>
 agent_body_meta_mesh_set_vertex_keys_time_point = 3317 #(agent_body_meta_mesh_set_vertex_keys_time_point, <agent_no>, <body_meta_mesh>, <time_point>), #Sets <agent_no>'s <body_meta_mesh> vertex keys time point to <time_point>
 agent_body_meta_mesh_set_visibility             = 3318 #(agent_body_meta_mesh_set_visibility, <agent_no>, <body_meta_mesh>, <value>), #Shows (<value> = 1) or hides (<value> = 0) <agent_no>'s <body_meta_mesh>
@@ -164,6 +164,7 @@ missile_remove_on_hit            = 3611 #(missile_remove_on_hit), #Causes a miss
 missile_is_valid                 = 3612 #(missile_is_valid, <missile_no>), #Fails if <missile_no> is not valid
 missile_get_cur_position         = 3613 #(missile_get_cur_position, <position_register>, <missile_no>), #Stores <missile_no>'s current position into <position_register>
 set_prop_collision_threshold     = 3614 #(set_prop_collision_threshold, <attack_direction>, <low_boundary>, <high_boundary>), #Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))
+get_camera_position              = 3615 #(get_camera_position, <position_register_no>), #Stores camera position and rotation into <position_register_no>
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>
@@ -361,9 +362,11 @@ lua_push_str        = 5109 #(lua_push_str, <string_1>), #Pushes <string_1> onto 
 lua_push_pos        = 5110 #(lua_push_pos, <pos_register>), #Pushes the position in <pos_register> onto the lua stack.
 lua_get_type        = 5111 #(lua_get_type, <destination>), #Stores the type of the value at <1> in the stack into <destination>. Return types can be found in header_common(_addon).py (LUA_T*)
 lua_call            = 5112 #(lua_call, <func_name>, <num_args>), #Calls the lua function with name <func_name>, using the lua stack to pass <num_args> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.
-lua_triggerCallback = 5113 #(lua_triggerCallback, <reference>), #Calls the lua trigger callback with <reference>. This operation is utilized internally and should not be used, unless you know what you are doing.
+lua_triggerCallback = 5113 #(lua_triggerCallback, <reference>, <triggerPart>), #Calls the lua trigger callback with <reference>. This operation is utilized internally and should not be used, unless you know what you are doing.
 
 lhs_operations += [
+	agent_get_ammo_for_slot,
+	agent_get_item_cur_ammo,
 	agent_get_damage_modifier,
 	agent_get_accuracy_modifier,
 	agent_get_speed_modifier,

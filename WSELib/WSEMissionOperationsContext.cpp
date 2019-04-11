@@ -363,7 +363,7 @@ void ParticleSystemRemove(WSEMissionOperationsContext *context)
 	}
 #endif
 }
-/*
+
 void GetCameraPosition(WSEMissionOperationsContext *context)
 {
 	int preg;
@@ -372,7 +372,7 @@ void GetCameraPosition(WSEMissionOperationsContext *context)
 
 	warband->basic_game.position_registers[preg] = warband->cur_mission->camera_position;
 }
-*/
+
 int GetSpectatedAgentNo(WSEMissionOperationsContext *context)
 {
 #if defined WARBAND
@@ -668,11 +668,7 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("particle_system_remove", ParticleSystemRemove, Client, None, 0, 1,
 		"Removes <0> (all particle systems if not set or -1) from the current entity (can be used in several in triggers)",
 		"particle_system_no");
-	/*
-	RegisterOperation("get_camera_position", GetCameraPosition, Client, None, 1, 1,
-		"Stores camera position and rotation into <0>",
-		"position_register_no");
-	*/
+
 	RegisterOperation("get_spectated_agent_no", GetSpectatedAgentNo, Client, Lhs, 1, 1,
 		"Stores spectated agent no into <0>",
 		"destination");
@@ -723,5 +719,9 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
 	"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
 	"attack_direction", "low_boundary", "high_boundary");
+
+	RegisterOperation("get_camera_position", GetCameraPosition, Client, None, 1, 1,
+	"Stores camera position and rotation into <0>",
+	"position_register_no");
 	
 }

@@ -305,11 +305,11 @@ void ItemSetHorseBloodParticles(WSEItemOperationsContext *context)
 	int item_kind_no, blood_particle_1_no, blood_particle_2_no;
 
 	context->ExtractItemKindNo(item_kind_no);
-	context->ExtractValue(blood_particle_1_no);
-	context->ExtractValue(blood_particle_2_no);
+	context->ExtractParticleSystemNo(blood_particle_1_no);
+	context->ExtractParticleSystemNo(blood_particle_2_no);
 
 	WSE->Mission.m_item_horse_blood_particles[item_kind_no].blood_particle_1_no = blood_particle_1_no;
-	WSE->Mission.m_item_horse_blood_particles[item_kind_no].blood_particle_1_no = blood_particle_2_no;
+	WSE->Mission.m_item_horse_blood_particles[item_kind_no].blood_particle_2_no = blood_particle_2_no;
 #endif
 }
 

@@ -298,15 +298,19 @@ void AgentAiSetSimpleBehavior(WSEAgentOperationsContext *context)
 
 void AgentAccelerate(WSEAgentOperationsContext *context)
 {
-	int agent_no, preg;
+	int agent_no, preg, time;
 	
 	context->ExtractAgentNo(agent_no);
 	context->ExtractRegister(preg);
+	context->ExtractValue(time);
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 	agent->movement_flags &= ~0x1;
 	agent->acceleration += warband->basic_game.position_registers[preg].o;
+
+	if (time)
+		agent->movement_timer.increase((float)time / warband->basic_game.fixed_point_multiplier);
 }
 
 void AgentSetItemSlotModifier(WSEAgentOperationsContext *context)
@@ -442,9 +446,12 @@ void AgentAddStun(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractValue(duration);
 
-	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+	if (duration >= 0)
+	{
+		wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	agent->add_stun(duration / (float)1000);
+		agent->add_stun(duration / (float)1000);
+	}
 }
 
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
@@ -456,6 +463,10 @@ void WSEAgentOperationsContext::OnLoad()
 	ReplaceOperation(1825, "agent_get_ammo_for_slot", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
 	"Stores <1>'s <2> ammo count into <0>",
 	"destination", "agent_no", "item_slot_no");
+
+	ReplaceOperation(1977, "agent_get_item_cur_ammo", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
+		"Stores <1>'s <2> ammo count into <0>",
+		"destination", "agent_no", "item_slot_no");
 
 	ReplaceOperation(2065, "agent_get_damage_modifier", AgentGetDamageModifier, Both, Lhs | Undocumented, 2, 2,
 		"Stores <1>'s damage modifier into <0>",
@@ -541,9 +552,9 @@ void WSEAgentOperationsContext::OnLoad()
 		"Sets <0>'s behavior to <1> and guarantees it won't be changed for <2> seconds. If <2> is not specified or <= 0, it won't be changed until agent_force_rethink is called",
 		"agent_no", "simple_behavior", "guaranteed_time");
 
-	RegisterOperation("agent_accelerate", AgentAccelerate, Both, None, 2, 2,
-		"Uses x, y, z components of <1> to apply acceleration to <0>",
-		"agent_no", "position_register_no");
+	RegisterOperation("agent_accelerate", AgentAccelerate, Both, None, 2, 3,
+		"Uses x, y, z components of <1> to apply acceleration to <0>. Specify <2> for ghosting time",
+		"agent_no", "position_register_no", "movement_timer_fixed_point");
 
 	RegisterOperation("agent_set_item_slot_modifier", AgentSetItemSlotModifier, Both, None, 3, 3,
 		"Sets <0>'s <1> modifier to <2>",
@@ -578,6 +589,6 @@ void WSEAgentOperationsContext::OnLoad()
 		"destination", "agent_no");
 
 	RegisterOperation("agent_add_stun", AgentAddStun, Both, None, 2, 2,
-		"Adds stun to <0> for <1> milliseconds.",
+		"Adds stun to <0> for <1> milliseconds",
 		"agent_no", "duration");
 }

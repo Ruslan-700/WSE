@@ -13,6 +13,7 @@ namespace rgl
 		timer(int timer_no = 0);
 		double get_elapsed_time() const;
 		void update(int offset = 0);
+		void increase(float offset);
 	};
 
 	struct toggle_timer : timer

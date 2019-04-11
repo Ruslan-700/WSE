@@ -65,8 +65,8 @@ namespace wb
 		int num_agents;
 		int agent_closeness;
 		rgl::vector4 center_position;
-		int unknown_division_no;
-		int u1;
+		int parent_division_no;
+		int row_offset;
 		bool active_members[4096];
 	};
 	
