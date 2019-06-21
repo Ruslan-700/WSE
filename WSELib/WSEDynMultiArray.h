@@ -196,7 +196,8 @@ public:
 			deleteSubDimension(data, 0);
 		}
 
-		delete &dimSizes;
+		dimSizes.clear();
+		//delete &dimSizes;
 	}
 
 	bool saveToFile(const std::string &file, write_val_f write_cb) const

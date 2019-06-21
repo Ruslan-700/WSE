@@ -289,6 +289,15 @@ void DictGetKeyByIterator(WSEDictionaryOperationsContext *context)
 	warband->basic_game.string_registers[sreg] = dict->GetKeyByIterator(iterator);
 }
 
+void DictDeleteFileJson(WSEDictionaryOperationsContext *context)
+{
+	std::string path;
+
+	context->ExtractPath(path);
+
+	DeleteFile(context->CreateFile(path, "json").c_str());
+}
+
 WSEDictionaryOperationsContext::WSEDictionaryOperationsContext() : WSEOperationContext("dictionary", 3200, 3299)
 {
 }
@@ -395,6 +404,9 @@ void WSEDictionaryOperationsContext::OnLoad()
 		"Removes value from <0> paired to <1>",
 		"dict", "key");
 
+	RegisterOperation("dict_delete_file_json", DictDeleteFileJson, Both, None, 1, 1,
+		"Deletes dictionary json file <0> from disk",
+		"file");
 }
 
 void WSEDictionaryOperationsContext::OnUnload()

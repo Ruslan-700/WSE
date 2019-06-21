@@ -159,7 +159,7 @@ int ArrayCreate(WSEArrayOperationsContext *context)
 			delete ptr;
 		}
 		else{
-			context->ScriptError("invalid array type ID [%i]" + typeId);
+			context->ScriptError("invalid array type ID [%i]", typeId);
 		}
 	}
 
@@ -216,7 +216,7 @@ int ArrayCopy(WSEArrayOperationsContext *context)
 		delete ptr;
 	}
 
-	context->ScriptError("failed to copy array [%i]" + srcId);
+	context->ScriptError("failed to copy array [%i]", srcId);
 	return 0; //won't happen
 }
 
@@ -944,7 +944,7 @@ void WSEArrayOperationsContext::OnUnload()
 bool WSEArraySortOptions::setSortMode(int mode, int maxMode, bool isCustomScript)
 {
 	if (isCustomScript){
-		if (mode < 0 || !WSE->Game.HasScript(mode))
+		if (mode < 0 || mode >= warband->script_manager.num_scripts)
 			return false;
 
 		sortCmpScriptNo = mode;

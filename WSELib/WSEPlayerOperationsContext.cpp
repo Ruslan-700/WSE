@@ -42,7 +42,7 @@ void PlayerSetSkin(WSEPlayerOperationsContext *context)
 	wb::network_buffer nbuf;
 	
 	nbuf.pack_uint16(PlayerSetSkinNoClientMessage, MM_EVENT_BITS);
-	nbuf.pack_uint32(player_no, warband->network_manager.num_bits_player, -1);
+	nbuf.pack_int32(player_no, warband->network_manager.num_bits_player, -1);
 	nbuf.pack_uint32(skin_no, 4);
 
 	wb::multiplayer_event evt;
@@ -94,7 +94,7 @@ void PlayerStopControllingAgent(WSEPlayerOperationsContext *context)
 	wb::network_buffer nbuf;
 	
 	nbuf.pack_uint16(PlayerStopControllingAgentMessage, MM_EVENT_BITS);
-	nbuf.pack_uint32(player_no, warband->network_manager.num_bits_player, -1);
+	nbuf.pack_int32(player_no, warband->network_manager.num_bits_player, -1);
 
 	wb::multiplayer_event evt;
 
