@@ -3,6 +3,17 @@
 #include "WSE.h"
 #include "warband.h"
 
+void AgentSetAnimationProgress(WSEAgentOperationsContext *context)
+{
+	int agent_no, channel_no, value;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(value);
+	context->ExtractBoundedValue(channel_no, 0, 2);
+
+	warband->cur_mission->agents[agent_no].action_channels[channel_no].target_progress = (float)(value % warband->basic_game.fixed_point_multiplier) / warband->basic_game.fixed_point_multiplier;
+}
+
 int AgentGetDamageModifier(WSEAgentOperationsContext *context)
 {
 	int agent_no;
@@ -460,9 +471,13 @@ WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("ag
 
 void WSEAgentOperationsContext::OnLoad()
 {
+	ReplaceOperation(1743, "agent_set_animation_progress", AgentSetAnimationProgress, Both, None, 2, 3,
+		"Sets <0>'s channel <2> animation progress to <1>",
+		"agent_no", "value_fixed_point", "channel_no");
+
 	ReplaceOperation(1825, "agent_get_ammo_for_slot", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
-	"Stores <1>'s <2> ammo count into <0>",
-	"destination", "agent_no", "item_slot_no");
+		"Stores <1>'s <2> ammo count into <0>",
+		"destination", "agent_no", "item_slot_no");
 
 	ReplaceOperation(1977, "agent_get_item_cur_ammo", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
 		"Stores <1>'s <2> ammo count into <0>",
