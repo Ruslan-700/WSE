@@ -465,6 +465,96 @@ void AgentAddStun(WSEAgentOperationsContext *context)
 	}
 }
 
+void AgentBodyMetaMeshDeformInRange(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh, startFrame, endFrame, duration;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+	context->ExtractValue(startFrame);
+	context->ExtractValue(endFrame);
+	context->ExtractValue(duration);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if !defined WARBAND_DEDICATED
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return;
+
+	agent->body_meta_meshes[body_meta_mesh]->start_deform_animation(1, (float)startFrame, (float)endFrame, (float)duration * 0.001f);
+#endif
+}
+
+void AgentBodyMetaMeshDeformInCycleLoop(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh, startFrame, endFrame, duration;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+	context->ExtractValue(startFrame);
+	context->ExtractValue(endFrame);
+	context->ExtractValue(duration);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if !defined WARBAND_DEDICATED
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return;
+
+	agent->body_meta_meshes[body_meta_mesh]->start_deform_animation(2, (float)startFrame, (float)endFrame, (float)duration * 0.001f);
+#endif
+}
+
+int AgentBodyMetaMeshGetCurrentDeformProgress(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return -1;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if !defined WARBAND_DEDICATED
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return -1;
+
+	return (int)(agent->body_meta_meshes[body_meta_mesh]->get_current_deform_animation_progress() * 100.0f);
+#else
+	return -1;
+#endif
+}
+
+int AgentBodyMetaMeshGetCurrentDeformFrame(WSEAgentOperationsContext *context)
+{
+	int agent_no, body_meta_mesh;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(body_meta_mesh);
+
+	if (body_meta_mesh < wb::bmm_head || body_meta_mesh > wb::bmm_name)
+		return -1;
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+#if !defined WARBAND_DEDICATED
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return -1;
+
+	return static_cast<int>(std::round(agent->body_meta_meshes[body_meta_mesh]->get_mesh_vertex_anim_frame_time()));
+#else
+	return -1;
+#endif
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -606,4 +696,20 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_add_stun", AgentAddStun, Both, None, 2, 2,
 		"Adds stun to <0> for <1> milliseconds",
 		"agent_no", "duration");
+
+	RegisterOperation("agent_body_meta_mesh_deform_in_range", AgentBodyMetaMeshDeformInRange, Client, None, 5, 5,
+		"Animates <0>'s <1> from <2> to <3> within the specified <4> (in milliseconds)",
+		"agent_no", "body_meta_mesh", "start_frame", "end_frame", "time_period");
+
+	RegisterOperation("agent_body_meta_mesh_deform_in_cycle_loop", AgentBodyMetaMeshDeformInCycleLoop, Client, None, 5, 5,
+		"Performs looping animation of  <0>'s <1> from <2> to <3> and within the specified <4> (in milliseconds)",
+		"agent_no", "body_meta_mesh", "start_frame", "end_frame", "time_period");
+
+	RegisterOperation("agent_body_meta_mesh_get_current_deform_progress", AgentBodyMetaMeshGetCurrentDeformProgress, Client, Lhs, 3, 3,
+		"Stores <1>'s <2> deform progress percentage value between 0 and 100 if animation is still in progress into <0>. Returns 100 otherwise",
+		"destination", "agent_no", "body_meta_mesh");
+
+	RegisterOperation("agent_body_meta_mesh_get_current_deform_frame", AgentBodyMetaMeshGetCurrentDeformFrame, Client, Lhs, 3, 3,
+		"Stores <1>'s <2> current deform frame, rounded to nearest integer value, into <0>",
+		"destination", "agent_no", "body_meta_mesh");
 }

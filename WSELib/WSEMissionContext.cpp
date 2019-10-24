@@ -120,6 +120,27 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		m_item_difficulty_skill[wb::itp_type_book] = WSE->ModuleSettingsIni.Int("", "difficulty_skill_itp_type_book", -1);
 
 		break;
+#if defined WARBAND
+	case OnFrame:
+		for (int i = 0; i < warband->cur_mission->agents.num_items; ++i)
+		{
+			if (warband->cur_mission->agents[i].valid)
+			{
+				wb::agent *agent = &warband->cur_mission->agents[i];
+				if (agent->type == wb::at_human)
+				{
+					for (int j = wb::bmm_head; j < wb::bmm_name + 1; ++j)
+					{
+						if (agent->body_meta_meshes[j])
+						{
+							agent->body_meta_meshes[j]->deform_move();
+						}
+					}
+				}
+			}
+		}
+		break;
+#endif	
 	}
 }
 

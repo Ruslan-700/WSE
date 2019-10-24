@@ -1,5 +1,7 @@
 #include "rgl_meta_mesh.h"
 
+#include "warband.h"
+
 using namespace rgl;
 
 meta_mesh_lod::~meta_mesh_lod()
@@ -95,6 +97,100 @@ void meta_mesh::create_vertex_anim_morph(const float &time)
 	for (int i = 0; i < this->num_lods; ++i)
 	{
 		this->lods[i].create_vertex_anim_morph(time);
+	}
+}
+
+float meta_mesh::get_mesh_vertex_anim_frame_time()
+{
+	float next_vertex_anim_frame_time = 0.0f;
+
+	for (int i = 0; i < lods[0].meshes.size(); ++i)
+	{
+		float temp_next_vertex_anim_frame_time = lods[0].meshes[i]->next_vertex_anim_frame_time;
+		if (temp_next_vertex_anim_frame_time > 0.0f)
+		{
+			next_vertex_anim_frame_time = temp_next_vertex_anim_frame_time;
+			break;
+		}
+	}
+
+	return next_vertex_anim_frame_time;
+}
+
+void meta_mesh::start_deform_animation(int mode, float startFrame, float endFrame, float duration)
+{
+	if (duration >= 0.0f)
+	{
+		deformStartFrame = (startFrame > 0.0f) ? startFrame : 0.0f;
+		deformEndFrame = (endFrame > 0.0f) ? endFrame : 0.0f;
+		deformDuration = duration;
+		deformMode = mode;
+		deformStartTime = warband->timers[2] / 100000.0f;
+	}
+}
+
+float meta_mesh::get_current_deform_animation_progress()
+{
+	if (deformMode <= 0)
+		return 1.0f;
+
+	float elapsedTime = (warband->timers[2] / 100000.0f) - deformStartTime;
+	float progress;
+
+	if (deformMode == 2)
+	{
+		float duration = deformDuration;
+		while (elapsedTime >= duration)
+		{
+			elapsedTime -= duration;
+		}
+		progress = elapsedTime / duration;
+	}
+	else
+	{
+		progress = elapsedTime / deformDuration;
+	}
+
+	if (progress > 1.0f)
+		return 1.0f;
+
+	return progress;
+}
+
+void meta_mesh::deform_move()
+{
+	if (deformMode > 0)
+	{
+		float elapsedTime = (warband->timers[2] / 100000.0f) - deformStartTime;
+
+		if (deformMode == 2)
+		{
+			while (elapsedTime >= deformDuration)
+			{
+				deformStartTime += deformDuration;
+				elapsedTime = (warband->timers[2] / 100000.0f) - deformStartTime;
+			}
+		}
+
+		float timePoint;
+		if (elapsedTime <= 0.0f)
+		{
+			timePoint = deformStartFrame;
+		}
+		else
+		{
+			if (elapsedTime < deformDuration)
+			{
+				timePoint = elapsedTime * deformEndFrame / deformDuration + (deformDuration - elapsedTime) * deformStartFrame / deformDuration;
+			}
+			else
+			{
+				timePoint = deformEndFrame;
+				deformMode = 0;
+			}
+		}
+
+		set_mesh_vertex_anim_frame_time(timePoint);
 	}
 }
 

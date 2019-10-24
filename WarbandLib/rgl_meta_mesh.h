@@ -21,7 +21,11 @@ namespace rgl
 
 	struct meta_mesh
 	{
-		int u[NUM_LODS];//1166
+		float deformStartFrame;
+		float deformEndFrame;
+		float deformDuration;
+		int deformMode;
+		float deformStartTime;
 		bounding_box bounding_box;
 		meta_mesh_lod lods[NUM_LODS];
 		int num_lods;
@@ -35,6 +39,10 @@ namespace rgl
 		void set_mesh_vertex_anim_frame_time(const float &time);
 		void set_base_mesh_vertex_anim_frame_time(const float &time);
 		void create_vertex_anim_morph(const float &time);
+		float get_mesh_vertex_anim_frame_time();
+		void start_deform_animation(int mode, float startFrame, float endFrame, float duration);
+		float get_current_deform_animation_progress();
+		void deform_move();
 		void remove_particle_system(int particle_system_no = -1);
 		void set_vertex_color(unsigned int color);
 		void set_visibility_flags(unsigned int color);
