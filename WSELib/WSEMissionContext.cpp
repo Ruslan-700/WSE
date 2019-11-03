@@ -795,6 +795,9 @@ void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::miss
 
 void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
 {
+	if ((agent->action_channels[0].action_no >= 0 && agent->action_set->actions[agent->action_channels[0].action_no].flags & 0x800) || (agent->action_channels[1].action_no >= 0 && agent->action_set->actions[agent->action_channels[1].action_no].flags & 0x800))
+		*max_rotation_speed = 0.0f;
+
 	warband->basic_game.trigger_param_1 = agent->no;
 	warband->basic_game.trigger_param_2 = static_cast<int>(std::round(*max_rotation_speed * warband->basic_game.fixed_point_multiplier));
 	

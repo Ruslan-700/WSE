@@ -276,7 +276,6 @@ namespace wb
 		bool touched;
 		int hit_bone_no;
 		rgl::vector4 hit_force;
-		//float modifiers[5];
 		float modifiers[6];
 		rgl::vector4 acceleration;
 		rgl::vector4 velocity;
@@ -331,10 +330,11 @@ namespace wb
 		hkpRigidBody *horse_agent_before_death_body;
 		float u21;
 		int running_away_state;
+		int sound_channel;
+		int module_sound_channel;
 #if defined WARBAND
-		FMOD_CHANNEL *fmod_channel;
+		int reloading_sound_channel;
 #endif
-		int u32[2];//1153
 		int num_times_cheered;
 		bool update_banner;
 		rgl::ai_mesh_face *ai_mesh_face;
