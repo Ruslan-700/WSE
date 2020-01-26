@@ -805,7 +805,7 @@ void __declspec(naked) UpdateAgentEntityBodyHook()
 {
 	_asm
 	{
-		add esp, 444
+		add esp, 456
 		FREEZE_REGS
 		mov ebx, esp
 		mov eax, [ebx+32]

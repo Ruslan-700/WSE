@@ -187,7 +187,7 @@ unsigned int addresses::agent_CancelSwing_entry = 0x004B5F0F;
 unsigned int addresses::agent_CancelSwing_exit = 0x004B5F55;
 
 //unsigned int addresses::UpdateAgentEntityBody = 0x00530E58;
-unsigned int addresses::UpdateAgentEntityBody = 0x00571330;
+unsigned int addresses::UpdateAgentEntityBody = 0x004F5168;
 		
 //unsigned int addresses::agent_DropItem_entry = 0x0050E296;
 unsigned int addresses::agent_DropItem_entry = 0x004D1176;
@@ -419,7 +419,7 @@ unsigned int addresses::item_kind_TransformHoldPosition_entry = 0x004D88A0;
 unsigned int addresses::agent_CancelSwing_entry = 0x004F473F;
 unsigned int addresses::agent_CancelSwing_exit = 0x004F4785;
 
-unsigned int addresses::UpdateAgentEntityBody = 0x00534BF8;
+unsigned int addresses::UpdateAgentEntityBody = 0x004F5168;
 		
 unsigned int addresses::agent_DropItem_entry = 0x00512036;
 unsigned int addresses::agent_DropItem_exit = agent_DropItem_entry + 6;

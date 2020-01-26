@@ -255,7 +255,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_CancelSwing_entry = FindSignature("\x8B\x86\x00\x00\x00\x00\x33\xFF\x85\xC0\x7C\x1A", "xx????xxxxxx");
 	wb::addresses::agent_CancelSwing_exit = FindSignature("\x85\xFF\x74\x4D\x8B\x07", "xxxxxx");
 
-	wb::addresses::UpdateAgentEntityBody = FindSignature("\x81\xC4\x00\x00\x00\x00\xC3\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\xCC\x81\xEC\x00\x00\x00\x00\x53\x33\xDB", "xx????xxxxxxxxxxxx????xxx");
+	wb::addresses::UpdateAgentEntityBody = FindSignature("\x81\xC4\x00\x00\x00\x00\xC3\xCC\x8B\x4C", "xx????xxxx");
 
 	wb::addresses::agent_DropItem_entry = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x55\x8B\xAC\x24\x00\x00\x00\x00\x8B\x45\x00\x8B\xD9", "xx????xxxxx????xxxxx");
 	wb::addresses::agent_DropItem_exit = wb::addresses::agent_DropItem_entry + 6;

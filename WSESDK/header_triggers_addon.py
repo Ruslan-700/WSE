@@ -51,3 +51,7 @@ ti_on_agent_start_reloading = -105.0 #can only be used in module_mission_templat
 
 ti_on_agent_end_reloading = -106.0 #can only be used in module_mission_templates triggers
 # Trigger Param 1: agent no
+
+ti_on_scene_prop_is_deforming = -108.0 #can only be used in module_scene_props triggers
+# Trigger Param 1: prop instance no
+# Trigger Param 2: remaining deform time (1/1000th of second)

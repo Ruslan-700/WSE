@@ -51,7 +51,7 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowCrosshair_entry, TacticalWindowShowCrosshairHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_TransformHoldPosition_entry, ItemKindTransformHoldPositionHook);
-	//WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::UpdateAgentEntityBody, UpdateAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_ShieldNoParryCarry_entry, ItemKindShieldNoParryCarryHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_StartReloadingClient_entry, AgentStartReloadingClientHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_BloodParticles_entry, AgentBloodParticlesHook);
@@ -122,11 +122,12 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		break;
 #if defined WARBAND
 	case OnFrame:
-		for (int i = 0; i < warband->cur_mission->agents.num_items; ++i)
+		wb::mission *mission = warband->cur_mission;
+		for (int i = 0; i < mission->agents.num_items; ++i)
 		{
-			if (warband->cur_mission->agents[i].valid)
+			if (mission->agents[i].valid)
 			{
-				wb::agent *agent = &warband->cur_mission->agents[i];
+				wb::agent *agent = &mission->agents[i];
 				if (agent->type == wb::at_human)
 				{
 					for (int j = wb::bmm_head; j < wb::bmm_name + 1; ++j)
@@ -135,6 +136,25 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 						{
 							agent->body_meta_meshes[j]->deform_move();
 						}
+					}
+				}
+			}
+		}
+
+		for (int i = 0; i < mission->mission_objects.num_items; ++i)
+		{
+			if (mission->mission_objects[i].valid)
+			{
+				wb::mission_object *object = &mission->mission_objects[i];
+				if ((object->meta_type == wb::mt_scene_prop || object->meta_type == wb::mt_spawned_prop) && object->entity && object->entity->meta_meshes.size())
+				{
+					rgl::meta_mesh *meta_mesh = object->entity->meta_meshes[0];
+
+					if (meta_mesh->deformMode > 0)
+					{
+						warband->basic_game.trigger_param_1 = object->no;
+						warband->basic_game.trigger_param_2 = (int)(meta_mesh->deformDuration * 1000.0f - ((warband->timers[2] / 100000.0f) - meta_mesh->deformStartTime) * 1000.0f);
+						warband->scene_props[object->sub_kind_no].simple_triggers.execute(-108);
 					}
 				}
 			}
@@ -154,12 +174,28 @@ rgl::strategic_entity *WSEMissionContext::GetTriggerEntity(int trigger_no) const
 	case -40:
 	case -42:
 	case -43:
+	case -47:
+	case -48:
+	case -44:
+	case -45:
+	case -46:
+	case -76:
+	case -100:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			return mission->mission_objects[game->trigger_mission_object_no].entity;
 		}
 		break;
 	case -50:
+		if (mission->agents.is_valid_index(game->trigger_agent_no))
+		{
+			return mission->agents[game->trigger_agent_no].entity;
+		}
+		else if(mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
+		{
+			return mission->mission_objects[game->trigger_mission_object_no].entity;
+		}
+		break;
 	case -51:
 		if (mission->agents.is_valid_index(game->trigger_agent_no))
 		{
@@ -188,6 +224,13 @@ rgl::meta_mesh *WSEMissionContext::GetTriggerMetaMesh(int trigger_no) const
 	{
 	case -42:
 	case -43:
+	case -47:
+	case -48:
+	case -44:
+	case -45:
+	case -46:
+	case -76:
+	case -100:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			if (mission->mission_objects[game->trigger_mission_object_no].entity)
@@ -219,6 +262,13 @@ rgl::mesh *WSEMissionContext::GetTriggerMesh(int trigger_no) const
 	{
 	case -42:
 	case -43:
+	case -47:
+	case -48:
+	case -44:
+	case -45:
+	case -46:
+	case -76:
+	case -100:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			if (mission->mission_objects[game->trigger_mission_object_no].entity)
@@ -230,6 +280,7 @@ rgl::mesh *WSEMissionContext::GetTriggerMesh(int trigger_no) const
 		break;
 	case -40:
 	case -50:
+	case -70:
 		return game->trigger_mesh;
 	}
 
@@ -609,6 +660,48 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 
 	wb::face_generator *face_gen = &warband->face_generator;
 	wb::skin *skin = &face_gen->skins[face_gen->cur_skin_no];
+	int morph_key = 10 * (skin->flags & 0x7);
+
+	if (items[wb::is_foot].is_valid())
+	{
+		if (morph_key != 0)
+		{
+			if (meta_meshes[wb::bmm_left_foot])
+				meta_meshes[wb::bmm_left_foot]->create_vertex_anim_morph((float)morph_key);
+
+			if (meta_meshes[wb::bmm_right_foot])
+				meta_meshes[wb::bmm_right_foot]->create_vertex_anim_morph((float)morph_key);
+		}
+
+		if (meta_meshes[wb::bmm_left_foot] && (!items[wb::is_body].is_valid() || (items[wb::is_body].get_item_kind()->properties & 0x800000) == 0))
+		{
+			wb::item_kind *item_kind = &warband->item_kinds[items[wb::is_foot].item_no];
+
+			if (item_kind->simple_triggers.has_trigger(-50))
+			{
+				wb::game *game = warband->cur_game;
+
+				game->trigger_mission_object_no = -1;
+				game->trigger_agent_no = agent_no;
+				game->trigger_item_slot_no = wb::is_foot;
+				game->trigger_meta_mesh = meta_meshes[wb::bmm_left_foot];
+				game->trigger_mesh = nullptr;
+				warband->basic_game.trigger_param_1 = agent_no;
+				warband->basic_game.trigger_param_2 = troop_no;
+				item_kind->simple_triggers.execute(-50);
+			}
+		}
+	}
+
+	if (items[wb::is_body].is_valid() && items[wb::is_body].get_item_kind()->properties & 0x1000000000000000)
+	{
+		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_left_hand);
+		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_right_hand);
+		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_left_bracer);
+		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_right_bracer);
+	}
+
+	/*
 	unsigned int skin_color = skin->face_textures[face_gen->cur_face_texture].color;
 	
 	if (items[wb::is_body].is_valid() && items[wb::is_body].get_item_kind()->properties & 0x40000000 && meta_meshes[wb::bmm_armor])
@@ -664,23 +757,7 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 			}
 		}
 	}
-
-	int morph_key = 10 * (skin->flags & 0x7);
-	
-	if (morph_key != 0 && items[wb::is_foot].is_valid())
-	{
-		if (meta_meshes[wb::bmm_left_foot])
-			meta_meshes[wb::bmm_left_foot]->create_vertex_anim_morph((float)morph_key);
-
-		if (meta_meshes[wb::bmm_right_foot])
-			meta_meshes[wb::bmm_right_foot]->create_vertex_anim_morph((float)morph_key);
-	}
-
-	if (morph_key != 0 && items[wb::is_head].is_valid())
-	{
-		if (meta_meshes[wb::bmm_helmet])
-			meta_meshes[wb::bmm_helmet]->create_vertex_anim_morph((float)morph_key);
-	}
+*/
 #endif
 }
 
@@ -835,3 +912,15 @@ void WSEMissionContext::OnAgentGetBloodParticles(wb::agent *agent)
 	}
 #endif
 }
+
+#if defined WARBAND
+void WSEMissionContext::MBDeleteCharacterMetaMesh(rgl::strategic_entity *entity, rgl::meta_mesh **meta_meshes, int index)
+{
+	if (meta_meshes[index])
+	{
+		entity->skeleton->remove_meta_mesh(meta_meshes[index]);
+		rgl::_delete(meta_meshes[index]);
+		meta_meshes[index] = nullptr;
+	}
+}
+#endif

@@ -64,6 +64,9 @@ private:
 	void OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent);
 	void OnAgentTurn(wb::agent *agent, float *max_rotation_speed);
 	void OnAgentGetBloodParticles(wb::agent *agent);
+#if defined WARBAND
+	void MBDeleteCharacterMetaMesh(rgl::strategic_entity *entity, rgl::meta_mesh **meta_meshes, int index);
+#endif
 
 public:
 	wb::missile *m_cur_missile;
