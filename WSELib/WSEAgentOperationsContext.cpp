@@ -555,6 +555,20 @@ int AgentBodyMetaMeshGetCurrentDeformFrame(WSEAgentOperationsContext *context)
 #endif
 }
 
+void AgentSetFootstepSound(WSEAgentOperationsContext *context)
+{
+	int agent_no, type, sound_no;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractBoundedValue(type, 0, 5);
+	context->ExtractValue(sound_no);
+
+	if (sound_no != -1 && (sound_no < 0 || sound_no >= warband->sound_manager.num_sounds) && !warband->config.disable_sound)
+		context->ScriptError("invalid sound no %d", sound_no);
+
+	WSE->Mission.m_agent_additional_properties[agent_no].footstep_sounds[type] = sound_no;
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -712,4 +726,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_body_meta_mesh_get_current_deform_frame", AgentBodyMetaMeshGetCurrentDeformFrame, Client, Lhs, 3, 3,
 		"Stores <1>'s <2> current deform frame, rounded to nearest integer value, into <0>",
 		"destination", "agent_no", "body_meta_mesh");
+
+	RegisterOperation("agent_set_footstep_sound", AgentSetFootstepSound, Both, None, 3, 3,
+		"Sets <0>'s footstep <2> for <1>. For human type: 0 - water, 1 - indoors, 2 - outdoors. For horse type: 0 - water, 1 - walk, 2 - trot, 3 - canter, 4 - gallop. For mute use sound_no = -1",
+		"agent_no", "type", "sound_no");
 }

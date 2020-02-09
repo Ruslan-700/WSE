@@ -1172,6 +1172,39 @@ void __declspec(naked) AgentBloodParticlesHook()
 #endif
 }
 
+void __declspec(naked) AgentInitializeHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		push ebp
+		CALL_CONTEXT_FUNC(Mission, OnAgentInitialize)
+		RESTORE_REGS
+		pop ebp
+		pop ebx
+		add esp, 128
+		retn
+	}
+}
+
+void __declspec(naked) AgentSetupSoundSampleHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		mov edx, [esp + 8]
+		mov edx, [edx]
+		push edx
+		mov eax, [esp + 8]
+		mov eax, [eax]
+		push eax
+		push ecx
+		CALL_CONTEXT_FUNC(Mission, OnAgentSetupSoundSample)
+		RESTORE_REGS
+		retn 8
+	}
+}
+
 void __declspec(naked) RglLogHook()
 {
 	_asm

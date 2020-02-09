@@ -155,3 +155,8 @@ void agent::add_stun(float duration)
 	THISCALL1(wb::addresses::agent_AddStun, this, duration);
 }
 
+void agent::play_sound_at_position(bool *networkBroadcast, int type, bool *altSoundForPlayer, int *soundNo, int *playerSoundNo, const rgl::vector4 &position, float *frequency)
+{
+	int sound_type = type;
+	THISCALL7(wb::addresses::agent_PlaySoundAtPosition, this, networkBroadcast, sound_type, altSoundForPlayer, soundNo, playerSoundNo, position, frequency);
+}

@@ -67,5 +67,7 @@ void ItemKindDisableAgentSoundsHorseShortHook();
 void AgentBlockedAttackHook();
 void AgentTurnHook();
 void AgentBloodParticlesHook();
+void AgentInitializeHook();
+void AgentSetupSoundSampleHook();
 void RglLogHook();
 void XmlGetServerInfoHook();

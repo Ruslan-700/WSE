@@ -249,6 +249,10 @@ unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 unsigned int addresses::agent_BloodParticles_entry = 0x004A8493;
 unsigned int addresses::agent_BloodParticles_exit = agent_BloodParticles_entry + 59;
 
+unsigned int addresses::agent_Initialize = 0x00508443;
+
+unsigned int addresses::agent_SetupSoundSample_entry = 0x004B3D80;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B3D90;
@@ -276,6 +280,8 @@ unsigned int addresses::DXUtil_Timer = 0x0040E450;
 unsigned int addresses::agent_SetAiBehavior = 0x004D1EA0;
 
 unsigned int addresses::agent_AddStun = 0x004BB470;
+
+unsigned int addresses::agent_PlaySoundAtPosition = 0x004AA7D0;
 
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x008150A8;
 
@@ -477,6 +483,10 @@ unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 unsigned int addresses::agent_BloodParticles_entry = 0x004A6F23;
 unsigned int addresses::agent_BloodParticles_exit = agent_BloodParticles_entry + 59;
 
+unsigned int addresses::agent_Initialize = 0x00508443;
+
+unsigned int addresses::agent_SetupSoundSample_entry = 0x004B3D80;
+
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0x005B0A40;
@@ -498,6 +508,8 @@ unsigned int addresses::DXUtil_Timer = 0x0040F660;
 unsigned int addresses::agent_SetAiBehavior = 0x00512D60;
 
 unsigned int addresses::agent_AddStun = 0x004B9E30;
+
+unsigned int addresses::agent_PlaySoundAtPosition = 0x004AA7D0;
 
 unsigned int addresses::game_data_ptr = 0x009463D0;
 #elif defined WARBAND_DEDICATED
@@ -738,6 +750,10 @@ unsigned int addresses::agent_Turn_exit = agent_Turn_entry + 8;
 unsigned int addresses::agent_BloodParticles_entry = 0;
 unsigned int addresses::agent_BloodParticles_exit = 0;
 
+unsigned int addresses::agent_Initialize = 0x004A69F9;
+
+unsigned int addresses::agent_SetupSoundSample_entry = 0x00462AB0;
+
 unsigned int addresses::fixBotsBlocking_entry = 0x00460765;
 
 unsigned int addresses::makeScreenShot = 0;
@@ -763,6 +779,8 @@ unsigned int addresses::DXUtil_Timer = 0x00401040;
 unsigned int addresses::agent_SetAiBehavior = 0x00471010;
 
 unsigned int addresses::agent_AddStun = 0x0046C280;
+
+unsigned int addresses::agent_PlaySoundAtPosition = 0x00459180;
 
 unsigned int addresses::temp_ban_time_dbl_ptr = 0x0069F670;
 

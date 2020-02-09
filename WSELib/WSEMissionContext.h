@@ -18,6 +18,15 @@ struct bloodParticles
 	int blood_particle_2_no;
 };
 
+class AgentAdditionalProperties
+{
+public:
+	void Initialize();
+
+public:
+	int footstep_sounds[5];
+};
+
 class WSEMissionContext : public WSEContext
 {
 public:
@@ -64,6 +73,8 @@ private:
 	void OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent);
 	void OnAgentTurn(wb::agent *agent, float *max_rotation_speed);
 	void OnAgentGetBloodParticles(wb::agent *agent);
+	void OnAgentInitialize(wb::agent *agent);
+	void OnAgentSetupSoundSample(wb::agent *agent, int type, bool networkBroadcast);
 #if defined WARBAND
 	void MBDeleteCharacterMetaMesh(rgl::strategic_entity *entity, rgl::meta_mesh **meta_meshes, int index);
 #endif
@@ -81,4 +92,5 @@ public:
 	std::map <unsigned int, wb::action_set> m_agents_personal_action_manager;
 	std::map <unsigned int, std::map <int,int>> m_agents_personal_animations;
 	std::map <unsigned int, bloodParticles> m_item_horse_blood_particles;
+	std::map <unsigned int, AgentAdditionalProperties> m_agent_additional_properties;
 };

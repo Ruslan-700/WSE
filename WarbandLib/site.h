@@ -7,6 +7,17 @@
 
 namespace wb
 {
+	enum site_flags
+	{
+		sf_indoors = 0x1,
+		sf_force_skybox = 0x2,
+		sf_generate = 0x100,
+		sf_randomize = 0x200,
+		sf_auto_entry_points = 0x400,
+		sf_no_horses = 0x800,
+		sf_muddy_water = 0x1000,
+	};
+
 	struct site_visitor_entry
 	{
 		stl::deque<int> troop_nos;

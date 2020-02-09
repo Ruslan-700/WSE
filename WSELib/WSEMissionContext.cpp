@@ -46,6 +46,8 @@ void WSEMissionContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::item_kind_DisableAgentSoundsHorseShort_entry, ItemKindDisableAgentSoundsHorseShortHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_BlockedAttack_entry, AgentBlockedAttackHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::agent_Turn_entry, AgentTurnHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_SetupSoundSample_entry, AgentSetupSoundSampleHook);
+	WSE->Hooks.HookFunction(this, wb::addresses::agent_Initialize, AgentInitializeHook);
 #if defined WARBAND
 	WSE->Hooks.HookFunction(this, wb::addresses::UpdateHorseAgentEntityBody_entry, UpdateHorseAgentEntityBodyHook);
 	WSE->Hooks.HookFunction(this, wb::addresses::tactical_window_ShowUseTooltip_entry, TacticalWindowShowUseTooltipHook);
@@ -924,3 +926,166 @@ void WSEMissionContext::MBDeleteCharacterMetaMesh(rgl::strategic_entity *entity,
 	}
 }
 #endif
+
+void WSEMissionContext::OnAgentInitialize(wb::agent *agent)
+{
+	WSE->Mission.m_agent_additional_properties[agent->no].Initialize();
+}
+
+void WSEMissionContext::OnAgentSetupSoundSample(wb::agent *agent, int type, bool networkBroadcast)
+{
+	if (warband->cur_mission->preparing)
+		return;
+
+	int soundNo = -1;
+	int customSound = false;
+
+	if (agent->type == wb::at_human)
+	{
+		if (type == 3)
+		{
+			soundNo = wb::snd_sword_swing;
+		}
+		else if (type == 0 || type == 1)
+		{
+			if (agent->position.z <= warband->cur_mission->water_level)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[0] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[0];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_footstep_water;
+				}
+			}
+			else if (warband->cur_game->sites[warband->cur_mission->cur_site_no].flags & wb::sf_indoors)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[1] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[1];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_footstep_wood;
+				}
+			}
+			else
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[2] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[2];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_footstep_grass;
+				}
+			}
+		}
+	}
+	else if (!(agent->horse_item.get_item_kind()->properties & 0x40000000000000))
+	{
+		int walkPace = agent->walk_state & wb::hws_pace_mask;
+
+		if (type == 4)
+		{
+			soundNo = wb::snd_neigh;
+		}
+		else if (agent->position.z <= warband->cur_mission->water_level)
+		{
+			if (type == 2 || type == 3)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[0] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[0];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_footstep_water;
+				}
+			}
+		}
+		else if (walkPace == wb::hws_walk_backwards || walkPace == wb::hws_walk)
+		{
+			if (type == 0 || type == 2)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[1] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[1];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_horse_walk;
+				}
+			}
+		}
+		else if (walkPace == wb::hws_trot)
+		{
+			if (type == 0 || type == 2)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[2] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[2];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_horse_trot;
+				}
+			}
+		}
+		else if (walkPace == wb::hws_canter)
+		{
+			if (type == 0)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[3] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[3];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_horse_canter;
+				}
+			}
+		}
+		else if (walkPace == wb::hws_gallop)
+		{
+			if (type == 0)
+			{
+				if (WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[4] >= -1)
+				{
+					soundNo = WSE->Mission.m_agent_additional_properties[agent->no].footstep_sounds[4];
+					customSound = true;
+				}
+				else
+				{
+					soundNo = wb::snd_horse_gallop;
+				}
+			}
+		}
+	}
+
+	if (soundNo == -1)
+		return;
+
+	rgl::vector4 position = agent->position;
+
+	position.z += 0.1f;
+	bool altSoundForPlayer = false;
+	float frequency = rglRandf() * 0.4f + 0.8f;
+	agent->play_sound_at_position(&networkBroadcast, customSound ? 2 : 0, &altSoundForPlayer, &soundNo, &soundNo, position, &frequency);
+}
+
+void AgentAdditionalProperties::Initialize()
+{
+	for (int i = 0; i < 5; ++i)
+	{
+		footstep_sounds[i] = -2;
+	}
+}

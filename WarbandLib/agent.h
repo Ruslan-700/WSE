@@ -17,6 +17,20 @@
 
 namespace wb
 {
+	enum agent_horse_walk_state
+	{
+		hws_walk_backwards = 0x0,
+		hws_stand = 0x1,
+		hws_walk = 0x2,
+		hws_trot = 0x3,
+		hws_canter = 0x4,
+		hws_gallop = 0x5,
+		hws_pace_mask = 0x7,
+		hws_accelerating = 0x10,
+		hws_decelerating = 0x20,
+		hws_movement_mask = 0x30,
+	};
+
 	enum agent_body_meta_mesh
 	{
 		bmm_head = 0,
@@ -382,5 +396,6 @@ namespace wb
 		bool is_couching() const;
 		void set_ai_behavior(int behavior);
 		void add_stun(float duration);
+		void play_sound_at_position(bool *networkBroadcast, int type, bool *altSoundForPlayer, int *soundNo, int *playerSoundNo, const rgl::vector4 &position, float *frequency);
 	};
 }

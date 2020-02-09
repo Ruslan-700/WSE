@@ -196,6 +196,10 @@ namespace wb
 		static unsigned int agent_BloodParticles_entry;
 		static unsigned int agent_BloodParticles_exit;
 
+		static unsigned int agent_Initialize;
+
+		static unsigned int agent_SetupSoundSample_entry;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;
@@ -217,6 +221,8 @@ namespace wb
 		static unsigned int agent_SetAiBehavior;
 
 		static unsigned int agent_AddStun;
+
+		static unsigned int agent_PlaySoundAtPosition;
 		
 		static unsigned int temp_ban_time_dbl_ptr;
 

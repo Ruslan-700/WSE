@@ -313,6 +313,10 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_BloodParticles_entry = FindSignature("\xA1\x00\x00\x00\x00\x8B\x0D\x00\x00\x00\x00\x85\xC0\x76\x08", "x????xx????xxxx");
 	wb::addresses::agent_BloodParticles_exit = wb::addresses::agent_BloodParticles_entry + 59;
 
+	wb::addresses::agent_Initialize = FindSignature("\xD9\x9D\x00\x00\x00\x00\x5E\x5D\x5B\x81\xC4\x00\x00\x00\x00\xC3", "xx????xxxxx????x") + 7;
+
+	wb::addresses::agent_SetupSoundSample_entry = FindSignature("\x83\xEC\x08\x56\x8B\x35\x00\x00\x00\x00\x80", "xxxxxx????x");
+
 	wb::addresses::makeScreenShot = FindSignature("\x81\xEC\x00\x00\x00\x00\x80\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8B\x84\x24", "xx????xx?????xx????xxx");
 
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");
@@ -332,6 +336,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x32\xDB", "xxxxxxxxx????xx");
 
 	wb::addresses::agent_AddStun = FindSignature("\x81\xEC\x00\x00\x00\x00\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x8B\x0C\xC5", "xx????xxxxx????xxx");
+
+	wb::addresses::agent_PlaySoundAtPosition = FindSignature("\x81\xEC\x00\x00\x00\x00\x8B\x94\x24\x00\x00\x00\x00\x53\x55", "xx????xxx????xx");
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 
@@ -480,6 +486,10 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_Turn_entry = FindSignature("\xD9\x5C\x24\x18\xD9\x44\x24\x14\xD9\x86", "xxxxxxxxxx");
 	wb::addresses::agent_Turn_exit = wb::addresses::agent_Turn_entry + 8;
 
+	wb::addresses::agent_Initialize = FindSignature("\xD9\x9D\x00\x00\x00\x00\x5E\x5D", "xx????xx") + 7;
+
+	wb::addresses::agent_SetupSoundSample_entry = FindSignature("\x83\xEC\x08\x56\x8B\x35\x00\x00\x00\x00\x80", "xxxxxx????x");
+
 	wb::addresses::fixBotsBlocking_entry = FindSignature("\x85\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x83\xF8\xFF\x0F\x84", "x????x????xxxxx");
 
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");
@@ -497,6 +507,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::agent_SetAiBehavior = FindSignature("\x83\xEC\x08\x53\x56\x8B\xF1\x8B\x86", "xxxxxxxxx");
 
 	wb::addresses::agent_AddStun = FindSignature("\x81\xEC\x00\x00\x00\x00\x56\x8B\xF1\x8B\x86\x00\x00\x00\x00\x8B\x0C\xC5", "xx????xxxxx????xxx");
+
+	wb::addresses::agent_PlaySoundAtPosition = FindSignature("\x81\xEC\x00\x00\x00\x00\x8B\x84\x24\x00\x00\x00\x00\x8B\x00\x8B\x15", "xx????xxx????xxxx");
 
 	wb::addresses::temp_ban_time_dbl_ptr = FindSignature("\x00\x00\x00\x00\x00\x20\xAC", "xxxxxxx");
 

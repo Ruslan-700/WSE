@@ -215,3 +215,8 @@ std::string replaceString(std::string subject, std::string const & search, std::
 	}
 	return subject;
 }
+
+float rglRandf()
+{
+	return rand() % 15817 / 15817.0f;
+}
