@@ -210,8 +210,8 @@ namespace wb
 		rgl::timer yell_timer;
 		rgl::timer sprint_timer;
 		rgl::timer stun_timer;
-		rgl::timer u9;
-		rgl::timer u10;
+		rgl::timer keep_start_timer;
+		rgl::timer keep_timer;
 		int u11;
 		float couched_lance_time;
 		int couched_lance_mode;
@@ -332,11 +332,11 @@ namespace wb
 		rgl::timer ranged_hold_timer;
 		rgl::timer jump_kick_cooldown_timer;
 		rgl::timer horse_snort_timer;
-		rgl::timer u43;
+		rgl::timer stuck_timer;
 		rgl::timer death_timer;
-		rgl::timer horse_turn_timer;
 		rgl::timer horse_charged_horse_timer;
 		rgl::timer couch_parried_timer;
+		rgl::timer horse_turn_timer;
 		int horse_turn_direction;
 		int exit_status;
 		bool has_corpse;

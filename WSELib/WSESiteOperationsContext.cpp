@@ -74,7 +74,12 @@ void SiteSetTerrainSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 0, 0, 31, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setSeed(0, value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetRiverSeed(WSESiteOperationsContext *context)
@@ -84,7 +89,12 @@ void SiteSetRiverSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 1, 0, 31, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setSeed(1, value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetFloraSeed(WSESiteOperationsContext *context)
@@ -94,7 +104,12 @@ void SiteSetFloraSeed(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 2, 0, 31, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setSeed(2, value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetDeepWater(WSESiteOperationsContext *context)
@@ -105,7 +120,12 @@ void SiteSetDeepWater(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 1, 31, 1, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setDeepWater(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetPlaceRiver(WSESiteOperationsContext *context)
@@ -116,7 +136,12 @@ void SiteSetPlaceRiver(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 31, 1, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setPlaceRiver(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetDisableGrass(WSESiteOperationsContext *context)
@@ -127,7 +152,12 @@ void SiteSetDisableGrass(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractBoolean(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 5, 2, 2, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setDisableGrass(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetValleySize(WSESiteOperationsContext *context)
@@ -137,7 +167,12 @@ void SiteSetValleySize(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 0, 7, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setValley(value / 100.0f);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetHillHeight(WSESiteOperationsContext *context)
@@ -147,7 +182,12 @@ void SiteSetHillHeight(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 7, 7, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setHillHeight((float)value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetRuggedness(WSESiteOperationsContext *context)
@@ -157,7 +197,12 @@ void SiteSetRuggedness(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 14, 7, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setRuggedness(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetVegetation(WSESiteOperationsContext *context)
@@ -167,7 +212,12 @@ void SiteSetVegetation(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 21, 7, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setVegetation(value / 100.0f);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetSize(WSESiteOperationsContext *context)
@@ -177,9 +227,14 @@ void SiteSetSize(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(x);
 	context->ExtractValue(y);
-	
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 0, 10, x);
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 3, 10, 10, y);
+
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setSizeX((float)x);
+	context->setSizeY((float)y);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetRegionType(WSESiteOperationsContext *context)
@@ -189,7 +244,12 @@ void SiteSetRegionType(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 4, 28, 4, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setRegionType(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 void SiteSetRegionDetail(WSESiteOperationsContext *context)
@@ -199,59 +259,121 @@ void SiteSetRegionDetail(WSESiteOperationsContext *context)
 	context->ExtractSiteNo(site_no);
 	context->ExtractValue(value);
 
-	context->SetSiteTerrainCode(&warband->cur_game->sites[site_no], 5, 0, 2, value);
+	wb::site *site = &warband->cur_game->sites[site_no];
+
+	context->setTerrainCode(site->terrain_code);
+	context->setRegionDetail(value);
+	site->terrain_code = context->getTerrainCode();
+	site->descriptor_checksum = 0;
 }
 
 WSESiteOperationsContext::WSESiteOperationsContext() : WSEOperationContext("site", 4500, 4599)
 {
 }
 
-void WSESiteOperationsContext::SetSiteTerrainCode(wb::site *site, int key_no, int shift, int bits, int value)
+rgl::string WSESiteOperationsContext::getTerrainCode()
 {
-	std::string str = site->terrain_code;
-	unsigned int keys[6];
-
-	if (str[1] == 'x' || str[1] == 'X')
-		str = str.substr(2);
-
-	int len = str.length();
-	int cur_key = 5;
-
-	for (int i = 5; i >= 0; --i)
-	{
-		keys[i] = 0;
-	}
-
-	while (len > 0 && cur_key >= 0)
-	{
-		int start = str.length() - 8;
-
-		if (start < 0)
-			start = 0;
-
-		size_t length = 8;
-
-		if (length > str.length())
-			length = str.length();
-
-		std::string key_str = str.substr(start, length);
-		
-		keys[cur_key] = strtoul(key_str.c_str(), nullptr, 16);
-		str.erase(str.length() - length);
-		len -= 8;
-		cur_key--;
-	}
-	
-	unsigned int mask = (unsigned int)((((unsigned __int64)1) << bits) - 1);
-
-	keys[key_no] &= ~(mask << shift);
-	keys[key_no] |= ((value & mask) << shift);
-	
 	char buf[51];
 
-	sprintf_s(buf, "0x%.8X%.8X%.8X%.8X%.8X%.8X", keys[0], keys[1], keys[2], keys[3], keys[4], keys[5]);
-	site->terrain_code = buf;
-	site->descriptor_checksum = 0;
+	sprintf_s(buf, "0x%.8x%.8x%.8x%.8x%.8x%.8x", m_keys[5], m_keys[4], m_keys[3], m_keys[2], m_keys[1], m_keys[0]);
+	return buf;
+}
+
+void WSESiteOperationsContext::setTerrainCode(const rgl::string &code)
+{
+	for (int i = 0; i < MB_NUM_TERRAIN_KEYS; ++i)
+	{
+		m_keys[i] = 0;
+	}
+
+	int startPos = 0;
+	int key = 0;
+
+	if (code[0] == '0' && (code[1] == 'x' || code[1] == 'X'))
+		startPos = 2;
+
+	for (int i = code.length(); i >= startPos && key < MB_NUM_TERRAIN_KEYS; i -= 8)
+	{
+		rgl::string keyCode = code.substr(rglMax(i - 8, startPos), i);
+		unsigned int keyValue = 0;
+
+		for (int j = 0; j < keyCode.length(); ++j)
+		{
+			char c = keyCode[j];
+			int val = 0;
+
+			if (c - '0' <= 9)
+				val = c - '0';
+			else if (c - 'a' <= 5)
+				val = c - 'W';
+			else if (c - 'A' <= 5)
+				val = c - '7';
+
+			keyValue = keyValue * 16 + val;
+		}
+
+		m_keys[key++] = keyValue;
+	}
+}
+
+void WSESiteOperationsContext::setDisableGrass(int value)
+{
+	SETFLAGVALUE(m_keys[5], tk5_disable_grass_mask, tk5_disable_grass_shift, rglMin(value, 2));
+}
+
+void WSESiteOperationsContext::setPlaceRiver(int value)
+{
+	SETFLAGVALUE(m_keys[3], tk3_place_river_mask, tk3_place_river_shift, rglMin(value, 1));
+}
+
+void WSESiteOperationsContext::setDeepWater(int value)
+{
+	SETFLAGVALUE(m_keys[1], tk1_deep_water_mask, tk1_deep_water_shift, rglMin(value, 1));
+}
+
+void WSESiteOperationsContext::setSizeX(float value)
+{
+	SETFLAGVALUE(m_keys[3], tk3_size_x_mask, tk3_size_x_shift, rglMin((int)value, 1023));
+}
+
+void WSESiteOperationsContext::setSizeY(float value)
+{
+	SETFLAGVALUE(m_keys[3], tk3_size_y_mask, tk3_size_y_shift, rglMin((int)value, 1023));
+}
+
+void WSESiteOperationsContext::setHillHeight(float value)
+{
+	SETFLAGVALUE(m_keys[4], tk4_hill_height_mask, tk4_hill_height_shift, rglClampExclusive((int)value, 0, 128));
+}
+
+void WSESiteOperationsContext::setValley(float value)
+{
+	SETFLAGVALUE(m_keys[4], tk4_valley_mask, tk4_valley_shift, rglClampExclusive(rglRound(value * 100.0f), 0, 100));
+}
+
+void WSESiteOperationsContext::setRuggedness(int value)
+{
+	SETFLAGVALUE(m_keys[4], tk4_ruggedness_mask, tk4_ruggedness_shift, rglMin(value, 127));
+}
+
+void WSESiteOperationsContext::setVegetation(float value)
+{
+	SETFLAGVALUE(m_keys[4], tk4_vegetation_mask, tk4_vegetation_shift, rglClampExclusive(rglRound(value * 100.0f), 0, 100));
+}
+
+void WSESiteOperationsContext::setRegionType(int value)
+{
+	SETFLAGVALUE(m_keys[4], tk4_region_type_mask, tk4_region_type_shift, rglMin(value, 16));
+}
+
+void WSESiteOperationsContext::setRegionDetail(int value)
+{
+	SETFLAGVALUE(m_keys[5], tk5_region_detail_mask, tk5_region_detail_shift, rglMin(value, 3));
+}
+
+void WSESiteOperationsContext::setSeed(int index, int value)
+{
+	SETFLAGVALUE(m_keys[index], tk_seed_mask, tk_seed_shift, rglMin(value, tk_seed_mask));
 }
 
 void WSESiteOperationsContext::OnLoad()

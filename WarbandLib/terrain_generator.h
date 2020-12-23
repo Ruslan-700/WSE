@@ -2,6 +2,33 @@
 
 #include "rgl.h"
 
+#define MB_NUM_TERRAIN_KEYS 6
+
+#define tk_seed_mask 0x7FFFFFFF
+#define tk_seed_shift 0
+#define tk1_deep_water_mask 0x80000000
+#define tk1_deep_water_shift 31
+#define tk3_size_x_mask 0x3FF
+#define tk3_size_x_shift 0
+#define tk3_size_y_mask 0xFFC00
+#define tk3_size_y_shift 10
+#define tk3_place_river_mask 0x80000000
+#define tk3_place_river_shift 31
+#define tk4_valley_mask 0x7F
+#define tk4_valley_shift 0
+#define tk4_hill_height_mask 0x3F80
+#define tk4_hill_height_shift 7
+#define tk4_ruggedness_mask 0x1FC000
+#define tk4_ruggedness_shift 14
+#define tk4_vegetation_mask 0xFE00000
+#define tk4_vegetation_shift 21
+#define tk4_region_type_mask 0xF0000000
+#define tk4_region_type_shift 28
+#define tk5_region_detail_mask 0x3
+#define tk5_region_detail_shift 0
+#define tk5_disable_grass_mask 0xC
+#define tk5_disable_grass_shift 2
+
 namespace wb
 {
 	struct terrain_vertex
