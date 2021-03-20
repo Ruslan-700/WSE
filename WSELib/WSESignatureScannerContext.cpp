@@ -323,10 +323,6 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::operation_manager_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x00\x00\x00\x00\x53\x56\x57\x8B\xF1\x33\xFF", "xxxxxxxx????xxxxxxx");
 
-	wb::addresses::operation_manager_StartProfilingBlock_entry = wb::addresses::operation_manager_Execute;
-	wb::addresses::operation_manager_StartProfilingBlock_exit = wb::addresses::operation_manager_StartProfilingBlock_entry + 6;
-	wb::addresses::operation_manager_StopProfilingBlock = FindSignature("\x8B\xE5\x5D\xC2\x14\x00\xCC\xCC\xCC\xCC\xCC\xCC\x8B", "xxxxxxxxxxxxx");
-
 	wb::addresses::basic_game_ParseString = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x8B\x9C\x24\x00\x00\x00\x00\x56\x89\x4C\x24\x0C", "xx????xxxx????xxxxx");
 
 	wb::addresses::particle_system_manager_Create = FindSignature("\x55\x8B\x6C\x24\x08\x8B\x45\x00\x57", "xxxxxxxxx");
@@ -495,10 +491,6 @@ void WSESignatureScannerContext::FindWbAddresses()
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");
 
 	wb::addresses::operation_manager_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF8\x81\xEC\x00\x00\x00\x00\x53\x56\x57\x8B\xF1", "xxxxxxxx????xxxxx");
-
-	wb::addresses::operation_manager_StartProfilingBlock_entry = wb::addresses::operation_manager_Execute;
-	wb::addresses::operation_manager_StartProfilingBlock_exit = wb::addresses::operation_manager_StartProfilingBlock_entry + 6;
-	wb::addresses::operation_manager_StopProfilingBlock = FindSignature("\x8B\xE5\x5D\xC2\x14\x00\x8D\x54\x24\x10", "xxxxxxxxxx");
 
 	wb::addresses::basic_game_ParseString = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x8B\x9C\x24\x00\x00\x00\x00\x56\x89\x4C\x24\x0C", "xx????xxxx????xxxxx");
 

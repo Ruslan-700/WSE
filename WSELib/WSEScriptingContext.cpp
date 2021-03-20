@@ -81,17 +81,7 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 	{
 	case ModuleLoad:
 		m_allow_unset_script_params = WSE->ModuleSettingsIni.Bool("", "allow_unset_script_params", false);
-		m_allow_wse_execute_statement_blocks = WSE->ModuleSettingsIni.Bool("", "allow_wse_execute_statement_blocks", false);
-
-		if (m_allow_wse_execute_statement_blocks)
-		{
-			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
-		}
-		else
-		{
-			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StartProfilingBlock_entry, OperationManagerStartProfilingBlockHook);
-			WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_StopProfilingBlock, OperationManagerStopProfilingBlockHook);
-		}
+		WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
 
 		WSE->SendContextEvent(this, LoadOperations);
 		DumpOperationsHeader();

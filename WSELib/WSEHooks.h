@@ -4,8 +4,6 @@ void DebugHook();
 void OperationManagerExecuteHook();
 void OperationExecuteHook();
 void LuaOperationJumptableHook();
-void OperationManagerStartProfilingBlockHook();
-void OperationManagerStopProfilingBlockHook();
 void ChatMessageReceivedHook();
 void TeamChatMessageReceivedHook();
 void ReadModuleFilesHook();

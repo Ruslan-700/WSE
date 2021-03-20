@@ -73,6 +73,17 @@ void face_keys::set_age(float value)
 	this->keys[0] |= ((unsigned __int64)round_half_up(value * 63.0f) & FACE_KEYS_VALUE_MASK) << FACE_KEYS_AGE_SHIFT;
 }
 
+float face_keys::get_skin_color() const
+{
+	return ((this->keys[0] >> FACE_KEYS_SKIN_COLOR_SHIFT) & FACE_KEYS_VALUE_MASK) / 63.0f;
+}
+
+void face_keys::set_skin_color(float value)
+{
+	this->keys[0] &= ~(FACE_KEYS_VALUE_MASK << FACE_KEYS_SKIN_COLOR_SHIFT);
+	this->keys[0] |= ((unsigned __int64)round_half_up(value * 63.0f) & FACE_KEYS_VALUE_MASK) << FACE_KEYS_SKIN_COLOR_SHIFT;
+}
+
 float face_keys::get_morph_key(int index) const
 {
 	int qword = (index / 21) + 1;
@@ -97,4 +108,15 @@ rgl::string face_keys::to_string() const
 	//sprintf_s(buf, "0x%.16llX%.16llX%.16llX%.16llX", this->keys[0], this->keys[1], this->keys[2], this->keys[3]);
 	sprintf_s(buf, "%.16llx%.16llx%.16llx%.16llx", this->keys[0], this->keys[1], this->keys[2], this->keys[3]);
 	return buf;
+}
+
+void face_keys::from_string(const rgl::string &facekeys)
+{
+	if (facekeys.length() == 64)
+	{
+		this->keys[0] = _strtoui64(facekeys.substr(0, 16).c_str(), nullptr, 16);
+		this->keys[1] = _strtoui64(facekeys.substr(16, 32).c_str(), nullptr, 16);
+		this->keys[2] = _strtoui64(facekeys.substr(32, 48).c_str(), nullptr, 16);
+		this->keys[3] = _strtoui64(facekeys.substr(48, 64).c_str(), nullptr, 16);
+	}
 }

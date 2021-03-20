@@ -269,7 +269,7 @@ void WSEEnvironment::Load(HINSTANCE instance)
 	AddContext(&PositionOperations, false);
 	AddContext(&PresentationOperations, false);
 	AddContext(&SiteOperations, false);
-	//AddContext(&SkinOperations, false);
+	AddContext(&SkinOperations, false);
 	AddContext(&StringOperations, false);
 	AddContext(&TroopOperations, false);
 	AddContext(&ArrayOperations, false);

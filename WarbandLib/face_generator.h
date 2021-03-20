@@ -10,6 +10,7 @@
 #define FACE_KEYS_HAIR_TEXTURE_SHIFT 18
 #define FACE_KEYS_HAIR_COLOR_SHIFT 24
 #define FACE_KEYS_AGE_SHIFT 30
+#define FACE_KEYS_SKIN_COLOR_SHIFT 36
 
 namespace wb
 {
@@ -30,9 +31,12 @@ namespace wb
 		void set_hair_color(float value);
 		float get_age() const;
 		void set_age(float value);
+		float get_skin_color() const;
+		void set_skin_color(float value);
 		float get_morph_key(int index) const;
 		void set_morph_key(int index, float value);
 		rgl::string to_string() const;
+		void from_string(const rgl::string &facekeys);
 	};
 
 	struct face_texture_rec

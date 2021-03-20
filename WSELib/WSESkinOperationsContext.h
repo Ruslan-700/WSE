@@ -12,5 +12,5 @@ protected:
 	virtual void OnLoad();
 
 public:
-	wb::face_keys m_face_key_registers[NUM_REGISTERS];
+	//wb::face_keys m_face_key_registers[NUM_REGISTERS];
 };

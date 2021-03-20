@@ -16,7 +16,7 @@ int OverlayGetValue(WSEPresentationOperationsContext *context)
 	{
 	case rgl::wt_slider:
 	case rgl::wt_fill_slider:
-		return static_cast<int>(std::round(overlay->get_value_f()));
+		return rglRound(overlay->get_value_f());
 	case rgl::wt_combo_button:
 	case rgl::wt_number_box:
 	case rgl::wt_list_box:

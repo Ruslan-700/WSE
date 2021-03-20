@@ -364,7 +364,7 @@ bool WSEMissionContext::OnAgentApplyAttackRec(wb::agent *agent)
 		WSE->Scripting.SetTriggerParam(9, -1);
 	}
 	*/
-	warband->basic_game.trigger_param_6 = static_cast<int>(std::round(cur_blow->raw_damage));
+	warband->basic_game.trigger_param_6 = rglRound(cur_blow->raw_damage);
 	warband->basic_game.trigger_param_7 = cur_blow->item.get_modifier();
 
 	if (cur_blow->missile)
@@ -878,7 +878,7 @@ void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
 		*max_rotation_speed = 0.0f;
 
 	warband->basic_game.trigger_param_1 = agent->no;
-	warband->basic_game.trigger_param_2 = static_cast<int>(std::round(*max_rotation_speed * warband->basic_game.fixed_point_multiplier));
+	warband->basic_game.trigger_param_2 = rglRound(*max_rotation_speed * warband->basic_game.fixed_point_multiplier);
 	
 	warband->basic_game.trigger_result = -1;
 

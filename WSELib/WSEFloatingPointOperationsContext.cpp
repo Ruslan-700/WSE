@@ -60,13 +60,13 @@ void FLdPosZ(WSEFloatingPointOperationsContext *context)
 	context->m_float_registers[freg] = warband->basic_game.position_registers[preg].o.z;
 }
 
-int FSt(WSEFloatingPointOperationsContext *context)
+__int64 FSt(WSEFloatingPointOperationsContext *context)
 {
 	int freg;
 	
 	context->ExtractRegister(freg);
 
-	return static_cast<int>(std::round(context->m_float_registers[freg] * warband->basic_game.fixed_point_multiplier));
+	return rglRound64(context->m_float_registers[freg] * warband->basic_game.fixed_point_multiplier);
 }
 
 void FCpy(WSEFloatingPointOperationsContext *context)

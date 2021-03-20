@@ -263,10 +263,6 @@ unsigned int addresses::operation_Execute = 0x005192B0;
 //unsigned int addresses::operation_manager_Execute = 0x0057CA40;
 unsigned int addresses::operation_manager_Execute = 0x00539830;
 
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
-unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
-unsigned int addresses::operation_manager_StopProfilingBlock = 0x0053A264;
-
 //unsigned int addresses::basic_game_ParseString = 0x00517150;
 unsigned int addresses::basic_game_ParseString = 0x004DAD30;
 
@@ -494,10 +490,6 @@ unsigned int addresses::makeScreenShot = 0x005B0A40;
 unsigned int addresses::operation_Execute = 0x00563D30;
 
 unsigned int addresses::operation_manager_Execute = 0x00580940;
-
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
-unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
-unsigned int addresses::operation_manager_StopProfilingBlock = 0x00538A94;
 
 unsigned int addresses::basic_game_ParseString = 0x0051AEF0;
 
@@ -763,10 +755,6 @@ unsigned int addresses::operation_Execute = 0x004AFC70;
 
 //unsigned int addresses::operation_manager_Execute = 0x004C54E0;
 unsigned int addresses::operation_manager_Execute = 0x004CA540;
-
-unsigned int addresses::operation_manager_StartProfilingBlock_entry = operation_manager_Execute;
-unsigned int addresses::operation_manager_StartProfilingBlock_exit = operation_manager_StartProfilingBlock_entry + 6;
-unsigned int addresses::operation_manager_StopProfilingBlock = 0x004CAC93;
 
 //unsigned int addresses::basic_game_ParseString = 0x00481800;
 unsigned int addresses::basic_game_ParseString = 0x00484460;

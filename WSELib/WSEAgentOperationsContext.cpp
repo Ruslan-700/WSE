@@ -22,7 +22,7 @@ int AgentGetDamageModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[0] * 100));
+	return rglRound(agent->modifiers[0] * 100);
 }
 
 int AgentGetRangedDamageModifier(WSEAgentOperationsContext *context)
@@ -33,7 +33,7 @@ int AgentGetRangedDamageModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[1] * 100));
+	return rglRound(agent->modifiers[1] * 100);
 }
 
 int AgentGetAccuracyModifier(WSEAgentOperationsContext *context)
@@ -44,7 +44,7 @@ int AgentGetAccuracyModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[2] * 100));
+	return rglRound(agent->modifiers[2] * 100);
 }
 
 int AgentGetSpeedModifier(WSEAgentOperationsContext *context)
@@ -55,7 +55,7 @@ int AgentGetSpeedModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[3] * 100));
+	return rglRound(agent->modifiers[3] * 100);
 }
 
 int AgentGetReloadSpeedModifier(WSEAgentOperationsContext *context)
@@ -66,7 +66,7 @@ int AgentGetReloadSpeedModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[4] * 100));
+	return rglRound(agent->modifiers[4] * 100);
 }
 
 int AgentGetUseSpeedModifier(WSEAgentOperationsContext *context)
@@ -77,7 +77,7 @@ int AgentGetUseSpeedModifier(WSEAgentOperationsContext *context)
 
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
-	return static_cast<int>(std::round(agent->modifiers[5] * 100));
+	return rglRound(agent->modifiers[5] * 100);
 }
 
 int AgentGetItemModifier(WSEAgentOperationsContext *context)
@@ -108,7 +108,7 @@ int AgentGetAnimationProgress(WSEAgentOperationsContext *context)
 	context->ExtractAgentNo(agent_no);
 	context->ExtractBoundedValue(channel_no, 0, 2);
 
-	return static_cast<int>(std::round(warband->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f));
+	return rglRound(warband->cur_mission->agents[agent_no].action_channels[channel_no].progress * 100.0f);
 }
 
 int AgentGetDna(WSEAgentOperationsContext *context)
@@ -218,7 +218,7 @@ int AgentGetScale(WSEAgentOperationsContext *context)
 
 	context->ExtractAgentNo(agent_no);
 
-	return static_cast<int>(std::round(warband->cur_mission->agents[agent_no].scale * warband->basic_game.fixed_point_multiplier));
+	return rglRound(warband->cur_mission->agents[agent_no].scale * warband->basic_game.fixed_point_multiplier);
 }
 
 void AgentSetForcedLod(WSECoreOperationsContext *context)
@@ -549,7 +549,7 @@ int AgentBodyMetaMeshGetCurrentDeformFrame(WSEAgentOperationsContext *context)
 	if (!agent->body_meta_meshes[body_meta_mesh])
 		return -1;
 
-	return static_cast<int>(std::round(agent->body_meta_meshes[body_meta_mesh]->get_mesh_vertex_anim_frame_time()));
+	return rglRound(agent->body_meta_meshes[body_meta_mesh]->get_mesh_vertex_anim_frame_time());
 #else
 	return -1;
 #endif
