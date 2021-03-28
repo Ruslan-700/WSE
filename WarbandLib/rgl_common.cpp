@@ -1,5 +1,7 @@
 #include "rgl_common.h"
 
+#include "warband.h"
+
 #include <cmath>
 
 int rglMod(int a, int b)
@@ -203,6 +205,25 @@ float rglDegToRad(float degrees)
 float rglRadToDeg(float radians)
 {
 	return radians * 57.2957795f;
+}
+
+void rglWarning(const char *format, ...)
+{
+	va_list ap;
+	char message[2048];
+	char warningMessage[2100];
+
+	va_start(ap, format);
+	vsprintf_s(message, format, ap);
+	va_end(ap);
+	sprintf_s(warningMessage, "WARNING: %s", message);
+
+	warband->log_stream.write_c_str(warningMessage);
+	warband->log_stream.write_c_str("\n");
+
+#if defined WARBAND
+	warband->window_manager.display_message(warningMessage, 0xFFFF0000, 0);
+#endif
 }
 
 int file_get_length(FILE *file)

@@ -371,8 +371,10 @@ void AgentBodyMetaMeshSetVisibility(WSEAgentOperationsContext *context)
 	wb::agent *agent = &warband->cur_mission->agents[agent_no];
 
 #if defined WARBAND
-	if (agent->body_meta_meshes[body_meta_mesh])
-		agent->body_meta_meshes[body_meta_mesh]->set_visibility_flags(visibility ? 0xFFFF : 0x2000);
+	if (!agent->body_meta_meshes[body_meta_mesh])
+		return;
+
+	agent->body_meta_meshes[body_meta_mesh]->set_visibility_flags(visibility ? 0xFFFF : 0x2000);
 #endif
 }
 
@@ -569,6 +571,50 @@ void AgentSetFootstepSound(WSEAgentOperationsContext *context)
 	WSE->Mission.m_agent_additional_properties[agent_no].footstep_sounds[type] = sound_no;
 }
 
+__int64 AgentGetHorseRotationVelocity(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return rglRound64(agent->horse_turn_speed * warband->basic_game.fixed_point_multiplier);
+}
+
+int AgentGetCurrentVerticalSpeed(WSEAgentOperationsContext *context)
+{
+	int agent_no;
+
+	context->ExtractAgentNo(agent_no);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	return rglRound(agent->speed.y * 100.0f);
+}
+
+void AgentSetCurrentVerticalSpeed(WSEAgentOperationsContext *context)
+{
+	int agent_no, value;
+
+	context->ExtractAgentNo(agent_no);
+	context->ExtractValue(value);
+
+	wb::agent *agent = &warband->cur_mission->agents[agent_no];
+
+	agent->speed.y = value / 100.0f;
+
+	if (agent->type == wb::at_horse)
+	{
+		agent->walk_state &= ~wb::hws_movement_mask;
+
+		if (agent->speed.y > 0.0f)
+			agent->walk_state |= wb::hws_accelerating;
+		else if (agent->speed.y < 0.0f)
+			agent->walk_state |= wb::hws_decelerating;
+	}
+}
+
 WSEAgentOperationsContext::WSEAgentOperationsContext() : WSEOperationContext("agent", 3300, 3399)
 {
 }
@@ -730,4 +776,24 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_footstep_sound", AgentSetFootstepSound, Both, None, 3, 3,
 		"Sets <0>'s footstep <2> for <1>. For human type: 0 - water, 1 - indoors, 2 - outdoors. For horse type: 0 - water, 1 - walk, 2 - trot, 3 - canter, 4 - gallop. For mute use sound_no = -1",
 		"agent_no", "type", "sound_no");
+
+	RegisterOperation("agent_get_horse_rotation_velocity", AgentGetHorseRotationVelocity, Both, Lhs, 2, 2,
+		"Stores <1>'s horse rotation velocity into <0>",
+		"destination_fixed_point", "agent_no");
+
+	RegisterOperation("agent_get_current_vertical_speed", AgentGetCurrentVerticalSpeed, Both, Lhs, 2, 2,
+		"Stores <1>'s current vertical speed into <0> (in centimeters per second)",
+		"destination", "agent_no");
+
+	RegisterOperation("agent_set_current_vertical_speed", AgentSetCurrentVerticalSpeed, Both, None, 2, 2,
+		"Sets <0>'s current vertical speed to <1> (in centimeters per second)",
+		"agent_no", "value");
+
+	RegisterOperation("agent_get_position_in_group", nullptr, Both, WSE2, 2, 2,
+		"Stores <1>'s position in group into <0>",
+		"position_register", "agent_no");
+
+	RegisterOperation("agent_get_current_ai_mesh_face_group", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores <1>'s current ai mesh face group into <0>",
+		"destination", "agent_no");
 }

@@ -17,6 +17,7 @@ namespace rgl
 		void set_mesh_vertex_anim_frame_time(const float &time);
 		void set_base_mesh_vertex_anim_frame_time(const float &time);
 		void create_vertex_anim_morph(const float &time);
+		void add_mesh(mesh *mesh);
 	};
 
 	struct meta_mesh
@@ -46,5 +47,6 @@ namespace rgl
 		void remove_particle_system(int particle_system_no = -1);
 		void set_vertex_color(unsigned int color);
 		void set_visibility_flags(unsigned int color);
+		void add_mesh(int lodNo, mesh *mesh);
 	};
 }

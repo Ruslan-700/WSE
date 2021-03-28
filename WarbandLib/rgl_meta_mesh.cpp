@@ -44,6 +44,11 @@ void meta_mesh_lod::create_vertex_anim_morph(const float &time)
 	}
 }
 
+void meta_mesh_lod::add_mesh(mesh *mesh)
+{
+	meshes.push_back(mesh);
+}
+
 meta_mesh::meta_mesh()
 {
 	this->num_lods = 0;
@@ -225,4 +230,12 @@ void meta_mesh::set_visibility_flags(unsigned int visibility_flags)
 			this->lods[i].meshes[j]->visibility_flags = visibility_flags;
 		}
 	}
+}
+
+void meta_mesh::add_mesh(int lodNo, mesh *mesh)
+{
+	lods[lodNo].add_mesh(mesh);
+
+	if (lodNo >= num_lods)
+		num_lods = lodNo + 1;
 }

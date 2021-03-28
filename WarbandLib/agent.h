@@ -304,7 +304,7 @@ namespace wb
 		int weapon_usage_order;
 		float cur_action_progress_for_sound;
 		float prev_action_progress_for_sound;
-		int u19;
+		float horse_turn_speed;
 		int horse_turn_state;
 		int acceleration_state;
 		int strafe_state;

@@ -9,6 +9,11 @@ void BreakNetworkFailOperation(WSEOperationContext *context)
 	context->ScriptError("Operation %s requires network_compatible = 0 in module.ini", context->m_descriptor->m_name.c_str());
 }
 
+void WSE2FailOperation(WSEOperationContext *context)
+{
+	context->ScriptError("Operation %s requires WSE2", context->m_descriptor->m_name.c_str());
+}
+
 bool FailOperation(WSEOperationContext *context)
 {
 	return false;
@@ -638,6 +643,11 @@ void WSEScriptingContext::AddOperation(WSEContext *context, void *callback, WSEO
 		descriptor->m_type = Operation;
 		descriptor->m_callback = BreakNetworkFailOperation;
 	}
+	else if (flags & WSE2)
+	{
+		descriptor->m_type = Operation;
+		descriptor->m_callback = WSE2FailOperation;
+	}
 #if defined WARBAND
 	else if (target == Server)
 #elif defined WARBAND_DEDICATED
@@ -807,6 +817,9 @@ void WSEScriptingContext::DumpOperationsHeader()
 
 			if (descriptor->m_flags & BreakNetwork)
 				stream << " (requires network_compatible = 0 in wse_settings.ini)";
+
+			if (descriptor->m_flags & WSE2)
+				stream << " (requires WSE2)";
 
 			stream << std::endl;
 		}

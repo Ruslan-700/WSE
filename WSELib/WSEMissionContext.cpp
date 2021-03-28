@@ -156,7 +156,7 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 					{
 						warband->basic_game.trigger_param_1 = object->no;
 						warband->basic_game.trigger_param_2 = (int)(meta_mesh->deformDuration * 1000.0f - ((warband->timers[2] / 100000.0f) - meta_mesh->deformStartTime) * 1000.0f);
-						warband->scene_props[object->sub_kind_no].simple_triggers.execute(-108);
+						warband->scene_props[object->sub_kind_no].simple_triggers.execute(wb::ti_on_scene_prop_is_deforming);
 					}
 				}
 			}
@@ -173,22 +173,22 @@ rgl::strategic_entity *WSEMissionContext::GetTriggerEntity(int trigger_no) const
 
 	switch (trigger_no)
 	{
-	case -40:
-	case -42:
-	case -43:
-	case -47:
-	case -48:
-	case -44:
-	case -45:
-	case -46:
-	case -76:
-	case -100:
+	case wb::ti_on_scene_prop_init:
+	case wb::ti_on_scene_prop_hit:
+	case wb::ti_on_scene_prop_destroy:
+	case wb::ti_on_scene_prop_start_use:
+	case wb::ti_on_scene_prop_cancel_use:
+	case wb::ti_on_scene_prop_use:
+	case wb::ti_on_scene_prop_is_animating:
+	case wb::ti_on_scene_prop_animation_finished:
+	case wb::ti_scene_prop_deformation_finished:
+	case wb::ti_on_scene_prop_stepped_on:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			return mission->mission_objects[game->trigger_mission_object_no].entity;
 		}
 		break;
-	case -50:
+	case wb::ti_on_init_item:
 		if (mission->agents.is_valid_index(game->trigger_agent_no))
 		{
 			return mission->agents[game->trigger_agent_no].entity;
@@ -198,14 +198,14 @@ rgl::strategic_entity *WSEMissionContext::GetTriggerEntity(int trigger_no) const
 			return mission->mission_objects[game->trigger_mission_object_no].entity;
 		}
 		break;
-	case -51:
+	case wb::ti_on_weapon_attack:
 		if (mission->agents.is_valid_index(game->trigger_agent_no))
 		{
 			return mission->agents[game->trigger_agent_no].entity;
 		}
 		break;
-	case -101:
-	case -104:
+	case wb::ti_on_init_missile:
+	case wb::ti_on_missile_dive:
 		if (m_cur_missile)
 		{
 			return m_cur_missile->entity;
@@ -224,15 +224,15 @@ rgl::meta_mesh *WSEMissionContext::GetTriggerMetaMesh(int trigger_no) const
 
 	switch (trigger_no)
 	{
-	case -42:
-	case -43:
-	case -47:
-	case -48:
-	case -44:
-	case -45:
-	case -46:
-	case -76:
-	case -100:
+	case wb::ti_on_scene_prop_hit:
+	case wb::ti_on_scene_prop_destroy:
+	case wb::ti_on_scene_prop_start_use:
+	case wb::ti_on_scene_prop_cancel_use:
+	case wb::ti_on_scene_prop_use:
+	case wb::ti_on_scene_prop_is_animating:
+	case wb::ti_on_scene_prop_animation_finished:
+	case wb::ti_scene_prop_deformation_finished:
+	case wb::ti_on_scene_prop_stepped_on:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			if (mission->mission_objects[game->trigger_mission_object_no].entity)
@@ -242,11 +242,11 @@ rgl::meta_mesh *WSEMissionContext::GetTriggerMetaMesh(int trigger_no) const
 			}
 		}
 		break;
-	case -40:
-	case -50:
-	case -51:
-	case -101:
-	case -104:
+	case wb::ti_on_scene_prop_init:
+	case wb::ti_on_init_item:
+	case wb::ti_on_weapon_attack:
+	case wb::ti_on_init_missile:
+	case wb::ti_on_missile_dive:
 		return game->trigger_meta_mesh;
 	}
 
@@ -262,15 +262,15 @@ rgl::mesh *WSEMissionContext::GetTriggerMesh(int trigger_no) const
 
 	switch (trigger_no)
 	{
-	case -42:
-	case -43:
-	case -47:
-	case -48:
-	case -44:
-	case -45:
-	case -46:
-	case -76:
-	case -100:
+	case wb::ti_on_scene_prop_hit:
+	case wb::ti_on_scene_prop_destroy:
+	case wb::ti_on_scene_prop_start_use:
+	case wb::ti_on_scene_prop_cancel_use:
+	case wb::ti_on_scene_prop_use:
+	case wb::ti_on_scene_prop_is_animating:
+	case wb::ti_on_scene_prop_animation_finished:
+	case wb::ti_scene_prop_deformation_finished:
+	case wb::ti_on_scene_prop_stepped_on:
 		if (mission->mission_objects.is_valid_index(game->trigger_mission_object_no))
 		{
 			if (mission->mission_objects[game->trigger_mission_object_no].entity)
@@ -280,9 +280,9 @@ rgl::mesh *WSEMissionContext::GetTriggerMesh(int trigger_no) const
 			}
 		}
 		break;
-	case -40:
-	case -50:
-	case -70:
+	case wb::ti_on_scene_prop_init:
+	case wb::ti_on_init_item:
+	case wb::ti_on_init_map_icon:
 		return game->trigger_mesh;
 	}
 
@@ -297,8 +297,8 @@ int WSEMissionContext::GetTriggerBoneNo(int trigger_no) const
 
 	switch (trigger_no)
 	{
-	case -50:
-	case -51:
+	case wb::ti_on_init_item:
+	case wb::ti_on_weapon_attack:
 		if (game->trigger_item_slot_no >= 0 && mission->agents.is_valid_index(game->trigger_agent_no))
 		{
 			int item_kind_no = mission->agents[game->trigger_agent_no].items[game->trigger_item_slot_no].item_no;
@@ -377,7 +377,7 @@ bool WSEMissionContext::OnAgentApplyAttackRec(wb::agent *agent)
 	}
 
 	WSE->Scripting.SetTriggerParam(9, cur_blow->damage_type);
-	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-28);
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_hit);
 	return true;
 }
 
@@ -405,7 +405,7 @@ bool WSEMissionContext::OnAgentSetGroundQuad(wb::agent *agent, rgl::quad *quad)
 			{
 				warband->basic_game.trigger_param_1 = agent->no;
 				warband->basic_game.trigger_param_2 = object->no;
-				warband->scene_props[object->sub_kind_no].simple_triggers.execute(-100);
+				warband->scene_props[object->sub_kind_no].simple_triggers.execute(wb::ti_on_scene_prop_stepped_on);
 			}
 		}
 	}
@@ -420,7 +420,7 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 
 	wb::item_kind *item_kind = &warband->item_kinds[missile->missile_item.item_no];
 	
-	if (!item_kind->simple_triggers.has_trigger(-101))
+	if (!item_kind->simple_triggers.has_trigger(wb::ti_on_init_missile))
 		return;
 	
 	m_cur_missile = missile;
@@ -433,9 +433,7 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 	warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
 	warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
 	warband->basic_game.trigger_param_6 = missile->no;
-	//WSE->Scripting.SetTriggerParam(4, missile->missile_item.item_no);
-	//WSE->Scripting.SetTriggerParam(5, missile->missile_item.get_modifier());
-	item_kind->simple_triggers.execute(-101);
+	item_kind->simple_triggers.execute(wb::ti_on_init_missile);
 	m_cur_missile = nullptr;
 #if defined WARBAND
 	warband->cur_game->trigger_meta_mesh = nullptr;
@@ -445,7 +443,7 @@ void WSEMissionContext::OnMissionSpawnMissile(wb::missile *missile)
 int WSEMissionContext::OnAgentShieldHit(wb::agent *agent, wb::item *shield_item, int raw_damage, int damage, wb::agent_blow *blow, wb::missile *missile)
 {
 	wb::item_kind *item_kind = &warband->item_kinds[shield_item->item_no];
-	if (!item_kind->simple_triggers.has_trigger(-80))
+	if (!item_kind->simple_triggers.has_trigger(wb::ti_on_shield_hit))
 		return damage;
 
 	warband->basic_game.trigger_param_1 = agent->no;
@@ -467,7 +465,7 @@ int WSEMissionContext::OnAgentShieldHit(wb::agent *agent, wb::item *shield_item,
 	}
 
 	warband->basic_game.trigger_result = -1;
-	item_kind->simple_triggers.execute(-80);
+	item_kind->simple_triggers.execute(wb::ti_on_shield_hit);
 
 	if (warband->basic_game.trigger_result >= 0)
 		return (int)warband->basic_game.trigger_result;
@@ -479,7 +477,7 @@ void WSEMissionContext::OnUpdateHorseAgentEntityBody(int agent_no, wb::item *hor
 {
 	wb::item_kind *item_kind = &warband->item_kinds[horse_item->item_no];
 
-	if (!item_kind->simple_triggers.has_trigger(-50))
+	if (!item_kind->simple_triggers.has_trigger(wb::ti_on_init_item))
 		return;
 	
 	wb::game *game = warband->cur_game;
@@ -492,7 +490,7 @@ void WSEMissionContext::OnUpdateHorseAgentEntityBody(int agent_no, wb::item *hor
 #endif
 	warband->basic_game.trigger_param_1 = agent_no;
 	warband->basic_game.trigger_param_2 = -1;
-	item_kind->simple_triggers.execute(-50);
+	item_kind->simple_triggers.execute(wb::ti_on_init_item);
 }
 
 void WSEMissionContext::OnShowUseTooltip(int object_type)
@@ -585,14 +583,14 @@ void WSEMissionContext::OnItemKindTransformHoldPosition(wb::item_kind *item_kind
 {
 	pos->initialize();
 
-	if ((item_kind->capabilities & 0xFF000) == 0x40000)
+	if ((item_kind->capabilities & wb::itcf_shoot_mask) == wb::itcf_throw_javelin)
 	{
 		pos->rot.f = -pos->rot.f;
 		pos->rot.s = -pos->rot.s;
 	}
-	else if (item_kind->properties & 0x0004000000000000)
+	else if (item_kind->properties & wb::itp_offset_musket)
 	{
-		if ((item_kind->capabilities & 0x7F0000000) == 0xA0000000)
+		if ((item_kind->capabilities & wb::itcf_carry_mask) == wb::itcf_carry_pistol_front_left)
 		{
 			pos->rot.f = -pos->rot.f;
 			pos->rot.u = -pos->rot.u;
@@ -607,13 +605,13 @@ void WSEMissionContext::OnItemKindTransformHoldPosition(wb::item_kind *item_kind
 			pos->o = rgl::vector4(0.0f, item_kind->weapon_length * 0.01f - 0.2f, 0.0f);
 		}
 	}
-	else if (item_kind->properties & 0x1000000000000000)
+	else if (item_kind->properties & wb::itp_offset_mortschlag)
 	{
 		pos->rot.f = -pos->rot.f;
 		pos->rot.s = -pos->rot.s;
 		pos->o = rgl::vector4(0.0f, item_kind->weapon_length * 0.01f - 0.55f, 0.0f);
 	}
-	else if (item_kind->properties & 0x4000000000000000)
+	else if (item_kind->properties & wb::itp_offset_flip)
 	{
 		pos->rot.s = -pos->rot.s;
 		pos->rot.u = -pos->rot.u;
@@ -643,7 +641,7 @@ wb::item *WSEMissionContext::OnAgentGetItemForUnbalancedCheck(wb::agent *agent)
 		}
 	}
 
-	if (wielded_item >= 0 && agent->item_alternative_usages[wielded_item] && item && item->item_no >= 0 && (warband->item_kinds[item->item_no].properties & 0x20000000))
+	if (wielded_item >= 0 && agent->item_alternative_usages[wielded_item] && item && item->item_no >= 0 && (warband->item_kinds[item->item_no].properties & wb::itp_next_item_as_melee))
 	{
 		m_fake_item = *item;
 		m_fake_item.item_no++;
@@ -675,11 +673,11 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 				meta_meshes[wb::bmm_right_foot]->create_vertex_anim_morph((float)morph_key);
 		}
 
-		if (meta_meshes[wb::bmm_left_foot] && (!items[wb::is_body].is_valid() || (items[wb::is_body].get_item_kind()->properties & 0x800000) == 0))
+		if (meta_meshes[wb::bmm_left_foot] && (!items[wb::is_body].is_valid() || (items[wb::is_body].get_item_kind()->properties & wb::itp_replaces_shoes) == 0))
 		{
 			wb::item_kind *item_kind = &warband->item_kinds[items[wb::is_foot].item_no];
 
-			if (item_kind->simple_triggers.has_trigger(-50))
+			if (item_kind->simple_triggers.has_trigger(wb::ti_on_init_item))
 			{
 				wb::game *game = warband->cur_game;
 
@@ -690,12 +688,12 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 				game->trigger_mesh = nullptr;
 				warband->basic_game.trigger_param_1 = agent_no;
 				warband->basic_game.trigger_param_2 = troop_no;
-				item_kind->simple_triggers.execute(-50);
+				item_kind->simple_triggers.execute(wb::ti_on_init_item);
 			}
 		}
 	}
 
-	if (items[wb::is_body].is_valid() && items[wb::is_body].get_item_kind()->properties & 0x1000000000000000)
+	if (items[wb::is_body].is_valid() && items[wb::is_body].get_item_kind()->properties & wb::itp_covers_hands)
 	{
 		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_left_hand);
 		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_right_hand);
@@ -771,7 +769,7 @@ bool WSEMissionContext::OnAgentDropItem(wb::agent *agent, int item_no)
 void WSEMissionContext::OnAgentStartReloading(wb::agent *agent)
 {
 	warband->basic_game.trigger_param_1 = agent->no;
-	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-105);
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_start_reloading);
 }
 
 void WSEMissionContext::OnAgentEndReloading(wb::agent *agent)
@@ -779,7 +777,7 @@ void WSEMissionContext::OnAgentEndReloading(wb::agent *agent)
 	//if (agent->attack_action == 5)
 	//{
 		warband->basic_game.trigger_param_1 = agent->no;
-		warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-106);
+		warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_end_reloading);
 	//}
 }
 
@@ -794,7 +792,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 	pos.o.z = warband->cur_mission->water_level;
 
 	warband->basic_game.position_registers[1] = pos;
-	warband->cur_game->execute_script(52, missile->missile_item.item_no, missile->missile_item.get_modifier(), missile->shooting_item.item_no, missile->shooting_item.get_modifier(), missile->shooter_agent_no, missile->no);
+	warband->cur_game->execute_script(SCRIPT_GAME_MISSILE_DIVES_INTO_WATER, missile->missile_item.item_no, missile->missile_item.get_modifier(), missile->shooting_item.item_no, missile->shooting_item.get_modifier(), missile->shooter_agent_no, missile->no);
 
 	if (missile->missile_item.item_no >= 0)
 	{
@@ -808,7 +806,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 		warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
 		warband->basic_game.trigger_param_6 = missile->no;
 
-		item_kind->simple_triggers.execute(-104);
+		item_kind->simple_triggers.execute(wb::ti_on_missile_dive);
 	}
 }
 
@@ -821,7 +819,7 @@ void WSEMissionContext::OnItemDifficultyCheck(wb::item_kind &item_kind, int *att
 
 	if (item_kind_type > 0 && item_kind_type <= wb::itp_type_book)
 	{
-		if (item_kind_type == wb::itp_type_shield && (item_kind.properties & 0x4000) > 0)
+		if (item_kind_type == wb::itp_type_shield && (item_kind.properties & wb::itp_shield_no_parry) > 0)
 		{
 			*attribute = m_item_difficulty_attribute[wb::itp_type_one_handed];
 			*skill = m_item_difficulty_skill[wb::itp_type_one_handed];
@@ -836,23 +834,23 @@ void WSEMissionContext::OnItemDifficultyCheck(wb::item_kind &item_kind, int *att
 
 bool WSEMissionContext::OnMissionObjectWeaponKnockBack(wb::scene_prop *scene_prop)
 {
-	return (scene_prop->flags & 0x10000000) > 0;
+	return (scene_prop->flags & wb::sokf_weapon_knock_back_collision) > 0;
 }
 
 bool WSEMissionContext::OnItemKindShieldNoParry(int item_no)
 {
 	if (item_no <= 0) return true;
-	return (warband->item_kinds[item_no].properties & 0x4000) > 0;
+	return (warband->item_kinds[item_no].properties & wb::itp_shield_no_parry) > 0;
 }
 
 bool WSEMissionContext::OnItemKindShieldNoParryCarry(wb::item_kind *item_kind)
 {
-	return (item_kind->get_type() == wb::itp_type_shield && (item_kind->properties & 0x4000) == 0);
+	return (item_kind->get_type() == wb::itp_type_shield && (item_kind->properties & wb::itp_shield_no_parry) == 0);
 }
 
 bool WSEMissionContext::OnItemKindDisableAgentSounds(int item_no)
 {
-	return (warband->item_kinds[item_no].properties & 0x40000000000000) > 0;
+	return (warband->item_kinds[item_no].properties & wb::itp_disable_agent_sounds) > 0;
 }
 
 void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::missile *missile, wb::agent *agent)
@@ -869,12 +867,12 @@ void WSEMissionContext::OnAgentBlockedAttack(int agent_no, int item_no, wb::miss
 		warband->basic_game.trigger_param_4 = -1;
 	}
 	
-	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-103);
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_blocked);
 }
 
 void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
 {
-	if ((agent->action_channels[0].action_no >= 0 && agent->action_set->actions[agent->action_channels[0].action_no].flags & 0x800) || (agent->action_channels[1].action_no >= 0 && agent->action_set->actions[agent->action_channels[1].action_no].flags & 0x800))
+	if ((agent->action_channels[0].action_no >= 0 && agent->action_set->actions[agent->action_channels[0].action_no].flags & wb::acf_lock_rotation) || (agent->action_channels[1].action_no >= 0 && agent->action_set->actions[agent->action_channels[1].action_no].flags & wb::acf_lock_rotation))
 		*max_rotation_speed = 0.0f;
 
 	warband->basic_game.trigger_param_1 = agent->no;
@@ -882,7 +880,7 @@ void WSEMissionContext::OnAgentTurn(wb::agent *agent, float *max_rotation_speed)
 	
 	warband->basic_game.trigger_result = -1;
 
-	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(-102);
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_turn);
 
 	if (warband->basic_game.trigger_result >= 0)
 		*max_rotation_speed = warband->basic_game.trigger_result / (float)warband->basic_game.fixed_point_multiplier;
@@ -986,7 +984,7 @@ void WSEMissionContext::OnAgentSetupSoundSample(wb::agent *agent, int type, bool
 			}
 		}
 	}
-	else if (!(agent->horse_item.get_item_kind()->properties & 0x40000000000000))
+	else if (!(agent->horse_item.get_item_kind()->properties & wb::itp_disable_agent_sounds))
 	{
 		int walkPace = agent->walk_state & wb::hws_pace_mask;
 

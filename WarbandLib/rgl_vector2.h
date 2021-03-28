@@ -14,5 +14,7 @@ namespace rgl
 		float length_squared() const;
 		float normalize();
 		vector2 normalized();
+		operator float *();
+		operator float *() const;
 	};
 }

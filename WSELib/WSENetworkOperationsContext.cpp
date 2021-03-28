@@ -295,4 +295,15 @@ void WSENetworkOperationsContext::OnLoad()
 	RegisterOperation("execute_server_console_command", ExecuteServerConsoleCommand, Server, None, 2, 2,
 		"Executes dedicated server console command <1> and stores result string into <0>",
 		"string_register", "command");
+
+	RegisterOperation("add_anonymous_player", nullptr, Server, WSE2, 2, 2,
+		"Sets <1> pseudonym for multiplayer player <0>",
+		"unique_id", "name");
+
+	RegisterOperation("remove_anonymous_player", nullptr, Server, WSE2, 1, 1,
+		"Removes pseudonym for multiplayer player <0>",
+		"unique_id");
+
+	RegisterOperation("clear_anonymous_players", nullptr, Server, WSE2, 0, 0,
+		"Clears pseudonyms for multiplayer players");
 }

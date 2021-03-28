@@ -149,5 +149,8 @@ namespace rgl
 		void remove_particle_system(int particle_system_no = -1);
 		void set_vertex_color(unsigned int color);
 		void set_color(unsigned int color);
+#if !defined WARBAND_DEDICATED
+		void replace_material(rgl::material *new_material);
+#endif
 	};
 }

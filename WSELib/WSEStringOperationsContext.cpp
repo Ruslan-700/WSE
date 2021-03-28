@@ -808,6 +808,16 @@ void StrDecodeUrl(WSEStringOperationsContext *context)
 	warband->basic_game.string_registers[sreg] = UriDecode(str1);
 }
 
+void StrStoreSkillDesc(WSEStringOperationsContext *context)
+{
+	int sreg, skill_no;
+
+	context->ExtractRegister(sreg);
+	context->ExtractSkillNo(skill_no);
+
+	warband->basic_game.string_registers[sreg] = warband->skills[skill_no].description;
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -997,6 +1007,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_decode_url", StrDecodeUrl, Both, None, 2, 2,
 		"Decode url encoded <1> and stores it into <0>. Note that it doesn't convert +'s to spaces(as per the spec)",
 		"string_register", "string_1");
+
+	RegisterOperation("str_store_skill_desc", StrStoreSkillDesc, Both, None, 2, 2,
+		"Stores the description of <1> into <0>",
+		"string_register", "skill_no");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)

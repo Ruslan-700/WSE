@@ -143,6 +143,8 @@ bool opCall(WSELuaOperationsContext *context)
 	if (stackSize < numArgs)
 		context->ScriptError("not enough arguments on stack");
 
+	WSE->LuaOperations.luaContext = context->GetCurrentTrigger();
+
 	lua_getglobal(context->luaState, funcName.c_str());
 
 	if (numArgs)
@@ -172,6 +174,7 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	context->ExtractValue(ref);
 	context->ExtractValue(part);
+	context->ExtractValue(WSE->LuaOperations.luaContext);
 
 	if (part == triggerPart::condition)
 	{
@@ -409,9 +412,9 @@ void WSELuaOperationsContext::OnLoad()
 		"func_name", "num_args");
 
 	callTriggerOpcode = getOpcodeRangeCur();
-	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 2, 2,
+	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 2, 3,
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
-		"reference", "triggerPart");
+		"reference", "triggerPart", "context");
 
 	initLua();
 }

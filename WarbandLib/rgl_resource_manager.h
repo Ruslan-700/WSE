@@ -71,7 +71,13 @@ namespace rgl
 		int u7[8]; //1166
 #endif
 
-		mesh *get_mesh(const string &name);
+#if !defined WARBAND_DEDICATED
+		stl::vector<mesh *> get_meshes(const string &name);
+		mesh *try_get_mesh(const string &name);
+		material *try_get_material(const string &name);
+		material *get_material(const string &name);
+		material *get_default_material();
+#endif
 		void load_resource_file(const string &file, int modular, bool update);
 	};
 }

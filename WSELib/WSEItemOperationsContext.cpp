@@ -313,6 +313,75 @@ void ItemSetHorseBloodParticles(WSEItemOperationsContext *context)
 #endif
 }
 
+void CurItemMeshSetColor(WSEMissionOperationsContext *context)
+{
+#if defined WARBAND
+	int mesh_no, color;
+
+	context->ExtractValue(mesh_no);
+	context->ExtractValue(color);
+
+	int trigger_no = context->GetCurrentTrigger();
+
+	if (trigger_no == wb::ti_on_init_item)
+	{
+		rgl::meta_mesh *meta_mesh = WSE->Mission.GetTriggerMetaMesh(trigger_no);
+
+		if (meta_mesh)
+		{
+			for (int i = 0; i < meta_mesh->num_lods; ++i)
+			{
+				if (meta_mesh->lods[i].meshes.size() > mesh_no)
+					meta_mesh->lods[i].meshes[mesh_no]->set_vertex_color(color);
+			}
+		}
+	}
+#endif
+}
+
+void CurItemAddMeshWithMaterial(WSEMissionOperationsContext *context)
+{
+#if defined WARBAND
+	rgl::string m1n, m2n;
+	int lod_begin, lod_end, color;
+
+	context->ExtractString(m1n);
+	context->ExtractString(m2n);
+	context->ExtractValue(lod_begin);
+	context->ExtractValue(lod_end);
+	context->ExtractValue(color);
+
+	int trigger_no = context->GetCurrentTrigger();
+
+	if (trigger_no == wb::ti_on_init_item)
+	{
+		rgl::meta_mesh *meta_mesh = WSE->Mission.GetTriggerMetaMesh(trigger_no);
+
+		if (meta_mesh)
+		{
+			m1n.spaces_to_underscores();
+			m2n.spaces_to_underscores();
+
+			stl::vector<rgl::mesh *> meshes = warband->resource_manager.get_meshes(m1n);
+			rgl::material *material = warband->resource_manager.get_material(m2n);
+			lod_end = (lod_end) ? lod_end : meta_mesh->num_lods;
+
+			for (int i = lod_begin; i < lod_end && i < meshes.size(); ++i)
+			{
+				rgl::mesh *newMesh = meshes[i]->create_copy();
+
+				newMesh->replace_material(material);
+
+				if (color > 0)
+					newMesh->set_vertex_color(color);
+
+				meta_mesh->add_mesh(i, newMesh);
+			}
+		}
+	}
+#endif
+}
+
 WSEItemOperationsContext::WSEItemOperationsContext() : WSEOperationContext("item", 3800, 3899)
 {
 }
@@ -471,4 +540,16 @@ void WSEItemOperationsContext::OnLoad()
 	RegisterOperation("item_set_horse_blood_particles", ItemSetHorseBloodParticles, Client, None, 3, 3,
 		"Sets <0>'s horse blood <1> and <2>",
 		"item_kind_no", "particle_1_no", "particle_2_no");
+
+	RegisterOperation("item_set_horse_blood_color", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s horse blood <1>",
+		"item_kind_no", "color");
+
+	RegisterOperation("cur_item_mesh_set_color", CurItemMeshSetColor, Client, None, 2, 2,
+		"Sets item <0> color to <1>. Only call inside ti_on_init_item in module_items.",
+		"mesh_no", "color");
+
+	RegisterOperation("cur_item_add_mesh_with_material", CurItemAddMeshWithMaterial, Client, None, 2, 5,
+		"Adds another <0> to item. Replaces item material to <1>. Sets item color to <4>. Only call inside ti_on_init_item in module_items.",
+		"mesh_name_string_no", "material_name_string_no", "lod_begin", "lod_end", "color");
 }

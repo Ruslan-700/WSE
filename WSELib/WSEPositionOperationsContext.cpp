@@ -151,7 +151,7 @@ void PositionRotateZFloating(WSEPositionOperationsContext *context)
 	}
 }
 
-int PositionGetVectorToPosition(WSEPositionOperationsContext *context)
+__int64 PositionGetVectorToPosition(WSEPositionOperationsContext *context)
 {
 	int preg1, preg2, preg3;
 	
@@ -169,7 +169,7 @@ int PositionGetVectorToPosition(WSEPositionOperationsContext *context)
 	dest->rotate_z(-std::atan2(v.x, v.y));
 	dest->rotate_x(std::atan2(v.z, std::sqrt(v.x * v.x + v.y * v.y)));
 
-	return rglRound(v.length() * warband->basic_game.fixed_point_multiplier);
+	return rglRound64(v.length() * warband->basic_game.fixed_point_multiplier);
 }
 
 void PositionAlignToGround(WSEPositionOperationsContext *context)
@@ -211,6 +211,36 @@ void PositionAlignToGround(WSEPositionOperationsContext *context)
 		dest->o.z = height;
 }
 
+__int64 PositionGetLength(WSEPositionOperationsContext *context)
+{
+	int preg;
+
+	context->ExtractRegister(preg);
+
+	return rglRound64(warband->basic_game.position_registers[preg].o.length() * warband->basic_game.fixed_point_multiplier);
+}
+
+__int64 GetDotProductOfPositions(WSEPositionOperationsContext *context)
+{
+	int preg1, preg2;
+
+	context->ExtractRegister(preg1);
+	context->ExtractRegister(preg2);
+
+	return rglRound64(warband->basic_game.position_registers[preg1].o.dot(warband->basic_game.position_registers[preg2].o) * warband->basic_game.fixed_point_multiplier);
+}
+
+void GetCrossProductOfPositions(WSEPositionOperationsContext *context)
+{
+	int preg1, preg2, preg3;
+
+	context->ExtractRegister(preg1);
+	context->ExtractRegister(preg2);
+	context->ExtractRegister(preg3);
+
+	warband->basic_game.position_registers[preg1].o.cross(warband->basic_game.position_registers[preg2].o, warband->basic_game.position_registers[preg3].o);
+}
+
 WSEPositionOperationsContext::WSEPositionOperationsContext() : WSEOperationContext("position", 4100, 4199)
 {
 }
@@ -240,11 +270,7 @@ void WSEPositionOperationsContext::OnLoad()
 	ReplaceOperation(734, "position_rotate_z_floating", PositionRotateZFloating, Both, None, 2, 3,
 		"Rotates <0> around the z-axis by <1> degrees",
 		"position_register", "angle_fixed_point", "use_global_axis");
-	/*
-	RegisterOperation("position_rotate_z_floating", PositionRotateZFloating, Both, None, 2, 3,
-		"Rotates <0> around the z-axis by <1> degrees",
-		"position_register", "angle_fixed_point", "use_global_axis");
-	*/
+
 	RegisterOperation("position_get_vector_to_position", PositionGetVectorToPosition, Both, Lhs, 4, 4,
 		"Stores the vector from <2> to <3> into <1> and its length into <0>",
 		"destination_fixed_point", "dest_position_register", "position_register_1", "position_register_2");
@@ -252,4 +278,16 @@ void WSEPositionOperationsContext::OnLoad()
 	RegisterOperation("position_align_to_ground", PositionAlignToGround, Both, None, 1, 3,
 		"Aligns <0> to the ground (or to the ground normal if <1> is set)",
 		"position_register", "point_up", "set_z_to_ground_level");
+
+	RegisterOperation("position_get_length", PositionGetLength, Both, Lhs, 2, 2,
+		"Stores <1> length into <0>",
+		"destination_fixed_point", "position_register");
+
+	RegisterOperation("get_dot_product_of_positions", GetDotProductOfPositions, Both, Lhs, 3, 3,
+		"Stores <1> and <2> dot product into <0>",
+		"destination_fixed_point", "position_register_1", "position_register_2");
+
+	RegisterOperation("get_cross_product_of_positions", GetCrossProductOfPositions, Both, None, 3, 3,
+		"Stores <1> and <2> cross product into <0>",
+		"dest_position_register", "position_register_1", "position_register_2");
 }

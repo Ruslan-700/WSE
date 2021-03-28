@@ -293,4 +293,7 @@ void WSESkinOperationsContext::OnLoad()
 		"Sets <0>'s morph key value (0-7) to <value>",
 		"string_register", "key_no", "value");
 
+	RegisterOperation("skin_set_blood_color", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s blood <1>",
+		"skin_no", "color");
 }

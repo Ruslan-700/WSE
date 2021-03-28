@@ -4,6 +4,8 @@
 #include "basics.h"
 #include "game_object.h"
 
+#define MB_NUM_DNA_PARTY_STACKS 32
+
 namespace wb
 {
 	struct party_stack

@@ -60,9 +60,6 @@ void SiteSetOuterTerrain(WSESiteOperationsContext *context)
 
 	wb::site *site = &warband->cur_game->sites[site_no];
 
-	if (outer_terrain != "0" && !warband->resource_manager.get_mesh(outer_terrain))
-		return;
-
 	site->outer_terrain_name = outer_terrain;
 	site->descriptor_checksum = 0;
 }

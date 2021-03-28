@@ -6,7 +6,7 @@
 #include "WSEContext.h"
 #include "warband.h"
 
-#define WSE_MAX_NUM_OPERATIONS 5200
+#define WSE_MAX_NUM_OPERATIONS 5300
 #define WSE_FIRST_WARBAND_OPCODE 31
 #define WSE_LAST_WARBAND_OPCODE 2767
 #define MAX_NUM_NESTED_LOOPS 256
@@ -36,6 +36,7 @@ enum WSEOperationFlags
 	Control = 0x20,
 	Undocumented = 0x40,
 	FakeLhs = 0x80,
+	WSE2 = 0x100,
 };
 
 enum WSEOperationTarget

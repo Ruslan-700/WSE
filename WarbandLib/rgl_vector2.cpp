@@ -56,3 +56,13 @@ vector2 vector2::normalized()
 	vec.normalize();
 	return vec;
 }
+
+vector2::operator float *()
+{
+	return (float *)this;
+}
+
+vector2::operator float *() const
+{
+	return (float *)this;
+}

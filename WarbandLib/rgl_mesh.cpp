@@ -108,3 +108,20 @@ void mesh::set_color(unsigned int color)
 	if ((material->flags & mf_alpha_blend_factor) == mf_alpha_blend_factor)
 		render_order_is_up_to_date = false;
 }
+
+#if !defined WARBAND_DEDICATED
+void mesh::replace_material(rgl::material *new_material)
+{
+	if (material == new_material)
+		return;
+
+	if (material)
+		material->num_uses--;
+
+	material = new_material;
+	render_order_is_up_to_date = false;
+
+	if (new_material)
+		new_material->num_uses++;
+}
+#endif

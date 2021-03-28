@@ -2,6 +2,7 @@
 
 #include "WSE.h"
 #include "warband.h"
+#include "fmod.h"
 
 void PropInstanceReceiveDamage(WSEMissionOperationsContext *context)
 {
@@ -23,7 +24,7 @@ void PropInstanceReceiveDamage(WSEMissionOperationsContext *context)
 
 	wb::scene_prop *scene_prop = &warband->scene_props[mission_object->sub_kind_no];
 	
-	if (advanced && !warband->basic_game.is_client() && scene_prop->simple_triggers.has_trigger(-42))
+	if (advanced && !warband->basic_game.is_client() && scene_prop->simple_triggers.has_trigger(wb::ti_on_scene_prop_hit))
 	{
 		warband->cur_game->trigger_mission_object_no = mission_object_no;
 		warband->basic_game.trigger_result = -1;
@@ -36,7 +37,7 @@ void PropInstanceReceiveDamage(WSEMissionOperationsContext *context)
 		WSE->Scripting.SetTriggerParam(7, -1);
 		warband->basic_game.position_registers[1] = warband->cur_game->cur_position;
 		warband->basic_game.position_registers[2].o.x = (float)agent_no;
-		scene_prop->simple_triggers.execute(-42);
+		scene_prop->simple_triggers.execute(wb::ti_on_scene_prop_hit);
 
 		if (warband->basic_game.trigger_result >= 0)
 			damage = (int)warband->basic_game.trigger_result;
@@ -67,12 +68,12 @@ void PropInstanceReceiveDamage(WSEMissionOperationsContext *context)
 		warband->network_manager.server.broadcast_event(evt);
 	}
 
-	if (scene_prop->flags & 0x8000 && !warband->basic_game.is_client() && mission_object->hit_points <= 0.0f)
+	if (scene_prop->flags & wb::sokf_destructible && !warband->basic_game.is_client() && mission_object->hit_points <= 0.0f)
 	{
 		warband->cur_game->trigger_mission_object_no = mission_object_no;
 		warband->basic_game.trigger_param_1 = mission_object_no;
 		warband->basic_game.trigger_param_2 = agent_no;
-		scene_prop->simple_triggers.execute(-43);
+		scene_prop->simple_triggers.execute(wb::ti_on_scene_prop_destroy);
 	}
 }
 
@@ -80,19 +81,24 @@ void AddPointLight(WSEMissionOperationsContext *context)
 {
 #if defined WARBAND
 	int flicker_magnitude_int, flicker_interval_int;
+	__int64 range;
 
 	context->ExtractValue(flicker_magnitude_int);
 	context->ExtractValue(flicker_interval_int);
+	context->ExtractBigValue(range);
 	
-	float flicker_magnitude = flicker_magnitude_int / 100.0f;
-	float flicker_interval = flicker_interval_int / 100.0f;
-
 	rgl::light *light = rgl::_new<rgl::light>();
 	light->type = rgl::lt_point;
+	light->flicker_magnitude = flicker_magnitude_int / 100.0f;
+	light->flicker_interval = flicker_magnitude_int / 100.0f;
 	light->diffuse_color = warband->cur_game->cur_color;
 	light->specular_color = light->diffuse_color;
 	light->local_position = warband->cur_game->cur_local_position;
-	light->update_range();
+
+	if (range > 0)
+		light->range = (float)range;
+	else
+		light->update_range();
 
 	int trigger_no = context->GetCurrentTrigger();
 	rgl::mesh *mesh = WSE->Mission.GetTriggerMesh(trigger_no);
@@ -112,7 +118,7 @@ void AddPointLight(WSEMissionOperationsContext *context)
 	}
 	
 	rgl::strategic_entity *entity = WSE->Mission.GetTriggerEntity(trigger_no);
-	int bone_no = WSE->Mission.GetTriggerBoneNo(context->GetCurrentTrigger());
+	int bone_no = WSE->Mission.GetTriggerBoneNo(trigger_no);
 	
 	if (entity)
 	{
@@ -127,6 +133,52 @@ void AddPointLight(WSEMissionOperationsContext *context)
 	warband->cur_mission->mission_scene->lights.push_back(light);
 	light->local_position = rgl::vector4::zero;
 	light->position.transform(warband->cur_game->cur_local_position, warband->cur_game->cur_position);
+#endif
+}
+
+void AddPointLightToEntity(WSEMissionOperationsContext *context)
+{
+#if defined WARBAND
+	int flicker_magnitude_int, flicker_interval_int;
+	__int64 range;
+
+	context->ExtractValue(flicker_magnitude_int);
+	context->ExtractValue(flicker_interval_int);
+	context->ExtractBigValue(range);
+
+	int trigger_no = context->GetCurrentTrigger();
+	rgl::strategic_entity *entity = WSE->Mission.GetTriggerEntity(trigger_no);
+
+	if (entity)
+	{
+		rgl::light *light = rgl::_new<rgl::light>();
+		light->type = rgl::lt_point;
+		light->flicker_magnitude = flicker_magnitude_int / 100.0f;
+		light->flicker_interval = flicker_magnitude_int / 100.0f;
+		light->diffuse_color = warband->cur_game->cur_color;
+		light->specular_color = light->diffuse_color;
+		light->local_position = warband->cur_game->cur_local_position;
+
+		if (range > 0)
+			light->range = (float)range;
+		else
+			light->update_range();
+
+		if (trigger_no == wb::ti_on_init_item)
+		{
+			int bone_no = WSE->Mission.GetTriggerBoneNo(trigger_no);
+
+			if (entity->skeleton && bone_no >= 0)
+				entity->skeleton->bones[bone_no].set_light(light);
+		}
+		else
+		{
+			entity->set_light(light);
+			warband->cur_mission->mission_scene->lights.push_back(light);
+			light->local_position = rgl::vector4::zero;
+			light->position.transform(warband->cur_game->cur_local_position, warband->cur_game->cur_position);
+		}
+	}
 #endif
 }
 
@@ -331,7 +383,7 @@ void ParticleSystemRemove(WSEMissionOperationsContext *context)
 #if defined WARBAND
 	int particle_system_no;
 	
-	context->ExtractParticleSystemNo(particle_system_no);
+	context->ExtractValue(particle_system_no, -1);
 	
 	int trigger_no = context->GetCurrentTrigger();
 	
@@ -620,6 +672,53 @@ void MissileGetCurPosition(WSEMissionOperationsContext *context)
 	warband->basic_game.position_registers[preg].orthonormalize();
 }
 
+void MissionObjectRemoveParticleSystem(WSEMissionOperationsContext *context)
+{
+#if defined WARBAND
+	int mission_object_no, particle_system_no;
+
+	context->ExtractMissionObjectNo(mission_object_no);
+	context->ExtractValue(particle_system_no, -1);
+
+	rgl::strategic_entity *entity = warband->cur_mission->mission_objects[mission_object_no].entity;
+
+	if (entity)
+		entity->remove_particle_system(particle_system_no);
+#endif
+}
+
+void MissionObjectRemoveLight(WSEMissionOperationsContext *context)
+{
+#if defined WARBAND
+	int mission_object_no;
+
+	context->ExtractMissionObjectNo(mission_object_no);
+
+	rgl::strategic_entity *entity = warband->cur_mission->mission_objects[mission_object_no].entity;
+
+	if (entity)
+	{
+		if (entity->meta_meshes.size())
+		{
+			for (int i = 0; i < entity->meta_meshes.size(); ++i)
+			{
+				if (entity->meta_meshes[i]->lods[0].meshes[0]->light)
+				{
+					rgl::_delete(entity->meta_meshes[i]->lods[0].meshes[0]->light);
+					entity->meta_meshes[i]->lods[0].meshes[0]->light = nullptr;
+				}
+			}
+
+		}
+		else if (entity->light)
+		{
+			warband->cur_mission->mission_scene->lights.remove(entity->light);
+			entity->light = nullptr;
+		}
+	}
+#endif
+}
+
 WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext("mission", 3600, 3699)
 {
 }
@@ -631,9 +730,13 @@ void WSEMissionOperationsContext::OnLoad()
 		"<0> received <2> damage from <1>. If <3> is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.",
 		"prop_instance_no", "agent_no", "damage", "advanced");
 	
-	ReplaceOperation(1960, "add_point_light", AddPointLight, Client, Undocumented, 0, 2,
-		"Adds a point light with <0> and <1>",
-		"flicker_magnitude", "flicker_interval");
+	ReplaceOperation(1960, "add_point_light", AddPointLight, Client, None, 0, 3,
+		"Adds a point light with <0> and <1> (<2> if set - in meters)",
+		"flicker_magnitude", "flicker_interval", "range");
+
+	ReplaceOperation(1961, "add_point_light_to_entity", AddPointLightToEntity, Client, None, 0, 3,
+		"Adds a point light to entity with <0> and <1> (<2> if set - in meters)",
+		"flicker_magnitude", "flicker_interval", "range");
 	
 	ReplaceOperation(1965, "particle_system_add_new", ParticleSystemAddNew, Client, Undocumented, 1, 1,
 		"Adds <particle_system_no>",
@@ -665,6 +768,7 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_ally_collision_threshold", MissionSetAllyCollisionThreshold, Both, None, 2, 2,
 		"Changes the animation progress boundaries (in percents) that determine if attacks on allies will collide (default: 45% <= x <= 60%)",
 		"low_boundary", "high_boundary");
+
 	RegisterOperation("particle_system_remove", ParticleSystemRemove, Client, None, 0, 1,
 		"Removes <0> (all particle systems if not set or -1) from the current entity (can be used in several in triggers)",
 		"particle_system_no");
@@ -723,5 +827,16 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("get_camera_position", GetCameraPosition, Client, None, 1, 1,
 	"Stores camera position and rotation into <0>",
 	"position_register_no");
-	
+
+	RegisterOperation("prop_instance_remove_particle_system", MissionObjectRemoveParticleSystem, Client, None, 1, 2,
+		"Removes <1> (all particle systems if not set or -1) from <0>",
+		"prop_instance_no", "particle_system_no");
+
+	RegisterOperation("prop_instance_remove_light", MissionObjectRemoveLight, Client, None, 1, 1,
+		"Removes light from <0>",
+		"prop_instance_no");
+
+	RegisterOperation("prop_instance_get_sound_progress", nullptr, Client, Lhs | WSE2, 2, 2,
+		"Stores <1>'s sound_progress into <0>. Returned value can be between 0-100, or -1 if nothing is being played.",
+		"destination", "scene_prop_id");
 }

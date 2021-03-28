@@ -51,6 +51,15 @@ namespace wb
 		ti_on_switch_to_map                   = -75,
 		ti_scene_prop_deformation_finished    = -76,
 		ti_on_shield_hit                      = -80,
+		ti_on_scene_prop_stepped_on           = -100, //WSE
+		ti_on_init_missile                    = -101, //WSE
+		ti_on_agent_turn                      = -102, //WSE
+		ti_on_agent_blocked                   = -103, //WSE
+		ti_on_missile_dive                    = -104, //WSE
+		ti_on_agent_start_reloading           = -105, //WSE
+		ti_on_agent_end_reloading             = -106, //WSE
+		ti_on_shield_penetrated               = -107, //WSE
+		ti_on_scene_prop_is_deforming         = -108, //WSE
 		ti_once                               = 100000000,
 	};
 

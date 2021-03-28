@@ -35,6 +35,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];
 		std::chrono::steady_clock::time_point tStart;
 		std::vector<bool> lua_call_cfResults;
+		int luaContext = 0;
 
 	public:
 		WSELuaOperationsContext();
