@@ -353,7 +353,7 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 			{
 				wb::network_player *player = &warband->multiplayer_data.players[start_value];
 				
-				if (player->is_active() && player->ready)
+				if (player->status == wb::nps_active)
 					break;
 			}
 		}
@@ -481,7 +481,7 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			{
 				wb::network_player *player = &warband->multiplayer_data.players[value];
 
-				if (player->is_active() && player->ready)
+				if (player->status == wb::nps_active)
 					break;
 			}
 		}
