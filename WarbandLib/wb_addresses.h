@@ -200,6 +200,8 @@ namespace wb
 
 		static unsigned int agent_SetupSoundSample_entry;
 
+		static unsigned int agent_MakeHandsParallelToGround_entry;
+
 		static unsigned int fixBotsBlocking_entry;
 
 		static unsigned int makeScreenShot;

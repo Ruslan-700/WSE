@@ -1177,6 +1177,14 @@ void __declspec(naked) AgentSetupSoundSampleHook()
 	}
 }
 
+void __declspec(naked) AgentMakeHandsParallelToGroundHook()
+{
+	_asm
+	{
+		retn
+	}
+}
+
 void __declspec(naked) RglLogHook()
 {
 	_asm

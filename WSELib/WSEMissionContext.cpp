@@ -77,6 +77,7 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		m_prop_collision_threshold_high[3] = 0.75f;
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "ground_weapon_collision", false), wb::addresses::mission_CheckCollision_entry, MissionCheckCollisionHook);
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
+		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "do_not_make_hands_parallel_to_ground", false), wb::addresses::agent_MakeHandsParallelToGround_entry, AgentMakeHandsParallelToGroundHook);
 		
 		m_item_difficulty_attribute[0] = -1;
 		m_item_difficulty_skill[0] = -1;

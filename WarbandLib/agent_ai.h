@@ -38,9 +38,9 @@ namespace wb
 	struct agent_control
 	{
 		float look_dirf;
-		float u1;
-		float u2;
 		rgl::vector4 look_dir;
+		float rotation;
+		float rotation_time;
 		unsigned int actions_1;
 		unsigned int actions_2;
 		bool camera_mode;

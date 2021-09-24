@@ -67,5 +67,6 @@ void AgentTurnHook();
 void AgentBloodParticlesHook();
 void AgentInitializeHook();
 void AgentSetupSoundSampleHook();
+void AgentMakeHandsParallelToGroundHook();
 void RglLogHook();
 void XmlGetServerInfoHook();
