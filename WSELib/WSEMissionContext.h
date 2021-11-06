@@ -93,4 +93,5 @@ public:
 	std::map <unsigned int, std::map <int,int>> m_agents_personal_animations;
 	std::map <unsigned int, bloodParticles> m_item_horse_blood_particles;
 	std::map <unsigned int, AgentAdditionalProperties> m_agent_additional_properties;
+	bool m_horse_ff;
 };

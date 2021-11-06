@@ -719,6 +719,15 @@ void MissionObjectRemoveLight(WSEMissionOperationsContext *context)
 #endif
 }
 
+void SetHorseFriendlyFire(WSENetworkOperationsContext *context)
+{
+	bool value;
+
+	context->ExtractBoolean(value);
+
+	WSE->Mission.m_horse_ff = value;
+}
+
 WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext("mission", 3600, 3699)
 {
 }
@@ -839,4 +848,8 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("prop_instance_get_sound_progress", nullptr, Client, Lhs | WSE2, 2, 2,
 		"Stores <1>'s sound_progress into <0>. Returned value can be between 0-100, or -1 if nothing is being played.",
 		"destination", "scene_prop_id");
+
+	RegisterOperation("set_horse_friendly_fire", SetHorseFriendlyFire, Client, None, 1, 1,
+		"Enables or disables horse friendly fire for singleplayer",
+		"value");
 }

@@ -188,6 +188,7 @@ get_camera_position                  = 3615 #(get_camera_position, <position_reg
 prop_instance_remove_particle_system = 3616 #(prop_instance_remove_particle_system, <prop_instance_no>, [<particle_system_no>]), #Removes [<particle_system_no>] (all particle systems if not set or -1) from <prop_instance_no>
 prop_instance_remove_light           = 3617 #(prop_instance_remove_light, <prop_instance_no>), #Removes light from <prop_instance_no>
 prop_instance_get_sound_progress     = 3618 #(prop_instance_get_sound_progress, <destination>, <scene_prop_id>), #Stores <scene_prop_id>'s sound_progress into <destination>. Returned value can be between 0-100, or -1 if nothing is being played. (requires WSE2)
+set_horse_friendly_fire              = 3619 #(set_horse_friendly_fire, <value>), #Enables or disables horse friendly fire for singleplayer
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>

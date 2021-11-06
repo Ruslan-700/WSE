@@ -10,6 +10,7 @@ WSEMissionContext::WSEMissionContext()
 	}
 
 	m_cur_missile = nullptr;
+	m_horse_ff = false;
 }
 
 void WSEMissionContext::OnLoad()
@@ -525,7 +526,7 @@ bool WSEMissionContext::OnAgentAttackCollidesWithProp(int agent_no, int attack_d
 
 bool WSEMissionContext::OnAgentHorseCharged(wb::agent *charger_agent, wb::agent *charged_agent)
 {
-	return charger_agent->is_enemy_with(charged_agent) || (warband->basic_game.is_multiplayer() && !warband->cur_mission->duel_mode && WSE->Network.GetHorseFriendlyFire() && charger_agent->controller != wb::ac_bot);
+	return charger_agent->is_enemy_with(charged_agent) || (warband->basic_game.is_multiplayer() && !warband->cur_mission->duel_mode && WSE->Network.GetHorseFriendlyFire() && charger_agent->controller != wb::ac_bot) || (!warband->basic_game.is_multiplayer() && WSE->Mission.m_horse_ff);
 }
 
 void WSEMissionContext::OnShowCrosshair()
