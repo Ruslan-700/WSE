@@ -319,6 +319,8 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::agent_MakeHandsParallelToGround_entry = FindSignature("\x81\xEC\x00\x00\x00\x00\x53\x55\x56\x33\xC0\x57\x8B", "xx????xxxxxxx");
 
+	wb::addresses::fixSetCursor_entry = FindSignature("\xFF\x15\x00\x00\x00\x00\xBF\x00\x00\x00\x00\x57", "xx????x????x");
+
 	wb::addresses::makeScreenShot = FindSignature("\x81\xEC\x00\x00\x00\x00\x80\x3D\x00\x00\x00\x00\x00\x0F\x84\x00\x00\x00\x00\x8B\x84\x24", "xx????xx?????xx????xxx");
 
 	wb::addresses::operation_Execute = FindSignature("\x55\x8B\xEC\x83\xE4\xF0\xB8\x00\x00\x00\x00\xE8\x00\x00\x00\x00\x53\x8B\xD9", "xxxxxxx????x????xxx");

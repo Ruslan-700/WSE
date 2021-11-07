@@ -90,6 +90,7 @@ void WSEGameContext::OnReadModuleFiles()
 	warband->basic_game.module_download_url = WSE->ModuleSettingsIni.String("", "module_download_url", "www.taleworlds.com/mb_warband_download_module.html");
 	warband->network_manager.server.port = WSE->SettingsIni.Int("listen_server", "port", 7240);
 	if (warband->network_manager.server.port < 1024 || warband->network_manager.server.port > 65535) warband->network_manager.server.port = 7240;
+	WSE->Hooks.HookMemory(this, wb::addresses::fixSetCursor_entry, 0x01, 1);
 
 	bool more_skins_support_for_multiplayer_profile = WSE->ModuleSettingsIni.Bool("", "more_skins_support_for_multiplayer_profile", 0);
 	if (more_skins_support_for_multiplayer_profile)
@@ -105,9 +106,7 @@ void WSEGameContext::OnReadModuleFiles()
 		WSE->Hooks.HookFunction(this, wb::addresses::game_screen_EditProfileLoadSkinList_entry, EditProfileLoadSkinListHook);
 	}
 #elif defined WARBAND_DEDICATED
-	bool fix_bots_blocking_for_dedicated_server = WSE->ModuleSettingsIni.Bool("", "fix_bots_blocking_for_dedicated_server", true);
-	if (fix_bots_blocking_for_dedicated_server)
-		WSE->Hooks.HookMemory(this, wb::addresses::fixBotsBlocking_entry, 0x82, 1);
+	WSE->Hooks.HookMemory(this, wb::addresses::fixBotsBlocking_entry, 0x82, 1);
 #endif
 
 	char *mapped_script_ids[WSE_NUM_SCRIPTS];

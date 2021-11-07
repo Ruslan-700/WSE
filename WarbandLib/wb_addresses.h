@@ -204,6 +204,8 @@ namespace wb
 
 		static unsigned int fixBotsBlocking_entry;
 
+		static unsigned int fixSetCursor_entry;
+
 		static unsigned int makeScreenShot;
 
 		static unsigned int operation_Execute;

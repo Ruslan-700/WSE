@@ -257,6 +257,8 @@ unsigned int addresses::agent_MakeHandsParallelToGround_entry = 0x004AF110;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
 
+unsigned int addresses::fixSetCursor_entry = 0x00615855;
+
 unsigned int addresses::makeScreenShot = 0x005B3D90;
 
 //unsigned int addresses::operation_Execute = 0x0055FF90;
@@ -488,6 +490,8 @@ unsigned int addresses::agent_SetupSoundSample_entry = 0x004B3D80;
 unsigned int addresses::agent_MakeHandsParallelToGround_entry = 0x004AF110;
 
 unsigned int addresses::fixBotsBlocking_entry = 0;
+
+unsigned int addresses::fixSetCursor_entry = 0x00615855;
 
 unsigned int addresses::makeScreenShot = 0x005B0A40;
 
@@ -753,6 +757,8 @@ unsigned int addresses::agent_SetupSoundSample_entry = 0x00462AB0;
 unsigned int addresses::agent_MakeHandsParallelToGround_entry = 0x0045CD10;
 
 unsigned int addresses::fixBotsBlocking_entry = 0x00460765;
+
+unsigned int addresses::fixSetCursor_entry = 0;
 
 unsigned int addresses::makeScreenShot = 0;
 
