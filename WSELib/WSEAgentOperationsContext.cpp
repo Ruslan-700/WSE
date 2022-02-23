@@ -796,4 +796,12 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_get_current_ai_mesh_face_group", nullptr, Both, Lhs | WSE2, 2, 2,
 		"Stores <1>'s current ai mesh face group into <0>",
 		"destination", "agent_no");
+
+	RegisterOperation("agent_set_time_speed_multiplier", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s time speed multiplier to <1>",
+		"agent_no", "value_fixed_point");
+
+	RegisterOperation("agent_get_time_speed_multiplier", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores <1>'s time speed multiplier into <0>",
+		"destination_fixed_point", "agent_no");
 }

@@ -400,6 +400,10 @@ void WSEMultiplayerOperationsContext::OnLoad()
 	RegisterOperation("multiplayer_cur_profile_get_skin", MultiplayerCurProfileGetSkin, Both, Lhs, 1, 1,
 		"Stores current profile's skin into <0>",
 		"destination");
+
+	RegisterOperation("multiplayer_connect_to_server", nullptr, Client, WSE2, 2, 2,
+		"Connect to server with <0> and <1>",
+		"address", "password");
 }
 
 wb::network_buffer *WSEMultiplayerOperationsContext::GetCurrentNetworkBuffer()
