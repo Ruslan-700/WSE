@@ -119,7 +119,7 @@ void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 	switch (type)
 	{
 	case 0:
-		if (index < 0 || index >= 128)
+		if (index < 0 || index >= NUM_REGISTERS)
 			ScriptError("invalid string register index %d", index);
 
 		break;
@@ -182,7 +182,7 @@ void WSEOperationContext::ExtractRegister(int &value)
 {
 	value = GetNextOperand();
 
-	if (value < 0 || value >= 128)
+	if (value < 0 || value >= NUM_REGISTERS)
 		ScriptError("invalid register %d", value);
 }
 
@@ -529,7 +529,7 @@ std::string WSEOperationContext::CreateScreenshot(const std::string &file, const
 
 void WSEOperationContext::DefineOperation(int opcode, const std::string &name, unsigned int flags, short min_operands, short max_operands, std::string description, ...)
 {
-	std::string operands[16];
+	std::string operands[MAX_NUM_STATEMENT_OPERANDS];
 	va_list ap;
 
 	va_start(ap, description);
@@ -546,14 +546,14 @@ void WSEOperationContext::DefineOperation(int opcode, const std::string &name, u
 
 void WSEOperationContext::DisableOperation(int opcode, const std::string &name)
 {
-	std::string operands[16];
+	std::string operands[MAX_NUM_STATEMENT_OPERANDS];
 
 	WSE->Scripting.AddOperation(this, nullptr, Both, Disable, 0, 0, opcode, name, "Disabled by WSE", operands);
 }
 
 void WSEOperationContext::ReplaceOperation(int opcode, const std::string &name, void *callback, WSEOperationTarget target, unsigned int flags, short min_operands, short max_operands, std::string description, ...)
 {
-	std::string operands[16];
+	std::string operands[MAX_NUM_STATEMENT_OPERANDS];
 	va_list ap;
 
 	va_start(ap, description);
@@ -573,7 +573,7 @@ void WSEOperationContext::RegisterOperation(const std::string &name, void *callb
 	if (m_opcode_range_cur > m_opcode_range_max)
 		WSE->Log.Error("%s operation %s (%d) out of opcode range (%d-%d)", m_name.c_str(), name.c_str(), m_opcode_range_cur, m_opcode_range, m_opcode_range_max);
 	
-	std::string operands[16];
+	std::string operands[MAX_NUM_STATEMENT_OPERANDS];
 	va_list ap;
 
 	va_start(ap, description);

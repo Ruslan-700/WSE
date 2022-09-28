@@ -40,7 +40,7 @@ private:
 	bool m_enabled;
 	WSEBitStream m_profile_stream;
 	std::map<rgl::string *, int> m_profile_types;
-	WSEProfilingInfo m_infos[256];
+	WSEProfilingInfo m_infos[300];
 	int m_cur_info;
 	int m_cur_profile_type;
 	__int64 m_flush_interval;

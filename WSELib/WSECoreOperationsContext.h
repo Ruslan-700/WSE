@@ -12,7 +12,7 @@ protected:
 	virtual void OnLoad();
 
 public:
-	int m_return_values[16];
+	int m_return_values[MAX_NUM_STATEMENT_OPERANDS];
 	int m_num_return_values;
 	std::mt19937 m_mersenne_twister;
 	rgl::timer m_timer_registers[NUM_REGISTERS];

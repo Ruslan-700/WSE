@@ -77,7 +77,7 @@ bool operation::execute(__int64 *locals, const int &context_flags, int &error)
 
 bool operation::is_valid_register(int register_no)
 {
-	if (register_no >= 0 && register_no < 128)
+	if (register_no >= 0 && register_no < NUM_REGISTERS)
 		return true;
 
 	char buf[512];
@@ -200,8 +200,8 @@ void operation_manager::analyze()
 	if (this->analyzed)
 		return;
 
-	int else_statements[256];
-	int end_statements[256];
+	int else_statements[MAX_NUM_NESTED_LOOPS];
+	int end_statements[MAX_NUM_NESTED_LOOPS];
 	int depth = 0;
 
 	for (int i = 0; i < this->num_operations; ++i)
@@ -222,11 +222,11 @@ void operation_manager::analyze()
 			end_statements[depth + 1] = i;
 			depth++;
 
-			if (depth >= 256)
+			if (depth >= MAX_NUM_NESTED_LOOPS)
 			{
 				char buf[512];
 
-				sprintf_s(buf, "Amount of nested loops in %s is greater than %d", this->id.c_str(), 256);
+				sprintf_s(buf, "Amount of nested loops in %s is greater than %d", this->id.c_str(), MAX_NUM_NESTED_LOOPS);
 				wb::script::error(buf);
 			}
 
@@ -285,7 +285,7 @@ void operation_manager::analyze()
 
 bool operation_manager::execute(int context)
 {
-	__int64 params[16];
+	__int64 params[MAX_NUM_STATEMENT_BLOCK_PARAMS];
 
 	return this->execute(context, 0, 0, params);
 }

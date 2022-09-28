@@ -4,6 +4,7 @@
 #include "basics.h"
 
 #define NUM_REGISTERS 128
+#define NUM_TRIGGER_PARAMS 16
 
 namespace wb
 {

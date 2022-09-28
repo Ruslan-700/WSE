@@ -3,6 +3,11 @@
 #include "rgl.h"
 
 #define TAG_SHIFT 24
+#define MAX_NUM_STATEMENT_OPERANDS 16
+#define MAX_NUM_NESTED_LOOPS 128
+#define MAX_RECURSION_DEPTH 256
+#define MAX_NUM_STATEMENT_BLOCK_PARAMS 16
+#define MAX_NUM_LOCAL_VARIABLES 1024
 
 namespace wb
 {
@@ -44,7 +49,7 @@ namespace wb
 		int opcode;
 		int u1;
 		int num_operands;
-		__int64 operands[16];
+		__int64 operands[MAX_NUM_STATEMENT_OPERANDS];
 		int end_statement;
 
 		operation();

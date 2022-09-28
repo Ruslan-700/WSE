@@ -14,7 +14,7 @@ int StoreTriggerParam(WSECoreOperationsContext *context)
 {
 	int index;
 
-	context->ExtractBoundedValue(index, 1, 16, 1);
+	context->ExtractBoundedValue(index, 1, NUM_TRIGGER_PARAMS, 1);
 
 	return WSE->Scripting.GetTriggerParam(index);
 }
@@ -254,7 +254,7 @@ void ReturnValues(WSECoreOperationsContext *context)
 {
 	int index = 0;
 
-	while (context->HasMoreOperands() && index < 16)
+	while (context->HasMoreOperands() && index < MAX_NUM_STATEMENT_OPERANDS)
 	{
 		context->ExtractValue(context->m_return_values[index++]);
 	}
@@ -273,7 +273,7 @@ int StoreReturnValue(WSECoreOperationsContext *context)
 
 	context->ExtractValue(index, 1);
 
-	if (index == 0 || index > 16)
+	if (index == 0 || index > MAX_NUM_STATEMENT_OPERANDS)
 		context->ScriptError("invalid script result index %d", index);
 
 	if (index > context->m_num_return_values)

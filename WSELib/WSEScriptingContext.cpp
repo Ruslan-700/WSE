@@ -99,15 +99,15 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	m_cur_statement_block = operation_manager;
 	WSE->Profiling.StartProfilingBlock(operation_manager);
 
-	if (m_allow_unset_script_params && num_parameters < 16)
+	if (m_allow_unset_script_params && num_parameters < MAX_NUM_STATEMENT_BLOCK_PARAMS)
 	{
-		memset(parameters + num_parameters, 0, (16 - num_parameters) * sizeof(__int64));
-		num_parameters = 16;
+		memset(parameters + num_parameters, 0, (MAX_NUM_STATEMENT_BLOCK_PARAMS - num_parameters) * sizeof(__int64));
+		num_parameters = MAX_NUM_STATEMENT_BLOCK_PARAMS;
 	}
 	
 	WSEScriptingLoopManager loop_manager;
 	int cur_block = -1;
-	__int64 local_variables[1024];
+	__int64 *local_variables = new __int64[MAX_NUM_LOCAL_VARIABLES];
 	int num_operations = operation_manager->num_operations;
 	int operation_no = 0;
 	bool success = true;
@@ -162,9 +162,9 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 				int operand_type;
 				int script_no = (int)operation->get_operand_value(local_variables, 0, operand_type);
 
-				if (script_no >= 0 && script_no < warband->script_manager.num_scripts && depth < 256)
+				if (script_no >= 0 && script_no < warband->script_manager.num_scripts && depth < MAX_RECURSION_DEPTH)
 				{
-					__int64 script_params[16];
+					__int64 script_params[MAX_NUM_STATEMENT_BLOCK_PARAMS];
 
 					for (int i = 1; i < operation->num_operands; ++i)
 					{
@@ -304,6 +304,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	}
 
 	WSE->Profiling.StopProfilingBlock();
+	delete[] local_variables;
 	m_cur_statement_block = nullptr;
 	return success;
 }
@@ -866,7 +867,7 @@ int WSEScriptingContext::GetTriggerParam(int index) const
 		return (int)warband->basic_game.trigger_param_7;
 	else if (index == 8)
 		return (int)warband->basic_game.trigger_param_8;
-	else if (index > 0 && index <= 16)
+	else if (index > 0 && index <= NUM_TRIGGER_PARAMS)
 		return m_trigger_params[index - 1];
 	else
 		return 0;
@@ -890,7 +891,7 @@ void WSEScriptingContext::SetTriggerParam(int index, int value)
 		warband->basic_game.trigger_param_7 = value;
 	else if (index == 8)
 		warband->basic_game.trigger_param_8 = value;
-	else if (index > 0 && index <= 16)
+	else if (index > 0 && index <= NUM_TRIGGER_PARAMS)
 		m_trigger_params[index - 1] = value;
 }
 
@@ -964,12 +965,12 @@ void WSEScriptingContext::ExecuteScriptOperation(int opcode)
 
 void WSEScriptingContext::ExecuteScriptOperation(int opcode, const std::vector<int> &operands)
 {
-	if (operands.size() > 16)
+	if (operands.size() > MAX_NUM_STATEMENT_BLOCK_PARAMS)
 		return;
 
 	wb::operation_manager mgr;
 
-	__int64 params[16];
+	__int64 params[MAX_NUM_STATEMENT_BLOCK_PARAMS];
 	int num_params = 0;
 
 	mgr.num_operations = 1;

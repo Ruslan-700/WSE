@@ -9,7 +9,6 @@
 #define WSE_MAX_NUM_OPERATIONS 5300
 #define WSE_FIRST_WARBAND_OPCODE 31
 #define WSE_LAST_WARBAND_OPCODE 2767
-#define MAX_NUM_NESTED_LOOPS 256
 
 class WSEScriptingContext;
 
@@ -59,7 +58,7 @@ struct WSEOperationDescriptor
 	short m_max_operands;
 	std::string m_name;
 	std::string m_description;
-	std::string m_operands[16];
+	std::string m_operands[MAX_NUM_STATEMENT_OPERANDS];
 };
 
 class WSEScriptingLoop
@@ -121,7 +120,7 @@ public:
 
 private:
 	WSEOperationDescriptor *m_descriptors[WSE_MAX_NUM_OPERATIONS];
-	int m_trigger_params[16];
+	int m_trigger_params[NUM_TRIGGER_PARAMS];
 	bool m_allow_unset_script_params;
 	bool m_allow_wse_execute_statement_blocks;
 };
