@@ -366,7 +366,7 @@ bool WSEMissionContext::OnAgentApplyAttackRec(wb::agent *agent)
 		WSE->Scripting.SetTriggerParam(9, -1);
 	}
 	*/
-	warband->basic_game.trigger_param_6 = rglRound(cur_blow->raw_damage);
+	warband->basic_game.trigger_param_6 = (int)cur_blow->raw_damage;
 	warband->basic_game.trigger_param_7 = cur_blow->item.get_modifier();
 
 	if (cur_blow->missile)
@@ -800,15 +800,18 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 	{
 		wb::item_kind *item_kind = missile->missile_item.get_item_kind();
 		
-		warband->basic_game.position_registers[0] = pos;
-		warband->basic_game.trigger_param_1 = missile->shooter_agent_no;
-		warband->basic_game.trigger_param_2 = missile->shooting_item.item_no;
-		warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
-		warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
-		warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
-		warband->basic_game.trigger_param_6 = missile->no;
+		if (item_kind->simple_triggers.has_trigger(wb::ti_on_missile_dive))
+		{
+			warband->basic_game.position_registers[0] = pos;
+			warband->basic_game.trigger_param_1 = missile->shooter_agent_no;
+			warband->basic_game.trigger_param_2 = missile->shooting_item.item_no;
+			warband->basic_game.trigger_param_3 = missile->shooting_item.get_modifier();
+			warband->basic_game.trigger_param_4 = missile->missile_item.item_no;
+			warband->basic_game.trigger_param_5 = missile->missile_item.get_modifier();
+			warband->basic_game.trigger_param_6 = missile->no;
 
-		item_kind->simple_triggers.execute(wb::ti_on_missile_dive);
+			item_kind->simple_triggers.execute(wb::ti_on_missile_dive);
+		}
 	}
 }
 

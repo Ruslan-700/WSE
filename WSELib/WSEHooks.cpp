@@ -269,6 +269,7 @@ void __declspec(naked) LoadSaveHook()
 	_asm
 	{
 		FREEZE_REGS
+		push esi
 		CALL_CONTEXT_FUNC(Game, OnLoadSave)
 		RESTORE_REGS
 		push 0x008287F4
@@ -363,10 +364,13 @@ void __declspec(naked) ServerNetworkMessageReceivedServerJoinRequestHook()
 {
 	_asm
 	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Network, GetSkinSizeInBits)
+		RESTORE_REGS_NO_EAX
 #if defined WARBAND
-		mov dword ptr[esp + 36], 4
+		mov dword ptr[esp + 36], eax
 #elif defined WARBAND_DEDICATED
-		mov dword ptr[esp + 48], 4
+		mov dword ptr[esp + 48], eax
 #endif
 		jmp[wb::addresses::network_server_ReceiveMessageServerJoinRequest_exit]
 	}
@@ -460,7 +464,10 @@ void __declspec(naked) NetworkManagerPopulatePlayerInfoServerEventHook()
 {
 	_asm
 	{
-		mov dword ptr [esp+28], 4
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Network, GetSkinSizeInBits)
+		RESTORE_REGS_NO_EAX
+		mov dword ptr[esp + 28], eax
 		jmp [wb::addresses::network_manager_PopulatePlayerInfoServerEvent_exit]
 	}
 }
@@ -469,7 +476,10 @@ void __declspec(naked) NetworkManagerPopulatePlayerInfoClientEventHook()
 {
 	_asm
 	{
-		mov dword ptr [esp+32], 4
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(Network, GetSkinSizeInBits)
+		RESTORE_REGS_NO_EAX
+		mov dword ptr [esp+32], eax
 		jmp[wb::addresses::network_manager_PopulatePlayerInfoClientEvent_exit]
 	}
 }

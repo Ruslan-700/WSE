@@ -178,7 +178,7 @@ void MultiplayerMessageInit(WSEMultiplayerOperationsContext *context)
 
 	nbuf->~network_buffer();
 	new (nbuf) wb::network_buffer;
-	nbuf->pack_uint16(0, MM_EVENT_BITS);
+	nbuf->pack_uint16(MultiplayerMessage, MM_EVENT_BITS);
 	nbuf->pack_uint16(0, MM_SIZE_BITS);
 	nbuf->pack_uint16(0, MM_MESSAGE_BITS);
 }

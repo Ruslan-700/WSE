@@ -68,11 +68,10 @@ public:
 	void SendRemoteScript(wb::script *script, int num_params, int *params);
 	virtual void ReceiveRemoteScript(wb::network_buffer *nbuf, int player_no, int seq = 1, int cur_seq = 0);
 	void HandleHTTPReplies();
+	int MbnetGetSizeInBits(int value);
 
 private:
 	void BroadcastServerOptions();
-
-private:
 	void OnCreateMbnetHost();
 	void OnDestroyMbnetHost();
 	void OnCheckUrlReplies();
@@ -80,13 +79,15 @@ private:
 	bool OnServerNetworkMessageReceived(int type, int player_no, wb::network_buffer *nbuf, int seq, int cur_seq);
 	void OnPopulateServerOptionsServerEvent(wb::multiplayer_event *evt);
 	void XmlGetServerInfo(rgl::string &info);
+	int GetSkinSizeInBits();
 
 public:
 	wb::network_buffer *m_cur_nbuf;
 	std::deque<HTTPConnection *> m_http_connections;
 	CRITICAL_SECTION m_http_critical_section;
 	WSERCONServer *m_rcon_server;
-	int compatible_multiplayer_version_no;
+	int m_compatible_multiplayer_version_no;
+	int m_num_bits_skin;
 
 private:
 	WSEOGPServer *m_ogp_server;

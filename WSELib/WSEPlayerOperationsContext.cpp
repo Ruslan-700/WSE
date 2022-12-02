@@ -43,7 +43,7 @@ void PlayerSetSkin(WSEPlayerOperationsContext *context)
 	
 	nbuf.pack_uint16(PlayerSetSkinNoClientMessage, MM_EVENT_BITS);
 	nbuf.pack_int32(player_no, warband->network_manager.num_bits_player, -1);
-	nbuf.pack_uint32(skin_no, 4);
+	nbuf.pack_uint32(skin_no, WSE->Network.m_num_bits_skin);
 
 	wb::multiplayer_event evt;
 

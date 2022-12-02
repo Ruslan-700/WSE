@@ -248,7 +248,7 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		warband->network_manager.anti_cheat = 0;
 		m_horse_ff = false;
 		m_show_xhair = true;
-		compatible_multiplayer_version_no = WSE->ModuleSettingsIni.Int("", "compatible_multiplayer_version_no", 1157);
+		m_compatible_multiplayer_version_no = WSE->ModuleSettingsIni.Int("", "compatible_multiplayer_version_no", 1157);
 		m_break_compat = !WSE->ModuleSettingsIni.Bool("", "network_compatible", true);
 		m_filter_mods = WSE->ModuleSettingsIni.Bool("", "hide_other_mod_servers", false);
 		m_remote_scripting = WSE->SettingsIni.Bool("remote_debugging", "enabled", false);
@@ -261,6 +261,9 @@ void WSENetworkContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		if (m_break_compat)
 			WSE->Hooks.HookMemory(this, wb::addresses::network_manager_GoldNumBits_entry, 30, 4);
 
+		break;
+	case GameLoad:
+		m_num_bits_skin = MbnetGetSizeInBits(warband->face_generator.num_skins);
 		break;
 	}
 }
@@ -499,6 +502,19 @@ void WSENetworkContext::HandleHTTPReplies()
 	LeaveCriticalSection(&m_http_critical_section);
 }
 
+int WSENetworkContext::MbnetGetSizeInBits(int value)
+{
+	int size = 0;
+
+	do
+	{
+		size++;
+		value >>= 1;
+	} while (value);
+
+	return size;
+}
+
 void WSENetworkContext::OnCreateMbnetHost()
 {
 	if (m_break_compat && warband->network_manager.num_bits_item_kind > warband->network_manager.num_bits_scene_prop)
@@ -572,7 +588,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 
 			int player_no = nbuf->extract_int32(warband->network_manager.num_bits_player, -1);
 			std::string name = nbuf->extract_string(256);
-			int skin_no = nbuf->extract_uint32(4);
+			int skin_no = nbuf->extract_uint32(m_num_bits_skin);
 			int banner_no = nbuf->extract_int32(10, -1);
 			unsigned __int64 face_keys_1 = nbuf->extract_uint64(64);
 			unsigned __int64 face_keys_2 = nbuf->extract_uint64(64);
@@ -627,7 +643,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 			unsigned int compat_version = 0;
 			
 			if (server.compatible_game_version & (1 << 13))
-				compat_version = (server.compatible_game_version - compatible_multiplayer_version_no) & ~(1 << 13);
+				compat_version = (server.compatible_game_version - m_compatible_multiplayer_version_no) & ~(1 << 13);
 			
 			if (compat_version > 0)
 			{
@@ -638,7 +654,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 				else if (compat_version > WSE_NETCODE_VERSION)
 					server.compatible_game_version = 9999;
 				else
-					server.compatible_game_version = compatible_multiplayer_version_no;
+					server.compatible_game_version = m_compatible_multiplayer_version_no;
 			}
 			else if (m_break_compat)
 			{
@@ -741,7 +757,7 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 	case PlayerSetSkinNoClientMessage:
 		{
 			int player_no = nbuf->extract_int32(warband->network_manager.num_bits_player, -1);
-			int skin_no = nbuf->extract_int32(4);
+			int skin_no = nbuf->extract_int32(m_num_bits_skin);
 			wb::network_player *player = &warband->multiplayer_data.players[player_no];
 
 			if (seq > cur_seq && player->is_active())
@@ -807,9 +823,9 @@ bool WSENetworkContext::OnServerNetworkMessageReceived(int type, int player_no, 
 				nbuf.pack_string(mpdata.server_name, 50);
 				
 				if (m_break_compat)
-					nbuf.pack_uint32((compatible_multiplayer_version_no + WSE_NETCODE_VERSION) | (1 << 13), 14);
+					nbuf.pack_uint32((m_compatible_multiplayer_version_no + WSE_NETCODE_VERSION) | (1 << 13), 14);
 				else
-					nbuf.pack_uint32(compatible_multiplayer_version_no, 14);
+					nbuf.pack_uint32(m_compatible_multiplayer_version_no, 14);
 				
 				nbuf.pack_uint32(warband->compatible_module_version, 14);
 				nbuf.pack_string(warband->cur_module_name, 50);
@@ -918,7 +934,7 @@ void WSENetworkContext::XmlGetServerInfo(rgl::string &info)
 	printer.CloseElement();
 
 	printer.OpenElement("MultiplayerVersionNo");
-	printer.PushText(compatible_multiplayer_version_no);
+	printer.PushText(m_compatible_multiplayer_version_no);
 	printer.CloseElement();
 
 	printer.OpenElement("ModuleVersionNo");
@@ -993,4 +1009,9 @@ void WSENetworkContext::XmlGetServerInfo(rgl::string &info)
 	std::string response = "HTTP/1.1 200 OK\r\nVersion: HTTP/1.1\r\nContent-Type: text/xml; charset=utf-8\r\nContent-Length: " + std::to_string(xml.length()) + "\r\n\r\n" + xml;
 
 	info = response.c_str();
+}
+
+int WSENetworkContext::GetSkinSizeInBits()
+{
+	return m_num_bits_skin;
 }

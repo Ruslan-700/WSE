@@ -35,7 +35,7 @@ private:
 	void OnReadModuleFiles();
 	void OnReadGameFiles();
 	void OnSave();
-	void OnLoadSave();
+	void OnLoadSave(int mode);
 	bool OnConsoleCommandReceived(rgl::string *text, rgl::string *result);
 	bool OnConfigManagerChooseNumberOfEffectiveCorpses();
 	void OnOpenWindow(int window_no);

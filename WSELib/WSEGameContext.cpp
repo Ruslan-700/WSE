@@ -95,8 +95,7 @@ void WSEGameContext::OnReadModuleFiles()
 	bool more_skins_support_for_multiplayer_profile = WSE->ModuleSettingsIni.Bool("", "more_skins_support_for_multiplayer_profile", 0);
 	if (more_skins_support_for_multiplayer_profile)
 	{
-		m_num_skins_for_multiplayer_profile = WSE->ModuleSettingsIni.Int("", "num_skins_for_multiplayer_profile", 2);
-		if (m_num_skins_for_multiplayer_profile < 2) m_num_skins_for_multiplayer_profile = 2;
+		m_num_skins_for_multiplayer_profile = rglMax(WSE->ModuleSettingsIni.Int("", "num_skins_for_multiplayer_profile", 2), 2);
 
 		int allocated_memory = sizeof(rgl::string) * m_num_skins_for_multiplayer_profile + 4;
 		WSE->Hooks.HookMemory(this, wb::addresses::game_screen_ProfileNumSkins_entry, m_num_skins_for_multiplayer_profile, 4);
@@ -233,9 +232,10 @@ void WSEGameContext::OnSave()
 	ExecuteScript(WSE_SCRIPT_GAME_SAVED, 0);
 }
 
-void WSEGameContext::OnLoadSave()
+void WSEGameContext::OnLoadSave(int mode)
 {
-	ExecuteScript(WSE_SCRIPT_SAVEGAME_LOADED, 0);
+	if (mode == 1)
+		ExecuteScript(WSE_SCRIPT_SAVEGAME_LOADED, 0);
 }
 
 bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *result)
