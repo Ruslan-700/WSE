@@ -571,6 +571,46 @@ bool IsPartySkill(WSECoreOperationsContext *context)
 	return (warband->skills[skill_no].flags & wb::sf_effects_party) > 0;
 }
 
+__int64 GetCampaignTime(WSECoreOperationsContext *context)
+{
+	return warband->timers[1];
+}
+
+void SetCampaignTime(WSECoreOperationsContext *context)
+{
+	__int64 value;
+
+	context->ExtractBigValue(value);
+
+	warband->timers[1] = value;
+
+	double date = warband->cur_game->date.get_elapsed_time();
+	int hour = (int)date;
+
+	if (hour != warband->cur_game->hour)
+		warband->cur_game->hour = hour;
+
+	int day = (int)(date / 24.0f);
+
+	if (day != warband->cur_game->day)
+		warband->cur_game->day = day;
+
+	int week = (int)(date / 168.0f);
+
+	if (week != warband->cur_game->week)
+		warband->cur_game->week = week;
+
+	int month = (int)(date / 720.0f);
+
+	if (month != warband->cur_game->month)
+		warband->cur_game->month = month;
+
+	int year = (int)(date / 8640.0f);
+
+	if (year != warband->cur_game->year)
+		warband->cur_game->year = year;
+}
+
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
 	m_mersenne_twister.seed((int)time(NULL));
@@ -776,5 +816,13 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("is_party_skill", IsPartySkill, Both, Cf, 1, 1,
 		"Fails if <0> is not effects party",
 		"skill_no");
+
+	RegisterOperation("get_campaign_time", GetCampaignTime, Client, Lhs, 1, 1,
+		"Stores campaign time into <0>. 100000 = 1 game hour",
+		"destination");
+
+	RegisterOperation("set_campaign_time", SetCampaignTime, Client, None, 1, 1,
+		"Sets campaign time to <0>. 100000 = 1 game hour",
+		"value");
 	
 }

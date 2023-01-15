@@ -985,6 +985,10 @@ void WSENetworkContext::XmlGetServerInfo(rgl::string &info)
 	printer.PushText((warband->network_manager.anti_cheat > 0) ? "Yes" : "No");
 	printer.CloseElement();
 
+	printer.OpenElement("WSE");
+	printer.PushText(WSE_VERSION);
+	printer.CloseElement();
+
 	std::string module_setting;
 	int index = 0;
 	do

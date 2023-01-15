@@ -201,4 +201,8 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_temp_ban", PlayerTempBan, Both, None, 2, 2,
 		"Bans <0> temporarily for <1> seconds",
 		"player_no", "ban_time");
+
+	RegisterOperation("player_get_wse2_version", nullptr, Server, Lhs | WSE2, 2, 2,
+		"Stores <1>'s WSE2 version into <0>. Works only on servers. 0 - vanilla Warband engine",
+		"destination", "player_no");
 }
