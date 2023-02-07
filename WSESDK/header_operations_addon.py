@@ -31,6 +31,7 @@ player_stop_controlling_agent = 2901 #(player_stop_controlling_agent, <player_no
 player_set_banner_id          = 2902 #(player_set_banner_id, <player_no>, <banner_no>), #Sets <player_no>'s banner to <banner_no>
 player_set_username           = 2903 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
 player_temp_ban               = 2904 #(player_temp_ban, <player_no>, <ban_time>), #Bans <player_no> temporarily for <ban_time> seconds
+player_get_wse2_version       = 2905 #(player_get_wse2_version, <destination>, <player_no>), #Stores <player_no>'s WSE2 version into <destination>. Works only on servers. 0 - vanilla Warband engine (requires WSE2)
 
 register_get                      = 3000 #(register_get, <destination>, <index>), #Stores the value of register <index> into <destination>
 register_set                      = 3001 #(register_set, <index>, <value>), #Sets the value of register <index> to <value>
@@ -69,6 +70,9 @@ send_post_message_to_url_advanced = 3033 #(send_post_message_to_url_advanced, <u
 set_random_seed                   = 3034 #(set_random_seed, <value>), #Seeds the random generator with <value>
 store_application_time            = 3035 #(store_application_time, <destination>), #Stores application time into <destination> in milliseconds
 is_party_skill                    = 3036 #(is_party_skill, <skill_no>), #Fails if <skill_no> is not effects party
+get_campaign_time                 = 3037 #(get_campaign_time, <destination>), #Stores campaign time into <destination>. 100000 = 1 game hour
+set_campaign_time                 = 3038 #(set_campaign_time, <value>), #Sets campaign time to <value>. 100000 = 1 game hour
+get_mouse_map_coordinates         = 3039 #(get_mouse_map_coordinates, <position_register>), #Stores mouse map coordinates into <position_register> (requires WSE2)
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
 key_released      = 3101 #(key_released, <key>), #Fails if <key> wasn't released in the current frame
@@ -133,6 +137,8 @@ agent_get_current_vertical_speed                 = 3331 #(agent_get_current_vert
 agent_set_current_vertical_speed                 = 3332 #(agent_set_current_vertical_speed, <agent_no>, <value>), #Sets <agent_no>'s current vertical speed to <value> (in centimeters per second)
 agent_get_position_in_group                      = 3333 #(agent_get_position_in_group, <position_register>, <agent_no>), #Stores <agent_no>'s position in group into <position_register> (requires WSE2)
 agent_get_current_ai_mesh_face_group             = 3334 #(agent_get_current_ai_mesh_face_group, <destination>, <agent_no>), #Stores <agent_no>'s current ai mesh face group into <destination> (requires WSE2)
+agent_set_time_speed_multiplier                  = 3335 #(agent_set_time_speed_multiplier, <agent_no>, <value_fixed_point>), #Sets <agent_no>'s time speed multiplier to <value_fixed_point> (requires WSE2)
+agent_get_time_speed_multiplier                  = 3336 #(agent_get_time_speed_multiplier, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s time speed multiplier into <destination_fixed_point> (requires WSE2)
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -149,6 +155,7 @@ multiplayer_cur_message_get_int              = 3411 #(multiplayer_cur_message_ge
 multiplayer_cur_message_get_position         = 3412 #(multiplayer_cur_message_get_position, <position_register>, [<local>]), #Stores a position from the current message register into <position_register>. [<local>] MUST match the type sent (requires network_compatible = 0 in wse_settings.ini)
 multiplayer_cur_message_get_coordinate       = 3413 #(multiplayer_cur_message_get_coordinate, <position_register>, [<local>]), #Stores x, y, z coordinates from the current message register into <position_register>. [<local>] MUST match the type sent (requires network_compatible = 0 in wse_settings.ini)
 multiplayer_cur_profile_get_skin             = 3414 #(multiplayer_cur_profile_get_skin, <destination>), #Stores current profile's skin into <destination>
+multiplayer_connect_to_server                = 3415 #(multiplayer_connect_to_server, <address>, <password>), #Connect to server with <address> and <password> (requires WSE2)
 
 server_set_password_admin      = 3500 #(server_set_password_admin, <password>), #Sets <password> as server administrator password
 server_set_password_private    = 3501 #(server_set_password_private, <password>), #Sets <password> as server private player password
@@ -189,6 +196,7 @@ prop_instance_remove_particle_system = 3616 #(prop_instance_remove_particle_syst
 prop_instance_remove_light           = 3617 #(prop_instance_remove_light, <prop_instance_no>), #Removes light from <prop_instance_no>
 prop_instance_get_sound_progress     = 3618 #(prop_instance_get_sound_progress, <destination>, <scene_prop_id>), #Stores <scene_prop_id>'s sound_progress into <destination>. Returned value can be between 0-100, or -1 if nothing is being played. (requires WSE2)
 set_horse_friendly_fire              = 3619 #(set_horse_friendly_fire, <value>), #Enables or disables horse friendly fire for singleplayer
+cast_ray_agents                      = 3620 #(cast_ray_agents, <destination>, <hit_position_register>, <ray_position_register>, [<ray_length_fixed_point>]), #Casts a ray of length [<ray_length_fixed_point>] starting from <ray_position_register> and stores the closest agent's hit position into <hit_position_register> (fails if no hits). Agent's id will be stored into <destination> and bone no will be stored into reg0 (requires WSE2)
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>
@@ -424,6 +432,7 @@ lhs_operations += [
 	store_xor,
 	val_not,
 	store_not,
+	player_get_wse2_version,
 	register_get,
 	store_wse_version,
 	store_current_trigger,
@@ -434,6 +443,7 @@ lhs_operations += [
 	timer_get_elapsed_time,
 	get_main_party,
 	store_application_time,
+	get_campaign_time,
 	game_key_get_key,
 	dict_create,
 	dict_get_size,
@@ -454,6 +464,7 @@ lhs_operations += [
 	agent_get_horse_rotation_velocity,
 	agent_get_current_vertical_speed,
 	agent_get_current_ai_mesh_face_group,
+	agent_get_time_speed_multiplier,
 	multiplayer_get_cur_profile,
 	multiplayer_get_num_profiles,
 	multiplayer_cur_message_get_int,
@@ -468,6 +479,7 @@ lhs_operations += [
 	get_spectated_agent_no,
 	get_water_level,
 	prop_instance_get_sound_progress,
+	cast_ray_agents,
 	troop_get_skill_points,
 	troop_get_attribute_points,
 	troop_get_proficiency_points,
@@ -527,6 +539,7 @@ can_fail_operations += [
 	dict_is_empty,
 	dict_has_key,
 	missile_is_valid,
+	cast_ray_agents,
 	troop_has_flag,
 	party_has_flag,
 	str_equals,

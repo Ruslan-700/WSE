@@ -824,5 +824,9 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("set_campaign_time", SetCampaignTime, Client, None, 1, 1,
 		"Sets campaign time to <0>. 100000 = 1 game hour",
 		"value");
+
+	RegisterOperation("get_mouse_map_coordinates", nullptr, Client, WSE2, 1, 1,
+		"Stores mouse map coordinates into <0>",
+		"position_register");
 	
 }

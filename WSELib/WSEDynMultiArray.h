@@ -122,7 +122,7 @@ public:
 	WSEDynMultiArray(const std::vector<int> &dimensions, type_id typeID) : WSEBasicDynMultiArray()
 	{
 		dataTypeID = typeID;
-		dimSizes = *(new std::vector<int>(dimensions));
+		dimSizes = dimensions;
 
 		if (isDimSizesValid()){
 			data = buildSubDimension(0);
@@ -135,7 +135,7 @@ public:
 	WSEDynMultiArray(WSEDynMultiArray<T> *source) : WSEBasicDynMultiArray()
 	{
 		dataTypeID = source->dataTypeID;
-		dimSizes = *(new std::vector<int>(source->dimSizes));
+		dimSizes = source->dimSizes;
 
 		if (isDimSizesValid()){
 			data = source->createPrimitiveCopy();
@@ -197,7 +197,6 @@ public:
 		}
 
 		dimSizes.clear();
-		//delete &dimSizes;
 	}
 
 	bool saveToFile(const std::string &file, write_val_f write_cb) const
@@ -385,7 +384,7 @@ protected:
 	WSEDynMultiArray(const std::vector<int> &dimensions, type_id typeID, void *dataCopy) : WSEBasicDynMultiArray()
 	{
 		dataTypeID = typeID;
-		dimSizes = *(new std::vector<int>(dimensions));
+		dimSizes = dimensions;
 
 		if (isDimSizesValid()){
 			data = dataCopy;

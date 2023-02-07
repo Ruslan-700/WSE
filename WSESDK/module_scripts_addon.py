@@ -11,11 +11,13 @@
 #script_wse_game_saved
 # Called each time after game is saved successfully
 ("wse_game_saved", [
+	(store_script_param, ":savegame_no", 1),
 ]),
 
 #script_wse_savegame_loaded
 # Called each time after savegame is loaded successfully
 ("wse_savegame_loaded", [
+	(store_script_param, ":savegame_no", 1),
 ]),
 
 #script_wse_chat_message_received
