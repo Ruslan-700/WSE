@@ -9,8 +9,8 @@ int lGameExecOperationHandler(lua_State *L)
 
 	if (numLArgs == 0)
 		luaL_error(L, "need operation identifier");
-	else if (numLArgs > 17)
-		luaL_error(L, "operand count can't be > 16");
+	else if (numLArgs > MAX_NUM_STATEMENT_OPERANDS + 1)
+		luaL_error(L, "operand count can't be > %d", MAX_NUM_STATEMENT_OPERANDS);
 
 	if (!lua_isstring(L, 1))
 		luaL_error(L, "invalid operation identifier");
@@ -554,7 +554,7 @@ int lPropInstIterInit(lua_State *L)
 	it.subKindNo = 0;
 	it.metaType = 0;
 
-	if (checkLArgs(L, 0, 2, lNum))
+	if (checkLArgs(L, 0, 2, lNum, lNum))
 	{
 		it.subKindNo = lua_tointeger(L, 1);
 		it.metaType = lua_tointeger(L, 2);
@@ -669,7 +669,7 @@ int lHookOperation(lua_State *L)
 
 int lUnhookOperation(lua_State *L)
 {
-	checkLArgs(L, 2, 2, lNum | lStr);
+	checkLArgs(L, 1, 1, lNum | lStr);
 
 	int opcode;
 	if (lua_type(L, 1) == LUA_TNUMBER)
