@@ -2,6 +2,10 @@
 break_loop                   = 8 #(break_loop), #Break out of a loop, no matter how deeply nested in try_begin blocks
 continue_loop                = 9 #(continue_loop), #Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks
 try_for_dict_keys            = 18 #(try_for_dict_keys, <cur_key_string_register>, <dict>), #Loops through keys of <2>
+key_is_down                  = 70 #(key_is_down, <key>, [<bypass_console_check>]), #Fails if <key> is not currently down
+key_clicked                  = 71 #(key_clicked, <key>, [<bypass_console_check>]), #Fails if <key> is not clicked on the specific frame
+game_key_is_down             = 72 #(game_key_is_down, <game_key_no>, [<bypass_console_check>]), #Fails if <game_key_no> is not currently down
+game_key_clicked             = 73 #(game_key_clicked, <game_key_no>, [<bypass_console_check>]), #Fails if <game_key_no> is not clicked on the specific frame
 server_set_max_num_players   = 491 #(server_set_max_num_players, <max_players>, [<max_private_players>]), #Sets maximum players to <max_players> and maximum private players to [<max_private_players>] (default = same as <max_players>). Both values must be in the range 2-250, [<max_private_players>] can't be lower than <max_players>
 position_rotate_x            = 723 #(position_rotate_x, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the x-axis by <angle> degrees
 position_rotate_y            = 724 #(position_rotate_y, <position_register>, <angle>, [<use_global_axis>]), #Rotates <position_register> around the y-axis by <angle> degrees
@@ -75,8 +79,8 @@ set_campaign_time                 = 3038 #(set_campaign_time, <value>), #Sets ca
 get_mouse_map_coordinates         = 3039 #(get_mouse_map_coordinates, <position_register>), #Stores mouse map coordinates into <position_register> (requires WSE2)
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
-key_released      = 3101 #(key_released, <key>), #Fails if <key> wasn't released in the current frame
-game_key_released = 3102 #(game_key_released, <game_key_no>), #Fails if <game_key_no> wasn't released in the current frame
+key_released      = 3101 #(key_released, <key>, [<bypass_console_check>]), #Fails if <key> wasn't released in the current frame
+game_key_released = 3102 #(game_key_released, <game_key_no>, [<bypass_console_check>]), #Fails if <game_key_no> wasn't released in the current frame
 
 dict_create                = 3200 #(dict_create, <destination>), #Creates an empty dictionary object and stores it into <destination>
 dict_free                  = 3201 #(dict_free, <dict>), #Frees the dictionary object <dict>. A dictionary can't be used after freeing it
@@ -520,6 +524,10 @@ lhs_operations += [
 ]
 
 can_fail_operations += [
+	key_is_down,
+	key_clicked,
+	game_key_is_down,
+	game_key_clicked,
 	is_vanilla_warband,
 	item_slot_gt,
 	party_template_slot_gt,

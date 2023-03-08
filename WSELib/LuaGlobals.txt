@@ -245,18 +245,28 @@ game.rotation.mt =
 	__index = game.rotation.prototype
 }
 game.rotation.new = function(obj)
-	local newObj
-	if obj then
-		newObj = tableRecursiveCopy(obj)
-	else
-		newObj = {}
-	end
+    local newObj
+    if obj then
+        newObj = tableRecursiveCopy(obj)
+    else
+        newObj = {}
+    end
 
-	if newObj.s then newObj.s = vector3.new(newObj.s) end
-	if newObj.f then newObj.f = vector3.new(newObj.f) end
-	if newObj.u then newObj.u = vector3.new(newObj.u) end
-	
-	return setmetatable(newObj, game.rotation.mt)
+    local function merge(a, b)
+      for key,val in pairs(b) do
+        if not a[key] then
+          a[key] = val
+        end
+      end
+
+      return a
+    end
+
+    newObj.s = vector3.new( merge(newObj.s or {}, game.rotation.prototype.s) )
+    newObj.f = vector3.new( merge(newObj.f or {}, game.rotation.prototype.f) )
+    newObj.u = vector3.new( merge(newObj.u or {}, game.rotation.prototype.u) )
+    
+    return setmetatable(newObj, game.rotation.mt)
 end
 
 ------------positions------------
@@ -319,17 +329,17 @@ game.pos.mt =
 }
 
 game.pos.new = function(obj)
-	local newObj
-	if obj then
-		newObj = tableRecursiveCopy(obj)
-	else
-		newObj = {}
-	end
+    local newObj
+    if obj then
+        newObj = tableRecursiveCopy(obj)
+    else
+        newObj = {}
+    end
 
-	if newObj.o then newObj.o = vector3.new(newObj.o) end
-	if newObj.rot then newObj.rot = game.rotation.new(newObj.rot) end
+    newObj.o = vector3.new(newObj.o)
+    newObj.rot = game.rotation.new(newObj.rot)
 
-	return setmetatable(newObj, game.pos.mt)
+    return setmetatable(newObj, game.pos.mt)
 end
 
 print = function(...)

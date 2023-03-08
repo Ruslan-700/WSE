@@ -1,6 +1,7 @@
 #pragma once
 
 #define DIRECTINPUT_VERSION 0x0800
+#define RGL_NUM_KEYS 256
 
 #include "dinput.h"
 #include "rgl.h"
@@ -14,9 +15,9 @@ namespace wb
 		IDirectInputDevice8 *di_keyboard;
 		IDirectInputDevice8 *di_mouse;
 #endif		
-		int cur_key_status[256];
-		int prev_key_status[256];
-		int stored_key_status[256];
+		int cur_key_status[RGL_NUM_KEYS];
+		int prev_key_status[RGL_NUM_KEYS];
+		int stored_key_status[RGL_NUM_KEYS];
 		float mouse_x_movement;
 		float mouse_y_movement;
 		int mouse_x;
