@@ -81,6 +81,19 @@ void PartySwitchStacks(WSEPartyOperationsContext *context)
 		std::swap(warband->cur_game->main_party_dnas->dnas[party_stack_no_1], warband->cur_game->main_party_dnas->dnas[party_stack_no_2]);
 }
 
+void PartyStackSetNumUpgradeable(WSEPartyOperationsContext *context)
+{
+	int party_no;
+	int party_stack_no;
+	int value;
+
+	context->ExtractPartyNo(party_no);
+	context->ExtractPartyStackNo(party_stack_no, party_no);
+	context->ExtractValue(value);
+
+	warband->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable = value;
+}
+
 WSEPartyOperationsContext::WSEPartyOperationsContext() : WSEOperationContext("party", 3900, 3999)
 {
 }
@@ -110,4 +123,8 @@ void WSEPartyOperationsContext::OnLoad()
 	RegisterOperation("party_stack_upgrade", nullptr, Both, WSE2, 4, 4,
 		"Upgrades <0>'s <1>'s <2> of troops (<3> can be 0 or 1)",
 		"party_no", "party_stack_no", "amount", "upgrade_path");
+
+	RegisterOperation("party_stack_set_num_upgradeable", PartyStackSetNumUpgradeable, Both, None, 3, 3,
+		"Sets 0>'s <1>'s amount of upgradeable troops to <2>",
+		"party_no", "party_stack_no", "value");
 }

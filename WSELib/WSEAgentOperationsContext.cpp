@@ -804,4 +804,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_get_time_speed_multiplier", nullptr, Both, Lhs | WSE2, 2, 2,
 		"Stores <1>'s time speed multiplier into <0>",
 		"destination_fixed_point", "agent_no");
+
+	RegisterOperation("agent_kick", nullptr, Both, WSE2, 1, 1,
+		"AI <0> performs kick",
+		"agent_no");
 }

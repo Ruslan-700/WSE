@@ -2,14 +2,7 @@
 
 #include "WSE.h"
 #include "warband.h"
-/*
-bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
-{
-	wb::game *game = warband->cur_game;
 
-	return game->edit_mode_active && game->edit_mode_mode == 0;
-}
-*/
 int EditModeGetNumSelectedMissionObjects(WSEEditModeOperationsContext *context)
 {
 	wb::game *game = warband->cur_game;
@@ -111,16 +104,20 @@ void EditModeSetEnabled(WSEEditModeOperationsContext *context)
 	warband->config.enable_edit_mode = value ? 1 : 0;
 }
 
+
+bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = warband->cur_game;
+
+	return game->edit_mode_active && game->edit_mode_mode == 0;
+}
+
 WSEEditModeOperationsContext::WSEEditModeOperationsContext() : WSEOperationContext("edit_mode", 4600, 4699)
 {
 }
 
 void WSEEditModeOperationsContext::OnLoad()
 {
-	/*
-	RegisterOperation("edit_mode_in_edit_objects_mode", EditModeInEditObjectsMode, Client, Cf, 0, 0,
-		"Fails if the game is not in edit objects mode");
-	*/
 	RegisterOperation("edit_mode_get_num_selected_prop_instances", EditModeGetNumSelectedMissionObjects, Client, Lhs, 1, 1,
 		"Stores the number of selected prop instances into <destination>",
 		"destination");
@@ -148,4 +145,7 @@ void WSEEditModeOperationsContext::OnLoad()
 	RegisterOperation("edit_mode_set_enabled", EditModeSetEnabled, Client, None, 1, 1,
 		"Enables or disables edit mode",
 		"value");
+
+	RegisterOperation("edit_mode_in_edit_objects_mode", EditModeInEditObjectsMode, Client, Cf, 0, 0,
+		"Fails if the game is not in edit objects mode");
 }
