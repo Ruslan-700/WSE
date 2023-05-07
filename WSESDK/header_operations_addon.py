@@ -143,6 +143,7 @@ agent_get_position_in_group                      = 3333 #(agent_get_position_in_
 agent_get_current_ai_mesh_face_group             = 3334 #(agent_get_current_ai_mesh_face_group, <destination>, <agent_no>), #Stores <agent_no>'s current ai mesh face group into <destination> (requires WSE2)
 agent_set_time_speed_multiplier                  = 3335 #(agent_set_time_speed_multiplier, <agent_no>, <value_fixed_point>), #Sets <agent_no>'s time speed multiplier to <value_fixed_point> (requires WSE2)
 agent_get_time_speed_multiplier                  = 3336 #(agent_get_time_speed_multiplier, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s time speed multiplier into <destination_fixed_point> (requires WSE2)
+agent_kick                                       = 3337 #(agent_kick, <agent_no>), #AI <agent_no> performs kick (requires WSE2)
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -233,6 +234,7 @@ party_has_flag                  = 3902 #(party_has_flag, <party_no>, <flag>), #F
 party_heal_members              = 3903 #(party_heal_members, <party_no>, <troop_no>, <number>), #Heals <number> <troop_no> of <party_no>
 party_switch_stacks             = 3904 #(party_switch_stacks, <party_no>, <party_stack_no_1>, <party_stack_no_2>), #Switches <party_no>'s <party_stack_no_1> and <party_stack_no_2>
 party_stack_upgrade             = 3905 #(party_stack_upgrade, <party_no>, <party_stack_no>, <amount>, <upgrade_path>), #Upgrades <party_no>'s <party_stack_no>'s <amount> of troops (<upgrade_path> can be 0 or 1) (requires WSE2)
+party_stack_set_num_upgradeable = 3906 #(party_stack_set_num_upgradeable, <party_no>, <party_stack_no>, <value>), #Sets <party_no>'s <party_stack_no>'s amount of upgradeable troops to <value>
 
 position_get_vector_to_position = 4100 #(position_get_vector_to_position, <destination_fixed_point>, <dest_position_register>, <position_register_1>, <position_register_2>), #Stores the vector from <position_register_1> to <position_register_2> into <dest_position_register> and its length into <destination_fixed_point>
 position_align_to_ground        = 4101 #(position_align_to_ground, <position_register>, [<point_up>], [<set_z_to_ground_level>]), #Aligns <position_register> to the ground (or to the ground normal if [<point_up>] is set)
@@ -359,6 +361,7 @@ edit_mode_deselect_prop_instance          = 4603 #(edit_mode_deselect_prop_insta
 edit_mode_get_highlighted_prop_instance   = 4604 #(edit_mode_get_highlighted_prop_instance, <destination>), #Stores the highlighted prop instance into <destination>
 edit_mode_set_highlighted_prop_instance   = 4605 #(edit_mode_set_highlighted_prop_instance, [<prop_instance_no>]), #Stores the <1>th selected prop instance into instance no into [<prop_instance_no>]
 edit_mode_set_enabled                     = 4606 #(edit_mode_set_enabled, <value>), #Enables or disables edit mode
+edit_mode_in_edit_objects_mode            = 4607 #(edit_mode_in_edit_objects_mode), #Fails if the game is not in edit objects mode
 
 update_material = 4700 #(update_material, <material_name>, <new_material_name>), #Updates <material_name> with <new_material_name>
 
@@ -565,6 +568,7 @@ can_fail_operations += [
 	flt,
 	fge,
 	fle,
+	edit_mode_in_edit_objects_mode,
 	presentation_activate,
 	array_eq,
 	array_neq,

@@ -125,6 +125,6 @@ void WSEPartyOperationsContext::OnLoad()
 		"party_no", "party_stack_no", "amount", "upgrade_path");
 
 	RegisterOperation("party_stack_set_num_upgradeable", PartyStackSetNumUpgradeable, Both, None, 3, 3,
-		"Sets 0>'s <1>'s amount of upgradeable troops to <2>",
+		"Sets <0>'s <1>'s amount of upgradeable troops to <2>",
 		"party_no", "party_stack_no", "value");
 }
