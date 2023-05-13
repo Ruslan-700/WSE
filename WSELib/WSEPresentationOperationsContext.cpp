@@ -61,16 +61,16 @@ void OverlayButtonSetType(WSEPresentationOperationsContext *context)
 {
 #if defined WARBAND
 	int overlay_no;
-	bool showed, enabled;
+	bool toggle_or_not, deselectable_or_not;
 
 	context->ExtractOverlayNo(overlay_no);
-	context->ExtractBoolean(showed);
-	context->ExtractBoolean(enabled);
+	context->ExtractBoolean(toggle_or_not);
+	context->ExtractBoolean(deselectable_or_not);
 
-	rgl::widget *overlay = warband->cur_presentation->overlays[overlay_no];
+	rgl::simple_button_widget *overlay = (rgl::simple_button_widget *)warband->cur_presentation->overlays[overlay_no];
 
 	if (overlay->get_type() == rgl::wt_simple_button || overlay->get_type() == rgl::wt_image_button || overlay->get_type() == rgl::wt_game_button)
-		overlay->flags = (showed ? 0 : rgl::wf_hidden) | (enabled ? 0 : rgl::wf_disabled);
+		overlay->button_flags = (toggle_or_not ? 0 : rgl::sbwf_toggleable) | (deselectable_or_not ? rgl::sbwf_clickonce : 0);
 #endif
 }
 

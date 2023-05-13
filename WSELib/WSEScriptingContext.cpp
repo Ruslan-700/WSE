@@ -86,6 +86,7 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 	{
 	case ModuleLoad:
 		m_allow_unset_script_params = WSE->ModuleSettingsIni.Bool("", "allow_unset_script_params", false);
+		m_local_variables_zero_initialization = WSE->ModuleSettingsIni.Bool("", "local_variables_zero_initialization", true);
 		WSE->Hooks.HookFunction(this, wb::addresses::operation_manager_Execute, OperationManagerExecuteHook);
 
 		WSE->SendContextEvent(this, LoadOperations);
@@ -108,6 +109,10 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	WSEScriptingLoopManager loop_manager;
 	int cur_block = -1;
 	__int64 *local_variables = new __int64[MAX_NUM_LOCAL_VARIABLES];
+
+	if (m_local_variables_zero_initialization)
+		memset(local_variables, 0, MAX_NUM_LOCAL_VARIABLES * sizeof(__int64));
+
 	int num_operations = operation_manager->num_operations;
 	int operation_no = 0;
 	bool success = true;

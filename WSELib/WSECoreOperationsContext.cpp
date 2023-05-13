@@ -802,7 +802,7 @@ void WSECoreOperationsContext::OnLoad()
 		"format", "file");
 
 	RegisterOperation("send_post_message_to_url_advanced", SendPostMessageToUrlAdvanced, Both, None, 3, 7,
-		"Sends a HTTP POST request to <0> with <1> and <2>. If the request succeeds, <3> will be called. The script will behave like game_receive_url_response, unless <5> is non-zero, in which case the script will receive no arguments and s0 will contain the full response. If the request fails, <4> will be called.",
+		"Sends a HTTP POST (application/x-www-form-urlencoded) request to <0> with <1> and <2>. If the request succeeds, <3> will be called. The script will behave like game_receive_url_response, unless <5> is non-zero, in which case the script will receive no arguments and s0 will contain the full response. If the request fails, <4> will be called.",
 		"url_string", "user_agent_string", "post_data", "success_callback_script_no", "failure_callback_script_no", "skip_parsing", "timeout");
 
 	RegisterOperation("set_random_seed", SetRandomSeed, Both, None, 1, 1,
