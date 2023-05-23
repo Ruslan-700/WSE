@@ -5,6 +5,16 @@
 
 namespace wb
 {
+	enum dialog_states
+	{
+		dlg_start = 0,
+		dlg_party_encounter = 1,
+		dlg_event_triggered = 5,
+		dlg_close_window = 6,
+		dlg_member_chat = 13,
+		dlg_prisoner_chat = 14,
+	};
+
 	struct sentence
 	{
 		rgl::string text;

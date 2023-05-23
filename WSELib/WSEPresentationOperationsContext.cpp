@@ -118,6 +118,24 @@ void OverlaySetScrollPos(WSEPresentationOperationsContext *context)
 #endif
 }
 
+void OverlayEnable(WSEPresentationOperationsContext *context)
+{
+#if defined WARBAND
+	int overlay_no;
+	bool enable_or_disable;
+
+	context->ExtractOverlayNo(overlay_no);
+	context->ExtractBoolean(enable_or_disable);
+
+	rgl::widget *overlay = warband->cur_presentation->overlays[overlay_no];
+
+	if (enable_or_disable)
+		overlay->enable();
+	else
+		overlay->disable();
+#endif
+}
+
 
 WSEPresentationOperationsContext::WSEPresentationOperationsContext() : WSEOperationContext("presentation", 4900, 4999)
 {
@@ -144,4 +162,12 @@ void WSEPresentationOperationsContext::OnLoad()
 	RegisterOperation("overlay_set_scroll_pos", OverlaySetScrollPos, Client, None, 2, 2,
 		"Sets <0>'s scroll pos <1>",
 		"overlay_no", "value_fixed_point");
+
+	RegisterOperation("overlay_enable", OverlayEnable, Client, None, 2, 2,
+		"Sets <0>'s <1>",
+		"overlay_no", "enable_or_disable");
+
+	RegisterOperation("overlay_item_set_text", nullptr, Client, WSE2, 3, 3,
+		"Changes the <0>'s <1>'s <2>. Items are indexed from 0",
+		"overlay_no", "item_no", "text");
 }

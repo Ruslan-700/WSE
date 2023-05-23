@@ -17,6 +17,8 @@ public:
 	void Save(const std::string &file) const;
 	void LoadJson(const std::string &file, const int &mode = 0);
 	void SaveJson(const std::string &file) const;
+	void LoadIni(const std::string &file, const int &mode = 0);
+	void SaveIni(const std::string &file) const;
 	void FromUrlEncodedJson(const std::string &string, const int &mode = 0);
 	const std::string ToUrlEncodedJson() const;
 	void Clear();

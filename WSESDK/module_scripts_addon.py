@@ -80,18 +80,18 @@
 # Called each time a missile dives into water
 # INPUT
 # script param 1 = missile item no
-# script param 2 = missile item modifier
-# script param 3 = launcher item no
-# script param 4 = launcher item modifier
-# script param 5 = shooter agent no
+# script param 2 = launcher item no
+# script param 3 = shooter agent no
+# script param 4 = missile item modifier
+# script param 5 = launcher item modifier
 # script param 6 = missile no
 # pos1 = water impact position and rotation
 ("game_missile_dives_into_water", [
 	(store_script_param, ":missile_item_no", 1),
-	(store_script_param, ":missile_item_modifier", 2),
-	(store_script_param, ":launcher_item_no", 3),
-	(store_script_param, ":launcher_item_modifier", 4),
-	(store_script_param, ":shooter_agent_no", 5),
+	(store_script_param, ":launcher_item_no", 2),
+	(store_script_param, ":shooter_agent_no", 3),
+	(store_script_param, ":missile_item_modifier", 4),
+	(store_script_param, ":launcher_item_modifier", 5),
 	(store_script_param, ":missile_no", 6),
 ]),
 

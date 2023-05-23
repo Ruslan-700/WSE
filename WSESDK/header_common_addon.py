@@ -102,6 +102,14 @@ bmm_right_bracer = 25
 bmm_banner = 26
 bmm_name = 27
 
+#Dialog states
+dlg_start              = 0
+dlg_party_encounter    = 1
+dlg_event_triggered    = 5
+dlg_close_window       = 6
+dlg_member_chat        = 13
+dlg_prisoner_chat      = 14
+
 #Floating point registers
 fp0 = 0
 fp1 = 1

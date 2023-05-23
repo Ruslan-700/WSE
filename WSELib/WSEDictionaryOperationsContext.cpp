@@ -24,14 +24,19 @@ void DictLoadFile(WSEDictionaryOperationsContext *context)
 {
 	int id, mode;
 	std::string path;
+	bool ini;
 	
 	context->ExtractValue(id);
 	context->ExtractPath(path);
 	context->ExtractValue(mode);
+	context->ExtractBoolean(ini);
 	
 	WSEDictionary *dict = context->GetDictionary(id);
 	
-	dict->Load(context->CreateFile(path, "wsedict"), mode);
+	if (ini)
+		dict->LoadIni(context->CreateFile(path, "ini"), mode);
+	else
+		dict->Load(context->CreateFile(path, "wsedict"), mode);
 }
 
 void DictLoadDict(WSEDictionaryOperationsContext *context)
@@ -52,13 +57,18 @@ void DictSave(WSEDictionaryOperationsContext *context)
 {
 	int id;
 	std::string path;
+	bool ini;
 	
 	context->ExtractValue(id);
 	context->ExtractPath(path);
+	context->ExtractBoolean(ini);
 
 	WSEDictionary *dict = context->GetDictionary(id);
 
-	dict->Save(context->CreateFile(path, "wsedict"));
+	if (ini)
+		dict->SaveIni(context->CreateFile(path, "ini"));
+	else
+		dict->Save(context->CreateFile(path, "wsedict"));
 }
 
 void DictLoadFileJson(WSEDictionaryOperationsContext *context)
@@ -176,10 +186,15 @@ int DictGetSize(WSEDictionaryOperationsContext *context)
 void DictDeleteFile(WSEDictionaryOperationsContext *context)
 {
 	std::string path;
+	bool ini;
 	
 	context->ExtractPath(path);
+	context->ExtractBoolean(ini);
 
-	DeleteFile(context->CreateFile(path, "wsedict").c_str());
+	if (ini)
+		DeleteFile(context->CreateFile(path, "ini").c_str());
+	else
+		DeleteFile(context->CreateFile(path, "wsedict").c_str());
 }
 
 void DictGetStr(WSEDictionaryOperationsContext *context)
@@ -324,17 +339,17 @@ void WSEDictionaryOperationsContext::OnLoad()
 		"Frees the dictionary object <0>. A dictionary can't be used after freeing it",
 		"dict");
 
-	RegisterOperation("dict_load_file", DictLoadFile, Both, None, 2, 3,
-		"Loads a dictionary file into <0>. Setting <2> to 0 (default) clears <dict> and then loads the file, setting <2> to 1 doesn't clear <dict> but overrides any key that's already present, <2> to 2 doesn't clear <0> and doesn't overwrite keys that are already present",
-		"dict", "file", "mode");
+	RegisterOperation("dict_load_file", DictLoadFile, Both, None, 2, 4,
+		"Loads a dictionary file into <0>. Setting <2> to 0 (default) clears <dict> and then loads the file, setting <2> to 1 doesn't clear <dict> but overrides any key that's already present, <2> to 2 doesn't clear <0> and doesn't overwrite keys that are already present. Set <3> to 1 to use ini file instead of binary",
+		"dict", "file", "mode", "ini");
 
 	RegisterOperation("dict_load_dict", DictLoadDict, Both, None, 2, 3,
 		"Loads <1> into <0>. <2>: see above",
 		"dict_1", "dict_2", "mode");
 
-	RegisterOperation("dict_save", DictSave, Both, None, 2, 2,
-		"Saves <0> into a file. For security reasons, <1> is just a name, not a full path, and will be stored into a WSE managed directory",
-		"dict", "file");
+	RegisterOperation("dict_save", DictSave, Both, None, 2, 3,
+		"Saves <0> into a file. For security reasons, <1> is just a name, not a full path, and will be stored into a WSE managed directory. Set <2> to 1 to use ini file instead of binary",
+		"dict", "file", "ini");
 
 	RegisterOperation("dict_clear", DictClear, Both, None, 1, 1,
 		"Clears all key-value pairs from <0>",
@@ -352,9 +367,9 @@ void WSEDictionaryOperationsContext::OnLoad()
 		"Stores the count of key-value pairs in <1> into <0>",
 		"destination", "dict");
 
-	RegisterOperation("dict_delete_file", DictDeleteFile, Both, None, 1, 1,
-		"Deletes dictionary file <0> from disk",
-		"file");
+	RegisterOperation("dict_delete_file", DictDeleteFile, Both, None, 1, 2,
+		"Deletes dictionary file <0> from disk. Set <1> to 1 to use ini file instead of binary",
+		"file", "ini");
 
 	RegisterOperation("dict_get_str", DictGetStr, Both, None, 3, 4,
 		"Stores the string value paired to <2> into <0>. If the key is not found and <3> is set, <3> will be stored instead. If <3> is not set, an empty string will be stored",

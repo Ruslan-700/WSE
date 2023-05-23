@@ -794,7 +794,7 @@ void WSEMissionContext::OnMissileDive(wb::missile *missile)
 	pos.o.z = warband->cur_mission->water_level;
 
 	warband->basic_game.position_registers[1] = pos;
-	warband->cur_game->execute_script(SCRIPT_GAME_MISSILE_DIVES_INTO_WATER, missile->missile_item.item_no, missile->missile_item.get_modifier(), missile->shooting_item.item_no, missile->shooting_item.get_modifier(), missile->shooter_agent_no, missile->no);
+	warband->cur_game->execute_script(SCRIPT_GAME_MISSILE_DIVES_INTO_WATER, missile->missile_item.item_no, missile->shooting_item.item_no, missile->shooter_agent_no, missile->missile_item.get_modifier(), missile->shooting_item.get_modifier(), missile->no);
 
 	if (missile->missile_item.item_no >= 0)
 	{

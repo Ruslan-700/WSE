@@ -10,6 +10,22 @@ bool IsVanillaWarband(WSECoreOperationsContext *context)
 	return false;
 }
 
+void StartMapConversation(WSECoreOperationsContext *context)
+{
+	int troop_id, troop_dna, dialog_state;
+	bool set_dialog_state;
+
+	context->ExtractValue(troop_id);
+	context->ExtractValue(troop_dna);
+	context->ExtractBoolean(set_dialog_state);
+	context->ExtractValue(dialog_state);
+
+	warband->cur_game->map_conversation_troop_no = troop_id;
+	warband->cur_game->map_conversation_troop_dna = troop_dna;
+	warband->cur_game->map_conversation_token = set_dialog_state ? dialog_state : wb::dlg_event_triggered;
+	warband->cur_game->map_conversation_start = true;
+}
+
 int StoreTriggerParam(WSECoreOperationsContext *context)
 {
 	int index;
@@ -652,12 +668,16 @@ void WSECoreOperationsContext::OnLoad()
 	ReplaceOperation(1004, "is_vanilla_warband", IsVanillaWarband, Both, Cf, 0, 0,
 		"Fails only when WSE is running");
 
+	ReplaceOperation(1025, "start_map_conversation", StartMapConversation, Both, None, 1, 4,
+		"Starts a conversation with the selected <0>. Can be called directly from global map or game menus. <1> parameter allows you to randomize non-hero troop appearances. If <2> sets, then <3> used instead dlg_event_triggered",
+		"troop_id", "troop_dna", "set_dialog_state", "dialog_state");
+
 	ReplaceOperation(2070, "store_trigger_param", StoreTriggerParam, Both, Lhs | Undocumented, 1, 2,
 		"Stores <1> into <0>",
 		"destination", "trigger_param_no");
 
 	ReplaceOperation(2134, "shuffle_range", ShuffleRange, Both, Undocumented, 2, 2,
-		"Randomly shuffles a range of <1>..<2",
+		"Randomly shuffles a range of <0>..<1",
 		"register_1", "register_2");
 
 	ReplaceOperation(2135, "store_random", StoreRandom, Both, Lhs | Undocumented, 2, 2,

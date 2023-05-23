@@ -95,8 +95,8 @@ namespace wb
 		int merchandise_modifier_quality;
 		bool map_conversation_start;
 		int map_conversation_token;
-		int map_conversation_troop_1_no;
-		int map_conversation_troop_2_no;
+		int map_conversation_troop_no;
+		int map_conversation_troop_dna;
 		faction *factions;
 		int num_factions;
 		site *sites;

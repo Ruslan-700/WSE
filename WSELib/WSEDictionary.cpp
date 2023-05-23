@@ -84,6 +84,56 @@ void WSEDictionary::LoadJson(const std::string &file, const int &mode)
 	}
 }
 
+void WSEDictionary::LoadIni(const std::string &file, const int &mode)
+{
+	if (mode == 0)
+		m_values.clear();
+
+	std::ifstream stream(file);
+	std::string buffer;
+	rgl::string line;
+
+	if (!stream.is_open())
+		return;
+
+	bool firstLine = true;
+
+	while (!stream.eof())
+	{
+		std::getline(stream, buffer);
+		line = buffer.c_str();
+		line.trimmed();
+
+		if (firstLine)
+		{
+			if ((unsigned char)line[0] == 0xEF && (unsigned char)line[1] == 0xBB && (unsigned char)line[2] == 0xBF)
+				line = line.substr(3, line.length());
+
+			firstLine = false;
+		}
+
+		int commentIndex = rglMin(rglMin(line.index_of('#'), line.index_of(';')), line.index_of("//"));
+
+		if (commentIndex >= 0)
+			line = line.substr(0, commentIndex);
+
+		int splitIndex = line.index_of('=');
+
+		if (splitIndex >= 0 && splitIndex < line.length())
+		{
+			rgl::string key = line.substr(0, splitIndex);
+
+			key.trimmed();
+
+			rgl::string value = line.substr(splitIndex + 1, line.length());
+			value.trimmed();
+
+			if (mode != 2 || m_values.find(key.c_str()) == m_values.end())
+				m_values[key.c_str()] = value;
+		}
+	}
+}
+
 void WSEDictionary::Load(const WSEDictionary &dict, const int &mode)
 {
 	if (mode == 0)
@@ -141,6 +191,20 @@ void WSEDictionary::SaveJson(const std::string &file) const
 
 	Json::StyledStreamWriter writer;
 	writer.write(stream, root);
+
+	stream.close();
+}
+
+void WSEDictionary::SaveIni(const std::string &file) const
+{
+	std::ofstream stream(file);
+	if (!stream.is_open())
+		return;
+
+	for (std::map<std::string, std::string>::const_iterator it = m_values.begin(); it != m_values.end(); ++it)
+	{
+		stream << it->first.c_str() << "=" << it->second.c_str() << std::endl;
+	}
 
 	stream.close();
 }
