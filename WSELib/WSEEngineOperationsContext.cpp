@@ -181,4 +181,16 @@ void WSEEngineOperationsContext::OnLoad()
 	RegisterOperation("update_material", UpdateMaterial, Client, None, 2, 2,
 		"Updates <0> with <1>",
 		"material_name", "new_material_name");
+
+	RegisterOperation("reload_item_kinds", nullptr, Both, WSE2, 0, 2,
+		"Reload item kinds. If <0> sets, then <1> loaded instead default file",
+		"change_file", "file_name");
+
+	RegisterOperation("reload_troops", nullptr, Both, WSE2, 0, 2,
+		"Reload troops. If <0> sets, then <1> loaded instead default file",
+		"change_file", "file_name");
+
+	RegisterOperation("reload_parties", nullptr, Both, WSE2, 0, 2,
+		"Reload parties. If <0> sets, then <1> loaded instead default file",
+		"change_file", "file_name");
 }

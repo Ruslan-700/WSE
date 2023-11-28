@@ -159,8 +159,7 @@ size_t countChar(const std::string &s, char c)
 
 std::string getLuaScriptDir()
 {
-	std::string dir = "Modules\\";
-	dir += warband->cur_module_name.c_str();
+	std::string dir = warband->cur_module_path;
 	dir += "\\lua\\";
 
 	return dir;

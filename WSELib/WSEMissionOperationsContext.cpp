@@ -856,4 +856,8 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("cast_ray_agents", nullptr, Both, Lhs | Cf | WSE2, 3, 4,
 		"Casts a ray of length <3> starting from <2> and stores the closest agent's hit position into <1> (fails if no hits). Agent's id will be stored into <0> and bone no will be stored into reg0",
 		"destination", "hit_position_register", "ray_position_register", "ray_length_fixed_point");
+
+	RegisterOperation("ai_mesh_face_group_translate", nullptr, Both, WSE2, 2, 2,
+		"Translates the ai mesh face <0> by distance given in <1>",
+		"group_no", "position_register");
 }

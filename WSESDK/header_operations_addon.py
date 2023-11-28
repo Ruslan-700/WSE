@@ -145,6 +145,7 @@ agent_get_current_ai_mesh_face_group             = 3334 #(agent_get_current_ai_m
 agent_set_time_speed_multiplier                  = 3335 #(agent_set_time_speed_multiplier, <agent_no>, <value_fixed_point>), #Sets <agent_no>'s time speed multiplier to <value_fixed_point> (requires WSE2)
 agent_get_time_speed_multiplier                  = 3336 #(agent_get_time_speed_multiplier, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s time speed multiplier into <destination_fixed_point> (requires WSE2)
 agent_kick                                       = 3337 #(agent_kick, <agent_no>), #AI <agent_no> performs kick (requires WSE2)
+agent_set_dropped_items_prune_time               = 3338 #(agent_set_dropped_items_prune_time, <agent_no>, <value>), #Sets <agent_no>'s dropped items prune time to <value> (requires WSE2)
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -203,6 +204,7 @@ prop_instance_remove_light           = 3617 #(prop_instance_remove_light, <prop_
 prop_instance_get_sound_progress     = 3618 #(prop_instance_get_sound_progress, <destination>, <scene_prop_id>), #Stores <scene_prop_id>'s sound_progress into <destination>. Returned value can be between 0-100, or -1 if nothing is being played. (requires WSE2)
 set_horse_friendly_fire              = 3619 #(set_horse_friendly_fire, <value>), #Enables or disables horse friendly fire for singleplayer
 cast_ray_agents                      = 3620 #(cast_ray_agents, <destination>, <hit_position_register>, <ray_position_register>, [<ray_length_fixed_point>]), #Casts a ray of length [<ray_length_fixed_point>] starting from <ray_position_register> and stores the closest agent's hit position into <hit_position_register> (fails if no hits). Agent's id will be stored into <destination> and bone no will be stored into reg0 (requires WSE2)
+ai_mesh_face_group_translate         = 3621 #(ai_mesh_face_group_translate, <group_no>, <position_register>), #Translates the ai mesh face <group_no> by distance given in <position_register> (requires WSE2)
 
 troop_get_skill_points       = 3700 #(troop_get_skill_points, <destination>, <troop_no>), #Stores <troop_no>'s unused skill points into <destination>
 troop_set_skill_points       = 3701 #(troop_set_skill_points, <troop_no>, <value>), #Sets <troop_no>'s unused skill points to <value>
@@ -364,7 +366,10 @@ edit_mode_set_highlighted_prop_instance   = 4605 #(edit_mode_set_highlighted_pro
 edit_mode_set_enabled                     = 4606 #(edit_mode_set_enabled, <value>), #Enables or disables edit mode
 edit_mode_in_edit_objects_mode            = 4607 #(edit_mode_in_edit_objects_mode), #Fails if the game is not in edit objects mode
 
-update_material = 4700 #(update_material, <material_name>, <new_material_name>), #Updates <material_name> with <new_material_name>
+update_material   = 4700 #(update_material, <material_name>, <new_material_name>), #Updates <material_name> with <new_material_name>
+reload_item_kinds = 4701 #(reload_item_kinds, [<change_file>], [<file_name>]), #Reload item kinds. If [<change_file>] sets, then [<file_name>] loaded instead default file (requires WSE2)
+reload_troops     = 4702 #(reload_troops, [<change_file>], [<file_name>]), #Reload troops. If [<change_file>] sets, then [<file_name>] loaded instead default file (requires WSE2)
+reload_parties    = 4703 #(reload_parties, [<change_file>], [<file_name>]), #Reload parties. If [<change_file>] sets, then [<file_name>] loaded instead default file (requires WSE2)
 
 menu_create_new      = 4800 #(menu_create_new, <destination>, <text>, [<mesh_name>], [<flags>], [<script_no>], [<script_param>]), #Creates a dynamic menu and stores its id into <destination>. [<script_no>] (-1 for no script) will be called with params 1 = menu_no, 2 = [<script_param>] when the operations block is executed
 menu_add_item        = 4801 #(menu_add_item, <menu_no>, <text>, [<conditions_script_no>], [<consequences_script_no>], [<script_param>]), #Adds a new menu item to <menu_no>. [<conditions_script_no>] and [<consequences_script_no>] (-1 for no script) will be called with params 1 = <menu_no>, 2 = [<script_param>] when the conditions/consequences blocks are executed

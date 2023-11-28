@@ -194,10 +194,12 @@ int AgentGetWieldedItemSlotNo(WSEAgentOperationsContext *context)
 void AgentGetBonePosition(WSEAgentOperationsContext *context)
 {
 	int preg, agent_no, bone_no;
+	bool use_global_axis;
 	
 	context->ExtractRegister(preg);
 	context->ExtractAgentNo(agent_no);
 	context->ExtractValue(bone_no);
+	context->ExtractBoolean(use_global_axis);
 
 	rgl::strategic_entity *entity = warband->cur_mission->agents[agent_no].entity;
 
@@ -209,7 +211,16 @@ void AgentGetBonePosition(WSEAgentOperationsContext *context)
 	if (!skeleton || bone_no < 0 || bone_no >= skeleton->num_bones)
 		return;
 
-	warband->basic_game.position_registers[preg] = skeleton->get_bone_position(bone_no);
+	if (use_global_axis)
+	{
+		rgl::matrix position = warband->cur_mission->agents[agent_no].scaled_frame;
+		position.transform_to_parent(position, skeleton->get_bone_position(bone_no));
+		warband->basic_game.position_registers[preg] = position;
+	}
+	else
+	{
+		warband->basic_game.position_registers[preg] = skeleton->get_bone_position(bone_no);
+	}
 }
 */
 int AgentGetScale(WSEAgentOperationsContext *context)
@@ -808,4 +819,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_kick", nullptr, Both, WSE2, 1, 1,
 		"AI <0> performs kick",
 		"agent_no");
+
+	RegisterOperation("agent_set_dropped_items_prune_time", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s dropped items prune time to <1>",
+		"agent_no", "value");
 }
