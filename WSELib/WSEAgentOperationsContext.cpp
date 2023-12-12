@@ -823,4 +823,20 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_dropped_items_prune_time", nullptr, Both, WSE2, 2, 2,
 		"Sets <0>'s dropped items prune time to <1>",
 		"agent_no", "value");
+
+	RegisterOperation("agent_set_missile_items_prune_time", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s missile items prune time to <1>",
+		"agent_no", "value");
+
+	RegisterOperation("agent_set_action_speed_modifier", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s action speed modifier to <1>",
+		"agent_no", "value");
+
+	RegisterOperation("agent_get_action_speed_modifier", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores <1>'s action speed modifier into <0>",
+		"destination", "agent_no");
+
+	RegisterOperation("agent_set_left_hand_weapon_collision", nullptr, Both, WSE2, 2, 2,
+		"Enables or disables <0>'s left hand weapon collision",
+		"agent_no", "value");
 }

@@ -146,6 +146,10 @@ agent_set_time_speed_multiplier                  = 3335 #(agent_set_time_speed_m
 agent_get_time_speed_multiplier                  = 3336 #(agent_get_time_speed_multiplier, <destination_fixed_point>, <agent_no>), #Stores <agent_no>'s time speed multiplier into <destination_fixed_point> (requires WSE2)
 agent_kick                                       = 3337 #(agent_kick, <agent_no>), #AI <agent_no> performs kick (requires WSE2)
 agent_set_dropped_items_prune_time               = 3338 #(agent_set_dropped_items_prune_time, <agent_no>, <value>), #Sets <agent_no>'s dropped items prune time to <value> (requires WSE2)
+agent_set_missile_items_prune_time               = 3339 #(agent_set_missile_items_prune_time, <agent_no>, <value>), #Sets <agent_no>'s missile items prune time to <value> (requires WSE2)
+agent_set_action_speed_modifier                  = 3340 #(agent_set_action_speed_modifier, <agent_no>, <value>), #Sets <agent_no>'s action speed modifier to <value> (requires WSE2)
+agent_get_action_speed_modifier                  = 3341 #(agent_get_action_speed_modifier, <destination>, <agent_no>), #Stores <agent_no>'s action speed modifier into <destination> (requires WSE2)
+agent_set_left_hand_weapon_collision             = 3342 #(agent_set_left_hand_weapon_collision, <agent_no>, <value>), #Enables or disables <agent_no>'s left hand weapon collision (requires WSE2)
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires network_compatible = 0 in wse_settings.ini)
@@ -480,6 +484,7 @@ lhs_operations += [
 	agent_get_current_vertical_speed,
 	agent_get_current_ai_mesh_face_group,
 	agent_get_time_speed_multiplier,
+	agent_get_action_speed_modifier,
 	multiplayer_get_cur_profile,
 	multiplayer_get_num_profiles,
 	multiplayer_cur_message_get_int,
