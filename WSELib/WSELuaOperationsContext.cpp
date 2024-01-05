@@ -403,7 +403,7 @@ void WSELuaOperationsContext::OnLoad()
 		"Pushes the position in <0> onto the lua stack.",
 		"pos_register");
 
-	RegisterOperation("lua_get_type", opGetType, Both, Lhs, 1, 1,
+	RegisterOperation("lua_get_type", opGetType, Both, Lhs, 2, 2,
 		"Stores the type of the value at <1> in the stack into <0>. Return types can be found in header_common(_addon).py (LUA_T*)",
 		"destination", "index");
 
