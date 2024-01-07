@@ -68,7 +68,7 @@ void PropInstanceReceiveDamage(WSEMissionOperationsContext *context)
 		warband->network_manager.server.broadcast_event(evt);
 	}
 
-	if (scene_prop->flags & wb::sokf_destructible && !warband->basic_game.is_client() && mission_object->hit_points <= 0.0f)
+	if (scene_prop->flags & wb::sokf_destructible && mission_object->hit_points <= 0.0f)
 	{
 		warband->cur_game->trigger_mission_object_no = mission_object_no;
 		warband->basic_game.trigger_param_1 = mission_object_no;
@@ -728,6 +728,15 @@ void SetHorseFriendlyFire(WSENetworkOperationsContext *context)
 	WSE->Mission.m_horse_ff = value;
 }
 
+void SetShowCrosshair(WSENetworkOperationsContext *context)
+{
+	bool value;
+
+	context->ExtractBoolean(value);
+
+	WSE->Mission.m_show_xhair = value;
+}
+
 WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext("mission", 3600, 3699)
 {
 }
@@ -860,4 +869,8 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("ai_mesh_face_group_translate", nullptr, Both, WSE2, 2, 2,
 		"Translates the ai mesh face <0> by distance given in <1>",
 		"group_no", "position_register");
+
+	RegisterOperation("set_show_crosshair", SetShowCrosshair, Client, None, 1, 1,
+		"Enables or disables the crosshair for singleplayer",
+		"value");
 }

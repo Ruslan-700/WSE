@@ -73,17 +73,17 @@ DWORD WSESignatureScannerContext::FindSignature(const char* sig, const char* mas
 
 	ReadProcessMemory(TargetProcess, (LPVOID)mod.dwBase, data, mod.dwSize, &bytesRead);
 
-	int adress = NULL;
+	int address = NULL;
 	for (DWORD i = 0; i < mod.dwSize; i++)
 	{
 		if (MemoryCompare((const BYTE*)(data + i), (const BYTE*)sig, mask)) {
 			WSE->Log.Info("Address for signature %s %s: %p", HexDumpStr(sig, strlen(mask)), mask, mod.dwBase + i);
-			if (adress != NULL) WSE->Log.Error("Found more than one address!");
-			adress = mod.dwBase + i;
+			if (address != NULL) WSE->Log.Error("Found more than one address!");
+			address = mod.dwBase + i;
 		}
 	}
 	delete[] data;
-	if (adress != NULL) return adress;
+	if (address != NULL) return address;
 	WSE->Log.Error("Unable to find signature %s %s", HexDumpStr(sig, strlen(mask)), mask);
 	return NULL;
 }

@@ -578,7 +578,7 @@ void lPlayersIterAdvance(gameIterator *it)
 	{
 		wb::network_player *player = &warband->multiplayer_data.players[it->curVal];
 
-		if (player->is_active() && player->ready)
+		if (player->is_active())
 			break;
 	}
 }
@@ -601,7 +601,7 @@ int lPlayersIterInit(lua_State *L)
 	{
 		wb::network_player *player = &warband->multiplayer_data.players[it.curVal];
 
-		if (player->is_active() && player->ready)
+		if (player->is_active())
 			break;
 	}
 

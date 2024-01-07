@@ -64,6 +64,7 @@ WSEScriptingContext::WSEScriptingContext()
 {
 	m_cur_statement_block = nullptr;
 	memset(m_descriptors, 0, WSE_MAX_NUM_OPERATIONS * sizeof(WSEOperationDescriptor *));
+	memset(m_wse2_extended_descriptors, 0, WSE_MAX_NUM_OPERATIONS * sizeof(WSEOperationDescriptor *));
 }
 
 void WSEScriptingContext::OnLoad()
@@ -77,6 +78,8 @@ void WSEScriptingContext::OnUnload()
 	{
 		delete m_descriptors[i];
 		m_descriptors[i] = nullptr;
+		delete m_wse2_extended_descriptors[i];
+		m_wse2_extended_descriptors[i] = nullptr;
 	}
 }
 
@@ -336,7 +339,7 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 				int position_register_no = (int)statement->get_operand_value(local_variables, 1, operand_type);
 				float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / warband->basic_game.fixed_point_multiplier;
 
-				if (warband->cur_mission->grid.initialize_iterator(grid_iterator, warband->basic_game.position_registers[position_register_no].o, radius))
+				if (wb::operation::is_valid_register(position_register_no) && warband->cur_mission->grid.initialize_iterator(grid_iterator, warband->basic_game.position_registers[position_register_no].o, radius))
 					start_value = grid_iterator.agent_obj->agent->no;
 				else
 					start_value = -1;
@@ -359,7 +362,7 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 			{
 				wb::network_player *player = &warband->multiplayer_data.players[start_value];
 				
-				if (player->status == wb::nps_active)
+				if (player->is_active())
 					break;
 			}
 		}
@@ -487,7 +490,7 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			{
 				wb::network_player *player = &warband->multiplayer_data.players[value];
 
-				if (player->status == wb::nps_active)
+				if (player->is_active())
 					break;
 			}
 		}
@@ -601,7 +604,7 @@ void WSEScriptingContext::AddOperation(WSEContext *context, void *callback, WSEO
 		return;
 	}
 
-	if (m_descriptors[opcode])
+	if (m_descriptors[opcode] && !(flags & WSE2Extended))
 	{
 		WSE->Log.Error("failed to register %s: opcode %d is already assigned to %s.", name.c_str(), opcode, m_descriptors[opcode]->m_name.c_str());
 		return;
@@ -637,39 +640,46 @@ void WSEScriptingContext::AddOperation(WSEContext *context, void *callback, WSEO
 		descriptor->m_operands[i] = operands[i];
 	}
 	
-	if (flags & Cf)
-		descriptor->m_type = CfOperation;
-	else if (flags & Lhs)
-		descriptor->m_type = LhsOperation;
-	else if (flags & Disable)
-		descriptor->m_type = NoOperation;
-
-	if (flags & BreakNetwork && WSE->Network.IsNetworkCompatible())
+	if (flags & WSE2Extended)
 	{
-		descriptor->m_type = Operation;
-		descriptor->m_callback = BreakNetworkFailOperation;
+		m_wse2_extended_descriptors[opcode] = descriptor;
 	}
-	else if (flags & WSE2)
+	else
 	{
-		descriptor->m_type = Operation;
-		descriptor->m_callback = WSE2FailOperation;
-	}
-#if defined WARBAND
-	else if (target == Server)
-#elif defined WARBAND_DEDICATED
-	else if (target == Client)
-#endif
-	{
-		if (flags & Cf && flags & Fail)
-			descriptor->m_callback = FailOperation;
-		else
+		if (flags & Cf)
+			descriptor->m_type = CfOperation;
+		else if (flags & Lhs)
+			descriptor->m_type = LhsOperation;
+		else if (flags & Disable)
 			descriptor->m_type = NoOperation;
-	}
 
-	if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
-		WSE->Hooks.HookJumptable(context, wb::addresses::operation_Execute_jumptable, opcode - 30, OperationExecuteHook);
-	
-	m_descriptors[opcode] = descriptor;
+		if (flags & BreakNetwork && WSE->Network.IsNetworkCompatible())
+		{
+			descriptor->m_type = Operation;
+			descriptor->m_callback = BreakNetworkFailOperation;
+		}
+		else if (flags & WSE2)
+		{
+			descriptor->m_type = Operation;
+			descriptor->m_callback = WSE2FailOperation;
+		}
+#if defined WARBAND
+		else if (target == Server)
+#elif defined WARBAND_DEDICATED
+		else if (target == Client)
+#endif
+		{
+			if (flags & Cf && flags & Fail)
+				descriptor->m_callback = FailOperation;
+			else
+				descriptor->m_type = NoOperation;
+		}
+
+		if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
+			WSE->Hooks.HookJumptable(context, wb::addresses::operation_Execute_jumptable, opcode - 30, OperationExecuteHook);
+
+		m_descriptors[opcode] = descriptor;
+	}
 }
 
 void WSEScriptingContext::UnregisterOperations(WSEContext *context)
@@ -822,10 +832,132 @@ void WSEScriptingContext::DumpOperationsHeader()
 			}
 
 			if (descriptor->m_flags & BreakNetwork)
-				stream << " (requires network_compatible = 0 in wse_settings.ini)";
+				stream << " (requires, for WSE: network_compatible = 0 in wse_settings.ini, for WSE2: bBreakWarbandCompatibility=true in rgl_config.ini)";
 
 			if (descriptor->m_flags & WSE2)
 				stream << " (requires WSE2)";
+
+			stream << std::endl;
+		}
+	}
+
+	stream << std::endl << "#WSE2 extended operations" << std::endl;
+
+	max_lengths.clear();
+	cur_block = 0;
+	max_length = 0;
+	last = 0;
+
+	for (int i = 0; i < WSE_MAX_NUM_OPERATIONS; ++i)
+	{
+		WSEOperationDescriptor *descriptor = m_wse2_extended_descriptors[i];
+
+		if (descriptor && !(descriptor->m_flags & Undocumented))
+		{
+			if (last / 100 != i / 100 && i > WSE_LAST_WARBAND_OPCODE)
+			{
+				last = i;
+				max_lengths.push_back(max_length);
+				max_length = 0;
+			}
+
+			char name[512];
+
+			if (descriptor->m_name.length())
+				sprintf_s(name, "%s", descriptor->m_name.c_str());
+			else
+				sprintf_s(name, "op_%u", descriptor->m_opcode);
+
+			int length = strlen(name);
+
+			if (length > max_length)
+				max_length = length;
+		}
+	}
+
+	max_lengths.push_back(max_length);
+	last = 0;
+
+	for (int i = 0; i < WSE_MAX_NUM_OPERATIONS; ++i)
+	{
+		WSEOperationDescriptor *descriptor = m_wse2_extended_descriptors[i];
+
+		if (descriptor && !(descriptor->m_flags & Undocumented))
+		{
+			if (last / 100 != i / 100 && i > WSE_LAST_WARBAND_OPCODE)
+			{
+				cur_block++;
+				last = i;
+				stream << std::endl;
+			}
+
+			char name[512];
+
+			if (descriptor->m_name.length())
+				sprintf_s(name, "%s", descriptor->m_name.c_str());
+			else
+				sprintf_s(name, "op_%u", descriptor->m_opcode);
+
+			int length = strlen(name);
+
+			stream << name;
+
+			for (int i = length; i < max_lengths[cur_block]; ++i)
+				stream << " ";
+
+			stream << " = " << descriptor->m_opcode;
+
+			if (descriptor->m_min_operands >= 0)
+			{
+				stream << " #(";
+
+				if (descriptor->m_name.length())
+					stream << descriptor->m_name;
+				else
+					stream << descriptor->m_opcode;
+
+				for (int i = 0; i < descriptor->m_max_operands; ++i)
+				{
+					stream << ", ";
+
+					if (i >= descriptor->m_min_operands)
+						stream << "[";
+
+					stream << "<" << descriptor->m_operands[i] << ">";
+
+					if (i >= descriptor->m_min_operands)
+						stream << "]";
+				}
+			}
+
+			stream << "),";
+
+			if (descriptor->m_description.length())
+			{
+				std::string desc = descriptor->m_description;
+
+				for (int i = 0; i < descriptor->m_max_operands; ++i)
+				{
+					std::string tok = "<" + itostr(i) + ">";
+					int index;
+
+					std::string replacement = "<" + descriptor->m_operands[i] + ">";
+
+					if (i >= descriptor->m_min_operands)
+						replacement = "[" + replacement + "]";
+					while ((index = desc.find(tok)) >= 0)
+					{
+						desc.replace(index, tok.length(), replacement);
+					}
+				}
+
+				stream << " #" << desc;
+			}
+
+			if (descriptor->m_flags & BreakNetwork)
+				stream << " (requires, for WSE: network_compatible = 0 in wse_settings.ini, for WSE2: bBreakWarbandCompatibility=true in rgl_config.ini)";
+
+			stream << " (requires WSE2)";
 
 			stream << std::endl;
 		}

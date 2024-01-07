@@ -645,21 +645,9 @@ void WSECoreOperationsContext::OnLoad()
 	DefineOperation(9, "continue_loop", Control, 0, 0,
 		"Continue to the next iteration of a loop, no matter how deeply nested in try_begin blocks");
 	/*
-	DefineOperation(12, "try_for_agents", Control | Lhs, 1, 3,
-		"Loops through agents in the scene. If <1> and <2> are defined, it will only loop through agents in the chosen area",
-		"cur_agent_no", "position_no", "radius_fixed_point");
-	
 	DefineOperation(15, "try_for_attached_parties", Control | Lhs, 2, 2,
 		"Loops through parties attached to <1>.",
 		"cur_party_no", "party_no");
-	
-	DefineOperation(16, "try_for_active_players", Control | Lhs, 1, 2,
-		"Loops through all active players. If <1> is set to non-zero, the server player (0) will be skipped",
-		"cur_player_no", "skip_server");
-
-	DefineOperation(17, "try_for_prop_instances", Control | Lhs, 1, 2,
-		"Loops through scene prop instances of <1>. If <1> is not set it will loop through all scene prop instances in the scene",
-		"cur_instance_no", "scene_prop_kind_no");
 	*/
 	DefineOperation(18, "try_for_dict_keys", Control, 2, 2,
 		"Loops through keys of <2>",
@@ -671,6 +659,10 @@ void WSECoreOperationsContext::OnLoad()
 	ReplaceOperation(1025, "start_map_conversation", StartMapConversation, Both, None, 1, 4,
 		"Starts a conversation with the selected <0>. Can be called directly from global map or game menus. <1> parameter allows you to randomize non-hero troop appearances. If <2> sets, then <3> used instead dlg_event_triggered",
 		"troop_id", "troop_dna", "set_dialog_state", "dialog_state");
+
+	DefineOperation(1025, "start_map_conversation", WSE2Extended, 1, 5,
+		"Starts a conversation with the selected <0>. Can be called directly from global map or game menus. <1> parameter allows you to randomize non-hero troop appearances. If <2> sets, then <3> used instead dlg_event_triggered. If <4> sets, then conversation called directly from the presentation.",
+		"troop_id", "troop_dna", "set_dialog_state", "dialog_state", "from_presentation");
 
 	ReplaceOperation(2070, "store_trigger_param", StoreTriggerParam, Both, Lhs | Undocumented, 1, 2,
 		"Stores <1> into <0>",

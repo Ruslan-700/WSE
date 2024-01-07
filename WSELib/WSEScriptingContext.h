@@ -36,6 +36,7 @@ enum WSEOperationFlags
 	Undocumented = 0x40,
 	FakeLhs = 0x80,
 	WSE2 = 0x100,
+	WSE2Extended = 0x200,
 };
 
 enum WSEOperationTarget
@@ -120,6 +121,7 @@ public:
 
 private:
 	WSEOperationDescriptor *m_descriptors[WSE_MAX_NUM_OPERATIONS];
+	WSEOperationDescriptor *m_wse2_extended_descriptors[WSE_MAX_NUM_OPERATIONS];
 	int m_trigger_params[NUM_TRIGGER_PARAMS];
 	bool m_allow_unset_script_params;
 	bool m_local_variables_zero_initialization;

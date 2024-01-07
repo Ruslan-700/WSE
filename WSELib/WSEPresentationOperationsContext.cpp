@@ -159,9 +159,17 @@ void WSEPresentationOperationsContext::OnLoad()
 		"Stores <1>'s scroll pos into <0>",
 		"destination_fixed_point", "overlay_no");
 
+	DefineOperation(4903, "overlay_get_scroll_pos", Lhs | WSE2Extended, 2, 3,
+		"Stores <1>'s scroll pos into <0>",
+		"destination_fixed_point", "overlay_no", "horizontal");
+
 	RegisterOperation("overlay_set_scroll_pos", OverlaySetScrollPos, Client, None, 2, 2,
 		"Sets <0>'s scroll pos <1>",
 		"overlay_no", "value_fixed_point");
+
+	DefineOperation(4904, "overlay_set_scroll_pos", WSE2Extended, 2, 3,
+		"Sets <0>'s scroll pos <1>",
+		"overlay_no", "value_fixed_point", "horizontal");
 
 	RegisterOperation("overlay_enable", OverlayEnable, Client, None, 2, 2,
 		"Sets <0>'s <1>",

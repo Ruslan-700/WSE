@@ -71,6 +71,22 @@ void OptionsSetRealisticHeadshots(WSECoreOperationsContext *context)
 
 void WSEOptionsOperationsContext::OnLoad()
 {
+	DefineOperation(260, "options_get_damage_to_player", Lhs | WSE2Extended, 1, 2,
+		"Stores damage to player for singleplayer into <0>. If set <1>, uses 0-100% range instead default values (0 = 1/4, 1 = 1/2, 2 = 1/1)",
+		"destination", "percentage");
+
+	DefineOperation(261, "options_set_damage_to_player", WSE2Extended, 1, 2,
+		"Sets damage to player for singleplayer. If set <1>, uses 0-100% range instead default values (0 = 1/4, 1 = 1/2, 2 = 1/1)",
+		"value", "percentage");
+
+	DefineOperation(262, "options_get_damage_to_friends", Lhs | WSE2Extended, 1, 2,
+		"Stores damage to friends for singleplayer into <0>. If set <1>, uses 0-100% range instead default values (0 = 1/2, 1 = 3/4, 2 = 1/1)",
+		"destination", "percentage");
+
+	DefineOperation(263, "options_set_damage_to_friends", WSE2Extended, 1, 2,
+		"Sets damage to friends for singleplayer. If set <1>, uses 0-100% range instead default values (0 = 1/2, 1 = 3/4, 2 = 1/1)",
+		"value", "percentage");
+
 	/*
 	RegisterOperation("options_get_battle_size", OptionsGetBattleSize, Client, Lhs, 1, 1,
 		"Stores battle size into <0>",

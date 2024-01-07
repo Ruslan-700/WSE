@@ -104,6 +104,10 @@ void WSEInputOperationsContext::OnLoad()
 		"Stores the key mapped to <1> into <0>",
 		"destination", "game_key_no");
 
+	DefineOperation(3100, "game_key_get_key", Lhs | WSE2Extended, 2, 4,
+		"Stores the key mapped to <1> into <0>",
+		"destination", "game_key_no", "alternative", "modifier");
+
 	RegisterOperation("key_released", KeyReleased, Client, Cf | Fail, 1, 2,
 		"Fails if <0> wasn't released in the current frame",
 		"key", "bypass_console_check");

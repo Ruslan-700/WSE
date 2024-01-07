@@ -824,6 +824,10 @@ WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("
 
 void WSEStringOperationsContext::OnLoad()
 {
+	DefineOperation(65, "game_key_get_mapped_key_name", WSE2Extended, 2, 3,
+		"Stores human-readable key name that's currently assigned to the provided <1> into <0>",
+		"string_register", "game_key_no", "alternative");
+
 	RegisterOperation("str_equals", StrEquals, Both, Cf, 2, 3,
 		"Fails if <0> is not equal to <1>",
 		"string_1", "string_2", "case_insensitive");
@@ -935,6 +939,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_module_setting", StrStoreModuleSetting, Both, None, 2, 2,
 		"Stores the string value (empty if not found) of <1> in module.ini into <0>",
 		"string_register", "setting");
+
+	DefineOperation(4226, "str_store_module_setting", WSE2Extended, 3, 3,
+		"Stores the string value (empty if not found) of <2>'s <1> in rgl_config.ini into <0>",
+		"string_register", "setting", "section");
 
 	RegisterOperation("str_store_server_password_admin", StrStoreServerPasswordAdmin, Both, None, 1, 1,
 		"Stores the server administrator password into <0>",

@@ -79,7 +79,9 @@ void WSEMissionContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "ground_weapon_collision", false), wb::addresses::mission_CheckCollision_entry, MissionCheckCollisionHook);
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "use_missile_damage_type", false), wb::addresses::mission_ApplyBlow_entry, MissionApplyBlowHook);
 		WSE->Hooks.HookFunctionConditional(this, WSE->ModuleSettingsIni.Bool("", "do_not_make_hands_parallel_to_ground", false), wb::addresses::agent_MakeHandsParallelToGround_entry, AgentMakeHandsParallelToGroundHook);
-		
+		m_horse_ff = WSE->ModuleSettingsIni.Bool("", "horse_friendly_fire", false);
+		m_show_xhair = WSE->ModuleSettingsIni.Bool("", "show_crosshair", true);
+
 		m_item_difficulty_attribute[0] = -1;
 		m_item_difficulty_skill[0] = -1;
 		m_item_difficulty_attribute[wb::itp_type_horse] = WSE->ModuleSettingsIni.Int("", "difficulty_attribute_itp_type_horse", -1);
@@ -532,7 +534,7 @@ bool WSEMissionContext::OnAgentHorseCharged(wb::agent *charger_agent, wb::agent 
 void WSEMissionContext::OnShowCrosshair()
 {
 #if defined WARBAND
-	if (warband->basic_game.is_multiplayer() && !WSE->Network.GetShowCrosshair())
+	if ((warband->basic_game.is_multiplayer() && !WSE->Network.GetShowCrosshair()) || (!warband->basic_game.is_multiplayer() && !WSE->Mission.m_show_xhair))
 	{
 		warband->cur_mission->crosshair_entities[0]->visible = false;
 		warband->cur_mission->crosshair_entities[1]->visible = false;

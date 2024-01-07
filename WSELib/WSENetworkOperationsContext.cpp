@@ -306,4 +306,8 @@ void WSENetworkOperationsContext::OnLoad()
 
 	RegisterOperation("clear_anonymous_players", nullptr, Server, WSE2, 0, 0,
 		"Clears pseudonyms for multiplayer players");
+
+	RegisterOperation("server_set_ghost_mode_advanced", nullptr, Both, WSE2, 5, 5,
+		"Sets settings for advanced ghost mode. Works only for WSE2 clients. <0>: 0 - disable, 1 - enable, <1>: 0 - camera can move, 1 - camera can't move, <2>: 0 - any team, 1 - player's team only, <3>: 0 - freely rotate camera, 1 - lock to agent's view, <4>: 0 - any agents, 1 - only players",
+		"value", "can't_be_free", "team", "lock_to_view", "only_players");
 }

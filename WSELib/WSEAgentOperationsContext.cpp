@@ -636,6 +636,26 @@ void WSEAgentOperationsContext::OnLoad()
 		"Sets <0>'s channel <2> animation progress to <1>",
 		"agent_no", "value_fixed_point", "channel_no");
 
+	DefineOperation(1756, "agent_get_attached_scene_prop", Lhs | WSE2Extended, 2, 3,
+		"Stores scene prop instance which is attached to the <1>, or -1 if there isn't any into <0>. (<2>: 0-3)",
+		"destination", "agent_no", "attached_prop_index");
+
+	DefineOperation(1757, "agent_set_attached_scene_prop", WSE2Extended, 2, 5,
+		"Attaches the specified <1> to the <0>. (<2>: 0-3)",
+		"agent_no", "prop_instance_no", "attached_prop_index", "bone_no", "use_bone_rotation");
+
+	DefineOperation(1758, "agent_set_attached_scene_prop_x", WSE2Extended, 2, 3,
+		"Offsets the position of the attached scene prop in relation to <0>, in centimeters, along the X axis (left/right). (<2>: 0-3)",
+		"agent_no", "value", "attached_prop_index");
+
+	DefineOperation(1759, "agent_set_attached_scene_prop_z", WSE2Extended, 2, 3,
+		"Offsets the position of the attached scene prop in relation to <0>, in centimeters, along the Z axis (down/up). (<2>: 0-3)",
+		"agent_no", "value", "attached_prop_index");
+
+	DefineOperation(1809, "agent_set_attached_scene_prop_y", WSE2Extended, 2, 3,
+		"Offsets the position of the attached scene prop in relation to <0>, in centimeters, along the Y axis (backwards/forward). (<2>: 0-3)",
+		"agent_no", "value", "attached_prop_index");
+
 	ReplaceOperation(1825, "agent_get_ammo_for_slot", AgentGetItemSlotAmmo, Both, Lhs | Undocumented, 3, 3,
 		"Stores <1>'s <2> ammo count into <0>",
 		"destination", "agent_no", "item_slot_no");

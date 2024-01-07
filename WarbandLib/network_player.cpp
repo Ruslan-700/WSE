@@ -6,7 +6,7 @@ using namespace wb;
 
 bool network_player::is_active() const
 {
-	return this->status == nps_active && this->ready == 1;
+	return this->status == nps_active;
 }
 unsigned int network_player::get_unique_id() const
 {
