@@ -26,11 +26,11 @@ void StartMapConversation(WSECoreOperationsContext *context)
 	warband->cur_game->map_conversation_start = true;
 }
 
-int StoreTriggerParam(WSECoreOperationsContext *context)
+__int64 StoreTriggerParam(WSECoreOperationsContext *context)
 {
 	int index;
 
-	context->ExtractBoundedValue(index, 1, NUM_TRIGGER_PARAMS, 1);
+	context->ExtractBoundedValue(index, 1, NUM_TRIGGER_PARAMS + 1, 1);
 
 	return WSE->Scripting.GetTriggerParam(index);
 }
@@ -69,21 +69,22 @@ int StoreRandomInRange(WSECoreOperationsContext *context)
 	return range_low + rglRand(range_high - range_low);
 }
 
-int RegisterGet(WSECoreOperationsContext *context)
+__int64 RegisterGet(WSECoreOperationsContext *context)
 {
 	int reg;
 
 	context->ExtractRegister(reg);
 
-	return (int)warband->basic_game.registers[reg];
+	return warband->basic_game.registers[reg];
 }
 
 void RegisterSet(WSECoreOperationsContext *context)
 {
-	int reg, value;
+	int reg;
+	__int64 value;
 
 	context->ExtractRegister(reg);
-	context->ExtractValue(value);
+	context->ExtractBigValue(value);
 
 	warband->basic_game.registers[reg] = value;
 }
@@ -270,9 +271,9 @@ void ReturnValues(WSECoreOperationsContext *context)
 {
 	int index = 0;
 
-	while (context->HasMoreOperands() && index < MAX_NUM_STATEMENT_OPERANDS)
+	while (context->HasMoreOperands() && index < NUM_RETURN_VALUES)
 	{
-		context->ExtractValue(context->m_return_values[index++]);
+		context->ExtractBigValue(context->m_return_values[index++]);
 	}
 
 	context->m_num_return_values = index;
@@ -283,13 +284,13 @@ int StoreNumReturnValues(WSECoreOperationsContext *context)
 	return context->m_num_return_values;
 }
 
-int StoreReturnValue(WSECoreOperationsContext *context)
+__int64 StoreReturnValue(WSECoreOperationsContext *context)
 {
 	int index;
 
 	context->ExtractValue(index, 1);
 
-	if (index == 0 || index > MAX_NUM_STATEMENT_OPERANDS)
+	if (index <= 0 || index > NUM_RETURN_VALUES)
 		context->ScriptError("invalid script result index %d", index);
 
 	if (index > context->m_num_return_values)

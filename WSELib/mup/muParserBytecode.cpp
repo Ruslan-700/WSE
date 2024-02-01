@@ -92,6 +92,7 @@ namespace mu
     m_iStackPos = a_ByteCode.m_iStackPos;
     m_vRPN = a_ByteCode.m_vRPN;
     m_iMaxStackSize = a_ByteCode.m_iMaxStackSize;
+	m_bEnableOptimizer = a_ByteCode.m_bEnableOptimizer;
   }
 
   //---------------------------------------------------------------------------
@@ -163,7 +164,7 @@ namespace mu
 
 #if defined(MUP_MATH_EXCEPTIONS)
         if (y==0)
-          throw ParserError(ecDIV_BY_ZERO);
+          throw ParserError(ecDIV_BY_ZERO, _T("0"));
 #endif
 
         x = x / y;   
@@ -212,7 +213,7 @@ namespace mu
         switch(a_Oprt)
         {
         case  cmPOW:
-              // Optimization for ploynomials of low order
+              // Optimization for polynomials of low order
               if (m_vRPN[sz-2].Cmd == cmVAR && m_vRPN[sz-1].Cmd == cmVAL)
               {
                 if (m_vRPN[sz-1].Val.data2==2)
@@ -247,9 +248,9 @@ namespace mu
                         (m_vRPN[sz-2].Val.ptr == m_vRPN[sz-1].Val.ptr) );
 
                 m_vRPN[sz-2].Cmd = cmVARMUL;
-                m_vRPN[sz-2].Val.ptr    = (value_type*)((long)(m_vRPN[sz-2].Val.ptr) | (long)(m_vRPN[sz-1].Val.ptr));    // variable
+                m_vRPN[sz-2].Val.ptr    = (value_type*)((long long)(m_vRPN[sz-2].Val.ptr) | (long long)(m_vRPN[sz-1].Val.ptr));    // variable
                 m_vRPN[sz-2].Val.data2 += ((a_Oprt==cmSUB) ? -1 : 1) * m_vRPN[sz-1].Val.data2;  // offset
-                m_vRPN[sz-2].Val.data  += ((a_Oprt==cmSUB) ? -1 : 1) * m_vRPN[sz-1].Val.data;   // multiplikatior
+                m_vRPN[sz-2].Val.data  += ((a_Oprt==cmSUB) ? -1 : 1) * m_vRPN[sz-1].Val.data;   // multiplicand
                 m_vRPN.pop_back();
                 bOptimized = true;
               } 
@@ -260,7 +261,7 @@ namespace mu
                    (m_vRPN[sz-1].Cmd == cmVAL && m_vRPN[sz-2].Cmd == cmVAR) ) 
               {
                 m_vRPN[sz-2].Cmd        = cmVARMUL;
-                m_vRPN[sz-2].Val.ptr    = (value_type*)((long)(m_vRPN[sz-2].Val.ptr) | (long)(m_vRPN[sz-1].Val.ptr));
+                m_vRPN[sz-2].Val.ptr    = (value_type*)((long long)(m_vRPN[sz-2].Val.ptr) | (long long)(m_vRPN[sz-1].Val.ptr));
                 m_vRPN[sz-2].Val.data   = m_vRPN[sz-2].Val.data2 + m_vRPN[sz-1].Val.data2;
                 m_vRPN[sz-2].Val.data2  = 0;
                 m_vRPN.pop_back();
@@ -271,7 +272,7 @@ namespace mu
               {
                 // Optimization: 2*(3*b+1) or (3*b+1)*2 -> 6*b+2
                 m_vRPN[sz-2].Cmd     = cmVARMUL;
-                m_vRPN[sz-2].Val.ptr = (value_type*)((long)(m_vRPN[sz-2].Val.ptr) | (long)(m_vRPN[sz-1].Val.ptr));
+                m_vRPN[sz-2].Val.ptr = (value_type*)((long long)(m_vRPN[sz-2].Val.ptr) | (long long)(m_vRPN[sz-1].Val.ptr));
                 if (m_vRPN[sz-1].Cmd == cmVAL)
                 {
                   m_vRPN[sz-2].Val.data  *= m_vRPN[sz-1].Val.data2;
@@ -296,10 +297,11 @@ namespace mu
               break;
 
         case cmDIV:
-              if (m_vRPN[sz-1].Cmd == cmVAL && m_vRPN[sz-2].Cmd == cmVARMUL)
+              if (m_vRPN[sz-1].Cmd == cmVAL && m_vRPN[sz-2].Cmd == cmVARMUL && m_vRPN[sz-1].Val.data2!=0)
               {
                 // Optimization: 4*a/2 -> 2*a
-                m_vRPN[sz-2].Val.data /= m_vRPN[sz-1].Val.data;
+                m_vRPN[sz-2].Val.data  /= m_vRPN[sz-1].Val.data2;
+                m_vRPN[sz-2].Val.data2 /= m_vRPN[sz-1].Val.data2;
                 m_vRPN.pop_back();
                 bOptimized = true;
               }
@@ -328,7 +330,7 @@ namespace mu
   }
 
   //---------------------------------------------------------------------------
-  /** \brief Add an assignement operator
+  /** \brief Add an assignment operator
     
       Operator entries in byte code consist of:
       <ul>
@@ -344,7 +346,7 @@ namespace mu
 
     SToken tok;
     tok.Cmd = cmASSIGN;
-    tok.Val.ptr = a_pVar;
+    tok.Oprt.ptr = a_pVar;
     m_vRPN.push_back(tok);
   }
 

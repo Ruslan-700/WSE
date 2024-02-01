@@ -23,6 +23,8 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
 */
 
+#pragma warning( disable : 4244 ) 
+
 #include "muParserInt.h"
 
 #include <cmath>
@@ -38,20 +40,20 @@ using namespace std;
 /** \brief Namespace for mathematical applications. */
 namespace mu
 {
-value_type ParserInt::Abs(value_type v)  { return (value_type)Round((value_type)fabs((double)v)); }
-value_type ParserInt::Sign(value_type v) { return (value_type)((Round(v)<0) ? -1 : (Round(v)>0) ? 1 : 0); }
+value_type ParserInt::Abs(value_type v)  { return (value_type)Round(fabs((double)v)); }
+value_type ParserInt::Sign(value_type v) { return (Round(v)<0) ? -1 : (Round(v)>0) ? 1 : 0; }
 value_type ParserInt::Ite(value_type v1, 
                           value_type v2, 
-                          value_type v3) { return (value_type)((Round(v1)==1) ? Round(v2) : Round(v3)); }
-value_type ParserInt::Add(value_type v1, value_type v2) { return (value_type)(Round(v1)  + Round(v2)); }
-value_type ParserInt::Sub(value_type v1, value_type v2) { return (value_type)(Round(v1)  - Round(v2)); }
-value_type ParserInt::Mul(value_type v1, value_type v2) { return (value_type)(Round(v1)  * Round(v2)); }
-value_type ParserInt::Div(value_type v1, value_type v2) { return (value_type)(Round(v1)  / Round(v2)); }
-value_type ParserInt::Mod(value_type v1, value_type v2) { return (value_type)(Round(v1)  % Round(v2)); }
-value_type ParserInt::Shr(value_type v1, value_type v2) { return (value_type)(Round(v1) >> Round(v2)); }
-value_type ParserInt::Shl(value_type v1, value_type v2) { return (value_type)(Round(v1) << Round(v2)); }
-value_type ParserInt::LogAnd(value_type v1, value_type v2) { return (value_type)(Round(v1) & Round(v2)); }
-value_type ParserInt::LogOr(value_type v1, value_type v2)  { return (value_type)(Round(v1) | Round(v2)); }
+                          value_type v3) { return (Round(v1)==1) ? Round(v2) : Round(v3); }
+value_type ParserInt::Add(value_type v1, value_type v2) { return Round(v1)  + Round(v2); }
+value_type ParserInt::Sub(value_type v1, value_type v2) { return Round(v1)  - Round(v2); }
+value_type ParserInt::Mul(value_type v1, value_type v2) { return Round(v1)  * Round(v2); }
+value_type ParserInt::Div(value_type v1, value_type v2) { return Round(v1)  / Round(v2); }
+value_type ParserInt::Mod(value_type v1, value_type v2) { return Round(v1)  % Round(v2); }
+value_type ParserInt::Shr(value_type v1, value_type v2) { return Round(v1) >> Round(v2); }
+value_type ParserInt::Shl(value_type v1, value_type v2) { return Round(v1) << Round(v2); }
+value_type ParserInt::LogAnd(value_type v1, value_type v2) { return Round(v1) & Round(v2); }
+value_type ParserInt::LogOr(value_type v1, value_type v2)  { return Round(v1) | Round(v2); }
 value_type ParserInt::And(value_type v1, value_type v2) { return Round(v1) && Round(v2); }
 value_type ParserInt::Or(value_type v1, value_type v2)  { return Round(v1) || Round(v2); }
 value_type ParserInt::Less(value_type v1, value_type v2)      { return Round(v1)  < Round(v2); }
@@ -64,14 +66,14 @@ value_type ParserInt::Not(value_type v) { return !Round(v); }
 
 value_type ParserInt::Pow(value_type v1, value_type v2) 
 { 
-  return (value_type)std::pow((double)Round(v1), (double)Round(v2)); 
+  return std::pow((double)Round(v1), (double)Round(v2)); 
 }
 
 //---------------------------------------------------------------------------
 // Unary operator Callbacks: Infix operators
 value_type ParserInt::UnaryMinus(value_type v) 
 { 
-  return (value_type)-Round(v); 
+  return -Round(v); 
 }
 
 //---------------------------------------------------------------------------
@@ -146,7 +148,7 @@ int ParserInt::IsVal(const char_type *a_szExpr, int *a_iPos, value_type *a_fVal)
 /** \brief Check a given position in the expression for the presence of 
            a hex value. 
     \param a_szExpr Pointer to the expression string
-    \param [in/out] a_iPos Pointer to an interger value holding the current parsing 
+    \param [in/out] a_iPos Pointer to an integer value holding the current parsing 
            position in the expression.
     \param [out] a_fVal Pointer to the position where the detected value shall be stored.
 
@@ -192,7 +194,7 @@ int ParserInt::IsBinVal(const char_type *a_szExpr, int *a_iPos, value_type *a_fV
   if (i==iBits)
     throw exception_type(_T("Binary to integer conversion error (overflow)."));
 
-  *a_fVal = (value_type)(unsigned)(iVal >> (iBits-i) );
+  *a_fVal = (unsigned)(iVal >> (iBits-i) );
   *a_iPos += i+1;
 
   return 1;
@@ -244,7 +246,7 @@ void ParserInt::InitFun()
 /** \brief Initialize operators. */
 void ParserInt::InitOprt()
 {
-  // disable all built in operators, not all of them usefull for integer numbers
+  // disable all built in operators, not all of them useful for integer numbers
   // (they don't do rounding of values)
   EnableBuiltInOprt(false);
 

@@ -21,6 +21,7 @@ public:
 	bool HasMoreOperands();
 	void SetReturnValue(int value);
 	void ExtractLhsValue(int &value);
+	void ExtractLhsBigValue(__int64 &value);
 	void ExtractPointer(void *&value, void *def = nullptr);
 	void ExtractBigValue(__int64 &value, __int64 def = 0);
 	void ExtractValue(int &value, int def = 0);

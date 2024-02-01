@@ -13,7 +13,7 @@
 class WSEScriptingContext;
 
 typedef void (__cdecl *OperationCallback)(void *context);
-typedef int (__cdecl *LhsOperationCallback)(void *context);
+typedef __int64(__cdecl *LhsOperationCallback)(void *context);
 typedef bool (__cdecl *CfOperationCallback)(void *context);
 
 enum WSEOperationType
@@ -105,8 +105,8 @@ public:
 	bool CanLoop(wb::operation_manager *operation_manager, __int64 *local_variables, WSEScriptingLoopManager &loop_manager);
 	void AddOperation(WSEContext *context, void *callback, WSEOperationTarget target, unsigned short flags, short min_operands, short max_operands, unsigned int opcode, const std::string &name, const std::string &description, std::string *operands);
 	void UnregisterOperations(WSEContext *context);
-	int GetTriggerParam(int index) const;
-	void SetTriggerParam(int index, int value);
+	__int64 GetTriggerParam(int index) const;
+	void SetTriggerParam(int index, __int64 value);
 	void ExecuteScriptOperation(int opcode);
 	void ExecuteScriptOperation(int opcode, const std::vector<int> &operands);
 
@@ -122,7 +122,7 @@ public:
 private:
 	WSEOperationDescriptor *m_descriptors[WSE_MAX_NUM_OPERATIONS];
 	WSEOperationDescriptor *m_wse2_extended_descriptors[WSE_MAX_NUM_OPERATIONS];
-	int m_trigger_params[NUM_TRIGGER_PARAMS];
+	__int64 m_trigger_params[NUM_TRIGGER_PARAMS];
 	bool m_allow_unset_script_params;
 	bool m_local_variables_zero_initialization;
 };

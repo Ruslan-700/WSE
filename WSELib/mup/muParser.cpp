@@ -6,7 +6,7 @@
   |__|_|  /|____/ |____|    (____  /|__|  /____  > \___  >|__|   
         \/                       \/            \/      \/        
 
-  Copyright (C) 2012 Ingo Berg
+  Copyright (C) 2013 Ingo Berg
 
   Permission is hereby granted, free of charge, to any person obtaining a copy of this 
   software and associated documentation files (the "Software"), to deal in the Software
@@ -34,7 +34,7 @@
 /** \brief Pi (what else?). */
 #define PARSER_CONST_PI  3.141592653589793238462643
 
-/** \brief The eulerian number. */
+/** \brief The Eulerian number. */
 #define PARSER_CONST_E   2.718281828459045235360287
 
 using namespace std;
@@ -68,15 +68,53 @@ namespace mu
 
   //---------------------------------------------------------------------------
   // Logarithm functions
-  value_type Parser::Log2(value_type v)  { return MathImpl<value_type>::Log2(v);  }  // Logarithm base 2
-  value_type Parser::Log10(value_type v) { return MathImpl<value_type>::Log10(v); } // Logarithm base 10
-  value_type Parser::Ln(value_type v)    { return MathImpl<value_type>::Log(v);   } // Logarithm base e (natural logarithm)
+
+  // Logarithm base 2
+  value_type Parser::Log2(value_type v)  
+  { 
+    #ifdef MUP_MATH_EXCEPTIONS
+        if (v<=0)
+          throw ParserError(ecDOMAIN_ERROR, _T("Log2"));
+    #endif
+
+    return MathImpl<value_type>::Log2(v);  
+  }  
+
+  // Logarithm base 10
+  value_type Parser::Log10(value_type v) 
+  { 
+    #ifdef MUP_MATH_EXCEPTIONS
+        if (v<=0)
+          throw ParserError(ecDOMAIN_ERROR, _T("Log10"));
+    #endif
+
+    return MathImpl<value_type>::Log10(v); 
+  } 
+
+// Logarithm base e (natural logarithm)
+  value_type Parser::Ln(value_type v)    
+  { 
+    #ifdef MUP_MATH_EXCEPTIONS
+        if (v<=0)
+          throw ParserError(ecDOMAIN_ERROR, _T("Ln"));
+    #endif
+
+    return MathImpl<value_type>::Log(v);   
+  } 
 
   //---------------------------------------------------------------------------
   //  misc
   value_type Parser::Exp(value_type v)  { return MathImpl<value_type>::Exp(v);  }
   value_type Parser::Abs(value_type v)  { return MathImpl<value_type>::Abs(v);  }
-  value_type Parser::Sqrt(value_type v) { return MathImpl<value_type>::Sqrt(v); }
+  value_type Parser::Sqrt(value_type v) 
+  { 
+    #ifdef MUP_MATH_EXCEPTIONS
+        if (v<0)
+          throw ParserError(ecDOMAIN_ERROR, _T("sqrt"));
+    #endif
+
+    return MathImpl<value_type>::Sqrt(v); 
+  }
   value_type Parser::Rint(value_type v) { return MathImpl<value_type>::Rint(v); }
   value_type Parser::Sign(value_type v) { return MathImpl<value_type>::Sign(v); }
 
@@ -88,6 +126,16 @@ namespace mu
   value_type Parser::UnaryMinus(value_type v) 
   { 
     return -v; 
+  }
+
+  //---------------------------------------------------------------------------
+  /** \brief Callback for the unary minus operator.
+      \param v The value to negate
+      \return -v
+  */
+  value_type Parser::UnaryPlus(value_type v) 
+  { 
+    return v; 
   }
 
   //---------------------------------------------------------------------------
@@ -246,7 +294,7 @@ namespace mu
       // Logarithm functions
       DefineFun(_T("log2"), Log2);
       DefineFun(_T("log10"), Log10);
-      DefineFun(_T("log"), Log10);
+      DefineFun(_T("log"), Ln);
       DefineFun(_T("ln"), Ln);
       // misc
       DefineFun(_T("exp"), Exp);
@@ -265,7 +313,7 @@ namespace mu
   //---------------------------------------------------------------------------
   /** \brief Initialize constants.
   
-    By default the parser recognizes two constants. Pi ("pi") and the eulerian
+    By default the parser recognizes two constants. Pi ("pi") and the Eulerian
     number ("_e").
   */
   void Parser::InitConst()
@@ -282,6 +330,7 @@ namespace mu
   void Parser::InitOprt()
   {
     DefineInfixOprt(_T("-"), UnaryMinus);
+    DefineInfixOprt(_T("+"), UnaryPlus);
   }
 
   //---------------------------------------------------------------------------
@@ -331,7 +380,7 @@ namespace mu
                f[4] = {0,0,0,0},
                fEpsilon(a_fEpsilon);
 
-    // Backwards compatible calculation of epsilon inc case the user doesnt provide
+    // Backwards compatible calculation of epsilon inc case the user doesn't provide
     // his own epsilon
     if (fEpsilon==0)
       fEpsilon = (a_fPos==0) ? (value_type)1e-10 : (value_type)1e-7 * a_fPos;

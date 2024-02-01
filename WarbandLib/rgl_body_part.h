@@ -20,6 +20,9 @@ namespace rgl
 		bf_moveable           = 0x40000,
 		bf_ladder             = 0x80000,
 		bf_barrier_3d         = 0x100000,
+		bf_barrier_player     = 0x200000,
+		bf_static_movement    = 0x800000,
+		bf_barrier_ai_3d      = 0x1000000,
 	};
 
 	enum body_type

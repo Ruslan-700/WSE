@@ -222,20 +222,20 @@ int StrGetChar(WSEStringOperationsContext *context)
 	return str1.GetAt(index);
 }
 
-int StrToNum(WSEStringOperationsContext *context)
+__int64 StrToNum(WSEStringOperationsContext *context)
 {
 	CStringW str1;
-	int useFixedPointMultiplier;
+	bool useFixedPointMultiplier;
 
 	context->ExtractWideString(str1);
-	context->ExtractValue(useFixedPointMultiplier);
+	context->ExtractBoolean(useFixedPointMultiplier);
 
 	double value = _wtof(str1);
 
 	if (useFixedPointMultiplier)
 		value *= warband->basic_game.fixed_point_multiplier;
-	
-	return (int)value;
+
+	return (__int64)value;
 }
 
 int StrCompare(WSEStringOperationsContext *context)

@@ -57,6 +57,14 @@ void WSEOperationContext::ExtractLhsValue(int &value)
 	value = (int)m_operand_values[0];
 }
 
+void WSEOperationContext::ExtractLhsBigValue(__int64 &value)
+{
+	if (m_descriptor->m_max_operands == 0)
+		ScriptError("operand index (1) is above maximum (%d)", m_descriptor->m_min_operands);
+
+	value = m_operand_values[0];
+}
+
 void WSEOperationContext::ExtractPointer(void *&value, void *def)
 {
 	value = (void *)GetNextOperand((int)def);

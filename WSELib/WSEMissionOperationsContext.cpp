@@ -743,6 +743,9 @@ WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext
 
 void WSEMissionOperationsContext::OnLoad()
 {
+	DefineOperation(1780, "entry_point_get_position", WSE2Extended, 2, 3,
+		"Stores <1>'s position into <0>. If <2> is non-zero stores shifted position",
+		"position_register", "entry_no", "shifted");
 	
 	ReplaceOperation(1877, "prop_instance_receive_damage", PropInstanceReceiveDamage, Both, None, 3, 4,
 		"<0> received <2> damage from <1>. If <3> is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.",
@@ -839,12 +842,12 @@ void WSEMissionOperationsContext::OnLoad()
 		"position_register", "missile_no");
 	
 	RegisterOperation("set_prop_collision_threshold", MissionSetPropCollisionThreshold, Both, None, 3, 3,
-	"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
-	"attack_direction", "low_boundary", "high_boundary");
+		"Changes the animation progress boundaries (in percents) that determine if swing attacks on props will collide (default: 40% <= x <= 80% (75% for overheads))",
+		"attack_direction", "low_boundary", "high_boundary");
 
 	RegisterOperation("get_camera_position", GetCameraPosition, Client, None, 1, 1,
-	"Stores camera position and rotation into <0>",
-	"position_register_no");
+		"Stores camera position and rotation into <0>",
+		"position_register");
 
 	RegisterOperation("prop_instance_remove_particle_system", MissionObjectRemoveParticleSystem, Client, None, 1, 2,
 		"Removes <1> (all particle systems if not set or -1) from <0>",
@@ -873,4 +876,8 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("set_show_crosshair", SetShowCrosshair, Client, None, 1, 1,
 		"Enables or disables the crosshair for singleplayer",
 		"value");
+
+	RegisterOperation("shift_entry_point", nullptr, Both, WSE2, 1, 1,
+		"Shift <0> same way game does to spawn visitors",
+		"entry_no");
 }

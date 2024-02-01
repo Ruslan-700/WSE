@@ -5,7 +5,7 @@
   |  Y Y  \|  |  /|    |     / __ \_|  | \/\___ \ \  ___/ |  | \/
   |__|_|  /|____/ |____|    (____  /|__|  /____  > \___  >|__|   
         \/                       \/            \/      \/        
-  Copyright (C) 2004-2012 Ingo Berg
+  Copyright (C) 2004-2013 Ingo Berg
 
   Permission is hereby granted, free of charge, to any person obtaining a copy of this 
   software and associated documentation files (the "Software"), to deal in the Software
@@ -55,7 +55,7 @@ namespace mu
 	    <li>binary operator</li>
     </ul>
 
-   \author (C) 2004-2012 Ingo Berg 
+   \author (C) 2004-2013 Ingo Berg 
   */
   template<typename TBase, typename TString>
   class ParserToken
@@ -86,6 +86,8 @@ namespace mu
         ,m_pTok(0)
         ,m_iIdx(-1)
         ,m_strTok()
+		,m_strVal()
+		,m_fVal(0)
         ,m_pCallback()
       {}
 

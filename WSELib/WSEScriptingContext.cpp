@@ -65,6 +65,11 @@ WSEScriptingContext::WSEScriptingContext()
 	m_cur_statement_block = nullptr;
 	memset(m_descriptors, 0, WSE_MAX_NUM_OPERATIONS * sizeof(WSEOperationDescriptor *));
 	memset(m_wse2_extended_descriptors, 0, WSE_MAX_NUM_OPERATIONS * sizeof(WSEOperationDescriptor *));
+
+	for (int i = 0; i < NUM_TRIGGER_PARAMS; ++i)
+	{
+		m_trigger_params[i] = -100000;
+	}
 }
 
 void WSEScriptingContext::OnLoad()
@@ -986,31 +991,31 @@ void WSEScriptingContext::DumpOperationsHeader()
 	stream << "]" << std::endl;
 }
 
-int WSEScriptingContext::GetTriggerParam(int index) const
+__int64 WSEScriptingContext::GetTriggerParam(int index) const
 {
 	if (index == 1)
-		return (int)warband->basic_game.trigger_param_1;
+		return warband->basic_game.trigger_param_1;
 	else if (index == 2)
-		return (int)warband->basic_game.trigger_param_2;
+		return warband->basic_game.trigger_param_2;
 	else if (index == 3)
-		return (int)warband->basic_game.trigger_param_3;
+		return warband->basic_game.trigger_param_3;
 	else if (index == 4)
-		return (int)warband->basic_game.trigger_param_4;
+		return warband->basic_game.trigger_param_4;
 	else if (index == 5)
-		return (int)warband->basic_game.trigger_param_5;
+		return warband->basic_game.trigger_param_5;
 	else if (index == 6)
-		return (int)warband->basic_game.trigger_param_6;
+		return warband->basic_game.trigger_param_6;
 	else if (index == 7)
-		return (int)warband->basic_game.trigger_param_7;
+		return warband->basic_game.trigger_param_7;
 	else if (index == 8)
-		return (int)warband->basic_game.trigger_param_8;
+		return warband->basic_game.trigger_param_8;
 	else if (index > 0 && index <= NUM_TRIGGER_PARAMS)
 		return m_trigger_params[index - 1];
 	else
 		return 0;
 }
 
-void WSEScriptingContext::SetTriggerParam(int index, int value)
+void WSEScriptingContext::SetTriggerParam(int index, __int64 value)
 {
 	if (index == 1)
 		warband->basic_game.trigger_param_1 = value;

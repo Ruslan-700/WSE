@@ -494,6 +494,8 @@ void WSEMissionContext::OnUpdateHorseAgentEntityBody(int agent_no, wb::item *hor
 #endif
 	warband->basic_game.trigger_param_1 = agent_no;
 	warband->basic_game.trigger_param_2 = -1;
+	warband->basic_game.trigger_param_3 = horse_item->get_modifier();
+	warband->basic_game.trigger_param_4 = 0;
 	item_kind->simple_triggers.execute(wb::ti_on_init_item);
 }
 
@@ -692,6 +694,8 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 				game->trigger_mesh = nullptr;
 				warband->basic_game.trigger_param_1 = agent_no;
 				warband->basic_game.trigger_param_2 = troop_no;
+				warband->basic_game.trigger_param_3 = items[wb::is_foot].get_modifier();
+				warband->basic_game.trigger_param_4 = 0;
 				item_kind->simple_triggers.execute(wb::ti_on_init_item);
 			}
 		}
@@ -703,6 +707,46 @@ void WSEMissionContext::OnUpdateAgentEntityBody(rgl::strategic_entity *entity, i
 		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_right_hand);
 		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_left_bracer);
 		MBDeleteCharacterMetaMesh(entity, meta_meshes, wb::bmm_right_bracer);
+	}
+
+	if (items[wb::is_hand].is_valid())
+	{
+		wb::item_kind *item_kind = &warband->item_kinds[items[wb::is_hand].item_no];
+
+		if (item_kind->simple_triggers.has_trigger(wb::ti_on_init_item))
+		{
+			if (meta_meshes[wb::bmm_left_hand])
+			{
+				wb::game *game = warband->cur_game;
+
+				game->trigger_mission_object_no = -1;
+				game->trigger_agent_no = agent_no;
+				game->trigger_item_slot_no = wb::is_hand;
+				game->trigger_meta_mesh = meta_meshes[wb::bmm_left_hand];
+				game->trigger_mesh = nullptr;
+				warband->basic_game.trigger_param_1 = agent_no;
+				warband->basic_game.trigger_param_2 = troop_no;
+				warband->basic_game.trigger_param_3 = items[wb::is_hand].get_modifier();
+				warband->basic_game.trigger_param_4 = 0;
+				item_kind->simple_triggers.execute(wb::ti_on_init_item);
+			}
+
+			if (meta_meshes[wb::bmm_right_hand])
+			{
+				wb::game *game = warband->cur_game;
+
+				game->trigger_mission_object_no = -1;
+				game->trigger_agent_no = agent_no;
+				game->trigger_item_slot_no = wb::is_hand;
+				game->trigger_meta_mesh = meta_meshes[wb::bmm_right_hand];
+				game->trigger_mesh = nullptr;
+				warband->basic_game.trigger_param_1 = agent_no;
+				warband->basic_game.trigger_param_2 = troop_no;
+				warband->basic_game.trigger_param_3 = items[wb::is_hand].get_modifier();
+				warband->basic_game.trigger_param_4 = 1;
+				item_kind->simple_triggers.execute(wb::ti_on_init_item);
+			}
+		}
 	}
 
 	/*

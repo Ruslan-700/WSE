@@ -14,6 +14,12 @@ ti_on_agent_hit = -28.0 #can only be used in module_mission_templates triggers
 #                      rotation gives the direction of the blow
 # Trigger Result: if set, damage dealt to agent
 
+ti_on_init_item = -50.0 #can only be used in module_items triggers
+# Trigger Param 1: agent id
+# Trigger Param 2: troop id
+# Trigger Param 3: item modifier
+# Trigger Param 4: is extra mesh (used for gloves)
+
 ti_on_scene_prop_stepped_on = -100.0 #can only be used in module_scene_props triggers
 # Trigger Param 1: agent no
 # Trigger Param 2: prop instance no

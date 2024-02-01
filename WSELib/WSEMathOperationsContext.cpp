@@ -2,100 +2,100 @@
 
 #include "WSE.h"
 
-int RightShift(WSEMathOperationsContext *context)
+__int64 RightShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractLhsValue(value);
-	context->ExtractValue(shift);
+	context->ExtractLhsBigValue(value);
+	context->ExtractBigValue(shift);
 
 	return value >> shift;
 }
 
-int StoreRightShift(WSEMathOperationsContext *context)
+__int64 StoreRightShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractValue(value);
-	context->ExtractValue(shift);
+	context->ExtractBigValue(value);
+	context->ExtractBigValue(shift);
 
 	return value >> shift;
 }
 
-int LogicalRightShift(WSEMathOperationsContext *context)
+__int64 LogicalRightShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractLhsValue(value);
-	context->ExtractValue(shift);
+	context->ExtractLhsBigValue(value);
+	context->ExtractBigValue(shift);
 
-	return (unsigned int)value >> shift;
+	return (unsigned __int64)value >> shift;
 }
 
-int StoreLogicalRightShift(WSEMathOperationsContext *context)
+__int64 StoreLogicalRightShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractValue(value);
-	context->ExtractValue(shift);
+	context->ExtractBigValue(value);
+	context->ExtractBigValue(shift);
 
-	return (unsigned int)value >> shift;
+	return (unsigned __int64)value >> shift;
 }
 
-int LeftShift(WSEMathOperationsContext *context)
+__int64 LeftShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractLhsValue(value);
-	context->ExtractValue(shift);
+	context->ExtractLhsBigValue(value);
+	context->ExtractBigValue(shift);
 
 	return value << shift;
 }
 
-int StoreLeftShift(WSEMathOperationsContext *context)
+__int64 StoreLeftShift(WSEMathOperationsContext *context)
 {
-	int value, shift;
+	__int64 value, shift;
 
-	context->ExtractValue(value);
-	context->ExtractValue(shift);
+	context->ExtractBigValue(value);
+	context->ExtractBigValue(shift);
 
 	return value << shift;
 }
 
-int Xor(WSEMathOperationsContext *context)
+__int64 Xor(WSEMathOperationsContext *context)
 {
-	int value1, value2;
+	__int64 value1, value2;
 
-	context->ExtractLhsValue(value1);
-	context->ExtractValue(value2);
+	context->ExtractLhsBigValue(value1);
+	context->ExtractBigValue(value2);
 
 	return value1 ^ value2;
 }
 
-int StoreXor(WSEMathOperationsContext *context)
+__int64 StoreXor(WSEMathOperationsContext *context)
 {
-	int value1, value2;
+	__int64 value1, value2;
 
-	context->ExtractValue(value1);
-	context->ExtractValue(value2);
+	context->ExtractBigValue(value1);
+	context->ExtractBigValue(value2);
 
 	return value1 ^ value2;
 }
 
-int Not(WSEMathOperationsContext *context)
+__int64 Not(WSEMathOperationsContext *context)
 {
-	int value;
+	__int64 value;
 
-	context->ExtractLhsValue(value);
+	context->ExtractLhsBigValue(value);
 
 	return ~value;
 }
 
-int StoreNot(WSEMathOperationsContext *context)
+__int64 StoreNot(WSEMathOperationsContext *context)
 {
-	int value;
+	__int64 value;
 
-	context->ExtractValue(value);
+	context->ExtractBigValue(value);
 
 	return ~value;
 }
