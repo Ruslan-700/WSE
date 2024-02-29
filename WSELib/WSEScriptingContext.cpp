@@ -342,12 +342,33 @@ void WSEScriptingContext::StartLoop(wb::operation_manager *operation_manager, __
 			if (statement->num_operands > 1)
 			{
 				int position_register_no = (int)statement->get_operand_value(local_variables, 1, operand_type);
-				float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / warband->basic_game.fixed_point_multiplier;
 
-				if (wb::operation::is_valid_register(position_register_no) && warband->cur_mission->grid.initialize_iterator(grid_iterator, warband->basic_game.position_registers[position_register_no].o, radius))
-					start_value = grid_iterator.agent_obj->agent->no;
+				if (wb::operation::is_valid_register(position_register_no))
+				{
+					float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / warband->basic_game.fixed_point_multiplier;
+
+					if (statement->num_operands > 3 && statement->get_operand_value(local_variables, 3, operand_type))
+					{
+						if (warband->cur_mission->grid.initialize_iterator(grid_iterator, warband->basic_game.position_registers[position_register_no].o, radius))
+							start_value = grid_iterator.agent_obj->agent->no;
+						else
+							start_value = -1;
+					}
+					else
+					{
+						for (start_value = warband->cur_mission->agents.get_first_valid_index(); start_value < warband->cur_mission->agents.size(); start_value = warband->cur_mission->agents.get_next_valid_index(start_value))
+						{
+							wb::agent *agent = &warband->cur_mission->agents[start_value];
+
+							if ((warband->basic_game.position_registers[position_register_no].o - agent->position).length() <= radius)
+								break;
+						}
+					}
+				}
 				else
-					start_value = -1;
+				{
+					start_value = warband->cur_mission->agents.get_first_valid_index();
+				}
 			}
 			else
 			{
@@ -470,7 +491,7 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 		break;
 	case wb::try_for_agents:
 		{
-			if (statement->num_operands > 1)
+			if (statement->num_operands > 3 && statement->get_operand_value(local_variables, 3, operand_type))
 			{
 				if (warband->cur_mission->grid.advance_iterator(loop->mission_grid_iterator))
 					value = loop->mission_grid_iterator.agent_obj->agent->no;
@@ -480,6 +501,24 @@ void WSEScriptingContext::EndLoop(wb::operation_manager *operation_manager, __in
 			else
 			{
 				value = warband->cur_mission->agents.get_next_valid_index(value);
+
+				if (statement->num_operands > 1)
+				{
+					int position_register_no = (int)statement->get_operand_value(local_variables, 1, operand_type);
+
+					if (wb::operation::is_valid_register(position_register_no))
+					{
+						float radius = (float)statement->get_operand_value(local_variables, 2, operand_type) / warband->basic_game.fixed_point_multiplier;
+
+						for (; value < warband->cur_mission->agents.size(); value = warband->cur_mission->agents.get_next_valid_index(value))
+						{
+							wb::agent *agent = &warband->cur_mission->agents[value];
+
+							if ((warband->basic_game.position_registers[position_register_no].o - agent->position).length() <= radius)
+								break;
+						}
+					}
+				}
 			}
 		}
 		
@@ -583,7 +622,7 @@ bool WSEScriptingContext::CanLoop(wb::operation_manager *operation_manager, __in
 	case wb::try_for_range_backwards:
 		return value >= statement->get_operand_value(local_variables, 1, operand_type);
 	case wb::try_for_agents:
-		if (statement->num_operands > 1)
+		if (statement->num_operands > 3 && statement->get_operand_value(local_variables, 3, operand_type))
 			return value != -1;
 		else
 			return value < warband->cur_mission->agents.size();

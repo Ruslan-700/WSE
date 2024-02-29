@@ -286,14 +286,22 @@ void WSESkinOperationsContext::OnLoad()
 	//	"face_key_register", "string");
 
 	ReplaceOperation(2766, "face_keys_get_morph_key", FaceKeysGetMorphKey, Both, Lhs | Undocumented, 3, 3,
-		"Stores <1>'s morph key value (0-7) into <0>",
+		"Stores <1>'s morph <2> value (0-7) into <0>",
 		"destination", "string_register", "key_no");
 
 	ReplaceOperation(2767, "face_keys_set_morph_key", FaceKeysSetMorphKey, Both, Undocumented, 3, 3,
-		"Sets <0>'s morph key value (0-7) to <value>",
+		"Sets <0>'s morph <1> value (0-7) to <2>",
 		"string_register", "key_no", "value");
 
 	RegisterOperation("skin_set_blood_color", nullptr, Both, WSE2, 2, 2,
 		"Sets <0>'s blood <1>",
 		"skin_no", "color");
+
+	RegisterOperation("skeleton_model_set_bone_body_section", nullptr, Both, WSE2, 3, 3,
+		"Sets <0>'s <1> <2>. 0 - none, 1 - lowerbody, 2 - rightside (included lowerbody), 3 - all (included lowerbody and rightside). Check acf_enforce animations flags",
+		"skeleton_model_name", "bone_no", "body_section");
+
+	RegisterOperation("skeleton_model_clean_body_sections", nullptr, Both, WSE2, 1, 1,
+		"Cleans <0>'s body sections. Use to clean default body sections before set new",
+		"skeleton_model_name");
 }

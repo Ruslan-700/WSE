@@ -750,6 +750,10 @@ void WSEMissionOperationsContext::OnLoad()
 	ReplaceOperation(1877, "prop_instance_receive_damage", PropInstanceReceiveDamage, Both, None, 3, 4,
 		"<0> received <2> damage from <1>. If <3> is non-zero ti_on_scene_prop_hit will be called and the damage dealt will be sent to clients.",
 		"prop_instance_no", "agent_no", "damage", "advanced");
+
+	DefineOperation(1880, "prop_instance_intersects_with_prop_instance", Cf | WSE2Extended, 2, 3,
+		"Checks if two scene props are intersecting (i.e. collided). Useful when animating scene props movement. Pass -1 for <1> to check the prop against all other props on the scene. Scene props must have active collision meshes. If <2> is non-zero also checks polygon-to-polygon physics models, this is may reduce performance.",
+		"checked_scene_prop_no", "prop_instance_no", "check_polygon_to_polygon");
 	
 	ReplaceOperation(1960, "add_point_light", AddPointLight, Client, None, 0, 3,
 		"Adds a point light with <0> and <1> (<2> if set - in meters)",

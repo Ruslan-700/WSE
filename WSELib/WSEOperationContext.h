@@ -29,10 +29,10 @@ public:
 	void ExtractClampedValue(int &value, int lower_bound, int upper_bound, int def = 0);
 	void ExtractBoolean(bool &value, bool def = false);
 	void ExtractFixedPoint(float &value, float def = 0.0f);
-	void ExtractString(rgl::string &value, const char *def = "");
-	void ExtractString(std::string &value, const std::string &def = "");
-	void ExtractWideString(CStringW &value, const char *def = "");
-	void ExtractPath(std::string &path);
+	void ExtractString(rgl::string &value, const char *def = "", bool parse = true);
+	void ExtractString(std::string &value, const std::string &def = "", bool parse = true);
+	void ExtractWideString(CStringW &value, const char *def = "", bool parse = true);
+	void ExtractPath(std::string &path, bool parse = true);
 	void ExtractRegister(int &value);
 	void ExtractScriptNo(int &value);
 	void ExtractMenuNo(int &value);

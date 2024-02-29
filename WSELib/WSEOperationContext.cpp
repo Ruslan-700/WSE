@@ -113,7 +113,7 @@ void WSEOperationContext::ExtractFixedPoint(float &value, float def)
 	value = GetNextOperand() / (float)warband->basic_game.fixed_point_multiplier;
 }
 
-void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
+void WSEOperationContext::ExtractString(rgl::string &value, const char *def, bool parse)
 {
 	if (!HasMoreOperands())
 	{
@@ -148,28 +148,32 @@ void WSEOperationContext::ExtractString(rgl::string &value, const char *def)
 	rgl::string temp;
 
 	warband->string_manager.get_operand_string(temp, index, type);
-	warband->basic_game.parse_string(value, temp);
+
+	if (parse)
+		warband->basic_game.parse_string(value, temp);
+	else
+		value = temp;
 }
 
-void WSEOperationContext::ExtractString(std::string &value, const std::string &def)
+void WSEOperationContext::ExtractString(std::string &value, const std::string &def, bool parse)
 {
 	rgl::string s;
 
-	ExtractString(s, def.c_str());
+	ExtractString(s, def.c_str(), parse);
 	value = s.c_str();
 }
 
-void WSEOperationContext::ExtractWideString(CStringW &value, const char *def)
+void WSEOperationContext::ExtractWideString(CStringW &value, const char *def, bool parse)
 {
 	rgl::string s;
 
-	ExtractString(s, def);
+	ExtractString(s, def, parse);
 	s.widen(value);
 }
 
-void WSEOperationContext::ExtractPath(std::string &path)
+void WSEOperationContext::ExtractPath(std::string &path, bool parse)
 {
-	ExtractString(path);
+	ExtractString(path, "", parse);
 	
 	char invalid[] = "<>:\"/\\|?*";
 	size_t index = path.find_first_of(invalid);

@@ -27,7 +27,7 @@ void ServerSetPasswordAdmin(WSENetworkOperationsContext *context)
 {
 	rgl::string str;
 
-	context->ExtractString(str);
+	context->ExtractString(str, "", false);
 
 	if (!warband->basic_game.is_multiplayer() || !warband->basic_game.is_safe_string(str))
 		return;
@@ -39,7 +39,7 @@ void ServerSetPasswordPrivate(WSENetworkOperationsContext *context)
 {
 	rgl::string str;
 
-	context->ExtractString(str);
+	context->ExtractString(str, "", false);
 
 	if (!warband->basic_game.is_multiplayer() || !warband->basic_game.is_safe_string(str))
 		return;
@@ -197,7 +197,7 @@ void ServerSetPasswordRcon(WSENetworkOperationsContext *context)
 #if defined WARBAND_DEDICATED
 	std::string str;
 
-	context->ExtractString(str);
+	context->ExtractString(str, "", false);
 
 	if (!warband->basic_game.is_dedicated_server() || !WSE->Network.m_rcon_server)
 		return;
