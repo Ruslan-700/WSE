@@ -238,6 +238,7 @@ item_set_horse_blood_particles  = 3809 #(item_set_horse_blood_particles, <item_k
 item_set_horse_blood_color      = 3810 #(item_set_horse_blood_color, <item_kind_no>, <color>), #Sets <item_kind_no>'s horse blood <color> (requires WSE2)
 cur_item_mesh_set_color         = 3811 #(cur_item_mesh_set_color, <mesh_no>, <color>), #Sets item <mesh_no> color to <color>. Only call inside ti_on_init_item in module_items.
 cur_item_add_mesh_with_material = 3812 #(cur_item_add_mesh_with_material, <mesh_name_string_no>, <material_name_string_no>, [<lod_begin>], [<lod_end>], [<color>]), #Adds another <mesh_name_string_no> to item. Replaces item material to <material_name_string_no>. Sets item color to [<color>]. Only call inside ti_on_init_item in module_items.
+item_set_horse_skeleton_model   = 3813 #(item_set_horse_skeleton_model, <item_kind_no>, <skeleton_model_name>), #Sets <item_kind_no>'s horse <skeleton_model_name>. Use skeleton_model_clean_body_sections and skeleton_model_set_bone_body_section operations to configure sections for new horses skeleton models (requires WSE2)
 
 party_stack_get_experience      = 3900 #(party_stack_get_experience, <destination>, <party_no>, <party_stack_no>), #Stores the experience of <party_no>'s <party_stack_no> into <destination>
 party_stack_get_num_upgradeable = 3901 #(party_stack_get_num_upgradeable, <destination>, <party_no>, <party_stack_no>), #Stores the amount of upgradeable troops in <party_no>'s <party_stack_no> into <destination>

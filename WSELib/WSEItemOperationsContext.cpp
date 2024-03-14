@@ -552,4 +552,8 @@ void WSEItemOperationsContext::OnLoad()
 	RegisterOperation("cur_item_add_mesh_with_material", CurItemAddMeshWithMaterial, Client, None, 2, 5,
 		"Adds another <0> to item. Replaces item material to <1>. Sets item color to <4>. Only call inside ti_on_init_item in module_items.",
 		"mesh_name_string_no", "material_name_string_no", "lod_begin", "lod_end", "color");
+
+	RegisterOperation("item_set_horse_skeleton_model", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s horse <1>. Use skeleton_model_clean_body_sections and skeleton_model_set_bone_body_section operations to configure sections for new horses skeleton models",
+		"item_kind_no", "skeleton_model_name");
 }
