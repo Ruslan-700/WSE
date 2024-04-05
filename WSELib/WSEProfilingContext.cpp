@@ -155,3 +155,39 @@ void WSEProfilingContext::StopProfilingBlock()
 
 	QueryPerformanceCounter(&m_infos[m_cur_info].rec_end);
 }
+
+/*  v1 Format
+	
+	Header
+		PROFILING_MAGIC, 32
+		PROFILING_VERSION, 16
+		WSE_VERSION_MAJOR, 16
+		WSE_VERSION_MINOR, 16
+		WSE_VERSION_BUILD, 16
+		Frequency, 64
+		Overhead, 64
+
+	Payload
+		ID introduction, once for each new ID (id is script or trigger name)
+			1	id [len (12bit), chars (len*8bit)]
+	  
+		Block
+			01	id_index (BCI15)
+			00	(time delta between block start/end, minus time of child calls (outside)) (BCI15)
+
+		or Nested Block
+			01 id_index_1
+				01 id_index_2
+					01 id_index_3
+						...
+					00 time_3
+				00 time_2
+				01 id_index_4
+					...
+				00 time_4
+			00 time_1
+
+	Footer
+		stream len, 64
+		PROFILING_MAGIC, 32
+*/

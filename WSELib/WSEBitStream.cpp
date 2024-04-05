@@ -51,6 +51,7 @@ void WSEBitStream::Commit(bool force)
 	m_buffer = 0;
 }
 
+//First writes into 32bit buffer (cursor is current pos in it), once full commit() will write it to stream.
 void WSEBitStream::WriteU32(unsigned int value, size_t size)
 {
 	assert(size <= 32);
@@ -87,7 +88,7 @@ void WSEBitStream::WriteU64(unsigned __int64 value, size_t size)
 	}
 }
 
-void WSEBitStream::WriteBCI15(unsigned int value)
+void WSEBitStream::WriteBCI15(unsigned int value) //write as base 15, 15 (0xF) will signal stop (no fixed length)
 {
 	int det = 1;
 
