@@ -12,7 +12,7 @@ namespace WSEProfiler
 {
 	public partial class FormMain : Form
 	{
-		static readonly string NAME = "WSEProfilerGUI v1.2";
+		static readonly string NAME = "WSEProfilerGUI v2.0";
 		private ListViewColumnSorter _lvwColumnSorter = new ListViewColumnSorter();
 		private IProfilerFile _curFile = null;
 		private Dictionary<string, TabPage> _openTabs = new Dictionary<string, TabPage>();
@@ -26,9 +26,9 @@ namespace WSEProfiler
 
 		private void Cleanup()
 		{
-			while (tabControl.TabPages.Count > 1)
+			while (tabControl.TabPages.Count > 2)
 			{
-				tabControl.TabPages.RemoveAt(1);
+				tabControl.TabPages.RemoveAt(2);
 			}
 
 			listView.Items.Clear();
@@ -109,7 +109,7 @@ namespace WSEProfiler
 
 		private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(string.Format("{0} by cmpxchg8b", NAME), "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(string.Format("{0} by cmpxchg8b & AgentSmith", NAME), "About", MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 		
 		private void listView_ColumnClick(object sender, ColumnClickEventArgs e)

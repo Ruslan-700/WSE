@@ -10,7 +10,9 @@ namespace WSEProfiler
 	{
 		private string _id;
 		private float _time;
-		private float _totalTime = -1;
+        private float _time_childs = -1;
+        private uint _time_start;
+        private uint _time_stop;
 		private Call _parent;
 		private List<Call> _children = new List<Call>();
 
@@ -25,19 +27,19 @@ namespace WSEProfiler
 			_parent = parent;
 		}
 
-		public float CalculateTime()
+		private float CalculateChildTime()
 		{
-			if (_totalTime == -1)
+            if (_time_childs == -1)
 			{
-				_totalTime = _time;
+                _time_childs = 0;
 
 				foreach (var child in _children)
 				{
-					_totalTime += child.TimeRecursive;
+                    _time_childs += child.TimeTotal;
 				}
 			}
 
-			return _totalTime;
+            return _time_childs;
 		}
 
 		public override string ToString()
@@ -56,10 +58,27 @@ namespace WSEProfiler
 			set { _time = value; }
 		}
 
-		public float TimeRecursive
+        public uint TimeStart
+        {
+            get { return _time_start; }
+            set { _time_start = value; }
+        }
+
+        public uint TimeStop
+        {
+            get { return _time_stop; }
+            set { _time_stop = value; }
+        }
+
+		public float TimeTotal
 		{
-			get { return CalculateTime(); }
+            get { return _time + CalculateChildTime(); }
 		}
+
+        public float TimeChilds
+        {
+            get { return CalculateChildTime(); }
+        }
 
 		public Call Parent
 		{

@@ -28,11 +28,6 @@ namespace WSEProfiler
 
 		public void Parse(string blockName)
 		{
-			List<string> types = new List<string>();
-			int recursionLevel = 0;
-			Call baseCall = new Call("Engine");
-			Call curCall = baseCall;
-
 			_infos.Clear();
 			_details = new CallDetails();
 			_stream.Seek(-4, SeekOrigin.End);
@@ -73,72 +68,163 @@ namespace WSEProfiler
 			_overhead = _stream.ReadU64(64);
 			_totalTime = 0;
 
-			while (_stream.Position() < _length)
-			{
-				var type = _stream.ReadU32(1);
-
-				if (type == 0)
-				{
-					var rec = _stream.ReadU32(1);
-					var bci = _stream.ReadBCI15();
-
-					if (rec > 0)
-					{
-						var call = new Call(types[(int)bci], curCall);
-
-						curCall.Children.Add(call);
-						curCall = call;
-						recursionLevel++;
-					}
-					else
-					{
-						ulong time = bci - _overhead;
-
-						if (time < 0)
-							time = 0;
-
-						curCall.Time = time * 1000000 / _frequency;
-
-						if (curCall.Id == blockName)
-							_details.AddCall(curCall);
-
-						curCall = curCall.Parent;
-						recursionLevel--;
-					}
-
-					if (curCall == baseCall)
-					{
-						if (blockName == "")
-						{
-							if (curCall.Children.Count != 1)
-								throw new Exception("Base call with multiple children.");
-
-							_totalTime += curCall.Children[0].TimeRecursive;
-							ParseCall(curCall.Children[0]);
-						}
-						
-						curCall.Children.Clear();
-					}
-				}
-				else if (type == 1)
-				{
-					types.Add(_stream.ReadString());
-				}
-			}
-
-			if (recursionLevel != 0)
-			{
-				this.ShowWarning("Final block depth non-zero. Is the profiling file damaged or incomplete?");
-
-				var call = curCall;
-
-				while (call != null)
-				{
-					ParseCall(call);
-					call = call.Parent;
-				}
-			}
+            if (_profilerVersion == 1)
+            {
+                ParsePayload_V1(blockName);
+            }
+            else
+            {
+                ParsePayload_V2(blockName);
+            }
 		}
+
+        private void ParsePayload_V1(string blockName)
+        {
+            List<string> types = new List<string>();
+            int recursionLevel = 0;
+            Call baseCall = new Call("Engine");
+            Call curCall = baseCall;
+
+            while (_stream.Position() < _length)
+            {
+                var type = _stream.ReadU32(1);
+
+                if (type == 0)
+                {
+                    var rec = _stream.ReadU32(1);
+                    var bci = _stream.ReadBCI15();
+
+                    if (rec > 0)
+                    {
+                        var call = new Call(types[(int)bci], curCall);
+
+                        curCall.Children.Add(call);
+                        curCall = call;
+                        recursionLevel++;
+                    }
+                    else
+                    {
+                        ulong time = bci - _overhead;
+
+                        if (time < 0)
+                            time = 0;
+
+                        curCall.Time = time * 1000000 / _frequency;
+
+                        if (curCall.Id == blockName)
+                            _details.AddCall(curCall);
+
+                        curCall = curCall.Parent;
+                        recursionLevel--;
+                    }
+
+                    if (curCall == baseCall)
+                    {
+                        if (blockName == "")
+                        {
+                            if (curCall.Children.Count != 1)
+                                throw new Exception("Base call with multiple children.");
+
+                            _totalTime += curCall.Children[0].TimeTotal;
+                            ParseCall(curCall.Children[0]);
+                        }
+
+                        curCall.Children.Clear();
+                    }
+                }
+                else if (type == 1)
+                {
+                    types.Add(_stream.ReadString());
+                }
+            }
+
+            if (recursionLevel != 0)
+            {
+                this.ShowWarning("Final block depth non-zero. Is the profiling file damaged or incomplete?");
+
+                var call = curCall;
+
+                while (call != null)
+                {
+                    ParseCall(call);
+                    call = call.Parent;
+                }
+            }
+        }
+
+        private void ParsePayload_V2(string blockName)
+        {
+            List<string> types = new List<string>();
+            int recursionLevel = 0;
+            Call baseCall = new Call("Engine");
+            Call curCall = baseCall;
+
+            while (_stream.Position() < _length)
+            {
+                uint type = (_stream.ReadU32(1) << 1) | _stream.ReadU32(1);
+
+                if (type == 3) //0b11, type name
+                {
+                    types.Add(_stream.ReadString());
+                }
+                else if (type == 2) //0b10, frame marker
+                {
+                    //frame mark
+                    var t = _stream.Read_deltaBCI15();
+                }
+                else if (type == 1) //0b01, block start
+                {
+                    var id_idx = _stream.ReadBCI15();
+                    var t = _stream.Read_deltaBCI15();
+
+                    var call = new Call(types[(int)id_idx], curCall);
+                    call.TimeStart = t;
+
+                    curCall.Children.Add(call);
+                    curCall = call;
+                    recursionLevel++;
+                }
+                else if (type == 0){ //0b00, block end
+                    var t = _stream.Read_deltaBCI15();
+
+                    curCall.TimeStop = t;
+                    curCall.Time = (curCall.TimeStop - curCall.TimeStart) * 1000000 / _frequency - curCall.TimeChilds;
+
+                    if (curCall.Id == blockName)
+                        _details.AddCall(curCall);
+
+                    curCall = curCall.Parent;
+                    recursionLevel--;
+
+                    if (curCall == baseCall)
+                    {
+                        if (blockName == "")
+                        {
+                            if (curCall.Children.Count != 1)
+                                throw new Exception("Base call with multiple children.");
+
+                            _totalTime += curCall.Children[0].TimeTotal;
+                            ParseCall(curCall.Children[0]);
+                        }
+
+                        curCall.Children.Clear();
+                    }
+                }
+            }
+
+            if (recursionLevel != 0)
+            {
+                this.ShowWarning("Final block depth non-zero. Is the profiling file damaged or incomplete?");
+
+                var call = curCall;
+
+                while (call != null)
+                {
+                    ParseCall(call);
+                    call = call.Parent;
+                }
+            }
+        }
 
 		public void Close()
 		{
@@ -154,7 +240,7 @@ namespace WSEProfiler
 
 			var info = _infos[call.Id];
 
-			info.AddTime(call.Time, call.TimeRecursive);
+			info.AddTime(call.Time, call.TimeTotal);
 
 			foreach (var child in call.Children)
 			{

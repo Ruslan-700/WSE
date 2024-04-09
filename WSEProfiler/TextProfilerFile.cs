@@ -75,7 +75,7 @@ namespace WSEProfiler
 					if (curCall.Children.Count != 1)
 						throw new Exception("Base call with multiple children.");
 
-					_totalTime += curCall.Children[0].TimeRecursive;
+                    _totalTime += curCall.Children[0].TimeTotal;
 					ParseCall(curCall.Children[0]);
 					curCall.Children.Clear();
 				}
@@ -97,7 +97,7 @@ namespace WSEProfiler
 
 			var info = _infos[call.Id];
 
-			info.AddTime(call.Time, call.TimeRecursive);
+            info.AddTime(call.Time, call.TimeTotal);
 
 			foreach (var child in call.Children)
 			{
