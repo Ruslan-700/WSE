@@ -69,6 +69,9 @@ void WSEProfilingContext::Start()
 	strftime(time_str, MAX_PATH, "%H.%M.%S-%d.%m.%y", &time_info);
 	sprintf_s(path, "%s%s-%s.wseprfb", WSE->GetPath().c_str(), warband->cur_module_name.c_str(), time_str);
 
+	m_profile_stream.~WSEBitStream();
+	new (&m_profile_stream) WSEBitStream();
+
 	if (!m_profile_stream.Open(path))
 	{
 		WSE->Log.Error("Profiling: failed to open file %s", path);
