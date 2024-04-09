@@ -6,6 +6,7 @@ WSEBitStream::WSEBitStream()
 	m_total = 0;
 	m_buffer = 0;
 	m_mask_table[0] = 0;
+	m_delta_last = 0;
 
 	for (int i = 0; i < 32; ++i)
 	{
@@ -88,7 +89,8 @@ void WSEBitStream::WriteU64(unsigned __int64 value, size_t size)
 	}
 }
 
-void WSEBitStream::WriteBCI15(unsigned int value) //write as base 15, 15 (0xF) will signal stop (no fixed length)
+//write as base 15, 15 (0xF) will signal stop (no fixed length)
+void WSEBitStream::WriteBCI15(unsigned int value)
 {
 	int det = 1;
 
@@ -103,6 +105,21 @@ void WSEBitStream::WriteBCI15(unsigned int value) //write as base 15, 15 (0xF) w
 	}
 
 	WriteU32(15, 4);
+}
+
+void WSEBitStream::Write_DeltaBCI15(unsigned int value)
+{
+	if(m_delta_last > value)
+	{
+		WriteU32(1, 1);
+		WriteBCI15(m_delta_last - value);
+	}
+	else
+	{
+		WriteU32(0, 1);
+		WriteBCI15(value - m_delta_last);
+	}
+	m_delta_last = value;
 }
 
 void WSEBitStream::WriteString(const rgl::string &value)

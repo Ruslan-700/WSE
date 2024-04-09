@@ -18,6 +18,7 @@ public:
 	void WriteU64(unsigned __int64 value, size_t size);
 	void WriteBCI15(unsigned int value);
 	void WriteString(const rgl::string &value);
+	void Write_DeltaBCI15(unsigned int value);
 
 private:
 	std::ofstream m_stream;
@@ -25,4 +26,5 @@ private:
 	unsigned int m_buffer;
 	unsigned int m_mask_table[33];
 	unsigned __int64 m_total;
+	unsigned int m_delta_last;
 };

@@ -3,17 +3,13 @@
 #include <ctime>
 #include "WSE.h"
 
-WSEProfilingContext::WSEProfilingContext() : m_enabled(false), m_flush_interval(0)
+WSEProfilingContext::WSEProfilingContext() : m_status(Status::stopped), m_flush_interval(0)
 {
 }
 
 void WSEProfilingContext::OnLoad()
 {
-	m_enabled = WSE->SettingsIni.Bool("profiling", "enabled", false);
 	m_flush_interval = WSE->SettingsIni.Int("profiling", "flush_interval", 60);
-	
-	if (!m_enabled)
-		return;
 }
 
 void WSEProfilingContext::OnUnload()
@@ -26,16 +22,42 @@ void WSEProfilingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 	switch (evt)
 	{
 	case ModuleLoad:
-		Stop();
-		Start();
+		if (WSE->SettingsIni.Bool("profiling", "enabled", false)) {
+			Start();
+		}
+		break;
+
+	case OnFrame:
+		if (m_status & Status::recording)
+		{
+			LARGE_INTEGER t;
+			QueryPerformanceCounter(&t);
+
+			m_profile_stream.WriteU32(1, 1);
+			m_profile_stream.WriteU32(0, 1);
+			m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+		}
 		break;
 	}
 }
 
+void WSEProfilingContext::SetAwaitStatus(Status s)
+{
+	assert(Status::awaitStart <= s && s <= Status::awaitResume);
+	m_status = s;
+}
+
+WSEProfilingContext::Status WSEProfilingContext::GetStatus()
+{
+	return m_status;
+}
+
 void WSEProfilingContext::Start()
 {
-	if (!m_enabled)
+	if (m_status != Status::stopped)
 		return;
+
+	m_status = Status::recording;
 
 	char path[MAX_PATH];
 	char time_str[256];
@@ -50,7 +72,7 @@ void WSEProfilingContext::Start()
 	if (!m_profile_stream.Open(path))
 	{
 		WSE->Log.Error("Profiling: failed to open file %s", path);
-		m_enabled = false;
+		m_status = Status::stopped;
 		return;
 	}
 	
@@ -75,7 +97,7 @@ void WSEProfilingContext::Start()
 
 	overhead /= 1000;
 	m_cur_profile_type = 0;
-	m_cur_info = 0;
+	m_profile_types.clear();
 	m_profile_stream.WriteU64(m_frequency.QuadPart, 64);
 	m_profile_stream.WriteU64(overhead, 64);
 	QueryPerformanceCounter(&m_last_flush);
@@ -84,8 +106,7 @@ void WSEProfilingContext::Start()
 
 void WSEProfilingContext::Stop()
 {
-	if (!m_enabled)
-		return;
+	m_status = Status::stopped;
 
 	if (m_profile_stream.IsOpen())
 	{
@@ -99,61 +120,61 @@ void WSEProfilingContext::Stop()
 	}
 }
 
-void WSEProfilingContext::StartProfilingBlock(wb::operation_manager *manager)
+void WSEProfilingContext::StartProfilingBlock(int depth, wb::operation_manager *manager)
 {
-	if (!m_enabled)
-		return;
-
-	LARGE_INTEGER rec_start;
-	
-	QueryPerformanceCounter(&rec_start);
-	
-	if (m_infos[m_cur_info].rec_start.QuadPart > 0)
-		m_infos[m_cur_info].outside += m_infos[m_cur_info].rec_end.QuadPart - m_infos[m_cur_info].rec_start.QuadPart;
-
-	m_infos[m_cur_info].rec_start = rec_start;
-	m_cur_info++;
-
-	m_infos[m_cur_info].outside = 0;
-	m_infos[m_cur_info].rec_start.QuadPart = 0;
-
-	if (m_profile_types.find(&manager->id) == m_profile_types.end())
-	{
-		m_profile_stream.WriteU32(1, 1);
-		m_profile_stream.WriteString(manager->id);
-		m_profile_types[&manager->id] = m_cur_profile_type++;
+	if (m_status == Status::awaitStart && depth == 0){
+		m_status = Status::stopped;
+		Start();
+	}
+	if (m_status == Status::awaitResume && depth == 0){
+		m_status = Status::recording;
 	}
 
-	m_profile_stream.WriteU32(0, 1);
-	m_profile_stream.WriteU32(1, 1);
-	m_profile_stream.WriteBCI15(m_profile_types[&manager->id]);
-	QueryPerformanceCounter(&m_infos[m_cur_info].start);
+	if (m_status & Status::recording)
+	{
+		if (m_profile_types.find(&manager->id) == m_profile_types.end())
+		{
+			m_profile_stream.WriteU32(1, 1);
+			m_profile_stream.WriteU32(1, 1);
+			m_profile_stream.WriteString(manager->id);
+			m_profile_types[&manager->id] = m_cur_profile_type++;
+		}
+
+		m_profile_stream.WriteU32(0, 1);
+		m_profile_stream.WriteU32(1, 1);
+		m_profile_stream.WriteBCI15(m_profile_types[&manager->id]);
+
+		LARGE_INTEGER t;
+		QueryPerformanceCounter(&t);
+
+		m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+	}
 }
 
-void WSEProfilingContext::StopProfilingBlock()
+void WSEProfilingContext::StopProfilingBlock(int depth)
 {
-	if (!m_enabled)
-		return;
-
-	LARGE_INTEGER end;
-
-	QueryPerformanceCounter(&end);
-	
-	if (m_infos[m_cur_info].rec_start.QuadPart > 0)
-		m_infos[m_cur_info].outside += m_infos[m_cur_info].rec_end.QuadPart - m_infos[m_cur_info].rec_start.QuadPart;
-	
-	m_profile_stream.WriteU32(0, 1);
-	m_profile_stream.WriteU32(0, 1);
-	m_profile_stream.WriteBCI15((unsigned int)(end.QuadPart - m_infos[m_cur_info].start.QuadPart - m_infos[m_cur_info].outside));
-	m_cur_info--;
-
-	if (m_cur_info == 0 && m_flush_interval > 0 && ((end.QuadPart - m_last_flush.QuadPart) / m_frequency.QuadPart >= m_flush_interval))
+	if (m_status & Status::recording)
 	{
-		m_profile_stream.Flush();
-		m_last_flush = end;
+		LARGE_INTEGER end;
+		QueryPerformanceCounter(&end);
+
+		m_profile_stream.WriteU32(0, 1);
+		m_profile_stream.WriteU32(0, 1);
+		m_profile_stream.Write_DeltaBCI15((unsigned int)end.QuadPart);
+
+		if (depth == 0 && m_flush_interval > 0 && ((end.QuadPart - m_last_flush.QuadPart) / m_frequency.QuadPart >= m_flush_interval))
+		{
+			m_profile_stream.Flush();
+			m_last_flush = end;
+		}
 	}
 
-	QueryPerformanceCounter(&m_infos[m_cur_info].rec_end);
+	if (m_status == Status::awaitStop && depth == 0){
+		Stop();
+	}
+	if (m_status == Status::awaitPause && depth == 0){
+		m_status = Status::paused;
+	}
 }
 
 /*  v1 Format
@@ -176,18 +197,33 @@ void WSEProfilingContext::StopProfilingBlock()
 			00	(time delta between block start/end, minus time of child calls (outside)) (BCI15)
 
 		or Nested Block
-			01 id_index_1
-				01 id_index_2
-					01 id_index_3
+			01 id_index_0
+				01 id_index_1
+					01 id_index_2
 						...
-					00 time_3
-				00 time_2
-				01 id_index_4
+					00 time_2
+				00 time_1
+				01 id_index_3
 					...
-				00 time_4
-			00 time_1
+				00 time_3
+			00 time_0
 
 	Footer
 		stream len, 64
 		PROFILING_MAGIC, 32
+*/
+
+/*	v2 Format
+
+	Payload
+		ID introduction, once for each new ID (id is script or trigger name)
+			11	id [len (12bit), chars (len*8bit)]
+
+		Frame marker
+			10	time (delta_BCI15)
+
+		Block
+			01	id_index (BCI15), start time (delta_BCI15)
+			00	end time (delta_BCI15)
+			
 */

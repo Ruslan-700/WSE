@@ -628,6 +628,21 @@ void SetCampaignTime(WSECoreOperationsContext *context)
 		warband->cur_game->year = year;
 }
 
+void ProfilerStart(WSECoreOperationsContext *context) 
+{
+	WSE->Profiling.SetAwaitStatus(WSEProfilingContext::Status::awaitStart);
+}
+
+void ProfilerStop(WSECoreOperationsContext *context)
+{
+	WSE->Profiling.SetAwaitStatus(WSEProfilingContext::Status::awaitStop);
+}
+
+bool ProfilerIsRecording(WSECoreOperationsContext *context)
+{
+	return WSE->Profiling.GetStatus() == WSEProfilingContext::Status::recording;
+}
+
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
 	m_mersenne_twister.seed((int)time(NULL));
@@ -846,4 +861,7 @@ void WSECoreOperationsContext::OnLoad()
 		"Stores mouse map coordinates into <0>",
 		"position_register");
 	
+	RegisterOperation("profiler_start", ProfilerStart, Both, None, 0, 0, "Start the profiler");
+	RegisterOperation("profiler_stop",  ProfilerStop,  Both, None, 0, 0, "Stop the profiler");
+	RegisterOperation("profiler_is_recording", ProfilerIsRecording, Both, Cf, 0, 0, "Fails if profiler isn't recording");
 }
