@@ -22,6 +22,7 @@ namespace WSEProfiler
 			InitializeComponent();
 			Text = NAME;
 			listView.ListViewItemSorter = _lvwColumnSorter;
+            tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
 		}
 
 		private void Cleanup()
@@ -137,7 +138,7 @@ namespace WSEProfiler
 
 			if (!_openTabs.ContainsKey(blockName))
 			{
-				var page = new TabPage(blockName);
+                var page = new TabPage(blockName + "     ");
 
 				_curFile.Parse(blockName);
 
@@ -145,9 +146,13 @@ namespace WSEProfiler
 
 				callTab.Closed += new EventHandler<BlockEventArgs>(callTab_Closed);
 				callTab.Opened += new EventHandler<BlockEventArgs>(callTab_Opened);
+
 				page.Controls.Add(callTab);
 				tabControl.TabPages.Add(page);
-				_curFile.Close();
+
+                callTab.Dock = DockStyle.Fill;
+                
+                _curFile.Close();
 				_openTabs.Add(blockName, page);
 			}
 
@@ -174,5 +179,114 @@ namespace WSEProfiler
 		{
 			OpenDetailsTab(e.BlockName);
 		}
+
+        Rectangle tab_getXrect(Rectangle tabTextArea)
+        {
+            return new Rectangle(tabTextArea.Right - 20, tabTextArea.Top + 5, 16, 16);
+        }
+
+        private void tabControl_DrawItem(object sender, DrawItemEventArgs e)
+        {
+            //a bit of background for selected tab
+            if (e.Index == this.tabControl.SelectedIndex)
+            {
+                var bc = Color.FromArgb(20, SystemColors.Highlight);
+                var bb = new SolidBrush(bc);
+                e.Graphics.FillRectangle(bb, e.Bounds);
+            }
+
+            //title
+            TextRenderer.DrawText(e.Graphics, this.tabControl.TabPages[e.Index].Text, e.Font, e.Bounds, Color.Black, TextFormatFlags.HorizontalCenter | TextFormatFlags.SingleLine | TextFormatFlags.GlyphOverhangPadding | TextFormatFlags.VerticalCenter | TextFormatFlags.WordEllipsis);
+
+            //close "x"
+            if (e.Index >= 2)
+            {
+                Rectangle x_rect = tab_getXrect(e.Bounds);
+                var hc = Color.FromArgb(50, SystemColors.Highlight);
+                var br = new SolidBrush(hc);
+
+
+                //.tag is used for mouseover
+                if (this.tabControl.Tag == this.tabControl.TabPages[e.Index])
+                {
+                    e.Graphics.FillRectangle(br, x_rect);
+                    e.Graphics.DrawString("x", new Font(e.Font, FontStyle.Bold), Brushes.Black, x_rect.Left + 3, x_rect.Top - 0);
+                    e.Graphics.DrawRectangle(SystemPens.Highlight, x_rect);
+                }
+                else
+                {
+                    e.Graphics.DrawString("x", new Font(e.Font, FontStyle.Bold), Brushes.Black, x_rect.Left + 3, x_rect.Top - 0);
+                }
+            }
+           
+            e.DrawFocusRectangle();
+
+        }
+
+        private void tabControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            for (int i = 2; i < this.tabControl.TabPages.Count; i++)
+            {
+                Rectangle closeButton = tab_getXrect(tabControl.GetTabRect(i));
+
+                if (closeButton.Contains(e.Location))
+                {
+                    var cTab = (CallTab)this.tabControl.TabPages[i].Controls[0];
+                    CloseDetailsTab(cTab.BlockName);
+                    return;
+                }
+            }
+        }
+
+        private void tabControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            for (int i = 2; i < this.tabControl.TabPages.Count; i++)
+            {
+                Rectangle closeButton = tab_getXrect(tabControl.GetTabRect(i));
+
+                if (closeButton.Contains(e.Location))
+                {
+                    if (tabControl.Tag != this.tabControl.TabPages[i])
+                    {
+                        tabControl.Tag = this.tabControl.TabPages[i];
+                        tabControl.Invalidate();
+                    }
+                    return;
+                }
+            }
+
+            if (tabControl.Tag != null)
+            {
+                tabControl.Tag = null;
+                tabControl.Invalidate();
+            }
+        }
+
+        private void tabControl_MouseLeave(object sender, EventArgs e)
+        {
+            if (tabControl.Tag != null)
+            {
+                tabControl.Tag = null;
+                tabControl.Invalidate();
+            }
+        }
+
+        private void tabControl_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (e.Delta > 0)
+            {
+                if (this.tabControl.SelectedIndex > 0)
+                {
+                    this.tabControl.SelectedIndex--;
+                }
+            }
+            else
+            {
+                if (this.tabControl.SelectedIndex < this.tabControl.TabCount - 1)
+                {
+                    this.tabControl.SelectedIndex++;
+                }
+            }
+        }
 	}
 }

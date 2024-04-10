@@ -188,7 +188,10 @@ namespace WSEProfiler
                     var t = _stream.Read_deltaBCI15();
 
                     curCall.TimeStop = t;
-                    curCall.Time = (curCall.TimeStop - curCall.TimeStart) * 1000000 / _frequency - curCall.TimeChilds;
+                    curCall.Time = (curCall.TimeStop - curCall.TimeStart);
+                    curCall.Time *= 1000000;
+                    curCall.Time /= _frequency;
+                    curCall.Time -= curCall.TimeChilds;
 
                     if (curCall.Id == blockName)
                         _details.AddCall(curCall);

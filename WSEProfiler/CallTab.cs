@@ -74,11 +74,6 @@ namespace WSEProfiler
 				OnOpened(listViewCallees.SelectedItems[0].Text);
 		}
 
-		private void buttonClose_Click(object sender, EventArgs e)
-		{
-			OnClosed();
-		}
-
 		private void OnOpened(string blockName)
 		{
 			if (Opened != null)
@@ -90,6 +85,11 @@ namespace WSEProfiler
 			if (Closed != null)
 				Closed(this, new BlockEventArgs(_blockName));
 		}
+
+        public string BlockName
+        {
+            get { return _blockName; }
+        }
 	}
 
 	public class BlockEventArgs : EventArgs
