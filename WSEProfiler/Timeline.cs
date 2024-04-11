@@ -19,6 +19,7 @@ namespace WSEProfiler
         private long _view_time_start = 0;
         private long _view_time_end = 0;
 
+        private Point origin_offset = new Point(7, 5);
         private Rectangle canvas;
 
         bool dragging = false;
@@ -27,6 +28,10 @@ namespace WSEProfiler
         bool selecting = false;
         private long _select_time_a = -1;
         private long _select_time_b = -1;
+
+        private Action draw_hover_info;
+
+
 
         public Timeline()
         {
@@ -84,6 +89,16 @@ namespace WSEProfiler
             x /= duration;
 
             return (int)x;
+        }
+
+        private Point mouse2canvas(Point location)
+        {
+            return new Point(location.X - origin_offset.X, location.Y - origin_offset.Y);
+        }
+
+        private MouseEventArgs mouseEvent2Canvas(MouseEventArgs e)
+        {
+            return new MouseEventArgs(e.Button, e.Clicks, e.Location.X - origin_offset.X, e.Location.Y - origin_offset.Y, e.Delta);
         }
 
         private long clamp(long val, long min, long max)
@@ -215,7 +230,7 @@ namespace WSEProfiler
 
             if(w == 1)
             {
-                e.Graphics.DrawLine(Pens.Black, x1, y1, x1, y1 + 20);
+                e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, y1 + 20);
                 return;
             }
 
@@ -223,10 +238,37 @@ namespace WSEProfiler
 
             e.Graphics.FillRectangle(c.Timeline_Brush, r);
 
-            if (w > 40)
+            if (w > 5)
             {
                 e.Graphics.DrawRectangle(Pens.Black, r);
-                e.Graphics.DrawString(c.Id, DefaultFont, Brushes.Black, r);
+            }
+            if (w > 40)
+            {
+                //Font f = new Font(SystemFonts.SmallCaptionFont.Name, 8);
+                //e.Graphics.DrawString(c.Id, f, Brushes.Black, r);
+                e.Graphics.DrawString(c.Id, SystemFonts.DefaultFont, Brushes.Black, r, new StringFormat(StringFormatFlags.NoWrap));
+            }
+            if (w > 1)
+            {
+                Point p = mouse2canvas(PictureBox1.PointToClient(System.Windows.Forms.Control.MousePosition));
+                if (r.Contains(p))
+                {
+                    draw_hover_info = delegate()
+                    {
+                        var x = p.X + 5;
+                        var y = p.Y + 5;
+
+                        var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
+
+                        SizeF size = e.Graphics.MeasureString(text, DefaultFont);
+
+                        e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
+
+                        x += 5;
+                        y += 5;
+                        e.Graphics.DrawString(text, DefaultFont, Brushes.Black, x, y);
+                    };
+                };
             }
 
             foreach (var child in c.Children)
@@ -239,7 +281,7 @@ namespace WSEProfiler
         {
             e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
 
-            e.Graphics.TranslateTransform(7, 5);
+            e.Graphics.TranslateTransform(origin_offset.X, origin_offset.Y);
             canvas = new Rectangle(0, 0, PictureBox1.Width - 14, PictureBox1.Height);
 
             if (calls.Count == 0)
@@ -247,6 +289,8 @@ namespace WSEProfiler
 
             draw_fixed_time_axis(e);
             draw_time_axis(e);
+
+            draw_hover_info = null;
 
             foreach (var marker in markers)
             {
@@ -268,10 +312,19 @@ namespace WSEProfiler
 
                 e.Graphics.FillRectangle(b, x, 30, w, canvas.Height - 30);
             }
+            else
+            {
+                if (draw_hover_info != null)
+                {
+                    draw_hover_info();
+                }
+            }
         }
 
         private void PictureBox1_Wheel(object sender, MouseEventArgs e)
         {
+            e = mouseEvent2Canvas(e);
+
             if (e.Delta > 0 && view_duration < 10)
                 return;
 
@@ -309,6 +362,16 @@ namespace WSEProfiler
 
         private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
+            e = mouseEvent2Canvas(e);
+
+            if (e.Button == MouseButtons.Right && selecting)
+            {
+                _select_time_a = -1;
+                _select_time_b = -1;
+                MouseEnd();
+                return;
+            }
+
             if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
             {
                 selecting = true;
@@ -326,6 +389,8 @@ namespace WSEProfiler
 
         private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
+            e = mouseEvent2Canvas(e);
+
             if (dragging)
             {
                 long dx = x2t(drag_last_x) - x2t(e.Location.X);
@@ -358,14 +423,15 @@ namespace WSEProfiler
                     }
                 }
 
-                this.PictureBox1.Invalidate();
+                //this.PictureBox1.Invalidate();
             }
 
             if (selecting)
             {
                 _select_time_b = clamp(x2t(e.Location.X), 0, duration);
-                this.PictureBox1.Invalidate();
+                //this.PictureBox1.Invalidate();
             }
+            this.PictureBox1.Invalidate();
         }
 
         private void MouseEnd()
@@ -384,14 +450,13 @@ namespace WSEProfiler
                 {
                     _view_time_start = _select_time_a;
                     _view_time_end = _select_time_b;
-                    PictureBox1.Invalidate();
                 }
                 if (_select_time_a > _select_time_b)
                 {
                     _view_time_start = _select_time_b;
                     _view_time_end = _select_time_a;
-                    PictureBox1.Invalidate();
                 }
+                PictureBox1.Invalidate();
             }
         }
 
