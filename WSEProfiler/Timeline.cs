@@ -21,6 +21,13 @@ namespace WSEProfiler
 
         private Rectangle canvas;
 
+        bool dragging = false;
+        int drag_last_x;
+
+        bool selecting = false;
+        private long _select_time_a = -1;
+        private long _select_time_b = -1;
+
         public Timeline()
         {
             InitializeComponent();
@@ -31,9 +38,14 @@ namespace WSEProfiler
             get { return calls.Count == 0 ? 0 : calls.Last().TimeStop; }
         }
 
-        private long view_duration
+        public long view_duration
         {
             get { return _view_time_end - _view_time_start; }
+        }
+
+        public bool is_zoomed_out
+        {
+            get { return _view_time_start == 0 && _view_time_end == duration; }
         }
 
         public void refresh()
@@ -123,23 +135,56 @@ namespace WSEProfiler
         //bottom axis, dynamic
         void draw_time_axis(PaintEventArgs e)
         {
-            long i = _view_time_start / 1000000;
+            long unit = 1000;
+            string ustr = "ms";
+            long steps = 6;
 
             Pen p1 = new Pen(Color.DarkGray, 2);
             Pen p2 = new Pen(Color.DarkGray, 1);
 
-            for (; i <= (_view_time_end / 1000000); i++)
+            long a = _view_time_start / unit;
+            long b = _view_time_end / unit;
+            long d = b - a;
+
+
+            //find the best suited of 2, 5, or 10 (*10^n)
+            long step = d / steps;
+
+            long best_delta = Math.Abs(step - 2);
+            long best_step = 2;
+
+            long[] facs = {2,5,10};
+
+            foreach(long fac in facs)
             {
-                var x = t2x(i * 1000000);
-
-                e.Graphics.DrawLine(p1, x, 15, x, 25);
-                e.Graphics.DrawString(i.ToString() + "s", SystemFonts.DefaultFont, Brushes.Black, x - 7, 0);
-
-                for (uint j = 1; j < 10; j++)
+                long fac2 = fac;
+                do
                 {
-                    x = t2x(i * 1000000 + j * 100000);
-                    e.Graphics.DrawLine(p2, x, 15, x, 20);
-                }
+                    long delta = Math.Abs(step - fac2);
+                    if (delta < best_delta)
+                    {
+                        best_delta = delta;
+                        best_step = fac2;
+                    }
+                    fac2 *= 10;
+                } while(fac2 < step);
+            }
+            step = best_step;
+
+            Console.WriteLine("step "+step.ToString());
+
+            //get nearest multiple
+            long i = _view_time_start / unit / step;
+            i *= step;
+
+            while (i < _view_time_end / unit)
+            {
+                var x = t2x(i * unit);
+
+                e.Graphics.DrawLine(p1, x, canvas.Height - 20, x, canvas.Height - 30);
+                e.Graphics.DrawString(i.ToString() + ustr, SystemFonts.DefaultFont, Brushes.Black, x - 7, canvas.Height-20);
+
+                i += step;
             }
         }
 
@@ -153,7 +198,7 @@ namespace WSEProfiler
             float[] dash = { 10, 20 };
             p.DashPattern = dash;
 
-            e.Graphics.DrawLine(p, x1, 30, x1, canvas.Height);
+            e.Graphics.DrawLine(p, x1, 30, x1, canvas.Height - 30);
             return;
         }
 
@@ -168,12 +213,19 @@ namespace WSEProfiler
 
             int y1 = 40 + 20 * depth;
 
+            if(w == 1)
+            {
+                e.Graphics.DrawLine(Pens.Black, x1, y1, x1, y1 + 20);
+                return;
+            }
+
             Rectangle r = new Rectangle(x1, y1, w, 20);
 
-            e.Graphics.DrawRectangle(Pens.Black, r);
+            e.Graphics.FillRectangle(c.Timeline_Brush, r);
 
             if (w > 40)
             {
+                e.Graphics.DrawRectangle(Pens.Black, r);
                 e.Graphics.DrawString(c.Id, DefaultFont, Brushes.Black, r);
             }
 
@@ -194,6 +246,7 @@ namespace WSEProfiler
                 return;
 
             draw_fixed_time_axis(e);
+            draw_time_axis(e);
 
             foreach (var marker in markers)
             {
@@ -203,6 +256,17 @@ namespace WSEProfiler
             foreach (var call in calls)
             {
                 draw_call(e, call);
+            }
+
+            if (selecting && _select_time_b > -1)
+            {
+                var c = Color.FromArgb(20, SystemColors.Highlight);
+                var b = new SolidBrush(c);
+
+                int x = t2x(_select_time_a);
+                int w = t2x(_select_time_b) - x;
+
+                e.Graphics.FillRectangle(b, x, 30, w, canvas.Height - 30);
             }
         }
 
@@ -240,6 +304,111 @@ namespace WSEProfiler
             _view_time_end = clamp(_view_time_end, 0, duration);
             _view_time_start = clamp(_view_time_start, 0, _view_time_end);
             
+            PictureBox1.Invalidate();
+        }
+
+        private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
+            {
+                selecting = true;
+                _select_time_a = clamp(x2t(e.Location.X), 0, duration);
+                _select_time_b = -1;
+                PictureBox1.Cursor = Cursors.IBeam;
+            }
+            else
+            {
+                dragging = true;
+                drag_last_x = e.Location.X;
+                PictureBox1.Cursor = Cursors.Hand;
+            }
+        }
+
+        private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (dragging)
+            {
+                long dx = x2t(drag_last_x) - x2t(e.Location.X);
+                drag_last_x = e.Location.X;
+
+                if (dx < 0)
+                {
+                    if (_view_time_start + dx < 0)
+                    {
+                        _view_time_end -= _view_time_start;
+                        _view_time_start = 0;
+                    }
+                    else
+                    {
+                        _view_time_start += dx;
+                        _view_time_end += dx;
+                    }
+                }
+                else
+                {
+                    if (_view_time_end + dx > duration)
+                    {
+                        _view_time_start += (duration - _view_time_end);
+                        _view_time_end = duration;
+                    }
+                    else
+                    {
+                        _view_time_start += dx;
+                        _view_time_end += dx;
+                    }
+                }
+
+                this.PictureBox1.Invalidate();
+            }
+
+            if (selecting)
+            {
+                _select_time_b = clamp(x2t(e.Location.X), 0, duration);
+                this.PictureBox1.Invalidate();
+            }
+        }
+
+        private void MouseEnd()
+        {
+            if (dragging)
+            {
+                dragging = false;
+                PictureBox1.Cursor = Cursors.Default;
+            }
+            if (selecting)
+            {
+                selecting = false;
+                PictureBox1.Cursor = Cursors.Default;
+
+                if (_select_time_a < _select_time_b)
+                {
+                    _view_time_start = _select_time_a;
+                    _view_time_end = _select_time_b;
+                    PictureBox1.Invalidate();
+                }
+                if (_select_time_a > _select_time_b)
+                {
+                    _view_time_start = _select_time_b;
+                    _view_time_end = _select_time_a;
+                    PictureBox1.Invalidate();
+                }
+            }
+        }
+
+        private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
+        {
+            MouseEnd();
+        }
+
+        private void PictureBox1_MouseLeave(object sender, EventArgs e)
+        {
+            MouseEnd();
+        }
+
+        private void button_zoom_Click(object sender, EventArgs e)
+        {
+            _view_time_start = 0;
+            _view_time_end = duration;
             PictureBox1.Invalidate();
         }
 

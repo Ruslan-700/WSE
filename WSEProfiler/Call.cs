@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace WSEProfiler
 {
@@ -15,6 +16,7 @@ namespace WSEProfiler
         private uint _time_stop;
 		private Call _parent;
 		private List<Call> _children = new List<Call>();
+        private Brush _timeline_brush = null;
 
 		public Call(string id)
 		{
@@ -89,5 +91,37 @@ namespace WSEProfiler
 		{
 			get { return _children; }
 		}
+
+        public Brush Timeline_Brush
+        {
+            get
+            {
+                if (_timeline_brush == null)
+                {
+                    if (_id.StartsWith("Mission Template ["))
+                    {
+                        if (_id.EndsWith("Conditions"))
+                        {
+                            //c = Color.FromArgb(a, 7, 65, 115);
+                            _timeline_brush = Brushes.SkyBlue;
+                        }
+                        else
+                        {
+                            _timeline_brush = Brushes.SteelBlue;
+                        }
+                    }
+                    else if(_id.StartsWith("Script ["))
+                    {
+                        _timeline_brush = Brushes.BurlyWood;
+                    }
+                    else
+                    {
+                        _timeline_brush = Brushes.Indigo;
+                    }
+
+                }
+                return _timeline_brush;
+            }
+        }
 	}
 }
