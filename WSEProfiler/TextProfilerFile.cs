@@ -20,7 +20,7 @@ namespace WSEProfiler
 			_stream = new StreamReader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 		}
 
-		public void Parse(string blockName) // TODO: use blockname
+        public void Parse(string blockName, List<Call> call_list = null) // TODO: use blockname
 		{
 			Dictionary<int, string> types = new Dictionary<int,string>();
 			int recursionLevel = 0;

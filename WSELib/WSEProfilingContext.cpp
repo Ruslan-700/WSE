@@ -79,6 +79,8 @@ void WSEProfilingContext::Start()
 		return;
 	}
 	
+	WSE->Log.Info("Profiling: started (%s)", path);
+	
 	m_profile_stream.WriteU32(PROFILING_MAGIC, 32);
 	m_profile_stream.WriteU32(PROFILING_VERSION, 16);
 	m_profile_stream.WriteU32(WSE_VERSION_MAJOR, 16);
@@ -104,7 +106,7 @@ void WSEProfilingContext::Start()
 	m_profile_stream.WriteU64(m_frequency.QuadPart, 64);
 	m_profile_stream.WriteU64(overhead, 64);
 	QueryPerformanceCounter(&m_last_flush);
-	WSE->Log.Info("Profiling: started (%s)", path);
+	m_profile_stream.WriteU32((unsigned int)m_last_flush.QuadPart, 32);
 }
 
 void WSEProfilingContext::Stop()
@@ -217,6 +219,10 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 */
 
 /*	v2 Format
+
+	Header
+		...
+		record_start_time, 32
 
 	Payload
 		ID introduction, once for each new ID (id is script or trigger name)

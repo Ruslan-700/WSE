@@ -14,7 +14,7 @@ namespace WSEProfiler
 	{
 		static readonly string NAME = "WSEProfilerGUI v2.0";
 		private ListViewColumnSorter _lvwColumnSorter = new ListViewColumnSorter();
-		private IProfilerFile _curFile = null;
+		private BinaryProfilerFile _curFile = null;
 		private Dictionary<string, TabPage> _openTabs = new Dictionary<string, TabPage>();
 
 		public FormMain()
@@ -49,10 +49,10 @@ namespace WSEProfiler
 
 			string path = openFileDialog1.FileName;
 			
-			if (path.EndsWith(".wseprfb"))
+            //if (path.EndsWith(".wseprfb"))
 				_curFile = new BinaryProfilerFile(path);
-			else
-				_curFile = new TextProfilerFile(path);
+            //else
+                //_curFile = new TextProfilerFile(path);
 
 			try
 			{
@@ -273,6 +273,12 @@ namespace WSEProfiler
 
         private void tabControl_MouseWheel(object sender, MouseEventArgs e)
         {
+            Rectangle r = this.tabControl.ClientRectangle;
+            r.Height = this.tabControl.ItemSize.Height;
+
+            if (!r.Contains(e.Location))
+                return;
+
             if (e.Delta > 0)
             {
                 if (this.tabControl.SelectedIndex > 0)

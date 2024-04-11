@@ -6,7 +6,7 @@ using System.Text;
 
 namespace WSEProfiler
 {
-	class BinaryProfilerFile : IProfilerFile
+	class BinaryProfilerFile
 	{
 		private BitStream _stream;
 		private bool _terminated;
@@ -16,8 +16,11 @@ namespace WSEProfiler
 		private uint _wseVersionBuild;
 		private ulong _length;
 		private ulong _overhead;
+        private ulong _int_frequency;
 		private float _frequency;
-		private float _totalTime;
+        private uint _t_record_start = 0;
+        private float _totalTime;
+
 		private Dictionary<string, CallInfo> _infos = new Dictionary<string, CallInfo>();
 		private CallDetails _details;
 
@@ -26,7 +29,7 @@ namespace WSEProfiler
 			_stream = new BitStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 		}
 
-		public void Parse(string blockName)
+        public void Parse(string blockName, List<Call> call_list = null, List<Marker> marker_list = null)
 		{
 			_infos.Clear();
 			_details = new CallDetails();
@@ -64,7 +67,8 @@ namespace WSEProfiler
 			_wseVersionMajor = _stream.ReadU32(16);
 			_wseVersionMinor = _stream.ReadU32(16);
 			_wseVersionBuild = _stream.ReadU32(16);
-			_frequency = (float)_stream.ReadU64(64);
+            _int_frequency = _stream.ReadU64(64);
+            _frequency = (float)_int_frequency;
 			_overhead = _stream.ReadU64(64);
 			_totalTime = 0;
 
@@ -74,7 +78,7 @@ namespace WSEProfiler
             }
             else
             {
-                ParsePayload_V2(blockName);
+                ParsePayload_V2(blockName, call_list, marker_list);
             }
 		}
 
@@ -152,8 +156,10 @@ namespace WSEProfiler
             }
         }
 
-        private void ParsePayload_V2(string blockName)
+        private void ParsePayload_V2(string blockName, List<Call> call_list, List<Marker> marker_list)
         {
+            _t_record_start = _stream.ReadU32(32);
+
             List<string> types = new List<string>();
             int recursionLevel = 0;
             Call baseCall = new Call("Engine");
@@ -170,31 +176,47 @@ namespace WSEProfiler
                 else if (type == 2) //0b10, frame marker
                 {
                     //frame mark
-                    var t = _stream.Read_deltaBCI15();
+                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
+                    if (marker_list != null)
+                    {
+                        t *= 1000000;
+                        t /= _int_frequency;
+
+                        marker_list.Add(new Marker((uint)t));
+                    }
                 }
                 else if (type == 1) //0b01, block start
                 {
                     var id_idx = _stream.ReadBCI15();
-                    var t = _stream.Read_deltaBCI15();
+                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
 
                     var call = new Call(types[(int)id_idx], curCall);
-                    call.TimeStart = t;
+
+                    t *= 1000000;
+                    t /= _int_frequency;
+                    call.TimeStart = (uint)t;
 
                     curCall.Children.Add(call);
                     curCall = call;
                     recursionLevel++;
                 }
                 else if (type == 0){ //0b00, block end
-                    var t = _stream.Read_deltaBCI15();
+                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
 
-                    curCall.TimeStop = t;
-                    curCall.Time = (curCall.TimeStop - curCall.TimeStart);
-                    curCall.Time *= 1000000;
-                    curCall.Time /= _frequency;
+                    t *= 1000000;
+                    t /= _int_frequency;
+                    curCall.TimeStop = (uint)t;
+
+                    curCall.Time = (float)(curCall.TimeStop - curCall.TimeStart);
+                    //curCall.Time *= 1000000;
+                    //curCall.Time /= _frequency;
                     curCall.Time -= curCall.TimeChilds;
 
                     if (curCall.Id == blockName)
                         _details.AddCall(curCall);
+
+                    if (recursionLevel == 1 && call_list != null)
+                        call_list.Add(curCall);
 
                     curCall = curCall.Parent;
                     recursionLevel--;
@@ -274,5 +296,10 @@ namespace WSEProfiler
 		{
 			get { return _totalTime; }
 		}
+
+        public ulong iFrequency
+        {
+            get { return _int_frequency; }
+        }
 	}
 }
