@@ -36,6 +36,7 @@ namespace WSEProfiler
 			toolStripStatusLabel1.Text = "";
 			_curFile = null;
 			_openTabs.Clear();
+            timeline1.reset();
 			GC.Collect();
 		}
 

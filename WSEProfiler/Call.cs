@@ -122,6 +122,16 @@ namespace WSEProfiler
                 _timeline_brush = Brushes.DarkKhaki;
                 _timeline_pen = Pens.DarkKhaki;
             }
+            else if (_id.StartsWith("Item"))
+            {
+                _timeline_brush = Brushes.LightSeaGreen;
+                _timeline_pen = Pens.LightSeaGreen;
+            }
+            else if (_id == ("Engine"))
+            {
+                _timeline_brush = Brushes.Azure;
+                _timeline_pen = Pens.Azure;
+            }
             else
             {
                 _timeline_brush = Brushes.DarkRed;

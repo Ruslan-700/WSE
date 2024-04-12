@@ -182,7 +182,7 @@ namespace WSEProfiler
                         t *= 1000000;
                         t /= _int_frequency;
 
-                        marker_list.Add(new Marker((uint)t));
+                        marker_list.Add(new Marker((uint)t, Marker.Marker_Type.Frame));
                     }
                 }
                 else if (type == 1) //0b01, block start

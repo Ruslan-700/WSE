@@ -50,9 +50,9 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.timeline1 = new WSEProfiler.Timeline();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.timeline1 = new WSEProfiler.Timeline();
             this.menuStrip1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -245,15 +245,6 @@
             this.tabPage2.Text = "Timeline    ";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // timeline1
-            // 
-            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
-            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeline1.Location = new System.Drawing.Point(0, 0);
-            this.timeline1.Name = "timeline1";
-            this.timeline1.Size = new System.Drawing.Size(1198, 533);
-            this.timeline1.TabIndex = 0;
-            // 
             // statusStrip1
             // 
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -268,6 +259,15 @@
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+            // 
+            // timeline1
+            // 
+            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
+            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.timeline1.Location = new System.Drawing.Point(0, 0);
+            this.timeline1.Name = "timeline1";
+            this.timeline1.Size = new System.Drawing.Size(1198, 533);
+            this.timeline1.TabIndex = 0;
             // 
             // FormMain
             // 
