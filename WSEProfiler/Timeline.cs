@@ -16,8 +16,10 @@ namespace WSEProfiler
         public List<Marker> markers = new List<Marker>();
         public List<Marker> search_markers = new List<Marker>();
 
-        //all time in microseconds
+        //we merge some calls for zoomed out view to improve performance with large files
+        private List<Call> merged_calls = new List<Call>();
 
+        //all times in microseconds
         private long _view_time_start = 0;
         private long _view_time_end = 0;
 
@@ -30,6 +32,8 @@ namespace WSEProfiler
         bool selecting = false;
         private long _select_time_a = -1;
         private long _select_time_b = -1;
+
+        private int _marker_frame_last_draw_x;
 
         private Action draw_hover_info; //Callback for drawing tooltip last
 
@@ -77,10 +81,89 @@ namespace WSEProfiler
             get { return calls.Count != 0; }
         }
 
+
         public void refresh()
         {
             _view_time_start = 0;
             _view_time_end = duration;
+
+            //we merge calls that would be drawn <=1px wide at the same x-coord (this depends on the canvas width at the current time but should be fine)
+            //the merged call also gets an averaged color
+            merged_calls.Clear();
+
+            if (calls.Count > 1000)
+            {
+                Call cur_call = null;
+                int cur_x = -1;
+                ulong[] cur_col_aggregat = {0,0,0};
+                uint cur_col_count = 0;
+
+                Action commit = delegate()
+                {
+                    if (cur_call == null)
+                        return;
+
+                    cur_col_aggregat[0] /= cur_col_count;
+                    cur_col_aggregat[1] /= cur_col_count;
+                    cur_col_aggregat[2] /= cur_col_count;
+
+                    uint col = (uint)(cur_col_aggregat[0] << 16 | cur_col_aggregat[1] << 8 | cur_col_aggregat[2]);
+
+                    cur_call.Timeline_Pen = new Pen(col.ToColor());
+                    cur_call.Timeline_Brush = new SolidBrush(col.ToColor());
+
+                    merged_calls.Add(cur_call);
+
+                    cur_call = null;
+                };
+
+                Action<Color> add_color = delegate(Color c)
+                {
+                    byte[] rgb = {0,0,0};
+                    c.ToRgb(ref rgb);
+                    cur_col_aggregat[0] += rgb[0];
+                    cur_col_aggregat[1] += rgb[1];
+                    cur_col_aggregat[2] += rgb[2];
+                };
+
+                foreach (var c in calls)
+                {
+                    int x1 = t2x_f(c.TimeStart);
+                    int x2 = t2x_f(c.TimeStop);
+                    int w = x2 - x1;
+
+                    if (w <= 1)
+                    {
+                        if (cur_call == null || x1 != cur_x)
+                        {
+                            commit();
+
+                            cur_call = new Call("");
+                            cur_call.TimeStart = c.TimeStart;
+                            cur_call.TimeStop = c.TimeStop;
+                            cur_x = x1;
+
+                            cur_col_aggregat[0] = 0; cur_col_aggregat[1] = 0; cur_col_aggregat[2] = 0;
+                            add_color(c.Timeline_Pen.Color);
+                            cur_col_count = 0;
+                        }
+                        else
+                        {
+                            cur_call.TimeStart = c.TimeStop;
+                            add_color(c.Timeline_Pen.Color);
+                            cur_col_count++;
+                        }
+                    }
+                    else
+                    {
+                        if (cur_call != null)
+                            commit();
+
+                        merged_calls.Add(c);
+                    }
+                }
+            }
+
             PictureBox1.Invalidate();
         }
 
@@ -91,6 +174,7 @@ namespace WSEProfiler
             dragging = false;
             selecting = false;
             calls.Clear();
+            merged_calls.Clear();
             markers.Clear();
             PictureBox1.Invalidate();
         }
@@ -146,6 +230,72 @@ namespace WSEProfiler
         protected override void OnPaint(PaintEventArgs pe)
         {
             base.OnPaint(pe);
+        }
+
+        void draw_everything(PaintEventArgs e)
+        {
+            draw_fixed_time_axis(e);
+            draw_time_axis(e);
+
+            draw_hover_info = null;
+
+            foreach (var marker in markers)
+            {
+                draw_marker(e, marker);
+            }
+
+            if (view_duration > 5000000 && checkBox1.Checked)
+            {
+                foreach (var call in merged_calls)
+                {
+                    draw_call(e, call);
+                }
+            }
+            else
+            {
+                foreach (var call in calls)
+                {
+                    draw_call(e, call);
+                }
+            }
+
+            _marker_frame_last_draw_x = -1000;
+            foreach (var marker in search_markers)
+            {
+                draw_marker(e, marker);
+            }
+
+            if (selecting && _select_time_b > -1)
+            {
+                long start = Math.Min(_select_time_a, _select_time_b);
+                long end = Math.Max(_select_time_a, _select_time_b);
+
+                var c = Color.FromArgb(20, SystemColors.Highlight);
+                var b = new SolidBrush(c);
+
+                int x = t2x(start);
+                int w = t2x(end) - x;
+
+                Rectangle r = new Rectangle(x, 30, w, _canvas.Height - 30);
+
+                e.Graphics.FillRectangle(b, r);
+
+                StringFormat format = new StringFormat();
+                format.LineAlignment = StringAlignment.Center;
+                format.Alignment = StringAlignment.Center;
+
+                Point p = new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
+
+                float d = (float)(end - start);
+                e.Graphics.DrawString(d.FormatTime(), DefaultFont, Brushes.Black, p, format);
+            }
+            else
+            {
+                if (draw_hover_info != null)
+                {
+                    draw_hover_info();
+                }
+            }
         }
 
         //top axis
@@ -251,7 +401,11 @@ namespace WSEProfiler
 
             if (m.type == Marker.Marker_Type.Frame)
             {
+                if ((x1 - _marker_frame_last_draw_x) < 2)
+                    return;
+
                 e.Graphics.DrawLine(_marker_frame_pen, x1, 30, x1, _canvas.Height - 30);
+                _marker_frame_last_draw_x = x1;
             }
             else
             {
@@ -373,64 +527,13 @@ namespace WSEProfiler
         {
             e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
 
-            //We want some "padding", otherwise everything draws right at the edge
-            e.Graphics.TranslateTransform(origin_offset.X, origin_offset.Y);
-            _canvas = new Rectangle(0, 0, PictureBox1.Width - 14, PictureBox1.Height);
-
             if (!Ready)
                 return;
 
-            draw_fixed_time_axis(e);
-            draw_time_axis(e);
+            //We want some "padding", otherwise everything draws right at the edge
+            e.Graphics.TranslateTransform(origin_offset.X, origin_offset.Y);
 
-            draw_hover_info = null;
-
-            foreach (var marker in markers)
-            {
-                draw_marker(e, marker);
-            }
-
-            foreach (var call in calls)
-            {
-                draw_call(e, call);
-            }
-
-            foreach (var marker in search_markers)
-            {
-                draw_marker(e, marker);
-            }
-
-            if (selecting && _select_time_b > -1)
-            {
-                long start = Math.Min(_select_time_a, _select_time_b);
-                long end = Math.Max(_select_time_a, _select_time_b);
-
-                var c = Color.FromArgb(20, SystemColors.Highlight);
-                var b = new SolidBrush(c);
-
-                int x = t2x(start);
-                int w = t2x(end) - x;
-
-                Rectangle r = new Rectangle(x, 30, w, _canvas.Height - 30);
-
-                e.Graphics.FillRectangle(b, r);
-
-                StringFormat format = new StringFormat();
-                format.LineAlignment = StringAlignment.Center;
-                format.Alignment = StringAlignment.Center;
-
-                Point p = new Point(r.X + r.Width / 2, r.Y + r.Height / 2);
-
-                float d = (float)(end - start);
-                e.Graphics.DrawString(d.FormatTime(), DefaultFont, Brushes.Black, p, format);
-            }
-            else
-            {
-                if (draw_hover_info != null)
-                {
-                    draw_hover_info();
-                }
-            }
+            draw_everything(e);
         }
 
         private void PictureBox1_Wheel(object sender, MouseEventArgs e)
@@ -612,6 +715,16 @@ namespace WSEProfiler
                 default:
                     break;
             }
+        }
+
+        private void PictureBox1_SizeChanged(object sender, EventArgs e)
+        {
+            _canvas = new Rectangle(0, 0, PictureBox1.Width - origin_offset.X * 2, PictureBox1.Height - origin_offset.Y * 2);
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            PictureBox1.Invalidate();
         }
     }
 

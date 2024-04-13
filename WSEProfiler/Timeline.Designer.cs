@@ -59,6 +59,7 @@
             this.PictureBox1.Size = new System.Drawing.Size(998, 432);
             this.PictureBox1.TabIndex = 2;
             this.PictureBox1.TabStop = false;
+            this.PictureBox1.SizeChanged += new System.EventHandler(this.PictureBox1_SizeChanged);
             this.PictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
             this.PictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
             this.PictureBox1.MouseLeave += new System.EventHandler(this.PictureBox1_MouseLeave);
@@ -87,13 +88,17 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(354, 8);
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(339, 7);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(33, 17);
             this.checkBox1.TabIndex = 5;
             this.checkBox1.Text = "P";
-            this.toolTip1.SetToolTip(this.checkBox1, "Performance mode\r\nSkips some calls when zoomed out > 1000ms");
+            this.toolTip1.SetToolTip(this.checkBox1, "Performance mode\r\nRender a simplified view when zoomed out > 5000ms\r\nSome calls m" +
+        "ay not be drawn at medium zoom levels");
             this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
             // 
             // Timeline
             // 

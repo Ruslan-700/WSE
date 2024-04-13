@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Drawing;
 
 namespace WSEProfiler
 {
@@ -33,5 +34,28 @@ namespace WSEProfiler
 			else
 				return string.Format("{0:0.##} s", val / 1000 / 1000);
 		}
+
+        public static uint ToRgb(this Color val)
+        {
+            return (uint)val.ToArgb() & 0xFFFFFF;
+        }
+
+        public static Color ToColor(this uint val)
+        {
+            int r = (int)(val >> 16) & 0xFF;
+            int g = (int)(val >> 8) & 0xFF;
+            int b = (int)val & 0xFF;
+
+            return Color.FromArgb(r, g, b);
+        }
+
+        public static void ToRgb(this Color val, ref byte[] rgb)
+        {
+            int col = val.ToArgb();
+
+            rgb[0] = (byte)((col >> 16) & 0xFF);
+            rgb[1] = (byte)((col >> 8) & 0xFF);
+            rgb[2] = (byte)(col & 0xFF);
+        }
 	}
 }

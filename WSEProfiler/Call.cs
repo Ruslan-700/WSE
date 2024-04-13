@@ -142,10 +142,12 @@ namespace WSEProfiler
         public Brush Timeline_Brush
         {
             get { return _timeline_brush; }
+            set { _timeline_brush = value; }
         }
         public Pen Timeline_Pen
         {
             get { return _timeline_pen; }
+            set { _timeline_pen = value; }
         }
     }
 }
