@@ -26,12 +26,17 @@ namespace WSEProfiler
         private Point origin_offset = new Point(7, 5);
         private Rectangle _canvas;
 
+        private const uint time_axis_fixed_height = 25;
+        private const uint time_axis_height = 30;
+
         bool dragging = false;
         int drag_last_x;
 
         bool selecting = false;
         private long _select_time_a = -1;
         private long _select_time_b = -1;
+
+        bool time_axis_fixed_scrubbing = false;
 
         private int _marker_frame_last_draw_x;
 
@@ -210,6 +215,16 @@ namespace WSEProfiler
             return (int)x;
         }
 
+        //draw coord -> time (fixed version)
+        private long x2t_f(int x)
+        {
+            long t = duration;
+            t *= x;
+            t /= _canvas.Width;
+
+            return t;
+        }
+
         private Point mouse2canvas(Point location)
         {
             return new Point(location.X - origin_offset.X, location.Y - origin_offset.Y);
@@ -313,7 +328,7 @@ namespace WSEProfiler
             {
                 x = t2x_f(i * 1000000);
 
-                e.Graphics.DrawLine(p1, x, 15, x, 25);
+                e.Graphics.DrawLine(p1, x, 15, x, time_axis_fixed_height);
                 e.Graphics.DrawString(i.ToString() + "s", SystemFonts.DefaultFont, Brushes.Black, x - 7, 0);
 
                 if (step == 1)
@@ -330,12 +345,12 @@ namespace WSEProfiler
             var b = new SolidBrush(c);
 
             x = t2x_f(_view_time_start);
-            e.Graphics.FillRectangle(b, 0, 0, x, 25);
-            e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, 25);
+            e.Graphics.FillRectangle(b, 0, 0, x, time_axis_fixed_height);
+            e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, time_axis_fixed_height);
 
             x = t2x_f(_view_time_end);
-            e.Graphics.FillRectangle(b, x, 0, _canvas.Width - x, 25);
-            e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, 25);
+            e.Graphics.FillRectangle(b, x, 0, _canvas.Width - x, time_axis_fixed_height);
+            e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, time_axis_fixed_height);
         }
 
         //bottom axis, dynamic
@@ -385,7 +400,7 @@ namespace WSEProfiler
             {
                 var x = t2x(i * unit);
 
-                e.Graphics.DrawLine(p1, x, _canvas.Height - 20, x, _canvas.Height - 30);
+                e.Graphics.DrawLine(p1, x, _canvas.Height - 20, x, _canvas.Height - time_axis_height);
                 e.Graphics.DrawString(i.ToString() + ustr, SystemFonts.DefaultFont, Brushes.Black, x - 7, _canvas.Height-20);
 
                 i += step;
@@ -422,9 +437,13 @@ namespace WSEProfiler
             int x2 = t2x(c.TimeStop);
             int w = x2 - x1;
 
+            if (view_duration < 1000)
+                w = Math.Max(w, 1);
+                //so we still get tooltip for 0 w calls
+
             int y1 = 40 + 20 * depth;
 
-            if(w <= 1)
+            if(w < 1)
             {
                 e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, y1 + 20);
                 return;
@@ -519,6 +538,12 @@ namespace WSEProfiler
             }
         }
 
+        void scrub_timeline(MouseEventArgs e)
+        {
+            long t1 = x2t_f(e.X);
+            long t2 = _view_time_start + (_view_time_end - _view_time_start) / 2;
+            drag_timeline(t1 - t2);
+        }
 
         //###########
         //Events
@@ -593,18 +618,28 @@ namespace WSEProfiler
                 return;
             }
 
-            if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
+            if (e.Y <= time_axis_fixed_height)
             {
-                selecting = true;
-                _select_time_a = clamp(x2t(e.Location.X), 0, duration);
-                _select_time_b = -1;
-                PictureBox1.Cursor = Cursors.IBeam;
+                time_axis_fixed_scrubbing = true;
+                scrub_timeline(e);
+                PictureBox1.Cursor = Cursors.Hand;
+                PictureBox1.Invalidate();
             }
             else
             {
-                dragging = true;
-                drag_last_x = e.Location.X;
-                PictureBox1.Cursor = Cursors.Hand;
+                if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
+                {
+                    selecting = true;
+                    _select_time_a = clamp(x2t(e.Location.X), 0, duration);
+                    _select_time_b = -1;
+                    PictureBox1.Cursor = Cursors.IBeam;
+                }
+                else
+                {
+                    dragging = true;
+                    drag_last_x = e.Location.X;
+                    PictureBox1.Cursor = Cursors.Hand;
+                }
             }
         }
 
@@ -630,6 +665,12 @@ namespace WSEProfiler
                 _select_time_b = clamp(x2t(e.Location.X), 0, duration);
                 //this.PictureBox1.Invalidate();
             }
+
+            if (time_axis_fixed_scrubbing)
+            {
+                scrub_timeline(e);
+            }
+
             this.PictureBox1.Invalidate();
         }
 
@@ -638,12 +679,10 @@ namespace WSEProfiler
             if (dragging)
             {
                 dragging = false;
-                PictureBox1.Cursor = Cursors.Default;
             }
             if (selecting)
             {
                 selecting = false;
-                PictureBox1.Cursor = Cursors.Default;
 
                 if (_select_time_a < _select_time_b)
                 {
@@ -657,6 +696,11 @@ namespace WSEProfiler
                 }
                 PictureBox1.Invalidate();
             }
+            if (time_axis_fixed_scrubbing)
+            {
+                time_axis_fixed_scrubbing = false;
+            }
+            PictureBox1.Cursor = Cursors.Default;
         }
 
         private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
