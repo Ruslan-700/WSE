@@ -51,11 +51,14 @@ namespace WSEProfiler
         private Brush _call_brush = Brushes.Black;
 
 
-        //For searchfiled placeholder
+        //For searchfield placeholder
         private const int EM_SETCUEBANNER = 0x1501;
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
         private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
 
+        private uint _draw_count_calls;
+        private uint _draw_count_search;
+        //private uint _draw_count_frame;
 
         public Timeline()
         {
@@ -64,6 +67,22 @@ namespace WSEProfiler
 
             float[] dash = { 10, 20 };
             _marker_frame_pen.DashPattern = dash;
+
+            float[] dash2 = { 5, 5 };
+            _marker_search_pen.DashPattern = dash2;
+
+            ToolStripControlHost host = new ToolStripControlHost(panel1);
+            host.Margin = Padding.Empty;
+            host.Padding = Padding.Empty;
+            toolStripDropDownButton1.DropDownItems.Add(host);
+
+            this.Controls.Remove(panel1);
+            panel1.Dock = DockStyle.Fill;
+            host.Dock = DockStyle.Fill;
+            host.RightToLeft = RightToLeft.No;
+
+            //this is simply to fix an annoying border, dont ask
+            toolStrip1.Renderer = new MySR();
         }
 
         public long duration
@@ -92,82 +111,7 @@ namespace WSEProfiler
             _view_time_start = 0;
             _view_time_end = duration;
 
-            //we merge calls that would be drawn <=1px wide at the same x-coord (this depends on the canvas width at the current time but should be fine)
-            //the merged call also gets an averaged color
-            merged_calls.Clear();
-
-            if (calls.Count > 1000)
-            {
-                Call cur_call = null;
-                int cur_x = -1;
-                ulong[] cur_col_aggregat = {0,0,0};
-                uint cur_col_count = 0;
-
-                Action commit = delegate()
-                {
-                    if (cur_call == null)
-                        return;
-
-                    cur_col_aggregat[0] /= cur_col_count;
-                    cur_col_aggregat[1] /= cur_col_count;
-                    cur_col_aggregat[2] /= cur_col_count;
-
-                    uint col = (uint)(cur_col_aggregat[0] << 16 | cur_col_aggregat[1] << 8 | cur_col_aggregat[2]);
-
-                    cur_call.Timeline_Pen = new Pen(col.ToColor());
-                    cur_call.Timeline_Brush = new SolidBrush(col.ToColor());
-
-                    merged_calls.Add(cur_call);
-
-                    cur_call = null;
-                };
-
-                Action<Color> add_color = delegate(Color c)
-                {
-                    byte[] rgb = {0,0,0};
-                    c.ToRgb(ref rgb);
-                    cur_col_aggregat[0] += rgb[0];
-                    cur_col_aggregat[1] += rgb[1];
-                    cur_col_aggregat[2] += rgb[2];
-                };
-
-                foreach (var c in calls)
-                {
-                    int x1 = t2x_f(c.TimeStart);
-                    int x2 = t2x_f(c.TimeStop);
-                    int w = x2 - x1;
-
-                    if (w <= 1)
-                    {
-                        if (cur_call == null || x1 != cur_x)
-                        {
-                            commit();
-
-                            cur_call = new Call("");
-                            cur_call.TimeStart = c.TimeStart;
-                            cur_call.TimeStop = c.TimeStop;
-                            cur_x = x1;
-
-                            cur_col_aggregat[0] = 0; cur_col_aggregat[1] = 0; cur_col_aggregat[2] = 0;
-                            add_color(c.Timeline_Pen.Color);
-                            cur_col_count = 0;
-                        }
-                        else
-                        {
-                            cur_call.TimeStart = c.TimeStop;
-                            add_color(c.Timeline_Pen.Color);
-                            cur_col_count++;
-                        }
-                    }
-                    else
-                    {
-                        if (cur_call != null)
-                            commit();
-
-                        merged_calls.Add(c);
-                    }
-                }
-            }
+            create_merged_view();
 
             PictureBox1.Invalidate();
         }
@@ -178,9 +122,12 @@ namespace WSEProfiler
             _view_time_end = 0;
             dragging = false;
             selecting = false;
+
             calls.Clear();
             merged_calls.Clear();
             markers.Clear();
+            search_markers.Clear();
+
             PictureBox1.Invalidate();
         }
 
@@ -225,6 +172,11 @@ namespace WSEProfiler
             return t;
         }
 
+        private int depth2y(int depth)
+        {
+            return 40 + 20 * depth;
+        }
+
         private Point mouse2canvas(Point location)
         {
             return new Point(location.X - origin_offset.X, location.Y - origin_offset.Y);
@@ -242,9 +194,88 @@ namespace WSEProfiler
             return val;
         }
 
-        protected override void OnPaint(PaintEventArgs pe)
+        private void create_merged_view()
         {
-            base.OnPaint(pe);
+            //we merge calls that would be drawn <=1px wide at the same x-coord (this depends on the canvas width at the current time but should be fine)
+            //the merged call also gets an averaged color
+            merged_calls.Clear();
+
+            if (calls.Count > 1000)
+            {
+                Call cur_call = null;
+                int cur_x = -1;
+                ulong[] cur_col_aggregat = { 0, 0, 0 };
+                uint cur_col_count = 0;
+
+                Action commit = delegate()
+                {
+                    if (cur_call == null)
+                        return;
+
+                    cur_col_aggregat[0] /= cur_col_count;
+                    cur_col_aggregat[1] /= cur_col_count;
+                    cur_col_aggregat[2] /= cur_col_count;
+
+                    uint col = (uint)(cur_col_aggregat[0] << 16 | cur_col_aggregat[1] << 8 | cur_col_aggregat[2]);
+
+                    cur_call.Timeline_Pen = new Pen(col.ToColor());
+                    cur_call.Timeline_Brush = new SolidBrush(col.ToColor());
+
+                    merged_calls.Add(cur_call);
+
+                    cur_call = null;
+                };
+
+                Action<Color> add_color = delegate(Color c)
+                {
+                    byte[] rgb = { 0, 0, 0 };
+                    c.ToRgb(ref rgb);
+                    cur_col_aggregat[0] += rgb[0];
+                    cur_col_aggregat[1] += rgb[1];
+                    cur_col_aggregat[2] += rgb[2];
+                };
+
+                foreach (var c in calls)
+                {
+                    if (c.timeline_hidden)
+                        continue;
+
+                    int x1 = t2x_f(c.TimeStart);
+                    int x2 = t2x_f(c.TimeStop);
+                    int w = x2 - x1;
+
+                    if (w <= 1)
+                    {
+                        if (cur_call == null || x1 != cur_x)
+                        {
+                            commit();
+
+                            cur_call = new Call("");
+                            cur_call.TimeStart = c.TimeStart;
+                            cur_call.TimeStop = c.TimeStop;
+                            cur_x = x1;
+
+                            cur_col_aggregat[0] = 0; cur_col_aggregat[1] = 0; cur_col_aggregat[2] = 0;
+                            add_color(c.Timeline_Pen.Color);
+                            cur_col_count = 1;
+                        }
+                        else
+                        {
+                            cur_call.TimeStart = c.TimeStop;
+                            add_color(c.Timeline_Pen.Color);
+                            cur_col_count++;
+                        }
+                    }
+                    else
+                    {
+                        if (cur_call != null)
+                            commit();
+
+                        merged_calls.Add(c);
+                    }
+                }
+                commit();
+            }
         }
 
         void draw_everything(PaintEventArgs e)
@@ -254,12 +285,16 @@ namespace WSEProfiler
 
             draw_hover_info = null;
 
+            _draw_count_calls = 0;
+            //_draw_count_frame = 0;
+            _draw_count_search = 0;
+
             foreach (var marker in markers)
             {
                 draw_marker(e, marker);
             }
 
-            if (view_duration > 5000000 && checkBox1.Checked)
+            if (view_duration > 5000000 && checkBox1.Checked && merged_calls.Count > 0)
             {
                 foreach (var call in merged_calls)
                 {
@@ -311,6 +346,11 @@ namespace WSEProfiler
                     draw_hover_info();
                 }
             }
+
+            string info = String.Format("Viewing {0} calls", _draw_count_calls);
+            if (_draw_count_search > 0)
+                info += String.Format(", {0} search marks", _draw_count_search);
+            label_drawinfo.Text = info;
         }
 
         //top axis
@@ -322,7 +362,8 @@ namespace WSEProfiler
             int x;
 
             uint seconds = (uint)(duration / 1000000);
-            uint step = seconds / 15;
+            uint steps = (uint)_canvas.Width / 70;
+            uint step = seconds / steps;
 
             for (uint i = 0; i <= seconds; i += step)
             {
@@ -358,7 +399,7 @@ namespace WSEProfiler
         {
             long unit = 1000;
             string ustr = "ms";
-            long steps = 6;
+            long steps = _canvas.Width / 150;
 
             Pen p1 = new Pen(Color.DarkGray, 2);
             Pen p2 = new Pen(Color.DarkGray, 1);
@@ -421,10 +462,12 @@ namespace WSEProfiler
 
                 e.Graphics.DrawLine(_marker_frame_pen, x1, 30, x1, _canvas.Height - 30);
                 _marker_frame_last_draw_x = x1;
+                //_draw_count_frame++;
             }
             else
             {
-                e.Graphics.DrawLine(_marker_search_pen, x1, 20, x1, 150);
+                e.Graphics.DrawLine(_marker_search_pen, x1, time_axis_fixed_height, x1, m.y);
+                _draw_count_search++;
             }
         }
 
@@ -433,56 +476,61 @@ namespace WSEProfiler
             if (c.TimeStart > _view_time_end || c.TimeStop < _view_time_start)
                 return;
 
-            int x1 = t2x(c.TimeStart);
-            int x2 = t2x(c.TimeStop);
-            int w = x2 - x1;
+            if (!c.timeline_hidden)
+            {
+                _draw_count_calls++;
 
-            if (view_duration < 1000)
-                w = Math.Max(w, 1);
+                int x1 = t2x(c.TimeStart);
+                int x2 = t2x(c.TimeStop);
+                int w = x2 - x1;
+
+                if (view_duration < 1000)
+                    w = Math.Max(w, 1);
                 //so we still get tooltip for 0 w calls
 
-            int y1 = 40 + 20 * depth;
+                int y1 = depth2y(depth);
 
-            if(w < 1)
-            {
-                e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, y1 + 20);
-                return;
-            }
-
-            Rectangle r = new Rectangle(x1, y1, w, 20);
-
-            e.Graphics.FillRectangle(c.Timeline_Brush, r);
-
-            if (w > 5)
-            {
-                e.Graphics.DrawRectangle(_call_border_pen, r);
-            }
-            if (w > 40)
-            {
-                //Font f = new Font(SystemFonts.SmallCaptionFont.Name, 8);
-                //e.Graphics.DrawString(c.Id, f, Brushes.Black, r);
-                e.Graphics.DrawString(c.Id, _call_label_font, _call_brush, r, new StringFormat(StringFormatFlags.NoWrap));
-            }
-
-            Point p = mouse2canvas(PictureBox1.PointToClient(System.Windows.Forms.Control.MousePosition));
-            if (r.Contains(p))
-            {
-                draw_hover_info = delegate()
+                if (w < 1)
                 {
-                    var x = p.X + 5;
-                    var y = p.Y + 5;
+                    e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, y1 + 20);
+                    return;
+                }
 
-                    var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
+                Rectangle r = new Rectangle(x1, y1, w, 20);
 
-                    SizeF size = e.Graphics.MeasureString(text, DefaultFont);
+                e.Graphics.FillRectangle(c.Timeline_Brush, r);
 
-                    e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
+                if (w > 5)
+                {
+                    e.Graphics.DrawRectangle(_call_border_pen, r);
+                }
+                if (w > 40)
+                {
+                    //Font f = new Font(SystemFonts.SmallCaptionFont.Name, 8);
+                    //e.Graphics.DrawString(c.Id, f, Brushes.Black, r);
+                    e.Graphics.DrawString(c.Id, _call_label_font, _call_brush, r, new StringFormat(StringFormatFlags.NoWrap));
+                }
 
-                    x += 5;
-                    y += 5;
-                    e.Graphics.DrawString(text, DefaultFont, Brushes.Black, x, y);
+                Point p = mouse2canvas(PictureBox1.PointToClient(System.Windows.Forms.Control.MousePosition));
+                if (r.Contains(p))
+                {
+                    draw_hover_info = delegate()
+                    {
+                        var x = p.X + 5;
+                        var y = p.Y + 5;
+
+                        var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
+
+                        SizeF size = e.Graphics.MeasureString(text, DefaultFont);
+
+                        e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
+
+                        x += 5;
+                        y += 5;
+                        e.Graphics.DrawString(text, DefaultFont, Brushes.Black, x, y);
+                    };
                 };
-            };
+            }
 
             foreach (var child in c.Children)
             {
@@ -497,14 +545,23 @@ namespace WSEProfiler
             if (text != "")
             {
                 text = text.ToLower();
+                int depth = 0;
 
-                foreach (var c in calls)
+                Action<List<Call>> search = null;
+                search = delegate(List<Call> cls)
                 {
-                    if (c.Id.ToLower().Contains(text))
+                    foreach (var c in cls)
                     {
-                        search_markers.Add(new Marker(c.TimeStart, Marker.Marker_Type.Search));
+                        if (c.Id.ToLower().Contains(text))
+                        {
+                            search_markers.Add(new Marker(c.TimeStart, Marker.Marker_Type.Search, depth2y(depth)));
+                        }
+                        depth++;
+                        search(c.Children);
+                        depth--;
                     }
-                }
+                };
+                search(calls);
             }
         }
 
@@ -543,6 +600,51 @@ namespace WSEProfiler
             long t1 = x2t_f(e.X);
             long t2 = _view_time_start + (_view_time_end - _view_time_start) / 2;
             drag_timeline(t1 - t2);
+        }
+
+        void filter_calls(List<Call> cls)
+        {
+            foreach (Call c in cls)
+            {
+                bool hide = true;
+
+                switch (c.kind)
+                {
+                    case Call.Kind.mst_cond:
+                        if (checkBox_filter_mst_cond.Checked)
+                            hide = false;
+                        break;
+
+                    case Call.Kind.mst_cons:
+                        if (checkBox_filter_mst_cons.Checked)
+                            hide = false;
+                        break;
+
+                    case Call.Kind.script:
+                        if (checkBox_filter_scripts.Checked)
+                            hide = false;
+                        break;
+
+                    case Call.Kind.prop:
+                        if (checkBox_filter_props.Checked)
+                            hide = false;
+                        break;
+
+                    case Call.Kind.item:
+                        if (checkBox_filter_items.Checked)
+                            hide = false;
+                        break;
+
+                    default:
+                        if (checkBox_filter_other.Checked)
+                            hide = false;
+                        break;
+                }
+
+                c.timeline_hidden = hide;
+
+                filter_calls(c.Children);
+            }
         }
 
         //###########
@@ -722,10 +824,33 @@ namespace WSEProfiler
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.KeyCode == Keys.Enter)
+            if(Ready && e.KeyCode == Keys.Enter)
             {
                 create_search_markers(textBox1.Text);
+                PictureBox1.Invalidate();
+
+                if (textBox1.Text == "")
+                    return;
+
+                ToolTip hint = new ToolTip();
+                hint.ToolTipIcon = ToolTipIcon.Info;
+                hint.Show(String.Format("{0} hits", search_markers.Count), textBox1, 0, textBox1.Height, 1000);
             }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+                btn_clear_search.Hide();
+            else
+                btn_clear_search.Show();
+        }
+
+        private void btn_clear_search_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            create_search_markers(textBox1.Text);
+            PictureBox1.Invalidate();
         }
 
         //mousewheel "tilt" (click mousewheel left/right)
@@ -770,6 +895,13 @@ namespace WSEProfiler
         {
             PictureBox1.Invalidate();
         }
+
+        private void checkBox_filter_CheckedChanged(object sender, EventArgs e)
+        {
+            filter_calls(calls);
+            create_merged_view();
+            PictureBox1.Invalidate();
+        }
     }
 
     public class Marker
@@ -780,13 +912,33 @@ namespace WSEProfiler
             Search
         }
 
-        public uint time;
         public Marker_Type type;
+        public uint time;
+        public int y;
 
-        public Marker(uint t, Marker_Type ty)
+        public Marker(uint t, Marker_Type ty, int y = 0)
         {
             time = t;
             type = ty;
+            this.y = y;
+        }
+    }
+
+    public class MySR : ToolStripSystemRenderer
+    {
+        public MySR() { }
+
+        protected override void OnRenderToolStripBorder(ToolStripRenderEventArgs e)
+        {
+            if (e.ToolStrip.GetType() == typeof(ToolStrip))
+            {
+                // skip render border
+            }
+            else
+            {
+                // do render border
+                base.OnRenderToolStripBorder(e);
+            }
         }
     }
 }

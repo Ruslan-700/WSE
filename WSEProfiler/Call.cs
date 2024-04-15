@@ -19,6 +19,7 @@ namespace WSEProfiler
 
         private Brush _timeline_brush;
         private Pen _timeline_pen;
+        public bool timeline_hidden = false; //filtering
 
         public Call(string id)
         {
@@ -96,38 +97,83 @@ namespace WSEProfiler
             get { return _children; }
         }
 
-        private void figure_out_color()
+        public enum Kind
         {
-            if (_id.StartsWith("Mission Template ["))
+            mst_cond,
+            mst_cons,
+            script,
+            prop,
+            item,
+            engine,
+            other
+        }
+
+        public Kind kind
+        {
+            get
             {
-                if (_id.EndsWith("Conditions"))
+                if (_id.StartsWith("Mission Template ["))
                 {
-                    //c = Color.FromArgb(a, 7, 65, 115);
-                    _timeline_brush = Brushes.SkyBlue;
-                    _timeline_pen = Pens.SkyBlue;
+                    if (_id.EndsWith("Conditions"))
+                    {
+                        return Kind.mst_cond;
+                    }
+                    else
+                    {
+                        return Kind.mst_cons;
+                    }
+                }
+                else if (_id.StartsWith("Script ["))
+                {
+                    return Kind.script;
+                }
+                else if (_id.StartsWith("Scene Prop"))
+                {
+                    return Kind.prop;
+                }
+                else if (_id.StartsWith("Item"))
+                {
+                    return Kind.item;
+                }
+                else if (_id == ("Engine"))
+                {
+                    return Kind.engine;
                 }
                 else
                 {
-                    _timeline_brush = Brushes.SteelBlue;
-                    _timeline_pen = Pens.SteelBlue;
+                    return Kind.other;
                 }
             }
-            else if (_id.StartsWith("Script ["))
+        }
+
+        private void figure_out_color()
+        {
+            if (kind == Kind.mst_cond)
+            {
+                _timeline_brush = Brushes.SkyBlue;
+                _timeline_pen = Pens.SkyBlue;
+            }
+            else if (kind == Kind.mst_cons)
+            {
+                _timeline_brush = Brushes.SteelBlue;
+                _timeline_pen = Pens.SteelBlue;
+            }
+            else if (kind == Kind.script)
             {
                 _timeline_brush = Brushes.BurlyWood;
                 _timeline_pen = Pens.BurlyWood;
             }
-            else if (_id.StartsWith("Scene Prop"))
+            else if (kind == Kind.prop)
             {
                 _timeline_brush = Brushes.DarkKhaki;
                 _timeline_pen = Pens.DarkKhaki;
             }
-            else if (_id.StartsWith("Item"))
+            else if (kind == Kind.item)
             {
                 _timeline_brush = Brushes.LightSeaGreen;
                 _timeline_pen = Pens.LightSeaGreen;
             }
-            else if (_id == ("Engine"))
+            else if (kind == Kind.engine)
             {
                 _timeline_brush = Brushes.Azure;
                 _timeline_pen = Pens.Azure;
