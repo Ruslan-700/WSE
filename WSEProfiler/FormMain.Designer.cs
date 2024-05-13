@@ -49,10 +49,13 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.btn_clear_search = new System.Windows.Forms.Label();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.timeline1 = new WSEProfiler.Timeline();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.timeline1 = new WSEProfiler.Timeline();
+            this.label1 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -62,6 +65,9 @@
             // 
             // listView
             // 
+            this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
@@ -74,12 +80,11 @@
             this.columnHeader6,
             this.columnHeader9,
             this.columnHeader10});
-            this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.FullRowSelect = true;
-            this.listView.Location = new System.Drawing.Point(3, 3);
+            this.listView.Location = new System.Drawing.Point(6, 33);
             this.listView.MultiSelect = false;
             this.listView.Name = "listView";
-            this.listView.Size = new System.Drawing.Size(1192, 527);
+            this.listView.Size = new System.Drawing.Size(1186, 494);
             this.listView.TabIndex = 0;
             this.listView.UseCompatibleStateImageBehavior = false;
             this.listView.View = System.Windows.Forms.View.Details;
@@ -226,14 +231,38 @@
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.label1);
+            this.tabPage1.Controls.Add(this.btn_clear_search);
+            this.tabPage1.Controls.Add(this.textBox1);
             this.tabPage1.Controls.Add(this.listView);
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(1198, 533);
             this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Main    ";
+            this.tabPage1.Text = "Summary";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // btn_clear_search
+            // 
+            this.btn_clear_search.AutoSize = true;
+            this.btn_clear_search.BackColor = System.Drawing.SystemColors.Window;
+            this.btn_clear_search.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btn_clear_search.Location = new System.Drawing.Point(270, 10);
+            this.btn_clear_search.Name = "btn_clear_search";
+            this.btn_clear_search.Size = new System.Drawing.Size(12, 13);
+            this.btn_clear_search.TabIndex = 2;
+            this.btn_clear_search.Text = "x";
+            this.btn_clear_search.Visible = false;
+            this.btn_clear_search.Click += new System.EventHandler(this.btn_clear_search_Click);
+            // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(7, 7);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(275, 20);
+            this.textBox1.TabIndex = 1;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // tabPage2
             // 
@@ -244,6 +273,15 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Timeline    ";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // timeline1
+            // 
+            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
+            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.timeline1.Location = new System.Drawing.Point(0, 0);
+            this.timeline1.Name = "timeline1";
+            this.timeline1.Size = new System.Drawing.Size(1198, 533);
+            this.timeline1.TabIndex = 0;
             // 
             // statusStrip1
             // 
@@ -260,14 +298,15 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // timeline1
+            // label1
             // 
-            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
-            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeline1.Location = new System.Drawing.Point(0, 0);
-            this.timeline1.Name = "timeline1";
-            this.timeline1.Size = new System.Drawing.Size(1198, 533);
-            this.timeline1.TabIndex = 0;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(289, 10);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(35, 13);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "label1";
+            this.label1.Visible = false;
             // 
             // FormMain
             // 
@@ -286,6 +325,7 @@
             this.menuStrip1.PerformLayout();
             this.tabControl.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
@@ -321,6 +361,9 @@
 		private System.Windows.Forms.ColumnHeader columnHeader11;
         private System.Windows.Forms.TabPage tabPage2;
         private Timeline timeline1;
+        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.Label btn_clear_search;
+        private System.Windows.Forms.Label label1;
 	}
 }
 

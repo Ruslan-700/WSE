@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows.Forms;
 
@@ -16,6 +17,12 @@ namespace WSEProfiler
 		private ListViewColumnSorter _lvwColumnSorter = new ListViewColumnSorter();
 		private BinaryProfilerFile _curFile = null;
 		private Dictionary<string, TabPage> _openTabs = new Dictionary<string, TabPage>();
+        private List<ListViewItem> _master_list;
+
+        //For searchfield placeholder
+        private const int EM_SETCUEBANNER = 0x1501;
+        [DllImport("user32.dll", CharSet = CharSet.Auto)]
+        private static extern Int32 SendMessage(IntPtr hWnd, int msg, int wParam, [MarshalAs(UnmanagedType.LPWStr)]string lParam);
 
 		public FormMain()
 		{
@@ -23,6 +30,7 @@ namespace WSEProfiler
 			Text = NAME;
 			listView.ListViewItemSorter = _lvwColumnSorter;
             tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
+            SendMessage(textBox1.Handle, EM_SETCUEBANNER, 0, "Search");
 		}
 
 		private void Cleanup()
@@ -69,6 +77,7 @@ namespace WSEProfiler
 				Application.Exit();
 			}
 
+            _master_list = new List<ListViewItem>();
 			foreach (var info in _curFile.CallInfos)
 			{
 				float selfSum = info.SumSelf;
@@ -81,7 +90,7 @@ namespace WSEProfiler
 				float fullMax = info.MaxTotal;
 				float percentage = (fullSum / _curFile.TimeTotal) * 100;
 
-				listView.Items.Add(new ListViewItem(new ListViewItem.ListViewSubItem[]
+                _master_list.Add(new ListViewItem(new ListViewItem.ListViewSubItem[]
 				{
 					new ListViewItem.ListViewSubItem() { Text = info.ToString(), Tag = info.ToString() },
 					new ListViewItem.ListViewSubItem() { Text = info.Count.ToString(), Tag = info.Count },
@@ -96,6 +105,7 @@ namespace WSEProfiler
 					new ListViewItem.ListViewSubItem() { Text = fullMax.FormatTime(), Tag = fullMax },
 				}, 0));
 			}
+            filter_list("");
 
 			ListViewColor.Update(listView, 2);
 
@@ -180,6 +190,22 @@ namespace WSEProfiler
 		{
 			OpenDetailsTab(e.BlockName);
 		}
+
+        void filter_list(string txt)
+        {
+            listView.Items.Clear();
+
+            txt = txt.ToLower();
+            foreach (ListViewItem itm in _master_list)
+            {
+                if (itm.SubItems[0].Text.ToLower().Contains(txt))
+                {
+                    listView.Items.Add(itm);
+                }
+            }
+            label1.Text = string.Format("Showing {0}/{1}", listView.Items.Count, _master_list.Count);
+            label1.Show();
+        }
 
         Rectangle tab_getXrect(Rectangle tabTextArea)
         {
@@ -294,6 +320,25 @@ namespace WSEProfiler
                     this.tabControl.SelectedIndex++;
                 }
             }
+        }
+
+        private void btn_clear_search_Click(object sender, EventArgs e)
+        {
+            textBox1.Text = "";
+            filter_list("");
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                btn_clear_search.Hide();
+            }
+            else
+            {
+                btn_clear_search.Show();
+            }
+            filter_list(textBox1.Text);
         }
 	}
 }
