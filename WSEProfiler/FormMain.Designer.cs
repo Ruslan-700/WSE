@@ -50,12 +50,12 @@
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.btn_clear_search = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
+            this.textBox_filter = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.timeline1 = new WSEProfiler.Timeline();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label1 = new System.Windows.Forms.Label();
+            this.label_filter = new System.Windows.Forms.Label();
+            this.timeline1 = new WSEProfiler.Timeline();
             this.menuStrip1.SuspendLayout();
             this.tabControl.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -231,9 +231,9 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.label1);
+            this.tabPage1.Controls.Add(this.label_filter);
             this.tabPage1.Controls.Add(this.btn_clear_search);
-            this.tabPage1.Controls.Add(this.textBox1);
+            this.tabPage1.Controls.Add(this.textBox_filter);
             this.tabPage1.Controls.Add(this.listView);
             this.tabPage1.Location = new System.Drawing.Point(4, 29);
             this.tabPage1.Name = "tabPage1";
@@ -256,13 +256,13 @@
             this.btn_clear_search.Visible = false;
             this.btn_clear_search.Click += new System.EventHandler(this.btn_clear_search_Click);
             // 
-            // textBox1
+            // textBox_filter
             // 
-            this.textBox1.Location = new System.Drawing.Point(7, 7);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(275, 20);
-            this.textBox1.TabIndex = 1;
-            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
+            this.textBox_filter.Location = new System.Drawing.Point(7, 7);
+            this.textBox_filter.Name = "textBox_filter";
+            this.textBox_filter.Size = new System.Drawing.Size(275, 20);
+            this.textBox_filter.TabIndex = 1;
+            this.textBox_filter.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // tabPage2
             // 
@@ -273,15 +273,6 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Timeline    ";
             this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // timeline1
-            // 
-            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
-            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.timeline1.Location = new System.Drawing.Point(0, 0);
-            this.timeline1.Name = "timeline1";
-            this.timeline1.Size = new System.Drawing.Size(1198, 533);
-            this.timeline1.TabIndex = 0;
             // 
             // statusStrip1
             // 
@@ -298,15 +289,24 @@
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
             this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
             // 
-            // label1
+            // label_filter
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(289, 10);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(35, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "label1";
-            this.label1.Visible = false;
+            this.label_filter.AutoSize = true;
+            this.label_filter.Location = new System.Drawing.Point(289, 10);
+            this.label_filter.Name = "label_filter";
+            this.label_filter.Size = new System.Drawing.Size(35, 13);
+            this.label_filter.TabIndex = 3;
+            this.label_filter.Text = "label1";
+            this.label_filter.Visible = false;
+            // 
+            // timeline1
+            // 
+            this.timeline1.BackColor = System.Drawing.SystemColors.Control;
+            this.timeline1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.timeline1.Location = new System.Drawing.Point(0, 0);
+            this.timeline1.Name = "timeline1";
+            this.timeline1.Size = new System.Drawing.Size(1198, 533);
+            this.timeline1.TabIndex = 0;
             // 
             // FormMain
             // 
@@ -361,9 +361,9 @@
 		private System.Windows.Forms.ColumnHeader columnHeader11;
         private System.Windows.Forms.TabPage tabPage2;
         private Timeline timeline1;
-        private System.Windows.Forms.TextBox textBox1;
+        private System.Windows.Forms.TextBox textBox_filter;
         private System.Windows.Forms.Label btn_clear_search;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label_filter;
 	}
 }
 

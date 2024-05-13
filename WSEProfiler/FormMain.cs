@@ -17,7 +17,7 @@ namespace WSEProfiler
 		private ListViewColumnSorter _lvwColumnSorter = new ListViewColumnSorter();
 		private BinaryProfilerFile _curFile = null;
 		private Dictionary<string, TabPage> _openTabs = new Dictionary<string, TabPage>();
-        private List<ListViewItem> _master_list;
+        private List<ListViewItem> _master_list = new List<ListViewItem>();
 
         //For searchfield placeholder
         private const int EM_SETCUEBANNER = 0x1501;
@@ -30,7 +30,7 @@ namespace WSEProfiler
 			Text = NAME;
 			listView.ListViewItemSorter = _lvwColumnSorter;
             tabControl.DrawMode = TabDrawMode.OwnerDrawFixed;
-            SendMessage(textBox1.Handle, EM_SETCUEBANNER, 0, "Search");
+            SendMessage(textBox_filter.Handle, EM_SETCUEBANNER, 0, "Search");
 		}
 
 		private void Cleanup()
@@ -40,11 +40,13 @@ namespace WSEProfiler
 				tabControl.TabPages.RemoveAt(2);
 			}
 
+            _master_list.Clear();
 			listView.Items.Clear();
 			toolStripStatusLabel1.Text = "";
 			_curFile = null;
 			_openTabs.Clear();
             timeline1.reset();
+            label_filter.Hide();
 			GC.Collect();
 		}
 
@@ -105,9 +107,9 @@ namespace WSEProfiler
 					new ListViewItem.ListViewSubItem() { Text = fullMax.FormatTime(), Tag = fullMax },
 				}, 0));
 			}
-            filter_list("");
+            ListViewColor.Update(_master_list, 2);
+            update_listview(textBox_filter.Text);
 
-			ListViewColor.Update(listView, 2);
 
 			_curFile.Close();
 			Text = NAME + " (" + Path.GetFileName(openFileDialog1.FileName) + ")";
@@ -191,20 +193,22 @@ namespace WSEProfiler
 			OpenDetailsTab(e.BlockName);
 		}
 
-        void filter_list(string txt)
+        void update_listview(string filter)
         {
             listView.Items.Clear();
 
-            txt = txt.ToLower();
+            if (_master_list.Count == 0) return;
+
+            filter = filter.ToLower();
             foreach (ListViewItem itm in _master_list)
             {
-                if (itm.SubItems[0].Text.ToLower().Contains(txt))
+                if (itm.SubItems[0].Text.ToLower().Contains(filter))
                 {
                     listView.Items.Add(itm);
                 }
             }
-            label1.Text = string.Format("Showing {0}/{1}", listView.Items.Count, _master_list.Count);
-            label1.Show();
+            label_filter.Text = string.Format("Showing {0}/{1}", listView.Items.Count, _master_list.Count);
+            label_filter.Show();
         }
 
         Rectangle tab_getXrect(Rectangle tabTextArea)
@@ -324,13 +328,13 @@ namespace WSEProfiler
 
         private void btn_clear_search_Click(object sender, EventArgs e)
         {
-            textBox1.Text = "";
-            filter_list("");
+            textBox_filter.Text = "";
+            update_listview("");
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            if (textBox1.Text == "")
+            if (textBox_filter.Text == "")
             {
                 btn_clear_search.Hide();
             }
@@ -338,7 +342,7 @@ namespace WSEProfiler
             {
                 btn_clear_search.Show();
             }
-            filter_list(textBox1.Text);
+            update_listview(textBox_filter.Text);
         }
 	}
 }

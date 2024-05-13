@@ -64,5 +64,23 @@ namespace WSEProfiler
 				}
 			}
 		}
+
+        public static void Update(List<ListViewItem> items, int column)
+        {
+            if (column < 0)
+            {
+                foreach (ListViewItem item in items)
+                {
+                    item.BackColor = Color.Transparent;
+                }
+            }
+            else
+            {
+                foreach (ListViewItem item in items)
+                {
+                    item.BackColor = GetColorForPercentage((float)item.SubItems[column].Tag);
+                }
+            }
+        }
 	}
 }
