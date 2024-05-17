@@ -167,7 +167,8 @@ multiplayer_cur_message_get_int              = 3411 #(multiplayer_cur_message_ge
 multiplayer_cur_message_get_position         = 3412 #(multiplayer_cur_message_get_position, <position_register>, [<local>]), #Stores a position from the current message register into <position_register>. [<local>] MUST match the type sent (requires, for WSE: network_compatible = 0 in wse_settings.ini, for WSE2: bBreakWarbandCompatibility=true in rgl_config.ini)
 multiplayer_cur_message_get_coordinate       = 3413 #(multiplayer_cur_message_get_coordinate, <position_register>, [<local>]), #Stores x, y, z coordinates from the current message register into <position_register>. [<local>] MUST match the type sent (requires, for WSE: network_compatible = 0 in wse_settings.ini, for WSE2: bBreakWarbandCompatibility=true in rgl_config.ini)
 multiplayer_cur_profile_get_skin             = 3414 #(multiplayer_cur_profile_get_skin, <destination>), #Stores current profile's skin into <destination>
-multiplayer_connect_to_server                = 3415 #(multiplayer_connect_to_server, <address>, <password>), #Connect to server with <address> and <password> (requires WSE2)
+multiplayer_connect_to_server                = 3415 #(multiplayer_connect_to_server, <address>, <password>, [<campaign>]), #Connect to server with <address> and <password>. Set [<campaign>] to non-zero for connect to multiplayer campaign server. (requires WSE2)
+multiplayer_is_campaign                      = 3416 #(multiplayer_is_campaign), #Checks that the code is running on multiplayer campaign mode. (requires WSE2)
 
 server_set_password_admin      = 3500 #(server_set_password_admin, <password>), #Sets <password> as server administrator password
 server_set_password_private    = 3501 #(server_set_password_private, <password>), #Sets <password> as server private player password
@@ -592,6 +593,7 @@ can_fail_operations += [
 	game_key_released,
 	dict_is_empty,
 	dict_has_key,
+	multiplayer_is_campaign,
 	missile_is_valid,
 	cast_ray_agents,
 	troop_has_flag,

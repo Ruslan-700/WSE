@@ -401,9 +401,12 @@ void WSEMultiplayerOperationsContext::OnLoad()
 		"Stores current profile's skin into <0>",
 		"destination");
 
-	RegisterOperation("multiplayer_connect_to_server", nullptr, Client, WSE2, 2, 2,
-		"Connect to server with <0> and <1>",
-		"address", "password");
+	RegisterOperation("multiplayer_connect_to_server", nullptr, Client, WSE2, 2, 3,
+		"Connect to server with <0> and <1>. Set <2> to non-zero for connect to multiplayer campaign server.",
+		"address", "password", "campaign");
+
+	RegisterOperation("multiplayer_is_campaign", nullptr, Both, Cf | WSE2, 0, 0,
+		"Checks that the code is running on multiplayer campaign mode.");
 }
 
 wb::network_buffer *WSEMultiplayerOperationsContext::GetCurrentNetworkBuffer()
