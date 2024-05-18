@@ -258,7 +258,11 @@ namespace WSEProfiler
         {
             for (int i = 2; i < this.tabControl.TabPages.Count; i++)
             {
-                Rectangle closeButton = tab_getXrect(tabControl.GetTabRect(i));
+                Rectangle closeButton;
+                if (e.Button == System.Windows.Forms.MouseButtons.Middle)
+                    closeButton = tabControl.GetTabRect(i);
+                else
+                    closeButton = tab_getXrect(tabControl.GetTabRect(i));
 
                 if (closeButton.Contains(e.Location))
                 {

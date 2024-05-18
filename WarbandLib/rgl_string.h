@@ -61,3 +61,18 @@ namespace rgl
 		operator const char *();
 	};
 }
+
+template <>
+struct std::hash<rgl::string>
+{
+	size_t operator()(const rgl::string& s) const //FNV-1a hash
+	{
+		size_t hash = 2166136261;
+		for (int i = 0; i < s.str_length; ++i)
+		{
+			hash = hash ^ s.buffer[i];
+			hash = hash * 16777619;
+		}
+		return hash;
+	}
+};

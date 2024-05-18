@@ -630,17 +630,24 @@ void SetCampaignTime(WSECoreOperationsContext *context)
 
 void ProfilerStart(WSECoreOperationsContext *context) 
 {
-	WSE->Profiling.SetAwaitStatus(WSEProfilingContext::Status::awaitStart);
+	WSE->Profiling.Start();
 }
 
 void ProfilerStop(WSECoreOperationsContext *context)
 {
-	WSE->Profiling.SetAwaitStatus(WSEProfilingContext::Status::awaitStop);
+	WSE->Profiling.Stop();
 }
 
 bool ProfilerIsRecording(WSECoreOperationsContext *context)
 {
-	return WSE->Profiling.GetStatus() == WSEProfilingContext::Status::recording;
+	return WSE->Profiling.IsRecording();
+}
+
+void ProfilerMark(WSECoreOperationsContext *context)
+{
+	rgl::string str;
+	context->ExtractString(str);
+	WSE->Profiling.AddMarker(str);
 }
 
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
@@ -864,4 +871,7 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("profiler_start", ProfilerStart, Both, None, 0, 0, "Start the profiler");
 	RegisterOperation("profiler_stop",  ProfilerStop,  Both, None, 0, 0, "Stop the profiler");
 	RegisterOperation("profiler_is_recording", ProfilerIsRecording, Both, Cf, 0, 0, "Fails if profiler isn't recording");
+	RegisterOperation("profiler_mark", ProfilerMark, Both, None, 1, 1,
+		"Add a marker at this point in time with name <0>. Good for analyzing individual parts of a script.",
+		"string_1");
 }

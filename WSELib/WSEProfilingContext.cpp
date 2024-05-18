@@ -3,7 +3,9 @@
 #include <ctime>
 #include "WSE.h"
 
-WSEProfilingContext::WSEProfilingContext() : m_status(Status::stopped), m_flush_interval(0)
+#define profiler_debug
+
+WSEProfilingContext::WSEProfilingContext() : m_is_recording(false), m_flush_interval(0)
 {
 }
 
@@ -28,36 +30,33 @@ void WSEProfilingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 		break;
 
 	case OnFrame:
-		if (m_status & Status::recording)
+		if (m_is_recording)
 		{
-			LARGE_INTEGER t;
-			QueryPerformanceCounter(&t);
-
 			m_profile_stream.WriteU32(1, 1);
 			m_profile_stream.WriteU32(0, 1);
+			m_profile_stream.WriteU32(0, 1);
+			
+			LARGE_INTEGER t;
+			QueryPerformanceCounter(&t);
 			m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+#ifdef profiler_debug
+			WSE->Log.Info("Frame marker, t=%u", (unsigned int)t.QuadPart);
+#endif
 		}
 		break;
 	}
 }
 
-void WSEProfilingContext::SetAwaitStatus(Status s)
+bool WSEProfilingContext::IsRecording()
 {
-	assert(Status::awaitStart <= s && s <= Status::awaitResume);
-	m_status = s;
-}
-
-WSEProfilingContext::Status WSEProfilingContext::GetStatus()
-{
-	return m_status;
+	return m_is_recording;
 }
 
 void WSEProfilingContext::Start()
 {
-	if (m_status != Status::stopped)
-		return;
+	if (m_is_recording){ return; }
 
-	m_status = Status::recording;
+	m_is_recording = true;
 
 	char path[MAX_PATH];
 	char time_str[256];
@@ -66,7 +65,7 @@ void WSEProfilingContext::Start()
 
 	time(&raw_time);
 	localtime_s(&time_info, &raw_time);
-	strftime(time_str, MAX_PATH, "%H.%M.%S-%d.%m.%y", &time_info);
+	strftime(time_str, MAX_PATH, "%d.%m.%y-%H.%M.%S", &time_info);
 	sprintf_s(path, "%s%s-%s.wseprfb", WSE->GetPath().c_str(), warband->cur_module_name.c_str(), time_str);
 
 	m_profile_stream.~WSEBitStream();
@@ -75,7 +74,7 @@ void WSEProfilingContext::Start()
 	if (!m_profile_stream.Open(path))
 	{
 		WSE->Log.Error("Profiling: failed to open file %s", path);
-		m_status = Status::stopped;
+		m_is_recording = false;
 		return;
 	}
 	
@@ -101,64 +100,85 @@ void WSEProfilingContext::Start()
 	}
 
 	overhead /= 1000;
-	m_cur_profile_type = 0;
-	m_profile_types.clear();
+	m_cur_str_id = 0;
+	m_str_ids.clear();
 	m_profile_stream.WriteU64(m_frequency.QuadPart, 64);
 	m_profile_stream.WriteU64(overhead, 64);
 	QueryPerformanceCounter(&m_last_flush);
 	m_profile_stream.WriteU32((unsigned int)m_last_flush.QuadPart, 32);
+
+#ifdef profiler_debug
+	WSE->Log.Info("Header, version=%i, major=%i, minor=%i, build=%i", PROFILING_VERSION, WSE_VERSION_MAJOR, WSE_VERSION_MINOR, WSE_VERSION_BUILD);
+	WSE->Log.Info("Header, frequency=%llu", m_frequency.QuadPart);
+	WSE->Log.Info("Header, overhead=%lli", overhead);
+	WSE->Log.Info("Header, t_start=%u", (unsigned int)m_last_flush.QuadPart);
+#endif
 }
 
 void WSEProfilingContext::Stop()
 {
-	m_status = Status::stopped;
+	m_is_recording = false;
 
 	if (m_profile_stream.IsOpen())
 	{
 		unsigned __int64 len = m_profile_stream.Length();
 
 		m_profile_stream.Commit(true);
+
+		LARGE_INTEGER t;
+		QueryPerformanceCounter(&t);
+		m_profile_stream.WriteU32((unsigned int)t.QuadPart, 32);
+
 		m_profile_stream.WriteU64(len, 64);
 		m_profile_stream.WriteU32(PROFILING_MAGIC, 32);
 		m_profile_stream.Close();
 		WSE->Log.Info("Profiling: stopped");
+
+#ifdef profiler_debug
+		WSE->Log.Info("Footer, time_stop=%u", (unsigned int)t.QuadPart);
+		WSE->Log.Info("Footer, len=%llu", len);
+#endif
 	}
 }
 
-void WSEProfilingContext::StartProfilingBlock(int depth, wb::operation_manager *manager)
+void inline WSEProfilingContext::IntroduceStr(const rgl::string& str)
 {
-	if (m_status == Status::awaitStart && depth == 0){
-		m_status = Status::stopped;
-		Start();
-	}
-	if (m_status == Status::awaitResume && depth == 0){
-		m_status = Status::recording;
-	}
-
-	if (m_status & Status::recording)
+	if (m_str_ids.find(str) == m_str_ids.end())
 	{
-		if (m_profile_types.find(&manager->id) == m_profile_types.end())
-		{
-			m_profile_stream.WriteU32(1, 1);
-			m_profile_stream.WriteU32(1, 1);
-			m_profile_stream.WriteString(manager->id);
-			m_profile_types[&manager->id] = m_cur_profile_type++;
-		}
+		m_profile_stream.WriteU32(1, 1);
+		m_profile_stream.WriteU32(1, 1);
+		m_profile_stream.WriteString(str);
+		m_str_ids[str] = m_cur_str_id++;
+
+#ifdef profiler_debug
+		WSE->Log.Info("String Intro, str=%s, id=%i", str.buffer, m_str_ids[str]);
+#endif
+	}
+}
+
+void WSEProfilingContext::StartProfilingBlock(wb::operation_manager *manager)
+{
+	if (m_is_recording)
+	{
+		IntroduceStr(manager->id);
 
 		m_profile_stream.WriteU32(0, 1);
 		m_profile_stream.WriteU32(1, 1);
-		m_profile_stream.WriteBCI15(m_profile_types[&manager->id]);
+		m_profile_stream.WriteBCI15(m_str_ids[manager->id]);
 
 		LARGE_INTEGER t;
 		QueryPerformanceCounter(&t);
-
 		m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+
+#ifdef profiler_debug
+		WSE->Log.Info("Block Start, id=%i, t=%u", m_str_ids[manager->id], (unsigned int)t.QuadPart);
+#endif
 	}
 }
 
 void WSEProfilingContext::StopProfilingBlock(int depth)
 {
-	if (m_status & Status::recording)
+	if (m_is_recording)
 	{
 		LARGE_INTEGER end;
 		QueryPerformanceCounter(&end);
@@ -172,13 +192,31 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 			m_profile_stream.Flush();
 			m_last_flush = end;
 		}
-	}
 
-	if (m_status == Status::awaitStop && depth == 0){
-		Stop();
+#ifdef profiler_debug
+		WSE->Log.Info("Block End, t=%u", (unsigned int)end.QuadPart);
+#endif
 	}
-	if (m_status == Status::awaitPause && depth == 0){
-		m_status = Status::paused;
+}
+
+void WSEProfilingContext::AddMarker(const rgl::string& text)
+{
+	if (m_is_recording)
+	{
+		IntroduceStr(text);
+
+		m_profile_stream.WriteU32(1, 1);
+		m_profile_stream.WriteU32(0, 1);
+		m_profile_stream.WriteU32(1, 1);
+		m_profile_stream.WriteBCI15(m_str_ids[text]);
+
+		LARGE_INTEGER t;
+		QueryPerformanceCounter(&t);
+		m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+
+#ifdef profiler_debug
+		WSE->Log.Info("Custom Marker, id=%i, t=%u", m_str_ids[text], (unsigned int)t.QuadPart);
+#endif
 	}
 }
 
@@ -218,7 +256,7 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 		PROFILING_MAGIC, 32
 */
 
-/*	v2 Format
+/*	v2 Format changes
 
 	Header
 		...
@@ -228,11 +266,16 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 		ID introduction, once for each new ID (id is script or trigger name)
 			11	id [len (12bit), chars (len*8bit)]
 
-		Frame marker
-			10	time (delta_BCI15)
+		Frame Marker
+			100 time (delta_BCI15)
+		Custom marker
+			101	id_index (BCI15), time (delta_BCI15)
 
 		Block
 			01	id_index (BCI15), start time (delta_BCI15)
 			00	end time (delta_BCI15)
-			
+
+	Footer
+		record_stop_time, 32
+		...
 */

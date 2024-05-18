@@ -35,6 +35,20 @@ namespace WSEProfiler
 				return string.Format("{0:0.##} s", val / 1000 / 1000);
 		}
 
+        public static string FormatTime(this uint val)
+        {
+            if (val < 1000)
+                return string.Format("{0:0.##} µs", val);
+            else
+            {
+                if (val < 1000000)
+                    return string.Format("{0:0.##} ms", ((float)val) / 1000);
+                else
+                    return string.Format("{0:0.##} s", ((float)val) / 1000 / 1000);
+            } 
+                
+        }
+
         public static uint ToRgb(this Color val)
         {
             return (uint)val.ToArgb() & 0xFFFFFF;

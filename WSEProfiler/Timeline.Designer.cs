@@ -48,6 +48,7 @@
             this.PictureBox1 = new System.Windows.Forms.PictureBox();
             this.label_drawinfo = new System.Windows.Forms.Label();
             this.btn_clear_search = new System.Windows.Forms.Label();
+            this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
@@ -269,10 +270,20 @@
             this.btn_clear_search.Visible = false;
             this.btn_clear_search.Click += new System.EventHandler(this.btn_clear_search_Click);
             // 
+            // vScrollBar1
+            // 
+            this.vScrollBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.vScrollBar1.Location = new System.Drawing.Point(982, 34);
+            this.vScrollBar1.Name = "vScrollBar1";
+            this.vScrollBar1.Size = new System.Drawing.Size(19, 430);
+            this.vScrollBar1.TabIndex = 13;
+            // 
             // Timeline
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.vScrollBar1);
             this.Controls.Add(this.btn_clear_search);
             this.Controls.Add(this.label_drawinfo);
             this.Controls.Add(this.panel1);
@@ -315,5 +326,6 @@
         private System.Windows.Forms.CheckBox checkBox_filter_props;
         private System.Windows.Forms.Label label_drawinfo;
         private System.Windows.Forms.Label btn_clear_search;
+        private System.Windows.Forms.VScrollBar vScrollBar1;
     }
 }

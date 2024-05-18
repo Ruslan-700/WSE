@@ -9,28 +9,31 @@ namespace WSEProfiler
 {
     public class Call
     {
-        private string _id;
+        public string Id;
+        public Call Parent;
+
         private float _time;
         private float _time_childs = -1;
         private uint _time_start;
         private uint _time_stop;
-        private Call _parent;
         private List<Call> _children = new List<Call>();
 
         private Brush _timeline_brush;
         private Pen _timeline_pen;
         public bool timeline_hidden = false; //filtering
 
+        public List<Marker> custom_markers = new List<Marker>();
+
         public Call(string id)
         {
-            _id = id;
+            Id = id;
             figure_out_color();
         }
 
         public Call(string id, Call parent)
         {
-            _id = id;
-            _parent = parent;
+            Id = id;
+            Parent = parent;
             figure_out_color();
         }
 
@@ -51,12 +54,7 @@ namespace WSEProfiler
 
         public override string ToString()
         {
-            return _id;
-        }
-
-        public string Id
-        {
-            get { return _id; }
+            return Id;
         }
 
         public float Time
@@ -77,6 +75,11 @@ namespace WSEProfiler
             set { _time_stop = value; }
         }
 
+        public void CalcTime()
+        {
+            _time = TimeStop - TimeStart - TimeChilds;
+        }
+
         public float TimeTotal
         {
             get { return _time + CalculateChildTime(); }
@@ -85,11 +88,6 @@ namespace WSEProfiler
         public float TimeChilds
         {
             get { return CalculateChildTime(); }
-        }
-
-        public Call Parent
-        {
-            get { return _parent; }
         }
 
         public List<Call> Children
@@ -112,9 +110,9 @@ namespace WSEProfiler
         {
             get
             {
-                if (_id.StartsWith("Mission Template ["))
+                if (Id.StartsWith("Mission Template ["))
                 {
-                    if (_id.EndsWith("Conditions"))
+                    if (Id.EndsWith("Conditions"))
                     {
                         return Kind.mst_cond;
                     }
@@ -123,19 +121,19 @@ namespace WSEProfiler
                         return Kind.mst_cons;
                     }
                 }
-                else if (_id.StartsWith("Script ["))
+                else if (Id.StartsWith("Script ["))
                 {
                     return Kind.script;
                 }
-                else if (_id.StartsWith("Scene Prop"))
+                else if (Id.StartsWith("Scene Prop"))
                 {
                     return Kind.prop;
                 }
-                else if (_id.StartsWith("Item"))
+                else if (Id.StartsWith("Item"))
                 {
                     return Kind.item;
                 }
-                else if (_id == ("Engine"))
+                else if (Id == ("Engine"))
                 {
                     return Kind.engine;
                 }

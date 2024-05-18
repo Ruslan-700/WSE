@@ -19,6 +19,8 @@ namespace WSEProfiler
         private ulong _int_frequency;
 		private float _frequency;
         private uint _t_record_start = 0;
+        private uint _t_record_end = 0;
+        private uint _t_last_known = 0;
         private float _totalTime;
 
 		private Dictionary<string, CallInfo> _infos = new Dictionary<string, CallInfo>();
@@ -78,6 +80,7 @@ namespace WSEProfiler
             }
             else
             {
+                _t_record_start = _stream.ReadU32(32);
                 ParsePayload_V2(blockName, call_list, marker_list);
             }
 		}
@@ -156,99 +159,160 @@ namespace WSEProfiler
             }
         }
 
+        private uint read_time()
+        {
+            ulong t = _stream.Read_deltaBCI15();
+            t -= _t_record_start;
+            t *= 1000000;
+            t /= _int_frequency;
+            
+            _t_last_known = (uint)t;
+            return (uint)t;
+        }
+
+        private enum pay_type
+        {
+            block_end   = 0,
+            block_start = 1,
+            marker      = 2,
+            id          = 3
+        }
+
         private void ParsePayload_V2(string blockName, List<Call> call_list, List<Marker> marker_list)
         {
-            _t_record_start = _stream.ReadU32(32);
-
             List<string> types = new List<string>();
-            int recursionLevel = 0;
-            Call baseCall = new Call("Engine");
-            Call curCall = baseCall;
+            Call curCall = null;
+
+            Action init_cur_call = delegate()
+            {
+                //In the new format we can have markers or block ends before any block start (because of the operations), just create a new call in that case
+                if (curCall == null)
+                    {
+                        curCall = new Call("???");
+                        curCall.TimeStart = 0;
+                    }
+            };
 
             while (_stream.Position() < _length)
             {
-                uint type = (_stream.ReadU32(1) << 1) | _stream.ReadU32(1);
+                pay_type type = (pay_type)((_stream.ReadU32(1) << 1) | _stream.ReadU32(1));
 
-                if (type == 3) //0b11, type name
+                if (type == pay_type.id)
                 {
                     types.Add(_stream.ReadString());
                 }
-                else if (type == 2) //0b10, frame marker
+                else if (type == pay_type.marker)
                 {
-                    //frame mark
-                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
-                    if (marker_list != null)
-                    {
-                        t *= 1000000;
-                        t /= _int_frequency;
+                    Marker m = new Marker();
 
-                        marker_list.Add(new Marker((uint)t, Marker.Marker_Type.Frame));
+                    if (_stream.ReadU32(1) == 1)
+                    {
+                        m.type = Marker.Marker_Type.Custom;
+                        var id_idx = _stream.ReadBCI15();
+                        m.text = types[(int)id_idx];
+
+                        uint t = read_time();
+                        m.time = t;
+                        init_cur_call();
+                        curCall.custom_markers.Add(m);
+                    }
+                    else
+                    {
+                        m.type = Marker.Marker_Type.Frame;
+                        if (curCall != null)
+                            curCall.Id = "Engine";
+
+                        uint t = read_time();
+                        if (marker_list != null)
+                        {
+                            m.time = t;
+                            marker_list.Add(m);
+                        }
                     }
                 }
-                else if (type == 1) //0b01, block start
+                else if (type == pay_type.block_start)
                 {
                     var id_idx = _stream.ReadBCI15();
-                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
+                    uint t = read_time();
 
+                    init_cur_call();
                     var call = new Call(types[(int)id_idx], curCall);
 
-                    t *= 1000000;
-                    t /= _int_frequency;
-                    call.TimeStart = (uint)t;
+                    call.TimeStart = t;
 
                     curCall.Children.Add(call);
                     curCall = call;
-                    recursionLevel++;
                 }
-                else if (type == 0){ //0b00, block end
-                    ulong t = _stream.Read_deltaBCI15() - _t_record_start;
+                else if (type == pay_type.block_end){
+                    uint t = read_time();
 
-                    t *= 1000000;
-                    t /= _int_frequency;
-                    curCall.TimeStop = (uint)t;
-
-                    curCall.Time = (float)(curCall.TimeStop - curCall.TimeStart);
-                    //curCall.Time *= 1000000;
-                    //curCall.Time /= _frequency;
-                    curCall.Time -= curCall.TimeChilds;
+                    init_cur_call();
+                    curCall.TimeStop = t;
+                    curCall.CalcTime();
 
                     if (curCall.Id == blockName)
                         _details.AddCall(curCall);
 
-                    if (recursionLevel == 1 && call_list != null)
-                        call_list.Add(curCall);
-
-                    curCall = curCall.Parent;
-                    recursionLevel--;
-
-                    if (curCall == baseCall)
+                    if (curCall.Parent == null)
                     {
-                        if (blockName == "")
-                        {
-                            if (curCall.Children.Count != 1)
-                                throw new Exception("Base call with multiple children.");
-
-                            _totalTime += curCall.Children[0].TimeTotal;
-                            ParseCall(curCall.Children[0]);
-                        }
-
-                        curCall.Children.Clear();
+                        Call c = new Call("???");
+                        c.Children.Add(curCall);
+                        curCall.Parent = c;
                     }
+                    curCall = curCall.Parent;
                 }
             }
 
-            if (recursionLevel != 0)
+            if (curCall == null) return;
+
+            if (_terminated)
             {
-                this.ShowWarning("Final block depth non-zero. Is the profiling file damaged or incomplete?");
+                _stream.Seek(-16, SeekOrigin.End);
+                ulong t = _stream.ReadU32(32) - _t_record_start;
+                t *= 1000000;
+                t /= _int_frequency;
+                _t_record_end = (uint)t;
+            }
+            else
+            {
+                _t_record_end = _t_last_known;
+            }
 
-                var call = curCall;
-
-                while (call != null)
+            //if the recording was stopped via the operation, curCall will be the script where it stopped.
+            //find the root call ("Engine")
+            do
+            {
+                if (curCall.TimeStop <= curCall.TimeStart)
                 {
-                    ParseCall(call);
-                    call = call.Parent;
+                    curCall.TimeStop = _t_record_end;
+                    curCall.CalcTime();
+                }
+
+                if (curCall.Parent == null)
+                    break;
+                else
+                    curCall = curCall.Parent;
+            } while (true);
+
+            if (curCall.Id != "Engine")
+            {
+                if (call_list != null)
+                    call_list.Add(curCall);
+
+                _totalTime += curCall.TimeTotal;
+            }
+            else
+            {
+                foreach (Call c in curCall.Children)
+                {
+                    _totalTime += c.TimeTotal;
+
+                    if (call_list != null)
+                        call_list.Add(c);
                 }
             }
+            
+            ParseCall(curCall);
         }
 
 		public void Close()
@@ -260,12 +324,15 @@ namespace WSEProfiler
 
 		private void ParseCall(Call call)
 		{
-			if (!_infos.ContainsKey(call.Id))
-				_infos.Add(call.Id, new CallInfo(call.Id));
+            if (call.Id != "Engine")
+            {
+                if (!_infos.ContainsKey(call.Id))
+                    _infos.Add(call.Id, new CallInfo(call.Id));
 
-			var info = _infos[call.Id];
+                var info = _infos[call.Id];
 
-			info.AddTime(call.Time, call.TimeTotal);
+                info.AddTime(call.Time, call.TimeTotal);
+            }
 
 			foreach (var child in call.Children)
 			{

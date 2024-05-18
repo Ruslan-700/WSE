@@ -45,6 +45,7 @@ namespace WSEProfiler
         //Cache some drawing stuff
         private Pen _marker_frame_pen = new Pen(Color.LightGray, 1);
         private Pen _marker_search_pen = new Pen(Color.DarkRed, 1);
+        private Pen _marker_custom_pen = new Pen(Color.MediumSpringGreen);
 
         private Pen _call_border_pen = Pens.Black;
         private Font _call_label_font = DefaultFont;
@@ -172,9 +173,9 @@ namespace WSEProfiler
             return t;
         }
 
-        private int depth2y(int depth)
+        private int depth2y(float depth)
         {
-            return 40 + 20 * depth;
+            return (int)(40 + 20 * depth);
         }
 
         private Point mouse2canvas(Point location)
@@ -363,7 +364,7 @@ namespace WSEProfiler
 
             uint seconds = (uint)(duration / 1000000);
             uint steps = (uint)_canvas.Width / 70;
-            uint step = seconds / steps;
+            uint step = Math.Max(seconds / steps, 1);
 
             for (uint i = 0; i <= seconds; i += step)
             {
@@ -464,11 +465,34 @@ namespace WSEProfiler
                 _marker_frame_last_draw_x = x1;
                 //_draw_count_frame++;
             }
-            else
+            else if(m.type == Marker.Marker_Type.Search)
             {
                 e.Graphics.DrawLine(_marker_search_pen, x1, time_axis_fixed_height, x1, m.y);
                 _draw_count_search++;
             }
+        }
+
+        Action create_hover_info_drawer(PaintEventArgs e, Point p, String text)
+        {
+            return delegate()
+            {
+                var x = p.X + 5;
+                var y = p.Y + 5;
+
+                SizeF size = e.Graphics.MeasureString(text, DefaultFont);
+
+                if (x + size.Width > _canvas.Width)
+                    x = Math.Max(0, _canvas.Width - (int)size.Width);
+
+                if (y + size.Height > _canvas.Height)
+                    y = Math.Max(0, _canvas.Height - (int)size.Height);
+
+                e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
+
+                x += 5;
+                y += 5;
+                e.Graphics.DrawString(text, DefaultFont, Brushes.Black, x, y);
+            };
         }
 
         void draw_call(PaintEventArgs e, Call c, int depth = 0)
@@ -512,24 +536,30 @@ namespace WSEProfiler
                 }
 
                 Point p = mouse2canvas(PictureBox1.PointToClient(System.Windows.Forms.Control.MousePosition));
+
                 if (r.Contains(p))
                 {
-                    draw_hover_info = delegate()
-                    {
-                        var x = p.X + 5;
-                        var y = p.Y + 5;
-
-                        var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
-
-                        SizeF size = e.Graphics.MeasureString(text, DefaultFont);
-
-                        e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
-
-                        x += 5;
-                        y += 5;
-                        e.Graphics.DrawString(text, DefaultFont, Brushes.Black, x, y);
-                    };
+                    var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
+                    draw_hover_info = create_hover_info_drawer(e, p, text);
                 };
+
+                foreach (var m in c.custom_markers)
+                {
+                    if (m.time > _view_time_end || m.time < _view_time_start)
+                        continue;
+
+                    x1 = t2x(m.time);
+                    var y2 = depth2y((float)depth + 0.5f);
+
+                    e.Graphics.DrawLine(_marker_custom_pen, x1, time_axis_fixed_height, x1, y2);
+
+                    r = new Rectangle(x1 - 2, (int)time_axis_fixed_height, 5, y2 - (int)time_axis_fixed_height);
+                    if (r.Contains(p))
+                    {
+                        var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
+                        draw_hover_info = create_hover_info_drawer(e, p, text);
+                    };
+                }
             }
 
             foreach (var child in c.Children)
@@ -909,12 +939,16 @@ namespace WSEProfiler
         public enum Marker_Type
         {
             Frame,
+            Custom,
             Search
         }
 
         public Marker_Type type;
         public uint time;
         public int y;
+        public string text;
+
+        public Marker() { }
 
         public Marker(uint t, Marker_Type ty, int y = 0)
         {

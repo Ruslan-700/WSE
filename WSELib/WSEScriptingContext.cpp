@@ -107,7 +107,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 {
 	m_cur_statement_block = operation_manager;
 
-	WSE->Profiling.StartProfilingBlock(depth, operation_manager);
+	WSE->Profiling.StartProfilingBlock(operation_manager);
 
 	if (m_allow_unset_script_params && num_parameters < MAX_NUM_STATEMENT_BLOCK_PARAMS)
 	{
