@@ -84,7 +84,7 @@ namespace WSEProfiler
             //this is simply to fix an annoying border, dont ask
             toolStrip1.Renderer = new MySR();
 
-            _marker_top_y = depth2y(-0.5f);
+            _marker_top_y = depth2y(-0.8f);
         }
 
         public long duration
@@ -227,6 +227,16 @@ namespace WSEProfiler
                     cur_call = null;
                 };
 
+                Action<List<Marker>, Call> collect_markers = null;
+                collect_markers = delegate(List<Marker> markers, Call call)
+                 {
+                     foreach(Marker m in call.custom_markers)
+                         markers.Add(m);
+
+                     foreach (Call c in call.Children)
+                         collect_markers(markers, c);
+                 };
+
                 Action<Color> add_color = delegate(Color c)
                 {
                     byte[] rgb = { 0, 0, 0 };
@@ -258,12 +268,14 @@ namespace WSEProfiler
 
                             cur_col_aggregat[0] = 0; cur_col_aggregat[1] = 0; cur_col_aggregat[2] = 0;
                             add_color(c.Timeline_Pen.Color);
+                            collect_markers(cur_call.custom_markers, c);
                             cur_col_count = 1;
                         }
                         else
                         {
                             cur_call.TimeStart = c.TimeStop;
                             add_color(c.Timeline_Pen.Color);
+                            collect_markers(cur_call.custom_markers, c);
                             cur_col_count++;
                         }
                     }
@@ -292,9 +304,6 @@ namespace WSEProfiler
 
         void draw_everything(PaintEventArgs e)
         {
-            draw_fixed_time_axis(e);
-            draw_time_axis(e);
-
             draw_hover_info = null;
 
             _draw_count_calls = 0;
@@ -320,6 +329,9 @@ namespace WSEProfiler
                     draw_call(e, call);
                 }
             }
+
+            draw_fixed_time_axis(e);
+            draw_time_axis(e);
 
             _marker_frame_last_draw_x = -1000;
             foreach (var marker in search_markers)
@@ -534,6 +546,10 @@ namespace WSEProfiler
                 if (w < 1)
                 {
                     e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, depth2y(depth+1));
+
+                    if(c.custom_markers.Count > 0 && checkBox_filter_custom_markers.Checked)
+                        e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y1);
+
                     return;
                 }
 
@@ -554,26 +570,29 @@ namespace WSEProfiler
 
                 if (r.Contains(p))
                 {
-                    var text = string.Format("{0}\nTime total: {1}\nTime self: {2}", c.Id, c.TimeTotal.FormatTime(), c.Time.FormatTime());
+                    var text = string.Format("{0}\nTime start: {1}\nTime total: {2}\nTime self: {3}", c.Id, c.TimeStart.FormatTime(), c.TimeTotal.FormatTime(), c.Time.FormatTime());
                     draw_hover_info = create_hover_info_drawer(e, p, text);
                 };
 
-                foreach (var m in c.custom_markers)
+                if (checkBox_filter_custom_markers.Checked)
                 {
-                    if (m.time > _view_time_end || m.time < _view_time_start)
-                        continue;
-
-                    x1 = t2x(m.time);
-                    var y2 = depth2y((float)depth + 0.5f);
-
-                    e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
-
-                    r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
-                    if (r.Contains(p))
+                    foreach (var m in c.custom_markers)
                     {
-                        var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
-                        draw_hover_info = create_hover_info_drawer(e, p, text);
-                    };
+                        if (m.time > _view_time_end || m.time < _view_time_start)
+                            continue;
+
+                        x1 = t2x(m.time);
+                        int y2 = depth2y((float)depth + 0.5f);
+
+                        e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
+
+                        r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
+                        if (r.Contains(p))
+                        {
+                            var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
+                            draw_hover_info = create_hover_info_drawer(e, p, text);
+                        };
+                    }
                 }
             }
 
@@ -934,6 +953,7 @@ namespace WSEProfiler
                     {
                         drag_timeline(Math.Max(view_duration / 10, 1));
                     }
+                    canvas1.Invalidate();
 
                     m.Result = (IntPtr)1;
                     break;

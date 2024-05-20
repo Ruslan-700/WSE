@@ -47,8 +47,9 @@
             this.label_drawinfo = new System.Windows.Forms.Label();
             this.btn_clear_search = new System.Windows.Forms.Label();
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.canvas1 = new WSEProfiler.Canvas();
             this.button1 = new System.Windows.Forms.Button();
+            this.canvas1 = new WSEProfiler.Canvas();
+            this.checkBox_filter_custom_markers = new System.Windows.Forms.CheckBox();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.canvas1)).BeginInit();
@@ -120,6 +121,7 @@
             // 
             this.panel1.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.panel1.BackColor = System.Drawing.SystemColors.Control;
+            this.panel1.Controls.Add(this.checkBox_filter_custom_markers);
             this.panel1.Controls.Add(this.checkBox_filter_items);
             this.panel1.Controls.Add(this.checkBox_filter_props);
             this.panel1.Controls.Add(this.checkBox_filter_other);
@@ -163,7 +165,7 @@
             this.checkBox_filter_other.AutoSize = true;
             this.checkBox_filter_other.Checked = true;
             this.checkBox_filter_other.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_filter_other.Location = new System.Drawing.Point(3, 136);
+            this.checkBox_filter_other.Location = new System.Drawing.Point(4, 159);
             this.checkBox_filter_other.Name = "checkBox_filter_other";
             this.checkBox_filter_other.Size = new System.Drawing.Size(52, 17);
             this.checkBox_filter_other.TabIndex = 13;
@@ -252,6 +254,17 @@
             this.vScrollBar1.Visible = false;
             this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
             // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(930, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(27, 23);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "?";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // canvas1
             // 
             this.canvas1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -271,16 +284,18 @@
             this.canvas1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.canvas1_Wheel);
             this.canvas1.Resize += new System.EventHandler(this.canvas1_Resize);
             // 
-            // button1
+            // checkBox_filter_custom_markers
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(930, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(27, 23);
-            this.button1.TabIndex = 15;
-            this.button1.Text = "?";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.checkBox_filter_custom_markers.AutoSize = true;
+            this.checkBox_filter_custom_markers.Checked = true;
+            this.checkBox_filter_custom_markers.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_filter_custom_markers.Location = new System.Drawing.Point(4, 136);
+            this.checkBox_filter_custom_markers.Name = "checkBox_filter_custom_markers";
+            this.checkBox_filter_custom_markers.Size = new System.Drawing.Size(102, 17);
+            this.checkBox_filter_custom_markers.TabIndex = 16;
+            this.checkBox_filter_custom_markers.Text = "Custom Markers";
+            this.checkBox_filter_custom_markers.UseVisualStyleBackColor = true;
+            this.checkBox_filter_custom_markers.CheckedChanged += new System.EventHandler(this.checkBox_filter_CheckedChanged);
             // 
             // Timeline
             // 
@@ -330,5 +345,6 @@
         private System.Windows.Forms.VScrollBar vScrollBar1;
         private Canvas canvas1;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox_filter_custom_markers;
     }
 }
