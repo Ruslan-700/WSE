@@ -23,9 +23,6 @@ namespace WSEProfiler
         private long _view_time_start = 0;
         private long _view_time_end = 0;
 
-        private Point origin_offset = new Point(7, 5);
-        private Rectangle _canvas;
-
         private const uint time_axis_fixed_height = 25;
         private const uint time_axis_height = 30;
 
@@ -39,6 +36,7 @@ namespace WSEProfiler
         bool time_axis_fixed_scrubbing = false;
 
         private int _marker_frame_last_draw_x;
+        private int _marker_top_y;
 
         private Action draw_hover_info; //Callback for drawing tooltip last
 
@@ -59,6 +57,7 @@ namespace WSEProfiler
 
         private uint _draw_count_calls;
         private uint _draw_count_search;
+        private int _draw_max_y;
         //private uint _draw_count_frame;
 
         public Timeline()
@@ -84,6 +83,8 @@ namespace WSEProfiler
 
             //this is simply to fix an annoying border, dont ask
             toolStrip1.Renderer = new MySR();
+
+            _marker_top_y = depth2y(-0.5f);
         }
 
         public long duration
@@ -114,7 +115,13 @@ namespace WSEProfiler
 
             create_merged_view();
 
-            PictureBox1.Invalidate();
+            int max_depth = 0;
+            find_max_depth(calls, ref max_depth);
+            _draw_max_y = depth2y(max_depth);
+
+            canvas1_Resize(null, null);
+
+            canvas1.Invalidate();
         }
 
         public void reset()
@@ -129,13 +136,13 @@ namespace WSEProfiler
             markers.Clear();
             search_markers.Clear();
 
-            PictureBox1.Invalidate();
+            canvas1.Invalidate();
         }
 
         //time -> draw coord
         private int t2x(long t)
         {
-            long x = (long)_canvas.Width * (t - _view_time_start);
+            long x = (long)canvas1.DrawWidth * (t - _view_time_start);
 
             x /= view_duration;
 
@@ -147,7 +154,7 @@ namespace WSEProfiler
         {
             long t = view_duration;
             t *= x;
-            t /= _canvas.Width;
+            t /= canvas1.DrawWidth;
             t += _view_time_start;
 
             return t;
@@ -156,7 +163,7 @@ namespace WSEProfiler
         //time -> draw coord (fixed version)
         private int t2x_f(long t)
         {
-            long x = _canvas.Width * t;
+            long x = canvas1.DrawWidth * t;
 
             x /= duration;
 
@@ -168,31 +175,24 @@ namespace WSEProfiler
         {
             long t = duration;
             t *= x;
-            t /= _canvas.Width;
+            t /= canvas1.DrawWidth;
 
             return t;
         }
 
         private int depth2y(float depth)
         {
-            return (int)(40 + 20 * depth);
-        }
+            int y = (int)(40 + 20 * depth);
 
-        private Point mouse2canvas(Point location)
-        {
-            return new Point(location.X - origin_offset.X, location.Y - origin_offset.Y);
-        }
+            if (vScrollBar1.Visible)
+            {
+                return y - vScrollBar1.Value;
+            }
+            else
+            {
+                return y;
 
-        private MouseEventArgs mouseEvent2Canvas(MouseEventArgs e)
-        {
-            return new MouseEventArgs(e.Button, e.Clicks, e.Location.X - origin_offset.X, e.Location.Y - origin_offset.Y, e.Delta);
-        }
-
-        private long clamp(long val, long min, long max)
-        {
-            val = Math.Min(val, max);
-            val = Math.Max(val, min);
-            return val;
+            }
         }
 
         private void create_merged_view()
@@ -279,6 +279,17 @@ namespace WSEProfiler
             }
         }
 
+        private void find_max_depth(List<Call> childs, ref int max_depth, int depth = 0)
+        {
+            if (depth > max_depth)
+                max_depth = depth;
+
+            foreach (Call c in childs)
+            {
+                find_max_depth(c.Children, ref max_depth, depth + 1);
+            }
+        }
+
         void draw_everything(PaintEventArgs e)
         {
             draw_fixed_time_axis(e);
@@ -327,7 +338,7 @@ namespace WSEProfiler
                 int x = t2x(start);
                 int w = t2x(end) - x;
 
-                Rectangle r = new Rectangle(x, 30, w, _canvas.Height - 30);
+                Rectangle r = new Rectangle(x, 30, w, canvas1.DrawHeight - 30);
 
                 e.Graphics.FillRectangle(b, r);
 
@@ -351,7 +362,7 @@ namespace WSEProfiler
             string info = String.Format("Viewing {0} calls", _draw_count_calls);
             if (_draw_count_search > 0)
                 info += String.Format(", {0} search marks", _draw_count_search);
-            label_drawinfo.Text = info;
+            label_drawinfo.Text = info;        
         }
 
         //top axis
@@ -363,7 +374,11 @@ namespace WSEProfiler
             int x;
 
             uint seconds = (uint)(duration / 1000000);
-            uint steps = (uint)_canvas.Width / 70;
+            uint steps = (uint)canvas1.DrawWidth / 70;
+
+            if (steps == 0)
+                return;
+
             uint step = Math.Max(seconds / steps, 1);
 
             for (uint i = 0; i <= seconds; i += step)
@@ -391,7 +406,7 @@ namespace WSEProfiler
             e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, time_axis_fixed_height);
 
             x = t2x_f(_view_time_end);
-            e.Graphics.FillRectangle(b, x, 0, _canvas.Width - x, time_axis_fixed_height);
+            e.Graphics.FillRectangle(b, x, 0, canvas1.DrawWidth - x, time_axis_fixed_height);
             e.Graphics.DrawLine(SystemPens.Highlight, x, 0, x, time_axis_fixed_height);
         }
 
@@ -400,7 +415,9 @@ namespace WSEProfiler
         {
             long unit = 1000;
             string ustr = "ms";
-            long steps = _canvas.Width / 150;
+            long steps = canvas1.DrawWidth / 150;
+            if (steps == 0)
+                return;
 
             Pen p1 = new Pen(Color.DarkGray, 2);
             Pen p2 = new Pen(Color.DarkGray, 1);
@@ -442,8 +459,8 @@ namespace WSEProfiler
             {
                 var x = t2x(i * unit);
 
-                e.Graphics.DrawLine(p1, x, _canvas.Height - 20, x, _canvas.Height - time_axis_height);
-                e.Graphics.DrawString(i.ToString() + ustr, SystemFonts.DefaultFont, Brushes.Black, x - 7, _canvas.Height-20);
+                e.Graphics.DrawLine(p1, x, canvas1.DrawHeight - 20, x, canvas1.DrawHeight - time_axis_height);
+                e.Graphics.DrawString(i.ToString() + ustr, SystemFonts.DefaultFont, Brushes.Black, x - 7, canvas1.DrawHeight-20);
 
                 i += step;
             }
@@ -461,13 +478,13 @@ namespace WSEProfiler
                 if ((x1 - _marker_frame_last_draw_x) < 2)
                     return;
 
-                e.Graphics.DrawLine(_marker_frame_pen, x1, 30, x1, _canvas.Height - 30);
+                e.Graphics.DrawLine(_marker_frame_pen, x1, _marker_top_y, x1, canvas1.DrawHeight - 30);
                 _marker_frame_last_draw_x = x1;
                 //_draw_count_frame++;
             }
             else if(m.type == Marker.Marker_Type.Search)
             {
-                e.Graphics.DrawLine(_marker_search_pen, x1, time_axis_fixed_height, x1, m.y);
+                e.Graphics.DrawLine(_marker_search_pen, x1, _marker_top_y, x1, m.y);
                 _draw_count_search++;
             }
         }
@@ -481,11 +498,11 @@ namespace WSEProfiler
 
                 SizeF size = e.Graphics.MeasureString(text, DefaultFont);
 
-                if (x + size.Width > _canvas.Width)
-                    x = Math.Max(0, _canvas.Width - (int)size.Width);
+                if (x + size.Width > canvas1.DrawWidth)
+                    x = Math.Max(0, canvas1.DrawWidth - (int)size.Width);
 
-                if (y + size.Height > _canvas.Height)
-                    y = Math.Max(0, _canvas.Height - (int)size.Height);
+                if (y + size.Height > canvas1.DrawHeight)
+                    y = Math.Max(0, canvas1.DrawHeight - (int)size.Height);
 
                 e.Graphics.FillRectangle(SystemBrushes.Control, x, y, size.Width + 10, size.Height + 10);
 
@@ -516,11 +533,11 @@ namespace WSEProfiler
 
                 if (w < 1)
                 {
-                    e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, y1 + 20);
+                    e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, depth2y(depth+1));
                     return;
                 }
 
-                Rectangle r = new Rectangle(x1, y1, w, 20);
+                Rectangle r = new Rectangle(x1, y1, w, depth2y(depth + 1) - y1);
 
                 e.Graphics.FillRectangle(c.Timeline_Brush, r);
 
@@ -530,12 +547,10 @@ namespace WSEProfiler
                 }
                 if (w > 40)
                 {
-                    //Font f = new Font(SystemFonts.SmallCaptionFont.Name, 8);
-                    //e.Graphics.DrawString(c.Id, f, Brushes.Black, r);
                     e.Graphics.DrawString(c.Id, _call_label_font, _call_brush, r, new StringFormat(StringFormatFlags.NoWrap));
                 }
 
-                Point p = mouse2canvas(PictureBox1.PointToClient(System.Windows.Forms.Control.MousePosition));
+                Point p = canvas1.PointToCanvas(System.Windows.Forms.Control.MousePosition);
 
                 if (r.Contains(p))
                 {
@@ -551,9 +566,9 @@ namespace WSEProfiler
                     x1 = t2x(m.time);
                     var y2 = depth2y((float)depth + 0.5f);
 
-                    e.Graphics.DrawLine(_marker_custom_pen, x1, time_axis_fixed_height, x1, y2);
+                    e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
 
-                    r = new Rectangle(x1 - 2, (int)time_axis_fixed_height, 5, y2 - (int)time_axis_fixed_height);
+                    r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
                     if (r.Contains(p))
                     {
                         var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
@@ -680,67 +695,80 @@ namespace WSEProfiler
         //###########
         //Events
         //###########
-        private void PictureBox1_Paint(object sender, PaintEventArgs e)
+        private void canvas1_Paint(object sender, PaintEventArgs e)
         {
-            e.Graphics.FillRectangle(Brushes.White, e.ClipRectangle);
-
             if (!Ready)
                 return;
 
             //We want some "padding", otherwise everything draws right at the edge
-            e.Graphics.TranslateTransform(origin_offset.X, origin_offset.Y);
+            //e.Graphics.TranslateTransform(_origin_offset.X, _origin_offset.Y);
 
             draw_everything(e);
         }
 
-        private void PictureBox1_Wheel(object sender, MouseEventArgs e)
+        private void canvas1_Wheel(object sender, MouseEventArgs e)
         {
             if (!Ready)
                 return;
 
-            e = mouseEvent2Canvas(e);
-
-            if (e.Delta > 0 && view_duration < 10)
-                return;
-
-            long t = x2t(e.X);
-
-            long max_amount = Math.Max(view_duration / 10, 1);
-
-            long a = max_amount;
-            a *= (t - _view_time_start);
-            a /= view_duration;
-
-            long b = max_amount;
-            b *= (_view_time_end - t);
-            b /= view_duration;
-
-            a = Math.Max(a, 1);
-            b = Math.Max(b, 1);
-
-            if (e.Delta > 0)
+            if (Control.ModifierKeys == Keys.Control)
             {
-                _view_time_start += (uint)a;
-                _view_time_end -= (uint)b;
+                if (!vScrollBar1.Visible)
+                    return;
+                vScrollBar1.Value = (vScrollBar1.Value - e.Delta/10).clamp(0, vScrollBar1.Maximum);
+                vScrollBar1_Scroll(null, null);
+            }
+            else if (Control.ModifierKeys == Keys.Shift)
+            {
+                if(e.Delta > 0)
+                    drag_timeline(- view_duration / 10);
+                else
+                    drag_timeline(view_duration / 10);
+
+                canvas1.Invalidate();
             }
             else
             {
-                _view_time_start -= (uint)a;
-                _view_time_end += (uint)b;
-            }
+                if (e.Delta > 0 && view_duration < 10)
+                    return;
 
-            _view_time_end = clamp(_view_time_end, 0, duration);
-            _view_time_start = clamp(_view_time_start, 0, _view_time_end);
-            
-            PictureBox1.Invalidate();
+                long t = x2t(e.X);
+
+                long max_amount = Math.Max(view_duration / 10, 1);
+
+                long a = max_amount;
+                a *= (t - _view_time_start);
+                a /= view_duration;
+
+                long b = max_amount;
+                b *= (_view_time_end - t);
+                b /= view_duration;
+
+                a = Math.Max(a, 1);
+                b = Math.Max(b, 1);
+
+                if (e.Delta > 0)
+                {
+                    _view_time_start += (uint)a;
+                    _view_time_end -= (uint)b;
+                }
+                else
+                {
+                    _view_time_start -= (uint)a;
+                    _view_time_end += (uint)b;
+                }
+
+                _view_time_end = _view_time_end.clamp(0, duration);
+                _view_time_start = _view_time_start.clamp(0, _view_time_end);
+              
+                canvas1.Invalidate();
+            }
         }
 
-        private void PictureBox1_MouseDown(object sender, MouseEventArgs e)
+        private void canvas1_MouseDown(object sender, MouseEventArgs e)
         {
             if (!Ready)
                 return;
-
-            e = mouseEvent2Canvas(e);
 
             if (e.Button == MouseButtons.Right && selecting)
             {
@@ -754,33 +782,31 @@ namespace WSEProfiler
             {
                 time_axis_fixed_scrubbing = true;
                 scrub_timeline(e);
-                PictureBox1.Cursor = Cursors.Hand;
-                PictureBox1.Invalidate();
+                canvas1.Cursor = Cursors.Hand;
+                canvas1.Invalidate();
             }
             else
             {
                 if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
                 {
                     selecting = true;
-                    _select_time_a = clamp(x2t(e.Location.X), 0, duration);
+                    _select_time_a = x2t(e.Location.X).clamp(0, duration);
                     _select_time_b = -1;
-                    PictureBox1.Cursor = Cursors.IBeam;
+                    canvas1.Cursor = Cursors.IBeam;
                 }
                 else
                 {
                     dragging = true;
                     drag_last_x = e.Location.X;
-                    PictureBox1.Cursor = Cursors.Hand;
+                    canvas1.Cursor = Cursors.Hand;
                 }
             }
         }
 
-        private void PictureBox1_MouseMove(object sender, MouseEventArgs e)
+        private void canvas1_MouseMove(object sender, MouseEventArgs e)
         {
             if (!Ready)
                 return;
-
-            e = mouseEvent2Canvas(e);
 
             if (dragging)
             {
@@ -789,13 +815,13 @@ namespace WSEProfiler
 
                 drag_timeline(dx);
 
-                //this.PictureBox1.Invalidate();
+                //this.canvas1.Invalidate();
             }
 
             if (selecting)
             {
-                _select_time_b = clamp(x2t(e.Location.X), 0, duration);
-                //this.PictureBox1.Invalidate();
+                _select_time_b = x2t(e.Location.X).clamp(0, duration);
+                //this.canvas1.Invalidate();
             }
 
             if (time_axis_fixed_scrubbing)
@@ -803,7 +829,7 @@ namespace WSEProfiler
                 scrub_timeline(e);
             }
 
-            this.PictureBox1.Invalidate();
+            this.canvas1.Invalidate();
         }
 
         private void MouseEnd()
@@ -826,21 +852,21 @@ namespace WSEProfiler
                     _view_time_start = _select_time_b;
                     _view_time_end = _select_time_a;
                 }
-                PictureBox1.Invalidate();
+                canvas1.Invalidate();
             }
             if (time_axis_fixed_scrubbing)
             {
                 time_axis_fixed_scrubbing = false;
             }
-            PictureBox1.Cursor = Cursors.Default;
+            canvas1.Cursor = Cursors.Default;
         }
 
-        private void PictureBox1_MouseUp(object sender, MouseEventArgs e)
+        private void canvas1_MouseUp(object sender, MouseEventArgs e)
         {
             MouseEnd();
         }
 
-        private void PictureBox1_MouseLeave(object sender, EventArgs e)
+        private void canvas1_MouseLeave(object sender, EventArgs e)
         {
             MouseEnd();
         }
@@ -849,7 +875,7 @@ namespace WSEProfiler
         {
             _view_time_start = 0;
             _view_time_end = duration;
-            PictureBox1.Invalidate();
+            canvas1.Invalidate();
         }
 
         private void textBox1_KeyDown(object sender, KeyEventArgs e)
@@ -857,7 +883,7 @@ namespace WSEProfiler
             if(Ready && e.KeyCode == Keys.Enter)
             {
                 create_search_markers(textBox1.Text);
-                PictureBox1.Invalidate();
+                canvas1.Invalidate();
 
                 if (textBox1.Text == "")
                     return;
@@ -880,7 +906,7 @@ namespace WSEProfiler
         {
             textBox1.Text = "";
             create_search_markers(textBox1.Text);
-            PictureBox1.Invalidate();
+            canvas1.Invalidate();
         }
 
         //mousewheel "tilt" (click mousewheel left/right)
@@ -916,21 +942,40 @@ namespace WSEProfiler
             }
         }
 
-        private void PictureBox1_SizeChanged(object sender, EventArgs e)
-        {
-            _canvas = new Rectangle(0, 0, PictureBox1.Width - origin_offset.X * 2, PictureBox1.Height - origin_offset.Y * 2);
-        }
-
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            PictureBox1.Invalidate();
+            canvas1.Invalidate();
         }
 
         private void checkBox_filter_CheckedChanged(object sender, EventArgs e)
         {
             filter_calls(calls);
             create_merged_view();
-            PictureBox1.Invalidate();
+            canvas1.Invalidate();
+        }
+
+        private void vScrollBar1_Scroll(object sender, ScrollEventArgs e)
+        {
+            _marker_top_y = depth2y(-0.5f);
+            canvas1.Invalidate();
+        }
+
+        private void canvas1_Resize(object sender, EventArgs e)
+        {
+            if (_draw_max_y > canvas1.DrawHeight)
+            {
+                vScrollBar1.Show();
+                vScrollBar1.Maximum = _draw_max_y - canvas1.DrawHeight;
+            }
+            else
+            {
+                vScrollBar1.Hide();
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show("Dashed Lines indicate frame start\nHold Shift and then drag to select a region when zoomed in\nShift+Wheel to pan horizontally\nCtrl+Wheel to scroll up/down", "Info");
         }
     }
 

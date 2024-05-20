@@ -31,7 +31,6 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Timeline));
             this.button_zoom = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -45,13 +44,14 @@
             this.checkBox_filter_mst_cons = new System.Windows.Forms.CheckBox();
             this.checkBox_filter_mst_cond = new System.Windows.Forms.CheckBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.PictureBox1 = new System.Windows.Forms.PictureBox();
             this.label_drawinfo = new System.Windows.Forms.Label();
             this.btn_clear_search = new System.Windows.Forms.Label();
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
+            this.canvas1 = new WSEProfiler.Canvas();
+            this.button1 = new System.Windows.Forms.Button();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.canvas1)).BeginInit();
             this.SuspendLayout();
             // 
             // button_zoom
@@ -63,16 +63,6 @@
             this.button_zoom.Text = "Zoom Out";
             this.button_zoom.UseVisualStyleBackColor = true;
             this.button_zoom.Click += new System.EventHandler(this.button_zoom_Click);
-            // 
-            // label1
-            // 
-            this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(666, 8);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(300, 13);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "Dashed Lines indicate frame start. Hold Shift to select a region";
             // 
             // textBox1
             // 
@@ -230,25 +220,6 @@
             this.label2.TabIndex = 9;
             this.label2.Text = "Filter";
             // 
-            // PictureBox1
-            // 
-            this.PictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.PictureBox1.Cursor = System.Windows.Forms.Cursors.Default;
-            this.PictureBox1.Location = new System.Drawing.Point(3, 32);
-            this.PictureBox1.Name = "PictureBox1";
-            this.PictureBox1.Size = new System.Drawing.Size(998, 432);
-            this.PictureBox1.TabIndex = 2;
-            this.PictureBox1.TabStop = false;
-            this.PictureBox1.SizeChanged += new System.EventHandler(this.PictureBox1_SizeChanged);
-            this.PictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureBox1_Paint);
-            this.PictureBox1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseDown);
-            this.PictureBox1.MouseLeave += new System.EventHandler(this.PictureBox1_MouseLeave);
-            this.PictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseMove);
-            this.PictureBox1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_MouseUp);
-            this.PictureBox1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.PictureBox1_Wheel);
-            // 
             // label_drawinfo
             // 
             this.label_drawinfo.AutoSize = true;
@@ -274,24 +245,56 @@
             // 
             this.vScrollBar1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.vScrollBar1.Location = new System.Drawing.Point(982, 34);
+            this.vScrollBar1.Location = new System.Drawing.Point(982, 32);
             this.vScrollBar1.Name = "vScrollBar1";
-            this.vScrollBar1.Size = new System.Drawing.Size(19, 430);
+            this.vScrollBar1.Size = new System.Drawing.Size(19, 432);
             this.vScrollBar1.TabIndex = 13;
+            this.vScrollBar1.Visible = false;
+            this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
+            // 
+            // canvas1
+            // 
+            this.canvas1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.canvas1.DrawPadding = new System.Windows.Forms.Padding(7, 5, 7, 5);
+            this.canvas1.Location = new System.Drawing.Point(3, 32);
+            this.canvas1.Name = "canvas1";
+            this.canvas1.Size = new System.Drawing.Size(998, 432);
+            this.canvas1.TabIndex = 14;
+            this.canvas1.TabStop = false;
+            this.canvas1.Paint += new System.Windows.Forms.PaintEventHandler(this.canvas1_Paint);
+            this.canvas1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.canvas1_MouseDown);
+            this.canvas1.MouseLeave += new System.EventHandler(this.canvas1_MouseLeave);
+            this.canvas1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.canvas1_MouseMove);
+            this.canvas1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.canvas1_MouseUp);
+            this.canvas1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.canvas1_Wheel);
+            this.canvas1.Resize += new System.EventHandler(this.canvas1_Resize);
+            // 
+            // button1
+            // 
+            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button1.Location = new System.Drawing.Point(930, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(27, 23);
+            this.button1.TabIndex = 15;
+            this.button1.Text = "?";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // Timeline
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.vScrollBar1);
+            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.canvas1);
             this.Controls.Add(this.btn_clear_search);
             this.Controls.Add(this.label_drawinfo);
-            this.Controls.Add(this.panel1);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.PictureBox1);
             this.Controls.Add(this.button_zoom);
             this.DoubleBuffered = true;
             this.Name = "Timeline";
@@ -300,7 +303,7 @@
             this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.canvas1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -309,8 +312,6 @@
         #endregion
 
         private System.Windows.Forms.Button button_zoom;
-        private System.Windows.Forms.PictureBox PictureBox1;
-        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.ToolTip toolTip1;
@@ -327,5 +328,7 @@
         private System.Windows.Forms.Label label_drawinfo;
         private System.Windows.Forms.Label btn_clear_search;
         private System.Windows.Forms.VScrollBar vScrollBar1;
+        private Canvas canvas1;
+        private System.Windows.Forms.Button button1;
     }
 }
