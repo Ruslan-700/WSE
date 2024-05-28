@@ -14,7 +14,7 @@ namespace WSEProfiler
 
 		public void AddCall(Call call)
 		{
-			_timeSelf += call.Time;
+			_timeSelf += call.TimeSelf;
 			_timeTotal += call.TimeTotal;
 
 			if (call.Parent != null)

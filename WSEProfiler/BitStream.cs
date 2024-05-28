@@ -14,7 +14,7 @@ namespace WSEProfiler
 		private uint _buffer;
 		private ulong _position;
 		private uint[] _maskTable = new uint[33];
-        public uint _delta_last = 0;
+        public ulong _delta_last = 0;
 
 		public BitStream(FileStream stream)
 		{
@@ -115,13 +115,13 @@ namespace WSEProfiler
 			return result;
 		}
 
-        public uint Read_deltaBCI15()
+        public ulong Read_deltaBCI15()
         {
             uint sign = ReadU32(1);
 
             uint value;
-            uint result = 0;
-            uint det = 1;
+            ulong result = 0;
+            ulong det = 1;
             int tries = 0;
 
             while (tries++ < 20 && (value = ReadU32(4)) != 15)

@@ -64,7 +64,7 @@ namespace WSEProfiler
 					if (time < 0)
 						time = 0;
 
-					curCall.Time = time * 1000000 / _frequency;
+					curCall.TimeSelf = time * 1000000 / _frequency;
 
 					curCall = curCall.Parent;
 					recursionLevel--;
@@ -97,7 +97,7 @@ namespace WSEProfiler
 
 			var info = _infos[call.Id];
 
-            info.AddTime(call.Time, call.TimeTotal);
+            info.AddTime(call.TimeSelf, call.TimeTotal);
 
 			foreach (var child in call.Children)
 			{

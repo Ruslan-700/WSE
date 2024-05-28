@@ -14,12 +14,12 @@ namespace WSEProfiler
 			return (int)(f1 * strength + f2 * (1.0f - strength));
 		}
 
-		public static Color Interpolate(Color c1, Color c2, float str)
+		public static Color Interpolate(Color c1, Color c2, float str, int alpha)
 		{
-			return Color.FromArgb(10, Interpolate(c1.R, c2.R, str), Interpolate(c1.G, c2.G, str), Interpolate(c1.B, c2.B, str));
+            return Color.FromArgb(alpha, Interpolate(c1.R, c2.R, str), Interpolate(c1.G, c2.G, str), Interpolate(c1.B, c2.B, str));
 		}
 
-		public static Color GetColorForPercentage(float percentage)
+        public static Color GetColorForPercentage(float percentage, int alpha = 10)
 		{
 			Color upper;
 			Color lower;
@@ -44,7 +44,7 @@ namespace WSEProfiler
 				strength = percentage / 20.0f;
 			}
 
-			return Interpolate(upper, lower, strength);
+			return Interpolate(upper, lower, strength, alpha);
 		}
 
 		public static void Update(ListView listView, int column)

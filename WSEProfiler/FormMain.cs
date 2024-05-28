@@ -59,25 +59,28 @@ namespace WSEProfiler
 			this.ClearWarnings();
 
 			string path = openFileDialog1.FileName;
-			
+
             //if (path.EndsWith(".wseprfb"))
 				_curFile = new BinaryProfilerFile(path);
             //else
                 //_curFile = new TextProfilerFile(path);
 
-			try
-			{
-				_curFile.Parse("");
-			}
-			catch (ErrorException ex)
-			{
-				MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-			}
-			catch (Exception ex)
-			{
-				MessageBox.Show(ex.Message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-				Application.Exit();
-			}
+            //_curFile.Parse("", this.timeline1);
+            //this.timeline1.refresh();
+            try
+            {
+                _curFile.Parse("", this.timeline1);
+                this.timeline1.refresh();
+            }
+            catch (ErrorException ex)
+            {
+                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message, "Critical Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Application.Exit();
+            }
 
             _master_list = new List<ListViewItem>();
 			foreach (var info in _curFile.CallInfos)

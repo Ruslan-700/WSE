@@ -18,9 +18,9 @@ namespace WSEProfiler
 		private ulong _overhead;
         private ulong _int_frequency;
 		private float _frequency;
-        private uint _t_record_start = 0;
-        private uint _t_record_end = 0;
-        private uint _t_last_known = 0;
+        private long _t_record_start = 0;
+        private long _t_record_end = 0;
+        private long _t_last_known = 0;
         private float _totalTime;
 
 		private Dictionary<string, CallInfo> _infos = new Dictionary<string, CallInfo>();
@@ -31,7 +31,7 @@ namespace WSEProfiler
 			_stream = new BitStream(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 		}
 
-        public void Parse(string blockName, List<Call> call_list = null, List<Marker> marker_list = null)
+        public void Parse(string blockName, Timeline tline = null)
 		{
 			_infos.Clear();
 			_details = new CallDetails();
@@ -77,11 +77,17 @@ namespace WSEProfiler
             if (_profilerVersion == 1)
             {
                 ParsePayload_V1(blockName);
+                
+                if (tline != null)
+                    tline.set_unsupported_format(true);
             }
             else
             {
-                _t_record_start = _stream.ReadU32(32);
-                ParsePayload_V2(blockName, call_list, marker_list);
+                _t_record_start = (long)_stream.ReadU64(64);
+                ParsePayload_V2(blockName, tline);
+                
+                if (tline != null)
+                    tline.set_unsupported_format(false);
             }
 		}
 
@@ -116,7 +122,7 @@ namespace WSEProfiler
                         if (time < 0)
                             time = 0;
 
-                        curCall.Time = time * 1000000 / _frequency;
+                        curCall.TimeSelf = time * 1000000 / _frequency;
 
                         if (curCall.Id == blockName)
                             _details.AddCall(curCall);
@@ -159,15 +165,15 @@ namespace WSEProfiler
             }
         }
 
-        private uint read_time()
+        private long read_time()
         {
-            ulong t = _stream.Read_deltaBCI15();
+            long t = (long)_stream.Read_deltaBCI15();
             t -= _t_record_start;
             t *= 1000000;
-            t /= _int_frequency;
+            t /= (long)_int_frequency;
             
-            _t_last_known = (uint)t;
-            return (uint)t;
+            _t_last_known = t;
+            return t;
         }
 
         private enum pay_type
@@ -178,7 +184,7 @@ namespace WSEProfiler
             id          = 3
         }
 
-        private void ParsePayload_V2(string blockName, List<Call> call_list, List<Marker> marker_list)
+        private void ParsePayload_V2(string blockName, Timeline tline = null)
         {
             List<string> types = new List<string>();
             Call curCall = null;
@@ -211,7 +217,7 @@ namespace WSEProfiler
                         var id_idx = _stream.ReadBCI15();
                         m.text = types[(int)id_idx];
 
-                        uint t = read_time();
+                        long t = read_time();
                         m.time = t;
                         init_cur_call();
                         curCall.custom_markers.Add(m);
@@ -222,18 +228,18 @@ namespace WSEProfiler
                         if (curCall != null)
                             curCall.Id = "Engine";
 
-                        uint t = read_time();
-                        if (marker_list != null)
+                        long t = read_time();
+                        if (tline != null)
                         {
                             m.time = t;
-                            marker_list.Add(m);
+                            tline.frame_markers.Add(m);
                         }
                     }
                 }
                 else if (type == pay_type.block_start)
                 {
                     var id_idx = _stream.ReadBCI15();
-                    uint t = read_time();
+                    long t = read_time();
 
                     init_cur_call();
                     var call = new Call(types[(int)id_idx], curCall);
@@ -244,7 +250,7 @@ namespace WSEProfiler
                     curCall = call;
                 }
                 else if (type == pay_type.block_end){
-                    uint t = read_time();
+                    long t = read_time();
 
                     init_cur_call();
                     curCall.TimeStop = t;
@@ -267,10 +273,11 @@ namespace WSEProfiler
 
             if (_terminated)
             {
-                _stream.Seek(-16, SeekOrigin.End);
-                ulong t = _stream.ReadU32(32) - _t_record_start;
+                _stream.Seek(-20, SeekOrigin.End);
+                long t = (long)_stream.ReadU64(64);
+                t -= _t_record_start;
                 t *= 1000000;
-                t /= _int_frequency;
+                t /= (long)_int_frequency;
                 _t_record_end = (uint)t;
             }
             else
@@ -279,7 +286,7 @@ namespace WSEProfiler
             }
 
             //if the recording was stopped via the operation, curCall will be the script where it stopped.
-            //find the root call ("Engine")
+            //find the root call ("Engine"?)
             do
             {
                 if (curCall.TimeStop <= curCall.TimeStart)
@@ -294,10 +301,30 @@ namespace WSEProfiler
                     curCall = curCall.Parent;
             } while (true);
 
+
+            //We aren't sure about depth during parsing
+            Action<Call, int> transfer_markers = null;
+            transfer_markers = delegate(Call c, int depth)
+            {
+                foreach (Marker m in c.custom_markers)
+                {
+                    m.tag = depth;
+                    tline.custom_markers.Add(m);
+                }
+                c.custom_markers = null;
+
+                foreach (Call child in c.Children)
+                    transfer_markers(child, depth + 1);
+            };
+
+
             if (curCall.Id != "Engine")
             {
-                if (call_list != null)
-                    call_list.Add(curCall);
+                if (tline != null)
+                {
+                    tline.calls.Add(curCall);
+                    transfer_markers(curCall, 0);
+                }
 
                 _totalTime += curCall.TimeTotal;
             }
@@ -307,11 +334,14 @@ namespace WSEProfiler
                 {
                     _totalTime += c.TimeTotal;
 
-                    if (call_list != null)
-                        call_list.Add(c);
+                    if (tline != null)
+                    {
+                        tline.calls.Add(c);
+                        transfer_markers(c, 0);
+                    }
                 }
             }
-            
+
             ParseCall(curCall);
         }
 
@@ -331,7 +361,7 @@ namespace WSEProfiler
 
                 var info = _infos[call.Id];
 
-                info.AddTime(call.Time, call.TimeTotal);
+                info.AddTime(call.TimeSelf, call.TimeTotal);
             }
 
 			foreach (var child in call.Children)

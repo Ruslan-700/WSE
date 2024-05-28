@@ -13,11 +13,16 @@ namespace WSEProfiler
     public partial class Timeline : UserControl
     {
         public List<Call> calls = new List<Call>();
-        public List<Marker> markers = new List<Marker>();
+        public List<Marker> frame_markers = new List<Marker>();
+        public List<Marker> custom_markers = new List<Marker>();
         public List<Marker> search_markers = new List<Marker>();
+
+        private int _bad_frame_performance_treshold;
 
         //we merge some calls for zoomed out view to improve performance with large files
         private List<Call> merged_calls = new List<Call>();
+
+        private bool _unsupported_format = false;
 
         //all times in microseconds
         private long _view_time_start = 0;
@@ -26,14 +31,14 @@ namespace WSEProfiler
         private const uint time_axis_fixed_height = 25;
         private const uint time_axis_height = 30;
 
-        bool dragging = false;
-        int drag_last_x;
+        private bool _dragging = false;
+        private int _drag_last_x;
 
-        bool selecting = false;
+        private bool _selecting = false;
         private long _select_time_a = -1;
         private long _select_time_b = -1;
 
-        bool time_axis_fixed_scrubbing = false;
+        private bool _time_axis_fixed_scrubbing = false;
 
         private int _marker_frame_last_draw_x;
         private int _marker_top_y;
@@ -41,13 +46,15 @@ namespace WSEProfiler
         private Action draw_hover_info; //Callback for drawing tooltip last
 
         //Cache some drawing stuff
-        private Pen _marker_frame_pen = new Pen(Color.LightGray, 1);
-        private Pen _marker_search_pen = new Pen(Color.DarkRed, 1);
-        private Pen _marker_custom_pen = new Pen(Color.MediumSpringGreen);
+        private static Pen _marker_frame_pen = new Pen(Color.LightGray, 1);
+        private static Pen _marker_search_pen = new Pen(Color.DarkRed, 1);
+        private static Pen _marker_custom_pen = new Pen(Color.MediumSpringGreen);
 
-        private Pen _call_border_pen = Pens.Black;
-        private Font _call_label_font = DefaultFont;
-        private Brush _call_brush = Brushes.Black;
+        private static Pen _call_border_pen = Pens.Black;
+        private static Font _call_label_font = DefaultFont;
+        private static Brush _call_brush = Brushes.Black;
+
+        private static List<Pen> _performance_pc_pens = new List<Pen>();
 
 
         //For searchfield placeholder
@@ -70,6 +77,7 @@ namespace WSEProfiler
 
             float[] dash2 = { 5, 5 };
             _marker_search_pen.DashPattern = dash2;
+            _marker_search_pen.Width = 2;
 
             ToolStripControlHost host = new ToolStripControlHost(panel1);
             host.Margin = Padding.Empty;
@@ -85,6 +93,15 @@ namespace WSEProfiler
             toolStrip1.Renderer = new MySR();
 
             _marker_top_y = depth2y(-0.8f);
+
+            for (int i = 0; i <= 100; i++)
+            {
+                Pen p = new Pen(ListViewColor.GetColorForPercentage(i, 255), 2);
+                p.DashPattern = new float[] { 5, 10 };
+                _performance_pc_pens.Add(p);
+            }
+
+            _bad_frame_performance_treshold = trackBar_fp.Value;
         }
 
         public long duration
@@ -108,12 +125,19 @@ namespace WSEProfiler
         }
 
 
+        public void set_unsupported_format(bool val)
+        {
+            _unsupported_format = val;
+            canvas1.Invalidate();
+        }
+
         public void refresh()
         {
             _view_time_start = 0;
             _view_time_end = duration;
 
             create_merged_view();
+            analyze_frame_performance();
 
             int max_depth = 0;
             find_max_depth(calls, ref max_depth);
@@ -128,12 +152,17 @@ namespace WSEProfiler
         {
             _view_time_start = 0;
             _view_time_end = 0;
-            dragging = false;
-            selecting = false;
+            _dragging = false;
+            _selecting = false;
+            _time_axis_fixed_scrubbing = false;
+            _unsupported_format = false;
+
+            label_drawinfo.Text = "";
 
             calls.Clear();
             merged_calls.Clear();
-            markers.Clear();
+            frame_markers.Clear();
+            custom_markers.Clear();
             search_markers.Clear();
 
             canvas1.Invalidate();
@@ -227,16 +256,6 @@ namespace WSEProfiler
                     cur_call = null;
                 };
 
-                Action<List<Marker>, Call> collect_markers = null;
-                collect_markers = delegate(List<Marker> markers, Call call)
-                 {
-                     foreach(Marker m in call.custom_markers)
-                         markers.Add(m);
-
-                     foreach (Call c in call.Children)
-                         collect_markers(markers, c);
-                 };
-
                 Action<Color> add_color = delegate(Color c)
                 {
                     byte[] rgb = { 0, 0, 0 };
@@ -268,14 +287,12 @@ namespace WSEProfiler
 
                             cur_col_aggregat[0] = 0; cur_col_aggregat[1] = 0; cur_col_aggregat[2] = 0;
                             add_color(c.Timeline_Pen.Color);
-                            collect_markers(cur_call.custom_markers, c);
                             cur_col_count = 1;
                         }
                         else
                         {
                             cur_call.TimeStart = c.TimeStop;
                             add_color(c.Timeline_Pen.Color);
-                            collect_markers(cur_call.custom_markers, c);
                             cur_col_count++;
                         }
                     }
@@ -291,15 +308,48 @@ namespace WSEProfiler
             }
         }
 
+        private void analyze_frame_performance()
+        {
+            int ic = 0;
+            for (int im = 0; im < frame_markers.Count; im++ )
+            {
+                Marker frame = frame_markers[im];
+                long frame_call_time = 0;
+
+                //figure out when frame ends
+                long t_end;
+                if (im < frame_markers.Count - 1)
+                    t_end = frame_markers[im + 1].time;
+                else
+                    t_end = duration;
+
+                //iterate calls until we are after frame start
+                while (ic < calls.Count && calls[ic].TimeStart < frame.time)
+                    ic++;
+                if (ic >= calls.Count) { return; }
+
+                //is it even in this frame?
+                if (calls[ic].TimeStart > t_end) { continue; }
+
+                //add call times
+                while (ic < calls.Count && calls[ic].TimeStop < t_end)
+                {
+                    frame_call_time += calls[ic].LTime;
+                    ic++;
+                }
+
+                int pc = (int)(frame_call_time*100 / (t_end - frame.time));
+                frame.tag = pc;
+            }
+        }
+
         private void find_max_depth(List<Call> childs, ref int max_depth, int depth = 0)
         {
             if (depth > max_depth)
                 max_depth = depth;
 
             foreach (Call c in childs)
-            {
                 find_max_depth(c.Children, ref max_depth, depth + 1);
-            }
         }
 
         void draw_everything(PaintEventArgs e)
@@ -310,12 +360,10 @@ namespace WSEProfiler
             //_draw_count_frame = 0;
             _draw_count_search = 0;
 
-            foreach (var marker in markers)
-            {
+            foreach (var marker in frame_markers)
                 draw_marker(e, marker);
-            }
 
-            if (view_duration > 5000000 && checkBox1.Checked && merged_calls.Count > 0)
+            if (view_duration > 5000000 && checkBox_p_mode.Checked && merged_calls.Count > 0)
             {
                 foreach (var call in merged_calls)
                 {
@@ -330,6 +378,9 @@ namespace WSEProfiler
                 }
             }
 
+            foreach (var marker in custom_markers)
+                draw_marker(e, marker);
+
             draw_fixed_time_axis(e);
             draw_time_axis(e);
 
@@ -339,7 +390,7 @@ namespace WSEProfiler
                 draw_marker(e, marker);
             }
 
-            if (selecting && _select_time_b > -1)
+            if (_selecting && _select_time_b > -1)
             {
                 long start = Math.Min(_select_time_a, _select_time_b);
                 long end = Math.Max(_select_time_a, _select_time_b);
@@ -487,17 +538,47 @@ namespace WSEProfiler
 
             if (m.type == Marker.Marker_Type.Frame)
             {
-                if ((x1 - _marker_frame_last_draw_x) < 2)
-                    return;
+                if (checkBox_frame_time.Checked && m.tag >= _bad_frame_performance_treshold)
+                {
+                    e.Graphics.DrawLine(_performance_pc_pens[m.tag], x1, _marker_top_y + 10, x1, canvas1.DrawHeight - 30);
 
-                e.Graphics.DrawLine(_marker_frame_pen, x1, _marker_top_y, x1, canvas1.DrawHeight - 30);
+                    var r = new Rectangle(x1 - 2, _marker_top_y + 10, 5, canvas1.DrawHeight - 30 - _marker_top_y - 10);
+                    Point p = canvas1.PointToCanvas(System.Windows.Forms.Control.MousePosition);
+                    if (r.Contains(p))
+                    {
+                        var text = string.Format("{0}%", m.tag);
+                        draw_hover_info = create_hover_info_drawer(e, p, text);
+                    };
+                }
+                else
+                {
+                    if ((x1 - _marker_frame_last_draw_x) < 2)
+                        return;
+                    e.Graphics.DrawLine(_marker_frame_pen, x1, _marker_top_y + 10, x1, canvas1.DrawHeight - 30);
+                }
+
                 _marker_frame_last_draw_x = x1;
                 //_draw_count_frame++;
             }
             else if(m.type == Marker.Marker_Type.Search)
             {
-                e.Graphics.DrawLine(_marker_search_pen, x1, _marker_top_y, x1, m.y);
+                e.Graphics.DrawLine(_marker_search_pen, x1, _marker_top_y, x1, m.tag);
                 _draw_count_search++;
+            }
+            else if (m.type == Marker.Marker_Type.Custom && checkBox_filter_custom_markers.Checked)
+            {
+                x1 = t2x(m.time);
+                int y2 = depth2y((float)m.tag + 0.5f);
+
+                e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
+
+                var r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
+                Point p = canvas1.PointToCanvas(System.Windows.Forms.Control.MousePosition);
+                if (r.Contains(p))
+                {
+                    var text = string.Format("Marker\n'{0}'\nTime start: {1}", m.text, m.time.FormatTime());
+                    draw_hover_info = create_hover_info_drawer(e, p, text);
+                };
             }
         }
 
@@ -546,10 +627,6 @@ namespace WSEProfiler
                 if (w < 1)
                 {
                     e.Graphics.DrawLine(c.Timeline_Pen, x1, y1, x1, depth2y(depth+1));
-
-                    if(c.custom_markers.Count > 0 && checkBox_filter_custom_markers.Checked)
-                        e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y1);
-
                     return;
                 }
 
@@ -570,30 +647,30 @@ namespace WSEProfiler
 
                 if (r.Contains(p))
                 {
-                    var text = string.Format("{0}\nTime start: {1}\nTime total: {2}\nTime self: {3}", c.Id, c.TimeStart.FormatTime(), c.TimeTotal.FormatTime(), c.Time.FormatTime());
+                    var text = string.Format("{0}\nTime start: {1}\nTime total: {2}\nTime self: {3}", c.Id, c.TimeStart.FormatTime(), c.TimeTotal.FormatTime(), c.TimeSelf.FormatTime());
                     draw_hover_info = create_hover_info_drawer(e, p, text);
                 };
 
-                if (checkBox_filter_custom_markers.Checked)
-                {
-                    foreach (var m in c.custom_markers)
-                    {
-                        if (m.time > _view_time_end || m.time < _view_time_start)
-                            continue;
+                //if (checkBox_filter_custom_markers.Checked)
+                //{
+                //    foreach (var m in c.custom_markers)
+                //    {
+                //        if (m.time > _view_time_end || m.time < _view_time_start)
+                //            continue;
 
-                        x1 = t2x(m.time);
-                        int y2 = depth2y((float)depth + 0.5f);
+                //        x1 = t2x(m.time);
+                //        int y2 = depth2y((float)depth + 0.5f);
 
-                        e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
+                //        e.Graphics.DrawLine(_marker_custom_pen, x1, _marker_top_y, x1, y2);
 
-                        r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
-                        if (r.Contains(p))
-                        {
-                            var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
-                            draw_hover_info = create_hover_info_drawer(e, p, text);
-                        };
-                    }
-                }
+                //        r = new Rectangle(x1 - 2, _marker_top_y, 5, y2 - _marker_top_y);
+                //        if (r.Contains(p))
+                //        {
+                //            var text = string.Format("Marker\n{0}\nTime: {1}", m.text, m.time.FormatTime());
+                //            draw_hover_info = create_hover_info_drawer(e, p, text);
+                //        };
+                //    }
+                //}
             }
 
             foreach (var child in c.Children)
@@ -626,6 +703,10 @@ namespace WSEProfiler
                     }
                 };
                 search(calls);
+
+                foreach (Marker m in custom_markers)
+                    if (m.text.ToLower().Contains(text))
+                        search_markers.Add(new Marker(m.time, Marker.Marker_Type.Search, depth2y(m.tag)));
             }
         }
 
@@ -716,13 +797,17 @@ namespace WSEProfiler
         //###########
         private void canvas1_Paint(object sender, PaintEventArgs e)
         {
-            if (!Ready)
-                return;
-
-            //We want some "padding", otherwise everything draws right at the edge
-            //e.Graphics.TranslateTransform(_origin_offset.X, _origin_offset.Y);
-
-            draw_everything(e);
+            if (Ready)
+            {
+                draw_everything(e);
+            }
+            else if (_unsupported_format)
+            {
+                StringFormat f = new StringFormat();
+                f.LineAlignment = StringAlignment.Center;
+                f.Alignment = StringAlignment.Center;
+                e.Graphics.DrawString("File Format v1 does not support timeline view.", DefaultFont, Brushes.Black, e.Graphics.ClipBounds, f);
+            }
         }
 
         private void canvas1_Wheel(object sender, MouseEventArgs e)
@@ -789,7 +874,7 @@ namespace WSEProfiler
             if (!Ready)
                 return;
 
-            if (e.Button == MouseButtons.Right && selecting)
+            if (e.Button == MouseButtons.Left && _selecting)
             {
                 _select_time_a = -1;
                 _select_time_b = -1;
@@ -799,24 +884,24 @@ namespace WSEProfiler
 
             if (e.Y <= time_axis_fixed_height)
             {
-                time_axis_fixed_scrubbing = true;
+                _time_axis_fixed_scrubbing = true;
                 scrub_timeline(e);
                 canvas1.Cursor = Cursors.Hand;
                 canvas1.Invalidate();
             }
             else
             {
-                if (is_zoomed_out || Control.ModifierKeys == Keys.Shift)
+                if (e.Button == MouseButtons.Right)
                 {
-                    selecting = true;
+                    _selecting = true;
                     _select_time_a = x2t(e.Location.X).clamp(0, duration);
                     _select_time_b = -1;
                     canvas1.Cursor = Cursors.IBeam;
                 }
                 else
                 {
-                    dragging = true;
-                    drag_last_x = e.Location.X;
+                    _dragging = true;
+                    _drag_last_x = e.Location.X;
                     canvas1.Cursor = Cursors.Hand;
                 }
             }
@@ -827,23 +912,23 @@ namespace WSEProfiler
             if (!Ready)
                 return;
 
-            if (dragging)
+            if (_dragging)
             {
-                long dx = x2t(drag_last_x) - x2t(e.Location.X);
-                drag_last_x = e.Location.X;
+                long dx = x2t(_drag_last_x) - x2t(e.Location.X);
+                _drag_last_x = e.Location.X;
 
                 drag_timeline(dx);
 
                 //this.canvas1.Invalidate();
             }
 
-            if (selecting)
+            if (_selecting)
             {
                 _select_time_b = x2t(e.Location.X).clamp(0, duration);
                 //this.canvas1.Invalidate();
             }
 
-            if (time_axis_fixed_scrubbing)
+            if (_time_axis_fixed_scrubbing)
             {
                 scrub_timeline(e);
             }
@@ -853,29 +938,32 @@ namespace WSEProfiler
 
         private void MouseEnd()
         {
-            if (dragging)
+            if (_dragging)
             {
-                dragging = false;
+                _dragging = false;
             }
-            if (selecting)
+            if (_selecting)
             {
-                selecting = false;
+                _selecting = false;
 
-                if (_select_time_a < _select_time_b)
+                if (_select_time_b != -1)
                 {
-                    _view_time_start = _select_time_a;
-                    _view_time_end = _select_time_b;
-                }
-                if (_select_time_a > _select_time_b)
-                {
-                    _view_time_start = _select_time_b;
-                    _view_time_end = _select_time_a;
+                    if (_select_time_a < _select_time_b)
+                    {
+                        _view_time_start = _select_time_a;
+                        _view_time_end = _select_time_b;
+                    }
+                    if (_select_time_a > _select_time_b)
+                    {
+                        _view_time_start = _select_time_b;
+                        _view_time_end = _select_time_a;
+                    }
                 }
                 canvas1.Invalidate();
             }
-            if (time_axis_fixed_scrubbing)
+            if (_time_axis_fixed_scrubbing)
             {
-                time_axis_fixed_scrubbing = false;
+                _time_axis_fixed_scrubbing = false;
             }
             canvas1.Cursor = Cursors.Default;
         }
@@ -993,9 +1081,25 @@ namespace WSEProfiler
             }
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button_help_Click(object sender, EventArgs e)
         {
-            MessageBox.Show("Dashed Lines indicate frame start\nHold Shift and then drag to select a region when zoomed in\nShift+Wheel to pan horizontally\nCtrl+Wheel to scroll up/down", "Info");
+            MessageBox.Show("Dashed Lines indicate frame start\nHold Right Mouse Button and then drag to select a region\nCancel select with Left Mouse Button\nShift+Wheel to pan horizontally\nCtrl+Wheel to scroll up/down", "Info");
+        }
+
+        private void checkBox_frame_time_CheckedChanged(object sender, EventArgs e)
+        {
+            canvas1.Invalidate();
+        }
+
+        private void trackBar_fp_Scroll(object sender, EventArgs e)
+        {
+            _bad_frame_performance_treshold = trackBar_fp.Value;
+
+            ToolTip hint = new ToolTip();
+            hint.ToolTipIcon = ToolTipIcon.Info;
+            hint.Show(String.Format("{0}%", _bad_frame_performance_treshold), trackBar_fp, 0, trackBar_fp.Height, 600);
+           
+            canvas1.Invalidate();
         }
     }
 
@@ -1009,17 +1113,17 @@ namespace WSEProfiler
         }
 
         public Marker_Type type;
-        public uint time;
-        public int y;
+        public long time;
+        public int tag = 0;
         public string text;
 
         public Marker() { }
 
-        public Marker(uint t, Marker_Type ty, int y = 0)
+        public Marker(long t, Marker_Type ty, int y = 0)
         {
             time = t;
             type = ty;
-            this.y = y;
+            this.tag = y;
         }
     }
 

@@ -14,8 +14,8 @@ namespace WSEProfiler
 
         private float _time;
         private float _time_childs = -1;
-        private uint _time_start;
-        private uint _time_stop;
+        private long _time_start;
+        private long _time_stop;
         private List<Call> _children = new List<Call>();
 
         private Brush _timeline_brush;
@@ -57,19 +57,18 @@ namespace WSEProfiler
             return Id;
         }
 
-        public float Time
+        public long LTime
         {
-            get { return _time; }
-            set { _time = value; }
+            get { return _time_stop - _time_start; }
         }
 
-        public uint TimeStart
+        public long TimeStart
         {
             get { return _time_start; }
             set { _time_start = value; }
         }
 
-        public uint TimeStop
+        public long TimeStop
         {
             get { return _time_stop; }
             set { _time_stop = value; }
@@ -78,6 +77,12 @@ namespace WSEProfiler
         public void CalcTime()
         {
             _time = TimeStop - TimeStart - TimeChilds;
+        }
+
+        public float TimeSelf
+        {
+            get { return _time; }
+            set { _time = value; }
         }
 
         public float TimeTotal

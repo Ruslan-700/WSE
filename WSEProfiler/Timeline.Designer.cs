@@ -32,11 +32,14 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Timeline));
             this.button_zoom = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.checkBox_p_mode = new System.Windows.Forms.CheckBox();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.checkBox_frame_time = new System.Windows.Forms.CheckBox();
+            this.trackBar_fp = new System.Windows.Forms.TrackBar();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripDropDownButton1 = new System.Windows.Forms.ToolStripDropDownButton();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.checkBox_filter_custom_markers = new System.Windows.Forms.CheckBox();
             this.checkBox_filter_items = new System.Windows.Forms.CheckBox();
             this.checkBox_filter_props = new System.Windows.Forms.CheckBox();
             this.checkBox_filter_other = new System.Windows.Forms.CheckBox();
@@ -47,9 +50,9 @@
             this.label_drawinfo = new System.Windows.Forms.Label();
             this.btn_clear_search = new System.Windows.Forms.Label();
             this.vScrollBar1 = new System.Windows.Forms.VScrollBar();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button_help = new System.Windows.Forms.Button();
             this.canvas1 = new WSEProfiler.Canvas();
-            this.checkBox_filter_custom_markers = new System.Windows.Forms.CheckBox();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_fp)).BeginInit();
             this.toolStrip1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.canvas1)).BeginInit();
@@ -74,20 +77,49 @@
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             this.textBox1.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBox1_KeyDown);
             // 
-            // checkBox1
+            // checkBox_p_mode
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Checked = true;
-            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(271, 7);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(33, 17);
-            this.checkBox1.TabIndex = 5;
-            this.checkBox1.Text = "P";
-            this.toolTip1.SetToolTip(this.checkBox1, "Performance mode\r\nRender a simplified view when zoomed out > 5000ms\r\nSome calls m" +
-        "ay not be drawn at medium zoom levels");
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.checkBox_p_mode.AutoSize = true;
+            this.checkBox_p_mode.Checked = true;
+            this.checkBox_p_mode.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_p_mode.Location = new System.Drawing.Point(271, 7);
+            this.checkBox_p_mode.Name = "checkBox_p_mode";
+            this.checkBox_p_mode.Size = new System.Drawing.Size(33, 17);
+            this.checkBox_p_mode.TabIndex = 5;
+            this.checkBox_p_mode.Text = "P";
+            this.toolTip1.SetToolTip(this.checkBox_p_mode, "Performance mode\r\nRender a simplified view when zoomed out > 5000ms\r\nSome calls m" +
+        "ay not be drawn at medium zoom levels.");
+            this.checkBox_p_mode.UseVisualStyleBackColor = true;
+            this.checkBox_p_mode.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // checkBox_frame_time
+            // 
+            this.checkBox_frame_time.AutoSize = true;
+            this.checkBox_frame_time.Checked = true;
+            this.checkBox_frame_time.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_frame_time.Location = new System.Drawing.Point(333, 8);
+            this.checkBox_frame_time.Name = "checkBox_frame_time";
+            this.checkBox_frame_time.Size = new System.Drawing.Size(39, 17);
+            this.checkBox_frame_time.TabIndex = 16;
+            this.checkBox_frame_time.Text = "FP";
+            this.toolTip1.SetToolTip(this.checkBox_frame_time, "Frame Performance\r\nColor frame markers according to % of time spent in modsys cod" +
+        "e\r\nThis lets you quickly find performance problems.\r\n");
+            this.checkBox_frame_time.UseVisualStyleBackColor = true;
+            this.checkBox_frame_time.CheckedChanged += new System.EventHandler(this.checkBox_frame_time_CheckedChanged);
+            // 
+            // trackBar_fp
+            // 
+            this.trackBar_fp.BackColor = System.Drawing.SystemColors.Control;
+            this.trackBar_fp.Location = new System.Drawing.Point(378, 5);
+            this.trackBar_fp.Maximum = 100;
+            this.trackBar_fp.Name = "trackBar_fp";
+            this.trackBar_fp.Size = new System.Drawing.Size(107, 45);
+            this.trackBar_fp.TabIndex = 17;
+            this.trackBar_fp.TickFrequency = 5;
+            this.toolTip1.SetToolTip(this.trackBar_fp, "FP Treshold\r\nDon\'t color frames that have % of time spent in modsys code lower th" +
+        "an this.");
+            this.trackBar_fp.Value = 15;
+            this.trackBar_fp.Scroll += new System.EventHandler(this.trackBar_fp_Scroll);
             // 
             // toolStrip1
             // 
@@ -129,10 +161,23 @@
             this.panel1.Controls.Add(this.checkBox_filter_mst_cons);
             this.panel1.Controls.Add(this.checkBox_filter_mst_cond);
             this.panel1.Controls.Add(this.label2);
-            this.panel1.Location = new System.Drawing.Point(460, 8);
+            this.panel1.Location = new System.Drawing.Point(625, 8);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(122, 184);
             this.panel1.TabIndex = 9;
+            // 
+            // checkBox_filter_custom_markers
+            // 
+            this.checkBox_filter_custom_markers.AutoSize = true;
+            this.checkBox_filter_custom_markers.Checked = true;
+            this.checkBox_filter_custom_markers.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox_filter_custom_markers.Location = new System.Drawing.Point(4, 136);
+            this.checkBox_filter_custom_markers.Name = "checkBox_filter_custom_markers";
+            this.checkBox_filter_custom_markers.Size = new System.Drawing.Size(102, 17);
+            this.checkBox_filter_custom_markers.TabIndex = 16;
+            this.checkBox_filter_custom_markers.Text = "Custom Markers";
+            this.checkBox_filter_custom_markers.UseVisualStyleBackColor = true;
+            this.checkBox_filter_custom_markers.CheckedChanged += new System.EventHandler(this.checkBox_filter_CheckedChanged);
             // 
             // checkBox_filter_items
             // 
@@ -224,11 +269,14 @@
             // 
             // label_drawinfo
             // 
-            this.label_drawinfo.AutoSize = true;
-            this.label_drawinfo.Location = new System.Drawing.Point(310, 8);
+            this.label_drawinfo.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.label_drawinfo.Location = new System.Drawing.Point(685, 8);
             this.label_drawinfo.Name = "label_drawinfo";
-            this.label_drawinfo.Size = new System.Drawing.Size(0, 13);
+            this.label_drawinfo.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.label_drawinfo.Size = new System.Drawing.Size(239, 21);
             this.label_drawinfo.TabIndex = 10;
+            this.label_drawinfo.Text = "                        ";
+            this.label_drawinfo.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // btn_clear_search
             // 
@@ -254,16 +302,16 @@
             this.vScrollBar1.Visible = false;
             this.vScrollBar1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.vScrollBar1_Scroll);
             // 
-            // button1
+            // button_help
             // 
-            this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.button1.Location = new System.Drawing.Point(930, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(27, 23);
-            this.button1.TabIndex = 15;
-            this.button1.Text = "?";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button_help.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button_help.Location = new System.Drawing.Point(930, 3);
+            this.button_help.Name = "button_help";
+            this.button_help.Size = new System.Drawing.Size(27, 23);
+            this.button_help.TabIndex = 15;
+            this.button_help.Text = "?";
+            this.button_help.UseVisualStyleBackColor = true;
+            this.button_help.Click += new System.EventHandler(this.button_help_Click);
             // 
             // canvas1
             // 
@@ -284,36 +332,26 @@
             this.canvas1.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.canvas1_Wheel);
             this.canvas1.Resize += new System.EventHandler(this.canvas1_Resize);
             // 
-            // checkBox_filter_custom_markers
-            // 
-            this.checkBox_filter_custom_markers.AutoSize = true;
-            this.checkBox_filter_custom_markers.Checked = true;
-            this.checkBox_filter_custom_markers.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox_filter_custom_markers.Location = new System.Drawing.Point(4, 136);
-            this.checkBox_filter_custom_markers.Name = "checkBox_filter_custom_markers";
-            this.checkBox_filter_custom_markers.Size = new System.Drawing.Size(102, 17);
-            this.checkBox_filter_custom_markers.TabIndex = 16;
-            this.checkBox_filter_custom_markers.Text = "Custom Markers";
-            this.checkBox_filter_custom_markers.UseVisualStyleBackColor = true;
-            this.checkBox_filter_custom_markers.CheckedChanged += new System.EventHandler(this.checkBox_filter_CheckedChanged);
-            // 
             // Timeline
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.checkBox_frame_time);
+            this.Controls.Add(this.button_help);
             this.Controls.Add(this.vScrollBar1);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.canvas1);
             this.Controls.Add(this.btn_clear_search);
-            this.Controls.Add(this.label_drawinfo);
             this.Controls.Add(this.toolStrip1);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.checkBox_p_mode);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button_zoom);
+            this.Controls.Add(this.trackBar_fp);
+            this.Controls.Add(this.label_drawinfo);
             this.DoubleBuffered = true;
             this.Name = "Timeline";
             this.Size = new System.Drawing.Size(1004, 467);
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar_fp)).EndInit();
             this.toolStrip1.ResumeLayout(false);
             this.toolStrip1.PerformLayout();
             this.panel1.ResumeLayout(false);
@@ -328,7 +366,7 @@
 
         private System.Windows.Forms.Button button_zoom;
         private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox_p_mode;
         private System.Windows.Forms.ToolTip toolTip1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripDropDownButton toolStripDropDownButton1;
@@ -344,7 +382,9 @@
         private System.Windows.Forms.Label btn_clear_search;
         private System.Windows.Forms.VScrollBar vScrollBar1;
         private Canvas canvas1;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button_help;
         private System.Windows.Forms.CheckBox checkBox_filter_custom_markers;
+        private System.Windows.Forms.CheckBox checkBox_frame_time;
+        private System.Windows.Forms.TrackBar trackBar_fp;
     }
 }
