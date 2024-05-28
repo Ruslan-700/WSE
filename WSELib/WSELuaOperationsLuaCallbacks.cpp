@@ -197,6 +197,9 @@ int lAddTrigger(lua_State *L)
 	int numArgs = checkLArgs(L, 5, 6, lStr, lNum, lNum, lNum, lFunc, lFunc);
 
 	const char *tId = lua_tostring(L, 1);
+	int tNo = getTemplateNo(tId);
+	if (tNo < 0)
+		luaL_error(L, "invalid template id: %s", tId);
 
 	wb::trigger newT;
 
@@ -235,13 +238,8 @@ int lAddTrigger(lua_State *L)
 	newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
 	newT.conditions.operations[0].operands[1] = triggerPart::condition;
 	newT.conditions.operations[0].operands[2] = (int)newT.check_interval;
-
-	int tNo = getTemplateNo(tId);
-
-	if (tNo < 0)
-		luaL_error(L, "invalid template id: %s", tId);
 	
-	int index = warband->mission_templates[tNo].addTrigger(newT, tNo);
+	int index = warband->mission_templates[tNo].addTrigger(newT, tNo, " (Lua)");
 
 	lua_pushinteger(L, index);
 	return 1;

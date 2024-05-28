@@ -56,20 +56,14 @@ void trigger_manager::execute(int context)
 
 int trigger_manager::addTrigger(const trigger &newTrigger)
 {
-	size_t oldTriggersSize = this->num_triggers * sizeof(trigger);
-	size_t newTriggersSize = oldTriggersSize + sizeof(trigger);
+	trigger *newTriggers = rgl::_new<trigger>(this->num_triggers + 1);
 
-	void *oldTriggers = (void*)this->triggers;
-	void *newTriggers = malloc(newTriggersSize);
-
-	memcpy_s(newTriggers, newTriggersSize, oldTriggers, oldTriggersSize);
-	free(oldTriggers);
-	this->triggers = (trigger*)newTriggers;
-
-	this->triggers[this->num_triggers].conditions.operations = rgl::_new<operation>();
-	this->triggers[this->num_triggers].consequences.operations = rgl::_new<operation>();
-	this->triggers[this->num_triggers].conditions.id.initialize();
-	this->triggers[this->num_triggers].consequences.id.initialize();
+	for (int i = 0; i < this->num_triggers; ++i)
+	{
+		newTriggers[i] = this->triggers[i];
+	}
+	rgl::_free(this->triggers);
+	this->triggers = newTriggers;
 	this->triggers[this->num_triggers] = newTrigger;
 
 	return this->num_triggers++;
@@ -84,7 +78,23 @@ bool trigger_manager::removeTrigger(int index)
 		return false;
 
 
-	size_t newTriggersSize = (this->num_triggers - 1) * sizeof(trigger);
+	trigger *newTriggers = rgl::_new<trigger>(this->num_triggers - 1);
+	for (int i = 0; i < index; ++i)
+	{
+		newTriggers[i] = this->triggers[i];
+	}
+	for (int i = index; i < this->num_triggers - 1; ++i)
+	{
+		newTriggers[i] = this->triggers[i + 1];
+	}
+	rgl::_free(this->triggers);
+	this->triggers = newTriggers;
+	this->num_triggers--;
+
+	return true;
+
+
+	/*size_t newTriggersSize = (this->num_triggers - 1) * sizeof(trigger);
 	trigger *newTriggers = (trigger*)malloc(newTriggersSize);
 
 	int oldIndex = 0;
@@ -107,5 +117,5 @@ bool trigger_manager::removeTrigger(int index)
 	this->triggers = newTriggers;
 	this->num_triggers--;
 
-	return true;
+	return true;*/
 }

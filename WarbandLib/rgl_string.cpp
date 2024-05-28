@@ -251,12 +251,13 @@ void string::widen(CStringW &s)
 
 void string::format(const char *format, ...)
 {
-	char buf[1024];
 	va_list ap;
 
 	va_start(ap, format);
-	vsnprintf_s(buf, 1024, format, ap);
-	*this = buf;
+	int len = _vscprintf(format, ap);;
+	reallocate(len + 1); //+1 for \0
+	vsnprintf_s(this->buffer, len + 1, len, format, ap);
+	this->str_length = len;
 }
 
 char *string::get_buffer(int size)

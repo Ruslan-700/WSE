@@ -4,13 +4,13 @@
 
 using namespace wb;
 
-int mission_template::addTrigger(const trigger &newTrigger, int templateNo)
+int mission_template::addTrigger(const trigger &newTrigger, int templateNo, const rgl::string& id_suffix)
 {
 	int tIndex = this->triggers.addTrigger(newTrigger);
 	trigger &actualNewTrigger = this->triggers.triggers[tIndex];
 
-	actualNewTrigger.conditions.id.format("Mission Template [%i] %s Trigger [%i] Conditions", templateNo, this->id.static_c_str(), tIndex);
-	actualNewTrigger.consequences.id.format("Mission Template [%i] %s Trigger [%i] Consequences", templateNo, this->id.static_c_str(), tIndex);
+	actualNewTrigger.conditions.id.format("Mission Template [%i] %s Trigger [%i] Conditions%s", templateNo, this->id.static_c_str(), tIndex, id_suffix.c_str());
+	actualNewTrigger.consequences.id.format("Mission Template [%i] %s Trigger [%i] Consequences%s", templateNo, this->id.static_c_str(), tIndex, id_suffix.c_str());
 
 	return tIndex;
 }
