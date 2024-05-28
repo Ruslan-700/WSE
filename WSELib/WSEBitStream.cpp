@@ -1,4 +1,5 @@
 #include "WSEBitStream.h"
+#include "WSE.h"
 
 WSEBitStream::WSEBitStream()
 {
@@ -107,17 +108,34 @@ void WSEBitStream::WriteBCI15(unsigned int value)
 	WriteU32(15, 4);
 }
 
-void WSEBitStream::Write_DeltaBCI15(unsigned int value)
+void WSEBitStream::WriteBCI15(ULONGLONG value)
+{
+	ULONGLONG det = 1;
+
+	while (value)
+	{
+		ULONGLONG mod = value % (det * 15);
+
+		WriteU32((unsigned int)(mod / det), 4);
+
+		value -= mod;
+		det *= 15;
+	}
+
+	WriteU32(15, 4);
+}
+
+void WSEBitStream::Write_DeltaBCI15(LONGLONG value)
 {
 	if(m_delta_last > value)
 	{
 		WriteU32(1, 1);
-		WriteBCI15(m_delta_last - value);
+		WriteBCI15((ULONGLONG)(m_delta_last - value));
 	}
 	else
 	{
 		WriteU32(0, 1);
-		WriteBCI15(value - m_delta_last);
+		WriteBCI15((ULONGLONG)(value - m_delta_last));
 	}
 	m_delta_last = value;
 }

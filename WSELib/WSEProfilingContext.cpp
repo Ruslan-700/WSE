@@ -3,8 +3,6 @@
 #include <ctime>
 #include "WSE.h"
 
-#define profiler_debug
-
 WSEProfilingContext::WSEProfilingContext() : m_is_recording(false), m_flush_interval(0)
 {
 }
@@ -38,9 +36,9 @@ void WSEProfilingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 			
 			LARGE_INTEGER t;
 			QueryPerformanceCounter(&t);
-			m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+			m_profile_stream.Write_DeltaBCI15(t.QuadPart);
 #ifdef profiler_debug
-			WSE->Log.Info("Frame marker, t=%u", (unsigned int)t.QuadPart);
+			WSE->Log.Info("Frame marker, t=%lld", t.QuadPart);
 #endif
 		}
 		break;
@@ -105,13 +103,13 @@ void WSEProfilingContext::Start()
 	m_profile_stream.WriteU64(m_frequency.QuadPart, 64);
 	m_profile_stream.WriteU64(overhead, 64);
 	QueryPerformanceCounter(&m_last_flush);
-	m_profile_stream.WriteU32((unsigned int)m_last_flush.QuadPart, 32);
+	m_profile_stream.WriteU64(m_last_flush.QuadPart, 64);
 
 #ifdef profiler_debug
 	WSE->Log.Info("Header, version=%i, major=%i, minor=%i, build=%i", PROFILING_VERSION, WSE_VERSION_MAJOR, WSE_VERSION_MINOR, WSE_VERSION_BUILD);
-	WSE->Log.Info("Header, frequency=%llu", m_frequency.QuadPart);
+	WSE->Log.Info("Header, frequency=%lld", m_frequency.QuadPart);
 	WSE->Log.Info("Header, overhead=%lli", overhead);
-	WSE->Log.Info("Header, t_start=%u", (unsigned int)m_last_flush.QuadPart);
+	WSE->Log.Info("Header, t_start=%lld", m_last_flush.QuadPart);
 #endif
 }
 
@@ -121,13 +119,14 @@ void WSEProfilingContext::Stop()
 
 	if (m_profile_stream.IsOpen())
 	{
+		LARGE_INTEGER t;
+		QueryPerformanceCounter(&t);
+
 		unsigned __int64 len = m_profile_stream.Length();
 
 		m_profile_stream.Commit(true);
 
-		LARGE_INTEGER t;
-		QueryPerformanceCounter(&t);
-		m_profile_stream.WriteU32((unsigned int)t.QuadPart, 32);
+		m_profile_stream.WriteU64(t.QuadPart, 64);
 
 		m_profile_stream.WriteU64(len, 64);
 		m_profile_stream.WriteU32(PROFILING_MAGIC, 32);
@@ -135,7 +134,7 @@ void WSEProfilingContext::Stop()
 		WSE->Log.Info("Profiling: stopped");
 
 #ifdef profiler_debug
-		WSE->Log.Info("Footer, time_stop=%u", (unsigned int)t.QuadPart);
+		WSE->Log.Info("Footer, time_stop=%lld", t.QuadPart);
 		WSE->Log.Info("Footer, len=%llu", len);
 #endif
 	}
@@ -151,7 +150,13 @@ void inline WSEProfilingContext::IntroduceStr(const rgl::string& str)
 		m_str_ids[str] = m_cur_str_id++;
 
 #ifdef profiler_debug
-		WSE->Log.Info("String Intro, str=%s, id=%i", str.buffer, m_str_ids[str]);
+		//std::stringstream s;
+		/*for (int i = 0; i < str.length(); i++){
+			s << std::to_string((unsigned char)str.buffer[i]) << ' ';
+		}*/
+
+		WSE->Log.Info("String Intro, len=%d, str='%s', id=%i", str.length(), str.c_str(), m_str_ids[str]);
+		//WSE->Log.Info("str pointer %p", (void*)str.c_str());
 #endif
 	}
 }
@@ -168,10 +173,10 @@ void WSEProfilingContext::StartProfilingBlock(wb::operation_manager *manager)
 
 		LARGE_INTEGER t;
 		QueryPerformanceCounter(&t);
-		m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+		m_profile_stream.Write_DeltaBCI15(t.QuadPart);
 
 #ifdef profiler_debug
-		WSE->Log.Info("Block Start, id=%i, t=%u", m_str_ids[manager->id], (unsigned int)t.QuadPart);
+		WSE->Log.Info("Block Start, id=%i, t=%lld", m_str_ids[manager->id], t.QuadPart);
 #endif
 	}
 }
@@ -185,7 +190,7 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 
 		m_profile_stream.WriteU32(0, 1);
 		m_profile_stream.WriteU32(0, 1);
-		m_profile_stream.Write_DeltaBCI15((unsigned int)end.QuadPart);
+		m_profile_stream.Write_DeltaBCI15(end.QuadPart);
 
 		if (depth == 0 && m_flush_interval > 0 && ((end.QuadPart - m_last_flush.QuadPart) / m_frequency.QuadPart >= m_flush_interval))
 		{
@@ -194,7 +199,7 @@ void WSEProfilingContext::StopProfilingBlock(int depth)
 		}
 
 #ifdef profiler_debug
-		WSE->Log.Info("Block End, t=%u", (unsigned int)end.QuadPart);
+		WSE->Log.Info("Block End, t=%lld", end.QuadPart);
 #endif
 	}
 }
@@ -212,10 +217,10 @@ void WSEProfilingContext::AddMarker(const rgl::string& text)
 
 		LARGE_INTEGER t;
 		QueryPerformanceCounter(&t);
-		m_profile_stream.Write_DeltaBCI15((unsigned int)t.QuadPart);
+		m_profile_stream.Write_DeltaBCI15(t.QuadPart);
 
 #ifdef profiler_debug
-		WSE->Log.Info("Custom Marker, id=%i, t=%u", m_str_ids[text], (unsigned int)t.QuadPart);
+		WSE->Log.Info("Custom Marker, id=%i, t=%lld", m_str_ids[text], t.QuadPart);
 #endif
 	}
 }
@@ -260,7 +265,7 @@ void WSEProfilingContext::AddMarker(const rgl::string& text)
 
 	Header
 		...
-		record_start_time, 32
+		record_start_time, 64
 
 	Payload
 		ID introduction, once for each new ID (id is script or trigger name)
@@ -276,6 +281,6 @@ void WSEProfilingContext::AddMarker(const rgl::string& text)
 			00	end time (delta_BCI15)
 
 	Footer
-		record_stop_time, 32
+		record_stop_time, 64
 		...
 */

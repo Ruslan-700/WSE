@@ -34,8 +34,8 @@ private:
 private:
 	bool m_is_recording;
 	WSEBitStream m_profile_stream;
-	std::unordered_map<rgl::string, int> m_str_ids;
-	int m_cur_str_id;
+	std::unordered_map<rgl::string, unsigned int> m_str_ids;
+	unsigned int m_cur_str_id;
 	__int64 m_flush_interval;
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_last_flush;
