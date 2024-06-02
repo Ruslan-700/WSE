@@ -106,6 +106,7 @@ void WSEScriptingContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation_manager, int context_flags, int depth, int &num_parameters, __int64 *parameters)
 {
 	m_cur_statement_block = operation_manager;
+
 	WSE->Profiling.StartProfilingBlock(operation_manager);
 
 	if (m_allow_unset_script_params && num_parameters < MAX_NUM_STATEMENT_BLOCK_PARAMS)
@@ -316,7 +317,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 			break;
 	}
 
-	WSE->Profiling.StopProfilingBlock();
+	WSE->Profiling.StopProfilingBlock(depth);
 	delete[] local_variables;
 	m_cur_statement_block = nullptr;
 	return success;

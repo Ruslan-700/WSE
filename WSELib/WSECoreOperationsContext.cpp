@@ -628,6 +628,28 @@ void SetCampaignTime(WSECoreOperationsContext *context)
 		warband->cur_game->year = year;
 }
 
+void ProfilerStart(WSECoreOperationsContext *context) 
+{
+	WSE->Profiling.Start();
+}
+
+void ProfilerStop(WSECoreOperationsContext *context)
+{
+	WSE->Profiling.Stop();
+}
+
+bool ProfilerIsRecording(WSECoreOperationsContext *context)
+{
+	return WSE->Profiling.IsRecording();
+}
+
+void ProfilerMark(WSECoreOperationsContext *context)
+{
+	rgl::string str;
+	context->ExtractString(str);
+	WSE->Profiling.AddMarker(str);
+}
+
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
 	m_mersenne_twister.seed((int)time(NULL));
@@ -846,4 +868,10 @@ void WSECoreOperationsContext::OnLoad()
 		"Stores mouse map coordinates into <0>",
 		"position_register");
 	
+	RegisterOperation("profiler_start", ProfilerStart, Both, None, 0, 0, "Start the profiler");
+	RegisterOperation("profiler_stop",  ProfilerStop,  Both, None, 0, 0, "Stop the profiler");
+	RegisterOperation("profiler_is_recording", ProfilerIsRecording, Both, Cf, 0, 0, "Fails if profiler isn't recording");
+	RegisterOperation("profiler_mark", ProfilerMark, Both, None, 1, 1,
+		"Add a marker at this point in time with name <0>. Good for analyzing individual parts of a script.",
+		"string_1");
 }

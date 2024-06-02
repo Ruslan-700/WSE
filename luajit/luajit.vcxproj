@@ -38,7 +38,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeOutput>luajit.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>setlocal enabledelayedexpansion
+    <NMakeBuildCommandLine>REM this script uses "dir" to compare the source file attributes to last run, if they are different the project gets rebuilt
+
+setlocal enabledelayedexpansion
 
 cd "$(ProjectDir)"
 
@@ -72,7 +74,7 @@ goto:eof
   echo release &gt; "%1"
 
   set Line=
-  for /f "delims=" %%a in ('dir /s luajit') do (
+  for /f "delims=" %%a in ('dir /s/a:-d luajit') do (
     if not "!Line!"=="" &gt;&gt;"%1" echo.!Line!
     set Line=%%a
   )
@@ -100,7 +102,9 @@ del lj_recdef.h</NMakeCleanCommandLine>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <NMakeOutput>luajit.exe</NMakeOutput>
     <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeBuildCommandLine>setlocal enabledelayedexpansion
+    <NMakeBuildCommandLine>REM this script uses "dir" to compare the source file attributes to last run, if they are different the project gets rebuilt
+
+setlocal enabledelayedexpansion
 
 cd "$(ProjectDir)"
 
@@ -134,7 +138,7 @@ goto:eof
   echo debug &gt; "%1"
 
   set Line=
-  for /f "delims=" %%a in ('dir /s luajit') do (
+  for /f "delims=" %%a in ('dir /s/a:-d luajit') do (
     if not "!Line!"=="" &gt;&gt;"%1" echo.!Line!
     set Line=%%a
   )

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <vector>
 #include "WSEBitStream.h"
@@ -8,15 +8,7 @@
 #include "warband.h"
 
 #define PROFILING_MAGIC 0xDEADCAFE
-#define PROFILING_VERSION 1
-
-struct WSEProfilingInfo
-{
-	__int64 outside;
-	LARGE_INTEGER start;
-	LARGE_INTEGER rec_start;
-	LARGE_INTEGER rec_end;
-};
+#define PROFILING_VERSION 2
 
 class WSEProfilingContext : public WSEContext
 {
@@ -29,20 +21,21 @@ protected:
 	virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
 public:
-	void StartProfilingBlock(wb::operation_manager *manager);
-	void StopProfilingBlock();
-
-private:
 	void Start();
 	void Stop();
+	void StartProfilingBlock(wb::operation_manager *manager);
+	void StopProfilingBlock(int depth);
+	bool IsRecording();
+	void AddMarker(const rgl::string& text);
 
 private:
-	bool m_enabled;
+	void IntroduceStr(const rgl::string& id);
+
+private:
+	bool m_is_recording;
 	WSEBitStream m_profile_stream;
-	std::map<rgl::string *, int> m_profile_types;
-	WSEProfilingInfo m_infos[300];
-	int m_cur_info;
-	int m_cur_profile_type;
+	std::unordered_map<rgl::string, unsigned int> m_str_ids;
+	unsigned int m_cur_str_id;
 	__int64 m_flush_interval;
 	LARGE_INTEGER m_frequency;
 	LARGE_INTEGER m_last_flush;

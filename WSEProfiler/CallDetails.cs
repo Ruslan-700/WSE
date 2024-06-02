@@ -14,8 +14,8 @@ namespace WSEProfiler
 
 		public void AddCall(Call call)
 		{
-			_timeSelf += call.Time;
-			_timeTotal += call.TimeRecursive;
+			_timeSelf += call.TimeSelf;
+			_timeTotal += call.TimeTotal;
 
 			if (call.Parent != null)
 			{
@@ -28,9 +28,9 @@ namespace WSEProfiler
 			foreach (var child in call.Children)
 			{
 				if (_callees.ContainsKey(child.Id))
-					_callees[child.Id] += child.TimeRecursive;
+                    _callees[child.Id] += child.TimeTotal;
 				else
-					_callees.Add(child.Id, child.TimeRecursive);
+                    _callees.Add(child.Id, child.TimeTotal);
 			}
 		}
 

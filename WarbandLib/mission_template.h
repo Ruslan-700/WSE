@@ -33,7 +33,7 @@ namespace wb
 		int u1[4];
 		trigger_manager triggers;
 
-		int addTrigger(const trigger &newTrigger, int templateNo);
+		int addTrigger(const trigger &newTrigger, int templateNo, const rgl::string& id_suffix = "");
 		bool removeTrigger(int index);
 	};
 }

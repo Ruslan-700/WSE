@@ -20,7 +20,7 @@ namespace WSEProfiler
 			_stream = new StreamReader(File.Open(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
 		}
 
-		public void Parse(string blockName) // TODO: use blockname
+        public void Parse(string blockName, List<Call> call_list = null) // TODO: use blockname
 		{
 			Dictionary<int, string> types = new Dictionary<int,string>();
 			int recursionLevel = 0;
@@ -64,7 +64,7 @@ namespace WSEProfiler
 					if (time < 0)
 						time = 0;
 
-					curCall.Time = time * 1000000 / _frequency;
+					curCall.TimeSelf = time * 1000000 / _frequency;
 
 					curCall = curCall.Parent;
 					recursionLevel--;
@@ -75,7 +75,7 @@ namespace WSEProfiler
 					if (curCall.Children.Count != 1)
 						throw new Exception("Base call with multiple children.");
 
-					_totalTime += curCall.Children[0].TimeRecursive;
+                    _totalTime += curCall.Children[0].TimeTotal;
 					ParseCall(curCall.Children[0]);
 					curCall.Children.Clear();
 				}
@@ -97,7 +97,7 @@ namespace WSEProfiler
 
 			var info = _infos[call.Id];
 
-			info.AddTime(call.Time, call.TimeRecursive);
+            info.AddTime(call.TimeSelf, call.TimeTotal);
 
 			foreach (var child in call.Children)
 			{

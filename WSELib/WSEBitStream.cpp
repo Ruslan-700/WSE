@@ -1,4 +1,5 @@
 #include "WSEBitStream.h"
+#include "WSE.h"
 
 WSEBitStream::WSEBitStream()
 {
@@ -6,6 +7,7 @@ WSEBitStream::WSEBitStream()
 	m_total = 0;
 	m_buffer = 0;
 	m_mask_table[0] = 0;
+	m_delta_last = 0;
 
 	for (int i = 0; i < 32; ++i)
 	{
@@ -51,6 +53,7 @@ void WSEBitStream::Commit(bool force)
 	m_buffer = 0;
 }
 
+//First writes into 32bit buffer (cursor is current pos in it), once full commit() will write it to stream.
 void WSEBitStream::WriteU32(unsigned int value, size_t size)
 {
 	assert(size <= 32);
@@ -87,6 +90,7 @@ void WSEBitStream::WriteU64(unsigned __int64 value, size_t size)
 	}
 }
 
+//write as base 15, 15 (0xF) will signal stop (no fixed length)
 void WSEBitStream::WriteBCI15(unsigned int value)
 {
 	int det = 1;
@@ -102,6 +106,38 @@ void WSEBitStream::WriteBCI15(unsigned int value)
 	}
 
 	WriteU32(15, 4);
+}
+
+void WSEBitStream::WriteBCI15(ULONGLONG value)
+{
+	ULONGLONG det = 1;
+
+	while (value)
+	{
+		ULONGLONG mod = value % (det * 15);
+
+		WriteU32((unsigned int)(mod / det), 4);
+
+		value -= mod;
+		det *= 15;
+	}
+
+	WriteU32(15, 4);
+}
+
+void WSEBitStream::Write_DeltaBCI15(LONGLONG value)
+{
+	if(m_delta_last > value)
+	{
+		WriteU32(1, 1);
+		WriteBCI15((ULONGLONG)(m_delta_last - value));
+	}
+	else
+	{
+		WriteU32(0, 1);
+		WriteBCI15((ULONGLONG)(value - m_delta_last));
+	}
+	m_delta_last = value;
 }
 
 void WSEBitStream::WriteString(const rgl::string &value)

@@ -36,7 +36,7 @@ namespace WSEProfiler
 
 	public interface IProfilerFile
 	{
-		void Parse(string blockName);
+        void Parse(string blockName, List<Call> call_list = null);
 		void Close();
 
 		IEnumerable<ICallInfo> CallInfos { get; }
