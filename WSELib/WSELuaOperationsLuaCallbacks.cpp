@@ -345,7 +345,7 @@ int lAddPrsnt(lua_State *L)
 	}
 
 	newP.simple_triggers.num_simple_triggers = numTriggers;
-	newP.simple_triggers.simple_triggers = (wb::simple_trigger*)malloc(sizeof(wb::simple_trigger) * numTriggers);
+	newP.simple_triggers.simple_triggers = rgl::_new<wb::simple_trigger>(numTriggers);
 
 	int i = 0;
 	lua_pushnil(L);
@@ -356,7 +356,6 @@ int lAddPrsnt(lua_State *L)
 		curTrigger.interval = (float)lua_tonumber(L, -2);
 		curTrigger.interval_timer = rgl::timer(2);
 		
-		curTrigger.operations.id.initialize();
 		curTrigger.operations.num_operations = 1;
 		curTrigger.operations.operations = rgl::_new<wb::operation>(1);
 		curTrigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;

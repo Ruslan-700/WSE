@@ -6,19 +6,14 @@ using namespace wb;
 
 int presentation_manager::addPresentation(const presentation &newPresentation)
 {
-	size_t oldPresentationsSize = this->num_presentations * sizeof(presentation);
-	size_t newPresentationsSize = oldPresentationsSize + sizeof(presentation);
+	presentation *newPresentations = rgl::_new<presentation>(this->num_presentations + 1);
 
-	void *oldPresentations = (void*)this->presentations;
-	void *newPresentations = malloc(newPresentationsSize);
-
-	memcpy_s(newPresentations, newPresentationsSize, oldPresentations, oldPresentationsSize);
-	free(oldPresentations);
-	this->presentations = (presentation*)newPresentations;
-
-	this->presentations[this->num_presentations].id.initialize();
-	this->presentations[this->num_presentations].simple_triggers.simple_triggers = rgl::_new<simple_trigger>(0);
-	//this->presentations[this->num_presentations].simple_triggers.num_simple_triggers = 1;
+	for (int i = 0; i < this->num_presentations; ++i)
+	{
+		newPresentations[i] = this->presentations[i];
+	}
+	rgl::_free(this->presentations);
+	this->presentations = newPresentations;
 	this->presentations[this->num_presentations] = newPresentation;
 
 	return this->num_presentations++;
