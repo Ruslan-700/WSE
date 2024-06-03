@@ -27,27 +27,16 @@ bool presentation_manager::removePresentation(int index)
 	if (index < 0 || index >= this->num_presentations)
 		return false;
 
-
-	size_t newTriggersSize = (this->num_presentations - 1) * sizeof(presentation);
-	presentation *newPresentations = (presentation*)malloc(newTriggersSize);
-
-	int oldIndex = 0;
-	int newIndex = 0;
-	while (oldIndex < this->num_presentations)
+	presentation *newPresentations = rgl::_new<presentation>(this->num_presentations - 1);
+	for (int i = 0; i < index; ++i)
 	{
-		if (oldIndex != index)
-		{
-			void *oldIndexPtr = &(this->presentations[oldIndex]);
-			void *newIndexPtr = &(newPresentations[newIndex]);
-			memcpy_s(newIndexPtr, sizeof(presentation), oldIndexPtr, sizeof(presentation));
-
-			newIndex++;
-		}
-
-		oldIndex++;
+		newPresentations[i] = this->presentations[i];
 	}
-
-	free(this->presentations);
+	for (int i = index; i < this->num_presentations - 1; ++i)
+	{
+		newPresentations[i] = this->presentations[i + 1];
+	}
+	rgl::_free(this->presentations);
 	this->presentations = newPresentations;
 	this->num_presentations--;
 
