@@ -113,27 +113,39 @@
 
 	<style> /* dark theme */
 		body{
-			background-color: gray;
+			background-color: #1b2b34;
+			color: #fff;
+		}
+
+		h1, h2{
+			color: #e17742;
 		}
 
 		.button_hide{
-			background-color: rgb(0,120,180);
+			background-color: #5a9bcf;
 		}
 
 		.content_block_caption{
-			color: #004477;
+			color: #E1AB42;
+			border-bottom: 1px dashed #5a9bcf;
 		}
 
 		.keyword{
-			background-color: #BBBBBB;
+			background-color: #046741;
 		}
 
 		.example{
-			background-color: #7777dd;
+			color: #dff1ff;
+			background-color: #1a3d51;
+			border: 1px solid steelblue;
 		}
 
 		.comment{
-			color: rgb(0,120,0);
+			color: #8ad582;
+		}
+
+		a {
+			color: lightblue;
 		}
 	</style>
 
@@ -246,11 +258,7 @@
 		];
 		function updateBtnThemeSwitchText()
 		{
-			var nextTheme = curTheme + 1;
-			if(nextTheme >= document.styleSheets.length){
-				nextTheme = 1;
-			}
-			document.getElementById("btnThemeSwitch").innerHTML = themeNames[nextTheme];
+			document.getElementById("btnThemeSwitch").innerHTML = themeNames[curTheme];
 		}
 		function switchTheme()
 		{
@@ -274,7 +282,7 @@
 </head>
 
 <body id="bd">
-	<div style="font-size: 11px">version from 05.02.2019, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(2px)';">AgentSmith</span></div>
+	<div style="font-size: 11px">version from 03.06.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(2px)';">AgentSmith</span></div>
 	<div style="right: 5px; top: 5px; position: fixed;">
 		<button id="btnThemeSwitch" onclick="switchTheme()">Light</button>
 		<button onclick="minimizeAll()">Minimize all</button>
@@ -490,6 +498,10 @@
 									function rotY(self, angle)\n
 									function rotZ(self, angle)\n
 									function rotate(self, rotVec3)\n
+									function moveX(self, val) <span class="comment">--Move by val into local X direction</span>\n
+									function moveY(self, val) <span class="comment">--Move by val into local Y direction</span>\n
+									function moveZ(self, val) <span class="comment">--Move by val into local Z direction</span>\n
+									function move(self, val) <span class="comment">--Move by val into local directions, val must be table with any of x,y,z entries</span>\n
 									function dist(self, pos2) <span class="comment">--returns distance between self.o and pos2.o</span>\n
 									function isBehind(self, pos2) <span class="comment">--returns true if self is behind pos2 (shorthand for game.position_is_behind_position)</span>\n
 								</div>
@@ -505,6 +517,7 @@
 					local newPos = game.pos.new({rot = newRot})\n
 					newPos:rotX(45)\n
 					newPos:rotate({x = 90, z = 180})\n
+					newPos:move({x = 10, z = 5})
 				</div>
 			</div>
 		</div>
@@ -692,8 +705,13 @@
 									x = 0\n
 									y = 0\n
 									z = 0\n
+									<span class="comment">--You can also use vec3[1], vec3[2], vec3[3] instead of x,y,z</span>\n
 									function len(self) <span class="comment">--returns the length of the vector</span>\n
 									function dist(self, vec2) <span class="comment">--returns the distance between self and vec2</span>\n
+									function dot(self, vec2) <span class="comment">--returns the dot product of self and vec2</span>\n
+									function cross(self, vec2) <span class="comment">--returns the cross product of self and vec2</span>\n
+									function unit(self) <span class="comment">--returns a normalized copy of itself</span>\n
+									function lerp(self, goal, alpha) <span class="comment">--returns a new vector that is the interpolation between self and goal by factor alpha (0-1)</span>\n
 								</div>
 							</li>
 							<li>
@@ -721,6 +739,9 @@
 								</div>
 							</li>
 						</ul>
+					</li>
+					<li style="padding-left: 20px; padding-top: 10px;">
+						<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt">Lua startup code (sourceforge)</a>
 					</li>
 				</ul>
 			</div>
@@ -842,6 +863,90 @@
 					\tab(lua_call, "@dofile", 1), <span class="comment">#one param, the string we pushed</span>\n
 					\tab(set_trigger_result, 1),\n
 				]),\n
+			</div>
+		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">Simple event manager</div>
+			<p>Does only add to deathmatch, and no control over sp/mp triggers.</p>
+			<div class="example example2">
+				local events = {}\n
+				\n
+				local function initTrigger(event_id, trigger_const)\n
+				\tabif not events[event_id] then\n
+				\tab\tablocal cb = function()\n
+				\tab\tab\tabdispatch(event_id)\n
+				\tab\tab\tabreturn false\n
+				\tab\tabend\n
+				\n
+				\tab\tabgame.addTrigger("mst_multiplayer_dm", trigger_const, 0, 0, cb)\n
+				\tab\tabmake(events, event_id)\n
+				\tabend\n
+				end\n
+				\n
+				function subscribe(event_id, callback)\n
+				\tabif starts_with(event_id, "ti_") then\n
+				\tab\tabinitTrigger(event_id, game.const.triggers[event_id])\n
+				\tabelse \n
+				\tab\tabif starts_with(event_id, "timer_") then\n
+				\tab\tab\tabinitTrigger(event_id, tonumber(string.match(event_id, "%d+%.?%d*")) )\n
+				\tab\tabend\n
+				\tabend\n
+				\n
+				\tabtable.insert(events[event_id], callback)\n
+				\n
+				\tabreturn #events[event_id]\n
+				end\n
+				\n
+				function unsubscribe(event_id, index)\n
+				\tabtable.remove(events[event_id], index)\n
+				end\n
+				\n
+				function dispatch(event_id, ...)\n
+				\tabif events[event_id] then\n
+				\tab\tabfor i = 1, #events[event_id] do\n
+				\tab\tab\tabevents[event_id][i](...)\n
+				\tab\tabend\n
+				\tabend\n
+				end
+			</div>
+		</div>
+	</div>
+
+	<div class="content_block">
+			<div class="content_block_caption">Timeouts</div>
+			<p>Execute modssys script or function with a delay. Uses previous event manager</p>
+			<div class="example example2">
+				local timeouts = {}\n
+				\n
+				function timeoutsTick()\n
+				\tabif #timeouts ~= 0 then\n
+				\tab\tablocal t_now = game.store_mission_timer_a_msec(0)\n
+				\n
+				\tab\tabfor i = #timeouts, 1, -1 do\n
+				\tab\tab\tabif timeouts[i].t <= t_now then\n
+				\tab\tab\tab\tabtimeouts[i].cb(timeouts[i].cb, t_now)\n
+				\tab\tab\tab\tabtable.remove(timeouts, i)\n
+				\tab\tab\tabend\n
+				\tab\tabend\n
+				\tabend\n
+				end\n
+				\n
+				function timeoutAddScript(time, script_no, ...)\n
+				\tablocal args = {...}\n
+				\tablocal cb = function()\n
+				\tab\tabgame.call_script(script_no, unpack(args))\n
+				\tabend\n
+				\n
+				\tabtable.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = cb})\n
+				end\n
+				\n
+				function timeoutAdd(time, callback)\n
+				\tabtable.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = callback })\n
+				end\n
+				\n
+				subscribe("ti_before_mission_start", function() timeouts = {} end)\n
+				subscribe("timer_0", timeoutsTick)
 			</div>
 		</div>
 	</div>

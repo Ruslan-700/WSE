@@ -83,10 +83,43 @@ vector3.prototype =
 	dist = function(self, vec2)
 		return math.sqrt( (self.x - vec2.x)^2 + (self.y - vec2.y)^2 + (self.z - vec2.z)^2 )
 	end,
+
+	dot = function(self, vec2)
+		return self.x * vec2.x + self.y * vec2.y + self.z * vec2.z
+	end,
+
+	cross = function(self, vec2)
+		return vector3.new({
+			x = self.y * vec2.z - self.z * vec2.y,
+			y = self.z * vec2.x - self.x * vec2.z,
+			z = self.x * vec2.y - self.y * vec2.x
+		})
+	end,
+
+	unit = function(self)
+		return (vector3.new(self) / self:len())
+	end,
+
+	lerp = function(self, goal, alpha)
+		local d = goal - self
+		return self + d*alpha
+	end,
 }
 vector3.mt = 
 {
-	__index = vector3.prototype,
+	__index = function(self, k)
+		if k == 1 then return self.x end
+		if k == 2 then return self.y end
+		if k == 3 then return self.z end
+		return vector3.prototype[k]
+	end,
+
+	__newindex = function(self, k, v)
+		if     k == 1 then self.x = v
+		elseif k == 2 then self.y = v
+		elseif k == 3 then self.z = v
+		else   self[k] = v end
+	end,
 
 	__add = function(lhs, rhs)
 		local res = 
@@ -158,10 +191,14 @@ vector3.new = function(obj)
 	local newObj
 	if obj then
 		newObj = tableShallowCopy(obj)
+
+		newObj.x = newObj.x or newObj[1]
+		newObj.y = newObj.y or newObj[2]
+		newObj.z = newObj.z or newObj[3]
 	else
 		newObj = {}
 	end
-	
+  
 	return setmetatable(newObj, vector3.mt)
 end
 
