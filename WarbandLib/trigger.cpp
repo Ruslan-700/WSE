@@ -92,30 +92,4 @@ bool trigger_manager::removeTrigger(int index)
 	this->num_triggers--;
 
 	return true;
-
-
-	/*size_t newTriggersSize = (this->num_triggers - 1) * sizeof(trigger);
-	trigger *newTriggers = (trigger*)malloc(newTriggersSize);
-
-	int oldIndex = 0;
-	int newIndex = 0;
-	while (oldIndex < this->num_triggers)
-	{
-		if (oldIndex != index)
-		{
-			void *oldIndexPtr = &(this->triggers[oldIndex]);
-			void *newIndexPtr = &(newTriggers[newIndex]);
-			memcpy_s(newIndexPtr, sizeof(trigger), oldIndexPtr, sizeof(trigger));
-
-			newIndex++;
-		}
-		
-		oldIndex++;
-	}
-
-	free(this->triggers);
-	this->triggers = newTriggers;
-	this->num_triggers--;
-
-	return true;*/
 }
