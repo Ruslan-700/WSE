@@ -13,7 +13,7 @@
 class WSEScriptingContext;
 
 typedef void (__cdecl *OperationCallback)(void *context);
-typedef __int64(__cdecl *LhsOperationCallback)(void *context);
+typedef int (__cdecl *LhsOperationCallback)(void *context);
 typedef bool (__cdecl *CfOperationCallback)(void *context);
 
 enum WSEOperationType

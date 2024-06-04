@@ -79,6 +79,10 @@ is_party_skill                    = 3036 #(is_party_skill, <skill_no>), #Fails i
 get_campaign_time                 = 3037 #(get_campaign_time, <destination>), #Stores campaign time into <destination>. 100000 = 1 game hour
 set_campaign_time                 = 3038 #(set_campaign_time, <value>), #Sets campaign time to <value>. 100000 = 1 game hour
 get_mouse_map_coordinates         = 3039 #(get_mouse_map_coordinates, <position_register>), #Stores mouse map coordinates into <position_register> (requires WSE2)
+profiler_start                    = 3040 #(profiler_start), #Start the profiler
+profiler_stop                     = 3041 #(profiler_stop), #Stop the profiler
+profiler_is_recording             = 3042 #(profiler_is_recording), #Fails if profiler isn't recording
+profiler_mark                     = 3043 #(profiler_mark, <string_1>), #Add a marker at this point in time with name <string_1>. Good for analyzing individual parts of a script.
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
 key_released      = 3101 #(key_released, <key>, [<bypass_console_check>]), #Fails if <key> wasn't released in the current frame
@@ -248,6 +252,8 @@ party_heal_members              = 3903 #(party_heal_members, <party_no>, <troop_
 party_switch_stacks             = 3904 #(party_switch_stacks, <party_no>, <party_stack_no_1>, <party_stack_no_2>), #Switches <party_no>'s <party_stack_no_1> and <party_stack_no_2>
 party_stack_upgrade             = 3905 #(party_stack_upgrade, <party_no>, <party_stack_no>, <amount>, <upgrade_path>), #Upgrades <party_no>'s <party_stack_no>'s <amount> of troops (<upgrade_path> can be 0 or 1) (requires WSE2)
 party_stack_set_num_upgradeable = 3906 #(party_stack_set_num_upgradeable, <party_no>, <party_stack_no>, <value>), #Sets <party_no>'s <party_stack_no>'s amount of upgradeable troops to <value>
+party_get_banner_icon           = 3907 #(party_get_banner_icon, <destination>, <party_no>), #Stores <party_no>'s banner icon into <destination>
+party_get_extra_icon            = 3908 #(party_get_extra_icon, <destination>, <party_no>), #Stores <party_no>'s extra icon into <destination>
 
 position_get_vector_to_position = 4100 #(position_get_vector_to_position, <destination_fixed_point>, <dest_position_register>, <position_register_1>, <position_register_2>), #Stores the vector from <position_register_1> to <position_register_2> into <dest_position_register> and its length into <destination_fixed_point>
 position_align_to_ground        = 4101 #(position_align_to_ground, <position_register>, [<point_up>], [<set_z_to_ground_level>]), #Aligns <position_register> to the ground (or to the ground normal if [<point_up>] is set)
@@ -536,6 +542,8 @@ lhs_operations += [
 	troop_get_proficiency_points,
 	party_stack_get_experience,
 	party_stack_get_num_upgradeable,
+	party_get_banner_icon,
+	party_get_extra_icon,
 	position_get_vector_to_position,
 	position_get_length,
 	get_dot_product_of_positions,
@@ -589,6 +597,7 @@ can_fail_operations += [
 	scene_prop_slot_gt,
 	order_flag_is_active,
 	is_party_skill,
+	profiler_is_recording,
 	key_released,
 	game_key_released,
 	dict_is_empty,

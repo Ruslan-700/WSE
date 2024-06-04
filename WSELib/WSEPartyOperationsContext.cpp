@@ -94,6 +94,24 @@ void PartyStackSetNumUpgradeable(WSEPartyOperationsContext *context)
 	warband->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable = value;
 }
 
+int PartyGetBannerIcon(WSEPartyOperationsContext *context)
+{
+	int party_no;
+
+	context->ExtractPartyNo(party_no);
+
+	return warband->cur_game->parties[party_no].banner_map_icon_no;
+}
+
+int PartyGetExtraIcon(WSEPartyOperationsContext *context)
+{
+	int party_no;
+
+	context->ExtractPartyNo(party_no);
+
+	return warband->cur_game->parties[party_no].extra_icon_no;
+}
+
 WSEPartyOperationsContext::WSEPartyOperationsContext() : WSEOperationContext("party", 3900, 3999)
 {
 }
@@ -127,4 +145,12 @@ void WSEPartyOperationsContext::OnLoad()
 	RegisterOperation("party_stack_set_num_upgradeable", PartyStackSetNumUpgradeable, Both, None, 3, 3,
 		"Sets <0>'s <1>'s amount of upgradeable troops to <2>",
 		"party_no", "party_stack_no", "value");
+
+	RegisterOperation("party_get_banner_icon", PartyGetBannerIcon, Both, Lhs, 2, 2,
+		"Stores <1>'s banner icon into <0>",
+		"destination", "party_no");
+
+	RegisterOperation("party_get_extra_icon", PartyGetExtraIcon, Both, Lhs, 2, 2,
+		"Stores <1>'s extra icon into <0>",
+		"destination", "party_no");
 }
