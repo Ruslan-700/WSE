@@ -872,6 +872,22 @@
 			<div class="example example2">
 				local events = {}\n
 				\n
+				local function starts_with(str, start)\n
+				\tabreturn str:sub(1, #start) == start\n
+				end\n
+				\n
+				local function make(_table, ...) <span class="comment">--util function for quickly creating table trees</span>\n
+				\tablocal curTable = _table\n
+				\n
+				\tabfor i = 1, select("#", ...) do\n
+				\tab\tablocal curKey = select(i, ...)\n
+				\tab\tabif not curTable[curKey] then curTable[curKey] = {} end\n
+				\tab\tabcurTable = curTable[curKey]\n
+				\tabend\n
+				\n
+				\tabreturn curTable\n
+				end\n
+				\n
 				local function initTrigger(event_id, trigger_const)\n
 				\tabif not events[event_id] then\n
 				\tab\tablocal cb = function()\n
