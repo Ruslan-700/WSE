@@ -163,11 +163,11 @@
 		}
 
 		.keyword{
-			background-color: #dddddd;
+			background-color: ffd1b2;
 		}
 
 		.example{
-			background-color: #bbbbff;
+			background-color: #cde9ff;
 		}
 
 		.comment{
@@ -854,6 +854,7 @@
 
 		<div class="content_block">
 			<div class="content_block_caption">Quickly reload main.lua when typing "reloadMain" in server console</div>
+			<p>All this does is call dofile. Be careful, it is not equivalent to a full restart.</p>
 			<div class="example example2">
 				("wse_console_command_received", [ <span class="comment">#this is a script that WSE adds</span>\n
 					\tab(store_script_param, ":command_type", 1),\n
@@ -868,7 +869,7 @@
 
 		<div class="content_block">
 			<div class="content_block_caption">Simple event manager</div>
-			<p>Does only add to deathmatch, and no control over sp/mp triggers.</p>
+			<p>Does only add to deathmatch, and no control over SP/MP triggers.</p>
 			<div class="example example2">
 				local events = {}\n
 				\n
@@ -930,7 +931,7 @@
 
 		<div class="content_block">
 			<div class="content_block_caption">Timeouts</div>
-			<p>Execute modssys script or function with a delay. Uses previous event manager</p>
+			<p>Execute modssys script or function with a delay. Uses previous event manager.</p>
 			<div class="example example2">
 				local timeouts = {}\n
 				\n
@@ -962,6 +963,17 @@
 				\n
 				subscribe("ti_before_mission_start", function() timeouts = {} end)\n
 				subscribe("timer_0", timeoutsTick)
+			</div>
+			<br><br>
+			<p style="margin-bottom: 0;">Modsys example:</p>
+			<div class="example example2">
+				(lua_push_int, 2000),\n
+				(lua_push_int, "script_for_timeout"),\n
+				(lua_push_int, ":var1"),\n
+				(lua_push_int, ":var2"),\n
+				\n
+				(lua_call, "@timeoutAddScript", 4),\n
+				(lua_set_top, 0), <span class="comment">#Just make sure its cleaned up</span>\n
 			</div>
 		</div>
 	</div>
