@@ -30,6 +30,16 @@ function tableRecursiveCopy(t, copyMetatables)
 	return t2
 end
 
+print = function(...)
+	local s = ""
+	for i = 1, select("#", ...) do
+		s = s .. tostring(select(i, ...)) .. "     "
+	end
+	s = s .. "\n"
+
+	_print(s)
+end
+
 ------------access to module operations------------
 game.mt = {
 	__index = function(table, key)
@@ -118,7 +128,7 @@ vector3.mt =
 		if     k == 1 then self.x = v
 		elseif k == 2 then self.y = v
 		elseif k == 3 then self.z = v
-		else   self[k] = v end
+		else   rawset(self, k, v) end
 	end,
 
 	__add = function(lhs, rhs)
@@ -190,11 +200,10 @@ vector3.mt =
 vector3.new = function(obj)
 	local newObj
 	if obj then
-		newObj = tableShallowCopy(obj)
-
-		newObj.x = newObj.x or newObj[1]
-		newObj.y = newObj.y or newObj[2]
-		newObj.z = newObj.z or newObj[3]
+		newObj = {}
+		newObj.x = obj.x or obj[1]
+		newObj.y = obj.y or obj[2]
+		newObj.z = obj.z or obj[3]
 	else
 		newObj = {}
 	end
@@ -377,15 +386,5 @@ game.pos.new = function(obj)
     newObj.rot = game.rotation.new(newObj.rot)
 
     return setmetatable(newObj, game.pos.mt)
-end
-
-print = function(...)
-	local s = ""
-	for i = 1, select("#", ...) do
-		s = s .. tostring(select(i, ...)) .. "     "
-	end
-	s = s .. "\n"
-
-	_print(s)
 end
 )"
