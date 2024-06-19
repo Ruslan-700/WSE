@@ -6,27 +6,27 @@
 			font-family: Helvetica, Arial, sans-serif;
 		}
 
-		.example
+		.code
 		{		
 			margin-left: 60px;
 			padding-left: 10px;
 			padding-right: 10px;
 			display: inline-block;
-			line-height: 2.3em;
-			white-space: nowrap;
-			overflow: auto;
+			line-height: 1.7em;
+			tab-size: 2;
+			font-family: monospace;
 		}
 
-		.example2
+		.code2
 		{
 			margin-left: 0;
-			line-height: 1.5em;
 			margin-top: 10px;
 		}
 
 		.keyword
 		{
 			padding: 3px;
+			font-family: monospace;
 		}
 
 		.content_block
@@ -134,7 +134,7 @@
 			background-color: #046741;
 		}
 
-		.example{
+		.code{
 			color: #dff1ff;
 			background-color: #1a3d51;
 			border: 1px solid steelblue;
@@ -166,7 +166,7 @@
 			background-color: #ffe6c3;
 		}
 
-		.example{
+		.code{
 			background-color: #cde9ff;
 		}
 
@@ -197,7 +197,7 @@
 			background-color: #2A2A2A;
 		}
 
-		.example{
+		.code{
 			background-color: #002000;
 		}
 
@@ -319,29 +319,24 @@
 			<div class="content_block_caption">Operations</div>
 			<div>
 				<p>To call operations, use <span class="keyword">game.operation_name(arg1, arg2, ...)</span></p>
-				<p style="padding-left: 30px;">Example: <span style="margin-left:0px; line-height: 25px; display:inline; padding: 6px;" class="example">game.display_message("test string")</span></p>
+				<p style="padding-left: 30px;">Example: <span style="margin-left:0px; line-height: 25px; display:inline; padding: 6px;" class="code">game.display_message("test string")</span></p>
 				<p>String and pos arguments are passed to the game via the games registers (overwritting them), starting from reg[128] and counting downwards.</p>
 				<p>Notice that the argument type matters. For example, if an operation expects an integer, you cannot pass a string that contains a number.</p>
 				<p>Return values are:</p>
-				<div class="example">
-					<div style="display: inline-block; margin-right: 5px;">
-						<p>boolDidNotFail, intError</p>
-						<p>intResult, intError</p>
-						<p>boolDidNotFail, intResult, intError</p>
-						<p>intError</p>
-					</div>
-					<div style="display: inline-block;">
-						<p>=&nbsp;&nbsp;game.cf_operation(arg1, arg2, ...) for can_fail operations</p>
-						<p>=&nbsp;&nbsp;game.lhs_operation(lhs_arg, arg1, arg2, ...) for lhs operations</p>
-						<p>=&nbsp;&nbsp;game.cf_lhs_operation(lhs_arg, arg1, arg2, ...) for operations which are both can_fail and lhs</p>
-						<p>=&nbsp;&nbsp;game.operation(arg1, arg2, ...) for all other operations</p>
-					</div>
-				</div>
+				<pre class="code">
+					boolDidNotFail, intError						= game.cf_operation(arg1, arg2, ...) for can_fail operations
+					intResult, intError									= game.lhs_operation(lhs_arg, arg1, arg2, ...) for lhs operations
+					boolDidNotFail, intResult, intError	= game.cf_lhs_operation(lhs_arg, arg1, arg2, ...) for operations which are both can_fail and lhs
+					intError														= game.operation(arg1, arg2, ...) for all other operations
+					
+					(lhs = left hand side? Operations that assign a value)
+					(cf = can fail)
+				</pre>
 				<p>While most Lhs operations don't require an actual value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
 				<p>Real-world lhs_operation example:</p>
-				<div class="example">
+				<pre class="code">
 					local gold = game.player_get_gold(0, playerId)
-				</div>
+				</pre>
 				<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
 				<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
 			</div>
@@ -353,24 +348,24 @@
 			<div>
 				<p>To access registers, use <span class="keyword">game.reg[n]</span> , <span class="keyword">game.sreg[n]</span> and <span class="keyword">game.preg[n]</span></p>
 				<p style="padding-left: 30px;">Example:</p>
-				<div class="example">
-					game.reg[0] = 123\n
-					local i = game.reg[0]\n
-					game.sreg[0] = "test string"\n
-					local s = game.sreg[0]\n
-					game.preg[0] = game.pos.new()\n
-					local pos = game.preg[0]\n
-				</div>
+				<pre class="code">
+					game.reg[0] = 123
+					local i = game.reg[0]
+					game.sreg[0] = "test string"
+					local s = game.sreg[0]
+					game.preg[0] = game.pos.new()
+					local pos = game.preg[0]
+				</pre>
 				<p>As of the current version, registers are copied by value instead of by reference. So doing things like:</p>
-				<div class="example">
+				<pre class="code">
 					game.preg[0]:rotX(30)
-				</div>
+				</pre>
 				<p>Does not change the actual game register. This is likely going to be improved in a future version. What you have to do instead for now is:</p>
-				<div class="example">
-					local p = game.preg[0]\n
-					p:rotX(30)\n
-					game.preg[0] = p\n
-				</div>
+				<pre class="code">
+					local p = game.preg[0]
+					p:rotX(30)
+					game.preg[0] = p
+				</pre>
 			</div>
 		</div>
 
@@ -380,24 +375,24 @@
 				<p>For every header_[name].py or ID_[name].py file you copied to your "msfiles" folder (except header_operations.py), a new table will be generated: <span class="keyword">game.const.[name]</span></p>
 				<p>This table will be filled with all the constants from that file.</p>
 				<p>As of the current version, only lines that match one of the two following regexes (regular expressions) will be accepted:</p>
-				<div class="example">
-					^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$\n
-					^(\w+)=(\w+)$\n
-				</div>
+				<pre class="code">
+					^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$
+					^(\w+)=(\w+)$
+				</pre>
 				<p>This probably looks intimidating to you, but really all it says is that your constant must either be a number, a hex number, or another constant (from the same file, currently).</p>
 				<p>In other words: <span class="keyword">constant = num|hexNum|otherConstant</span>
 				<p>If the match fails, the line will be ignored and a warning message will be triggered which you can safely ignore.</p>
 				<p>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
 				<p>So let's say you want to add a deathmatch trigger for <span class="keyword">ti_on_agent_hit</span>. Instead of this:</p>
-				<div class="example">
-					game.addTrigger("mst_multiplayer_dm", -28, 0, 0, condCB)\n
-				</div>
+				<pre class="code">
+					game.addTrigger("mst_multiplayer_dm", -28, 0, 0, condCB)
+				</pre>
 				<p>You could copy header_triggers.py to your msfiles folder and do:</p>
-				<div class="example">
-					game.addTrigger("mst_multiplayer_dm", game.const.ti_on_agent_hit, 0, 0, condCB)\n
-					<span class="comment">--or if you like to be specific:</span>\n
-					game.addTrigger("mst_multiplayer_dm", game.const.triggers.ti_on_agent_hit, 0, 0, condCB)\n
-				</div>
+				<pre class="code">
+					game.addTrigger("mst_multiplayer_dm", game.const.ti_on_agent_hit, 0, 0, condCB)
+					<span class="comment">--or if you like to be specific:</span>
+					game.addTrigger("mst_multiplayer_dm", game.const.triggers.ti_on_agent_hit, 0, 0, condCB)
+				</pre>
 			</div>
 		</div>
 
@@ -408,23 +403,31 @@
 				<p>These work exactly like module system triggers. Times can be float values or values from header_triggers.py (the numbers, string names are not supported yet), just like you would do it in the MS. If conditionsCallback returns false, consequencesCallback will not be executed. If it returns true or nothing, consequencesCallback will be executed.</p>
 				<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 				<p style="padding-left: 30px;">Example:</p>
-				<div class="example">
-					function condCB()\n
-					<span class="tab">doStuff()</span>\n
-					<span class="tab">return true</span>\n
-					end\n
-					game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)\n
-				</div>
+				<pre class="code">
+					function condCB()
+						doStuff()
+						return true
+					end
+					game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)
+				</pre>
 				<p>addTrigger returns an integer that is the index of the added trigger.</p>
 				<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
 				<p>&nbsp;</p>
 				<p>You can also add item triggers with <span class="keyword">intTriggerNo = game.addItemTrigger(strItemID|intItemNo, numTriggerInterval, funcCallback)</span></p>
 				<p style="padding-left: 30px;">Example:</p>
-				<div class="example">
-					game.addItemTrigger("itm_fighting_pick", game.const.ti_on_weapon_attack, function()\n
-					<span class="tab">print("agent no " .. game.store_trigger_param_1(0) .. " swinged a fighting pick")</span>\n
-					end)\n
-				</div>
+				<pre class="code">
+					game.addItemTrigger("itm_fighting_pick", game.const.ti_on_weapon_attack, function()
+						print("agent no " .. game.store_trigger_param_1(0) .. " swung a fighting pick")
+					end)
+				</pre>
+				<p>&nbsp;</p>
+				<p>Scene prop triggers: <span class="keyword">intTriggerNo = game.addScenePropTrigger(strPropID|intPropNo, numTriggerInterval, funcCallback)</span></p>
+				<p style="padding-left: 30px;">Example:</p>
+				<pre class="code">
+					game.addScenePropTrigger(game.const.spr_apple_a, game.const.ti_on_scene_prop_init, function()
+						print("Apple " .. game.store_trigger_param_1(0) .. " initialized.")
+					end)
+				</pre>
 			</div>
 		</div>
 
@@ -435,11 +438,11 @@
 				<p>To use iterators (try_for_agents, try_for_players, ...), use the provided iterator functions <span class="keyword">game.partiesI, game.agentsI, game.propInstI, game.playersI</span></p>
 				<p>These work exactly like module system iterators and take the same arguments.</p>
 				<p style="padding-left: 30px;">Example:</p>
-				<div class="example">
-					for curPlayer in game.playersI(true) do <span class="comment">--skip server</span>\n
-					<span class="tab">foo(curPlayer)</span>\n
-					end\n
-				</div>
+				<pre class="code">
+					for curPlayer in game.playersI(true) do <span class="comment">--skip server</span>
+						foo(curPlayer)
+					end
+				</pre>
 			</div>
 		</div>
 
@@ -450,12 +453,12 @@
 				<p>Keep in mind that these don't need the fixed point multiplier that the module system requires you to use.</p>
 				<p>The MS multiplier is essentially a way of specifying the current unit of length.</p>
 				<p style="padding-left: 30px;">MS Example:</p>
-				<div class="example">
-					set_fixed_point_multiplier(1),\n
-					position_get_x(":x", 0), <span class="comment">#get pos0_x in meters</span>\n
-					set_fixed_point_multiplier(100),\n
-					position_get_x(":x", 0), <span class="comment">#get pos0_x in centimeters</span>\n
-				</div>
+				<pre class="code">
+					set_fixed_point_multiplier(1),
+					position_get_x(":x", 0), <span class="comment">#get pos0_x in meters</span>
+					set_fixed_point_multiplier(100),
+					position_get_x(":x", 0), <span class="comment">#get pos0_x in centimeters</span>
+				</pre>
 				<p>Consider the lua counterpart to "always have a fixed point multiplier of 1".</p>
 
 				<ul>
@@ -467,16 +470,16 @@
 							</li>
 							<li>
 								<p><span class="keyword">game.rotation.prototype</span></p>
-								<div class="example">
-									s = vector3.new({x = 1}) <span class="comment">--x axis</span>\n
-									f = vector3.new({y = 1}) <span class="comment">--forwards/y axis</span>\n
-									u = vector3.new({z = 1})  <span class="comment">--up/z axis</span>\n
-									function getRot(self) <span class="comment">--returns vector3.new({z = yaw, x = pitch, y = roll})</span>\n
-									function rotX(self, angle) <span class="comment">--rotate around x axis, angle in degrees</span>\n
-									function rotY(self, angle) <span class="comment">--rotate around y axis, angle in degrees</span>\n
-									function rotZ(self, angle) <span class="comment">--rotate around z axis, angle in degrees</span>\n
-									function rotate(self, rotVec3) <span class="comment">--rotate around all axis, zxy order, angle in degrees</span>\n
-								</div>
+								<pre class="code">
+									s = vector3.new({x = 1}) <span class="comment">--x axis</span>
+									f = vector3.new({y = 1}) <span class="comment">--forwards/y axis</span>
+									u = vector3.new({z = 1})  <span class="comment">--up/z axis</span>
+									function getRot(self) <span class="comment">--returns vector3.new({z = yaw, x = pitch, y = roll})</span>
+									function rotX(self, angle) <span class="comment">--rotate around x axis, angle in degrees</span>
+									function rotY(self, angle) <span class="comment">--rotate around y axis, angle in degrees</span>
+									function rotZ(self, angle) <span class="comment">--rotate around z axis, angle in degrees</span>
+									function rotate(self, rotVec3) <span class="comment">--rotate around all axis, zxy order, angle in degrees</span>
+								</pre>
 							</li>
 						</ul>
 					</li>
@@ -488,37 +491,37 @@
 							</li>
 							<li>
 								<p><span class="keyword">game.pos.prototype</span></p>
-								<div class="example">
-									o = vector3.new() <span class="comment">--position in the world</span>\n
-									rot = game.rotation.new() <span class="comment">--rotation, or heading of the pos if you like</span>\n
-									\n
-									<span class="comment">--see game.rotation.prototype for these</span>\n
-									function getRot(self)\n
-									function rotX(self, angle)\n
-									function rotY(self, angle)\n
-									function rotZ(self, angle)\n
-									function rotate(self, rotVec3)\n
-									function moveX(self, val) <span class="comment">--Move by val into local X direction</span>\n
-									function moveY(self, val) <span class="comment">--Move by val into local Y direction</span>\n
-									function moveZ(self, val) <span class="comment">--Move by val into local Z direction</span>\n
-									function move(self, val) <span class="comment">--Move by val into local directions, val must be table with any of x,y,z entries</span>\n
-									function dist(self, pos2) <span class="comment">--returns distance between self.o and pos2.o</span>\n
-									function isBehind(self, pos2) <span class="comment">--returns true if self is behind pos2 (shorthand for game.position_is_behind_position)</span>\n
-								</div>
+								<pre class="code">
+									o = vector3.new() <span class="comment">--position in the world</span>
+									rot = game.rotation.new() <span class="comment">--rotation, or heading of the pos if you like</span>
+									
+									<span class="comment">--see game.rotation.prototype for these</span>
+									function getRot(self)
+									function rotX(self, angle)
+									function rotY(self, angle)
+									function rotZ(self, angle)
+									function rotate(self, rotVec3)
+									function moveX(self, val) <span class="comment">--Move by val into local X direction</span>
+									function moveY(self, val) <span class="comment">--Move by val into local Y direction</span>
+									function moveZ(self, val) <span class="comment">--Move by val into local Z direction</span>
+									function move(self, val) <span class="comment">--Move by val into local directions, val must be table with any of x,y,z entries</span>
+									function dist(self, pos2) <span class="comment">--returns distance between self.o and pos2.o</span>
+									function isBehind(self, pos2) <span class="comment">--returns true if self is behind pos2 (shorthand for game.position_is_behind_position)</span>
+								</pre>
 							</li>
 						</ul>
 					</li>
 				</ul>
 
 				<p style="padding-left: 30px;">Example:</p>
-				<div class="example">
-					local pos0 = game.preg[0]\n
-					local newRot = game.rotation.new(pos0.rot)\n
-					local newPos = game.pos.new({rot = newRot})\n
-					newPos:rotX(45)\n
-					newPos:rotate({x = 90, z = 180})\n
+				<pre class="code">
+					local pos0 = game.preg[0]
+					local newRot = game.rotation.new(pos0.rot)
+					local newPos = game.pos.new({rot = newRot})
+					newPos:rotX(45)
+					newPos:rotate({x = 90, z = 180})
 					newPos:move({x = 10, z = 5})
-				</div>
+				</pre>
 			</div>
 		</div>
 
@@ -528,44 +531,44 @@
 			<div>
 				<p>You can add presentations using <span class="keyword">game.addPrsnt(tablePrsnt)</span></p>
 				<p>tablePrsnt must have the following format</p>
-				<div class="example">
-					tablePrsnt = {\n
-						\tabid = strID,\n
-						\tab[flags] = {intFlag1, ...},\n
-						\tab[mesh] = intMesh,\n
-						\tabtriggers = {[numTriggerConst] = func, ...}\n
-					<p>}</p>
-				</div>
+				<pre class="code">
+					tablePrsnt = {
+						id = strID,
+						[flags] = {intFlag1, ...},
+						[mesh] = intMesh,
+						triggers = {[numTriggerConst] = func, ...}
+					}
+				</pre>
 				<p><span class="keyword">[flags]</span> can be omited and defaults to no flags at all. If you copied header_presentation.py to your msfiles folder, you can use the flags defined there.</p>
 				<p><span class="keyword">[mesh]</span> can be omited and defaults to 0. If you copied ID_meshes.py to your msfiles folder, you can use the mesh nos defined there.</p>
 				<p><span class="keyword">triggers</span> must have at least one element, the key being a number and the value being a function. If you copied header_triggers.py to your msfiles folder, you can use the trigger values defined there.</p>
 				<p>Basic example:</p>
-				<div class="example">
-					<span class="comment">--copy header_presentations.py, header_triggers.py and ID_meshes.py to your msfiles folder for this example.</span>\n
-					local index = game.addPrsnt({\n
-					\tabid = "myPrsnt",\n
-					\tabflags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},\n
-					<span class="tab comment">--you can initialize an array like this, without keys - they don't matter here anyway.</span>\n
-					\tabmesh = game.const.mesh_cb_ui_main,\n
-					\tabtriggers = {\n
-						\tab2[game.const.ti_on_presentation_load] = function ()\n
-						<span class="tab2 comment">--The const inside the [] declares a number key, similar to keyName = 123 for string keys.</span>\n
-							\tab3game.presentation_set_duration(9999999)\n
-							\tab3local overlay = game.create_mesh_overlay(0, game.const.mesh_mp_ingame_menu)\n
-							\n
-							\tab3local position = game.pos.new()\n
-							\tab3position.o.x = 0.3\n
-							\tab3position.o.y = 0.3\n
-							\tab3game.overlay_set_position(overlay, position)\n
-							\n
-							\tab3position.o.x = 0.5\n
-							\tab3position.o.y = 0.8\n
-							\tab3game.overlay_set_size(overlay, position)\n
-						\tab2end\n
-					\tab}\n
-					})\n
-					game.start_presentation(index)\n
-				</div>
+				<pre class="code">
+					<span class="comment">--copy header_presentations.py, header_triggers.py and ID_meshes.py to your msfiles folder for this example.</span>
+					local index = game.addPrsnt({
+						id = "myPrsnt",
+						flags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},
+						<span class="comment">--you can initialize an array like this, without keys - they don't matter here anyway.</span>
+						mesh = game.const.mesh_cb_ui_main,
+						triggers = {
+								[game.const.ti_on_presentation_load] = function ()
+									<span class="comment">--The const inside the [] declares a number key, similar to keyName = 123 for string keys.</span>
+									game.presentation_set_duration(9999999)
+									local overlay = game.create_mesh_overlay(0, game.const.mesh_mp_ingame_menu)
+						
+									local position = game.pos.new()
+									position.o.x = 0.3
+									position.o.y = 0.3
+									game.overlay_set_position(overlay, position)
+						
+									position.o.x = 0.5
+									position.o.y = 0.8
+									game.overlay_set_size(overlay, position)
+								end
+						}
+					})
+					game.start_presentation(index)
+				</pre>
 			</div>
 		</div>
 
@@ -579,43 +582,43 @@
 				<p>The return values of <span class="keyword">funcCallback</span> control further behaviour.</p>
 				<p>If it returns nothing or true, the module operation will be executed as usual.</p>
 				<p>If the first return value is false, the module operation will not be executed.</p>
-				<p>If the second return value is a bool, the module system will think it is executing a cf operation (so if the bool is false, it will break execution, like e.g. <span class="example" style="margin-left: 0;display: unset; padding: 3px;">(eq, 1, 0),</span>).</p>
+				<p>If the second return value is a bool, the module system will think it is executing a cf operation (so if the bool is false, it will break execution, like e.g. <span class="code" style="margin-left: 0;display: unset; padding: 3px;">(eq, 1, 0),</span>).</p>
 				<p>If the second return value is a number, the module system will think it is executing a lhs operation and try to set the return value</p>
 				<p>If the callback returns three values, the module system will think it is executing a cf/lhs operation. The 2nd return value must be the cf value and the 3rd the lhs value</p>
 				<p>In short, the variants are:</p>
-				<div class="example">
-					boolExecute\n
-					boolExecute, boolFail\n
-					boolExecute, numLhs\n
-					boolExecute, boolFail, numLhs\n
-				</div>
+				<pre class="code">
+					boolExecute
+					boolExecute, boolFail
+					boolExecute, numLhs
+					boolExecute, boolFail, numLhs
+				</pre>
 				<p>The hook will not be triggered when calling operations from lua. However, this task can be achieved by overwritting the game metatable, which is defined as:</p>
-				<div class="example">
-					game.mt = {\n
-						\tab__index = function(table, key)\n
-							\tab2return function(...)\n
-								\tab3return game.execOperation(key,...)\n
-							\tab2end\n
-						\tabend\n
-					}\n
-				</div>
+				<pre class="code">
+					game.mt = {
+							__index = function(table, key)
+									return function(...)
+											return game.execOperation(key,...)
+									end
+							end
+					}
+				</pre>
 				<p>One could, for example, do (NOT FINISHED YET):</p>
-				<div class="example">
-					game.mt = {\n
-						\tab__index = function(table, key)\n
-							\tab2If key == "player_get_gold" then\n
-								\tab3return myCustomGoldCalculation\n
-								\tab3<span class="comment">--return function that takes all args (...) and returns gold</span>\n
-								\tab3<span class="comment">--this function should, if neccessary, use game.execOperation("player_get_gold", args)</span>\n
-								\tab3<span class="comment">--instead of game.player_get_gold(args), for avoiding an infinite loop.</span>\n
-							\tab2end\n
-							\tab2return function(...)\n
-								\tab3return game.execOperation(key,...)\n
-							\tab2end\n
-						\tabend\n
-					}\n
-					setmetatable(game, game.mt)\n
-				</div>
+				<pre class="code">
+					game.mt = {
+							__index = function(table, key)
+									If key == "player_get_gold" then
+											return myCustomGoldCalculation
+											<span class="comment">--return function that takes all args (...) and returns gold</span>
+											<span class="comment">--this function should, if neccessary, use game.execOperation("player_get_gold", args)</span>
+											<span class="comment">--instead of game.player_get_gold(args), for avoiding an infinite loop.</span>
+									end
+									return function(...)
+											return game.execOperation(key,...)
+									end
+							end
+					}
+					setmetatable(game, game.mt)
+				</pre>
 				<p>You could even go one step further and create a wrapper for <span class="keyword">game.hookOperation</span> that automates this process for you.</p>
 			</div>
 		</div>
@@ -628,10 +631,10 @@
 						<div>
 							<p style="padding-left: 20px;"><span class="keyword">game.getScriptNo(script_name)</span>, use in conjunction with game.call_script(scriptNo, ...)</p>
 							<p style="padding-left: 30px;">Example:</p>
-							<div class="example">
-								local no = game.getScriptNo("game_start")\n
-								game.call_script(no)\n
-							</div>
+							<pre class="code">
+								local no = game.getScriptNo("game_start")
+								game.call_script(no)
+							</pre>
 						</div>
 					</li>
 					<li>
@@ -641,8 +644,8 @@
 					</li>
 					<li>
 						<div>
-							<p style="padding-left: 20px;"><span class="keyword">game.OnRglLogWrite(str)</span>, this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.\n
-							A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.\n
+							<p style="padding-left: 20px;"><span class="keyword">game.OnRglLogWrite(str)</span>, this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
+							A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.
 							Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
 							</p>
 						</div>
@@ -652,23 +655,23 @@
 							<p style="padding-left: 20px;"><span class="keyword">game.fail()</span>, when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
 						</div>
 						<p style="padding-left: 30px;">Example:</p>
-						<div class="example">
-							(try_begin),\n
-								\tab(lua_push_int, 456),\n
-								\tab(lua_call, "@is123", 1),\n
-								\tab(display_message, "@Yes it is."),\n
-							(else_try),\n
-								\tab(display_message, "@Nah"),\n
-							(try_end),\n
-						</div>
+						<pre class="code">
+							(try_begin),
+									(lua_push_int, 456),
+									(lua_call, "@is123", 1),
+									(display_message, "@Yes it is."),
+							(else_try),
+									(display_message, "@Nah"),
+							(try_end),
+						</pre>
 						<p></p>
-						<div class="example">
-							function is123(val)\n
-								\tabif val ~= 123 then\n
-									\tab2game.fail()\n
-								\tabend\n
-							end\n
-						</div>
+						<pre class="code">
+							function is123(val)
+									if val ~= 123 then
+											game.fail()
+									end
+							end
+						</pre>
 					</li>
 					<li>
 						<div>
@@ -701,18 +704,18 @@
 						<ul>
 							<li>
 								<p style="padding-left: 20px; padding-top: 10px;"><span class="keyword">vector3.prototype</span></p>
-								<div class="example">
-									x = 0\n
-									y = 0\n
-									z = 0\n
-									<span class="comment">--You can also use vec3[1], vec3[2], vec3[3] instead of x,y,z</span>\n
-									function len(self) <span class="comment">--returns the length of the vector</span>\n
-									function dist(self, vec2) <span class="comment">--returns the distance between self and vec2</span>\n
-									function dot(self, vec2) <span class="comment">--returns the dot product of self and vec2</span>\n
-									function cross(self, vec2) <span class="comment">--returns the cross product of self and vec2</span>\n
-									function unit(self) <span class="comment">--returns a normalized copy of itself</span>\n
-									function lerp(self, goal, alpha) <span class="comment">--returns a new vector that is the interpolation between self and goal by factor alpha (0-1)</span>\n
-								</div>
+								<pre class="code">
+									x = 0
+									y = 0
+									z = 0
+									<span class="comment">--You can also use vec3[1], vec3[2], vec3[3] instead of x,y,z</span>
+									function len(self) <span class="comment">--returns the length of the vector</span>
+									function dist(self, vec2) <span class="comment">--returns the distance between self and vec2</span>
+									function dot(self, vec2) <span class="comment">--returns the dot product of self and vec2</span>
+									function cross(self, vec2) <span class="comment">--returns the cross product of self and vec2</span>
+									function unit(self) <span class="comment">--returns a normalized copy of itself</span>
+									function lerp(self, goal, alpha) <span class="comment">--returns a new vector that is the interpolation between self and goal by factor alpha (0-1)</span>
+								</pre>
 							</li>
 							<li>
 								<p style="padding-left: 20px; padding-top: 10px;"><span class="keyword">vector3.new([obj])</span> - constructor. obj; can be used to specify initial values.</p>
@@ -722,21 +725,21 @@
 							</li>
 							<li>
 							<p style="padding-left: 20px;">Example:</p>
-								<div class="example">
-									local vecA = vector3.new({x = 60, y = 30})\n
-									local vecB = vector3.new()\n
-									\n
-									game.display_message(tostring(vecA:len())) <span class="comment">--67.08...</span>\n
-									\n
-									if vecA == vecB then\n
-									\tab<span class="comment">--will not happen</span>\n
-									end\n
-									\n
-									vecA = vecA * vecB <span class="comment">--{60*0, 30*0, 0*0}</span>\n
-									if vecA == vecB then\n
-									\tab<span class="comment">--will happen</span>\n
-									end\n
-								</div>
+								<pre class="code">
+									local vecA = vector3.new({x = 60, y = 30})
+									local vecB = vector3.new()
+									
+									game.display_message(tostring(vecA:len())) <span class="comment">--67.08...</span>
+									
+									if vecA == vecB then
+										<span class="comment">--will not happen</span>
+									end
+									
+									vecA = vecA * vecB <span class="comment">--{60*0, 30*0, 0*0}</span>
+									if vecA == vecB then
+										<span class="comment">--will happen</span>
+									end
+								</pre>
 							</li>
 						</ul>
 					</li>
@@ -785,196 +788,196 @@
 	<div class="examples_content">
 		<div class="content_block">
 			<div class="content_block_caption">Simple custom log</div>
-			<div class="example example2">
-				myLog = io.open("custom_log.txt", "a")\n
-				myLog:write("Server started at " .. os.date("%Y.%m.%d, %X") .. "\\n")\n
-				myLog:flush()\n
-				\n
-				function getTriggerParam(index)\n
-					\tabreturn game.store_trigger_param(0, index)\n
-				end\n
-				\n
-				function playerJoinedCallback()\n
-					\tablocal playerNo = getTriggerParam(1)\n
-					\n
-					\tabgame.str_store_player_username(0, playerNo)\n
-					\tabgame.str_store_player_ip(1, playerNo)\n
-					\n
-					\tabmyLog:write(game.sreg[0] .. " joined with IP " .. game.sreg[1] ..\n
-							\tab2" at " .. os.date("%Y.%m.%d, %X") .. "\\n")\n
-					\tabmyLog:flush()\n
-					\tabreturn false\n
-				end\n
-				\n
-				templates = {\n
-					\tab"dm",\n
-					\tab"tdm",\n
-					\tab"cf", <span class="comment">--capture the flag</span>\n
-					\tab"sg", <span class="comment">--siege</span>\n
-					\tab"bt", <span class="comment">--battle</span>\n
-					\tab"fd", <span class="comment">--fight and destroy</span>\n
-					\tab"ccoop", <span class="comment">--invasion</span>\n
-					\tab"duel"\n
-				}\n
-				\n
-				<span class="comment">--add triggers to all multiplayer templates</span>\n
-				for k,v in pairs(templates) do\n
-				\tabgame.addTrigger("mst_multiplayer_" .. v, game.const.ti_server_player_joined, 0, 0, playerJoinedCallback)\n
-				end\n
-			</div>
+			<pre class="code code2">
+				myLog = io.open("custom_log.txt", "a")
+				myLog:write("Server started at " .. os.date("%Y.%m.%d, %X") .. "\\n")
+				myLog:flush()
+				
+				function getTriggerParam(index)
+						return game.store_trigger_param(0, index)
+				end
+				
+				function playerJoinedCallback()
+						local playerNo = getTriggerParam(1)
+					
+						game.str_store_player_username(0, playerNo)
+						game.str_store_player_ip(1, playerNo)
+					
+						myLog:write(game.sreg[0] .. " joined with IP " .. game.sreg[1] ..
+									" at " .. os.date("%Y.%m.%d, %X") .. "\\n")
+						myLog:flush()
+						return false
+				end
+				
+				templates = {
+						"dm",
+						"tdm",
+						"cf", <span class="comment">--capture the flag</span>
+						"sg", <span class="comment">--siege</span>
+						"bt", <span class="comment">--battle</span>
+						"fd", <span class="comment">--fight and destroy</span>
+						"ccoop", <span class="comment">--invasion</span>
+						"duel"
+				}
+				
+				<span class="comment">--add triggers to all multiplayer templates</span>
+				for k,v in pairs(templates) do
+					game.addTrigger("mst_multiplayer_" .. v, game.const.ti_server_player_joined, 0, 0, playerJoinedCallback)
+				end
+			</pre>
 		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Squad spawner</div>
 			<p>This function spawns agents in a square at the specified position.</p>
-			<div class="example example2">
-				function spawnSquad(troop, amount, position)\n
-					\tablocal sideLen = math.floor(math.sqrt(amount))\n
-					\tablocal leftovers = amount - sideLen * sideLen\n
-					\tabposition.o.x = position.o.x - math.floor(sideLen/2) * spawnSpreadDistance\n
-					\tabposition.o.y = position.o.y - math.floor(sideLen/2) * spawnSpreadDistance\n
-					\n
-					\tabfor i=1, sideLen do\n
-						\tab2for j=1, sideLen do\n
-							\tab3game.set_spawn_position(position)\n
-							\tab3game.spawn_agent(troop)\n
-							\tab3position.o.x = position.o.x + spawnSpreadDistance\n
-						\tab2end\n
-						\tab2position.o.x = position.o.x - spawnSpreadDistance * sideLen\n
-						\tab2position.o.y = position.o.y + spawnSpreadDistance\n
-					\tabend\n
-				end\n
-			</div>
+			<pre class="code code2">
+				function spawnSquad(troop, amount, position)
+						local sideLen = math.floor(math.sqrt(amount))
+						local leftovers = amount - sideLen * sideLen
+						position.o.x = position.o.x - math.floor(sideLen/2) * spawnSpreadDistance
+						position.o.y = position.o.y - math.floor(sideLen/2) * spawnSpreadDistance
+					
+						for i=1, sideLen do
+								for j=1, sideLen do
+										game.set_spawn_position(position)
+										game.spawn_agent(troop)
+										position.o.x = position.o.x + spawnSpreadDistance
+								end
+								position.o.x = position.o.x - spawnSpreadDistance * sideLen
+								position.o.y = position.o.y + spawnSpreadDistance
+						end
+				end
+			</pre>
 			<p>You could call it like:</p>
-			<div class="example example2">
-				local pos = game.pos.new({o = {x=100,y=100}})\n
-				spawnSquad(game.const.trp_bandit, 10, pos)\n
-			</div>
+			<pre class="code code2">
+				local pos = game.pos.new({o = {x=100,y=100}})
+				spawnSquad(game.const.trp_bandit, 10, pos)
+			</pre>
 		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Quickly reload main.lua when typing "reloadMain" in server console</div>
 			<p>All this does is call dofile. Be careful, it is not equivalent to a full restart.</p>
-			<div class="example example2">
-				("wse_console_command_received", [ <span class="comment">#this is a script that WSE adds</span>\n
-					\tab(store_script_param, ":command_type", 1),\n
-					\n
-					\tab(str_equals, s0, "@reloadMain"),\n
-					\tab(lua_push_str, "@main.lua"),\n
-					\tab(lua_call, "@dofile", 1), <span class="comment">#one param, the string we pushed</span>\n
-					\tab(set_trigger_result, 1),\n
-				]),\n
-			</div>
+			<pre class="code code2">
+				("wse_console_command_received", [ <span class="comment">#this is a script that WSE adds</span>
+						(store_script_param, ":command_type", 1),
+					
+						(str_equals, s0, "@reloadMain"),
+						(lua_push_str, "@main.lua"),
+						(lua_call, "@dofile", 1), <span class="comment">#one param, the string we pushed</span>
+						(set_trigger_result, 1),
+				]),
+			</pre>
 		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Simple event manager</div>
 			<p>Does only add to deathmatch, and no control over SP/MP triggers.</p>
-			<div class="example example2">
-				local events = {}\n
-				\n
-				local function starts_with(str, start)\n
-				\tabreturn str:sub(1, #start) == start\n
-				end\n
-				\n
-				local function make(_table, ...) <span class="comment">--util function for quickly creating table trees</span>\n
-				\tablocal curTable = _table\n
-				\n
-				\tabfor i = 1, select("#", ...) do\n
-				\tab\tablocal curKey = select(i, ...)\n
-				\tab\tabif not curTable[curKey] then curTable[curKey] = {} end\n
-				\tab\tabcurTable = curTable[curKey]\n
-				\tabend\n
-				\n
-				\tabreturn curTable\n
-				end\n
-				\n
-				local function initTrigger(event_id, trigger_const)\n
-				\tabif not events[event_id] then\n
-				\tab\tablocal cb = function()\n
-				\tab\tab\tabdispatch(event_id)\n
-				\tab\tab\tabreturn false\n
-				\tab\tabend\n
-				\n
-				\tab\tabgame.addTrigger("mst_multiplayer_dm", trigger_const, 0, 0, cb)\n
-				\tab\tabmake(events, event_id)\n
-				\tabend\n
-				end\n
-				\n
-				function subscribe(event_id, callback)\n
-				\tabif starts_with(event_id, "ti_") then\n
-				\tab\tabinitTrigger(event_id, game.const.triggers[event_id])\n
-				\tabelse \n
-				\tab\tabif starts_with(event_id, "timer_") then\n
-				\tab\tab\tabinitTrigger(event_id, tonumber(string.match(event_id, "%d+%.?%d*")) )\n
-				\tab\tabend\n
-				\tabend\n
-				\n
-				\tabtable.insert(events[event_id], callback)\n
-				\n
-				\tabreturn #events[event_id]\n
-				end\n
-				\n
-				function unsubscribe(event_id, index)\n
-				\tabtable.remove(events[event_id], index)\n
-				end\n
-				\n
-				function dispatch(event_id, ...)\n
-				\tabif events[event_id] then\n
-				\tab\tabfor i = 1, #events[event_id] do\n
-				\tab\tab\tabevents[event_id][i](...)\n
-				\tab\tabend\n
-				\tabend\n
+			<pre class="code code2">
+				local events = {}
+				
+				local function starts_with(str, start)
+					return str:sub(1, #start) == start
 				end
-			</div>
+				
+				local function make(_table, ...) <span class="comment">--util function for quickly creating table trees</span>
+					local curTable = _table
+				
+					for i = 1, select("#", ...) do
+						local curKey = select(i, ...)
+						if not curTable[curKey] then curTable[curKey] = {} end
+						curTable = curTable[curKey]
+					end
+				
+					return curTable
+				end
+				
+				local function initTrigger(event_id, trigger_const)
+					if not events[event_id] then
+						local cb = function()
+							dispatch(event_id)
+							return false
+						end
+				
+						game.addTrigger("mst_multiplayer_dm", trigger_const, 0, 0, cb)
+						make(events, event_id)
+					end
+				end
+				
+				function subscribe(event_id, callback)
+					if starts_with(event_id, "ti_") then
+						initTrigger(event_id, game.const.triggers[event_id])
+					else 
+						if starts_with(event_id, "timer_") then
+							initTrigger(event_id, tonumber(string.match(event_id, "%d+%.?%d*")) )
+						end
+					end
+				
+					table.insert(events[event_id], callback)
+				
+					return #events[event_id]
+				end
+				
+				function unsubscribe(event_id, index)
+					table.remove(events[event_id], index)
+				end
+				
+				function dispatch(event_id, ...)
+					if events[event_id] then
+						for i = 1, #events[event_id] do
+							events[event_id][i](...)
+						end
+					end
+				end
+			</pre>
 		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Timeouts</div>
 			<p>Execute modssys script or function with a delay. Uses previous event manager.</p>
-			<div class="example example2">
-				local timeouts = {}\n
-				\n
-				function timeoutsTick()\n
-				\tabif #timeouts ~= 0 then\n
-				\tab\tablocal t_now = game.store_mission_timer_a_msec(0)\n
-				\n
-				\tab\tabfor i = #timeouts, 1, -1 do\n
-				\tab\tab\tabif timeouts[i].t <= t_now then\n
-				\tab\tab\tab\tabtimeouts[i].cb(timeouts[i].cb, t_now)\n
-				\tab\tab\tab\tabtable.remove(timeouts, i)\n
-				\tab\tab\tabend\n
-				\tab\tabend\n
-				\tabend\n
-				end\n
-				\n
-				function timeoutAddScript(time, script_no, ...)\n
-				\tablocal args = {...}\n
-				\tablocal cb = function()\n
-				\tab\tabgame.call_script(script_no, unpack(args))\n
-				\tabend\n
-				\n
-				\tabtable.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = cb})\n
-				end\n
-				\n
-				function timeoutAdd(time, callback)\n
-				\tabtable.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = callback })\n
-				end\n
-				\n
-				subscribe("ti_before_mission_start", function() timeouts = {} end)\n
+			<pre class="code code2">
+				local timeouts = {}
+				
+				function timeoutsTick()
+					if #timeouts ~= 0 then
+						local t_now = game.store_mission_timer_a_msec(0)
+				
+						for i = #timeouts, 1, -1 do
+							if timeouts[i].t <= t_now then
+								timeouts[i].cb(timeouts[i].cb, t_now)
+								table.remove(timeouts, i)
+							end
+						end
+					end
+				end
+				
+				function timeoutAddScript(time, script_no, ...)
+					local args = {...}
+					local cb = function()
+						game.call_script(script_no, unpack(args))
+					end
+				
+					table.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = cb})
+				end
+				
+				function timeoutAdd(time, callback)
+					table.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = callback })
+				end
+				
+				subscribe("ti_before_mission_start", function() timeouts = {} end)
 				subscribe("timer_0", timeoutsTick)
-			</div>
+			</pre>
 			<br><br>
 			<p style="margin-bottom: 0;">Modsys example:</p>
-			<div class="example example2">
-				(lua_push_int, 2000),\n
-				(lua_push_int, "script_for_timeout"),\n
-				(lua_push_int, ":var1"),\n
-				(lua_push_int, ":var2"),\n
-				\n
-				(lua_call, "@timeoutAddScript", 4),\n
-				(lua_set_top, 0), <span class="comment">#Just make sure its cleaned up</span>\n
-			</div>
+			<pre class="code code2">
+				(lua_push_int, 2000),
+				(lua_push_int, "script_for_timeout"),
+				(lua_push_int, ":var1"),
+				(lua_push_int, ":var2"),
+				
+				(lua_call, "@timeoutAddScript", 4),
+				(lua_set_top, 0), <span class="comment">#Just make sure its cleaned up</span>
+			</pre>
 		</div>
 	</div>
 
@@ -1010,49 +1013,46 @@
 
 		updateBtnThemeSwitchText();
 
-		for(var i = 1; i <= 10; i++){
-			var className = "tab"
-			if(i > 1){
-				className += i;
-			}
-
-			var insert = "";
-			for(var j = 0; j < i; j++){
-				insert += "&emsp;&emsp;";
-			}
-
-			var tabbedElems = document.getElementsByClassName(className);
-			for(var j = 0; j < tabbedElems.length; j++){
-				tabbedElems[j].innerHTML = insert + tabbedElems[j].innerHTML;
-			}
+		function count_white(str)
+		{
+			var i = 0;
+			while(str[i] == " " || str[i] == "\t"){ i++; }
+			return i;
 		}
 
-		var bd = document.getElementById("bd");
-		bd.innerHTML = bd.innerHTML.replace(/\\+n/g, function(x){
-			if(x == "\\n"){
-				return "<br>";
-			}else{
-				return "\\n";
+		function empty_line(str)
+		{
+			for(var i = 0; i < str.length; i++){
+				var c = str[i];
+				if(c != " " && c != "\t" && c != "\r" && c != "\n"){ return false; }
 			}
-		}).replace(/\\+tab\d*/g, function(x){
-			var deTab = x.match(/^\\\\tab\d*$/);
-			if(deTab){
-				return x[0];
-			}
+			return true;
+		}
 
-			var num = x.match(/\d+/);
-			if(!num){
-				num = 1;
-			}else{
-				num = num[0];
-			}
+		//remove extra whitespace
+		for(block of document.getElementsByTagName("pre")) 
+		{
+			if(!block.classList.contains("code")){continue;}
 
-			var insert = "";
-			for(var i = 0; i < num; i++){
-				insert += "&emsp;&emsp;";
-			}
+			var lines = block.innerHTML.split("\n");
+			var min_indent = 9999;
+			lines.forEach((line) => 
+			{
+				if(!empty_line(line)){
+					var w = count_white(line);
+					if(w < min_indent){min_indent = w};
+				}
+			});
 
-			return insert;
-		})
+			for(var i = 0; i < lines.length; i++)
+			{
+				if(lines[i].length >= min_indent){
+					lines[i] = lines[i].slice(min_indent);
+				}
+			};
+			if(empty_line(lines[lines.length-1])){ lines.pop(); }
+
+			block.innerHTML = lines.join("\n");
+		};
 	</script>
 </body>

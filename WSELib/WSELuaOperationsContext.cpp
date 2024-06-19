@@ -263,6 +263,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lAddItemTrigger);
 	lua_setfield(L, -2, "addItemTrigger");
 
+	lua_pushcfunction(L, lAddPropTrigger);
+	lua_setfield(L, -2, "addScenePropTrigger");
+
 #if defined WARBAND
 	lua_pushcfunction(L, lAddPrsnt);
 	lua_setfield(L, -2, "addPrsnt");

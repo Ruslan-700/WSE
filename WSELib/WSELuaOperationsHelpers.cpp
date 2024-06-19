@@ -257,6 +257,15 @@ int getItemKindNo(const char *id)
 	return -1;
 }
 
+int getScenePropNo(const char *id)
+{
+	for (int i = 0; i < warband->num_scene_props; i++)
+		if (warband->scene_props[i].id == id)
+			return i;
+
+	return -1;
+}
+
 void printStack(lua_State *L)
 {
 	int size = lua_gettop(L);

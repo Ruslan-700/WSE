@@ -44,6 +44,7 @@ void setOperandToLocalVar(__int64 &operand, int localsIndex);
 int checkLArgs(lua_State *L, int minCount, int maxCount, ...);
 int getTemplateNo(const char *id);
 int getItemKindNo(const char *id);
+int getScenePropNo(const char *id);
 void printStack(lua_State *L);
 void checkStackIndex(WSELuaOperationsContext *context, int index);
 
