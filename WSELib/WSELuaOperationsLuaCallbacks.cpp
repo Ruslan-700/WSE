@@ -167,6 +167,37 @@ int lSetRegHandler(lua_State *L)
 	return 0;
 }
 
+int lGetGvarHandler(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lStr);
+
+	std::string gvar = lua_tostring(L, 1);
+
+	if (WSE->LuaOperations.gvarMap.find(gvar) == WSE->LuaOperations.gvarMap.end())
+		luaL_error(L, "invalid gvar '%s'", gvar);
+
+	int idx = WSE->LuaOperations.gvarMap[gvar];
+	lua_pushinteger(L, (lua_Integer)warband->basic_game.global_variables.get(idx));
+
+	return 1;
+}
+
+int lSetGvarHandler(lua_State *L)
+{
+	checkLArgs(L, 2, 2, lStr, lNum);
+
+	std::string gvar = lua_tostring(L, 1);
+	lua_Integer val = lua_tointeger(L, 2);
+
+	if (WSE->LuaOperations.gvarMap.find(gvar) == WSE->LuaOperations.gvarMap.end())
+		luaL_error(L, "invalid gvar '%s'", gvar);
+
+	int idx = WSE->LuaOperations.gvarMap[gvar];
+	warband->basic_game.global_variables.set(idx, val);
+
+	return 0;
+}
+
 int lGetScriptNo(lua_State *L)
 {
 	checkLArgs(L, 1, 1, lStr);
@@ -287,7 +318,7 @@ int lAddItemTrigger(lua_State *L)
 	newT.interval = (float)lua_tonumber(L, 2);
 	newT.interval_timer = rgl::timer();
 
-	newT.operations.id.format("Item Kind[%d] % s Trigger[%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
+	newT.operations.id.format("Item Kind[%d] % s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
 	newT.operations.num_operations = 1;
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 
@@ -329,7 +360,7 @@ int lAddPropTrigger(lua_State *L)
 	newT.interval = (float)lua_tonumber(L, 2);
 	newT.interval_timer = rgl::timer();
 
-	newT.operations.id.format("Scene Prop[%d] % s Trigger[%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
+	newT.operations.id.format("Scene Prop[%d] % s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
 	newT.operations.num_operations = 1;
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 

@@ -44,6 +44,11 @@
 			border-bottom: 1px dashed black;
 		}
 
+		.border-top
+		{
+			border-top: 1px dashed;
+		}
+
 		.button_hide
 		{
 			display: inline-block;
@@ -99,7 +104,7 @@
 		}
 
 		ul{
-			line-height: 1.5em;
+			line-height: 2em;
 		}
 
 		p{
@@ -108,6 +113,11 @@
 
 		h1, h2{
 			color: #003366;
+		}
+
+		#asterix{
+			cursor: pointer;
+			color: lightsalmon;
 		}
 	</style>
 
@@ -127,7 +137,7 @@
 
 		.content_block_caption{
 			color: #E1AB42;
-			border-bottom: 1px dashed #5a9bcf;
+			border-bottom: 1px dashed #A37C30;
 		}
 
 		.keyword{
@@ -163,11 +173,12 @@
 		}
 
 		.keyword{
-			background-color: #ffe6c3;
+			background-color: #C5FFE3;
 		}
 
 		.code{
 			background-color: #cde9ff;
+			color: black;
 		}
 
 		.comment{
@@ -191,6 +202,7 @@
 
 		.content_block_caption{
 			color: green;
+			border-bottom: 1px dashed green;
 		}
 
 		.keyword{
@@ -199,10 +211,16 @@
 
 		.code{
 			background-color: #002000;
+			color: #00FF00;
 		}
 
 		.comment{
 			color: rgb(0,120,0);
+		}
+
+		#asterix{
+			cursor: pointer;
+			color: #005500;
 		}
 	</style>
 
@@ -282,27 +300,72 @@
 </head>
 
 <body id="bd">
-	<div style="font-size: 11px">version from 03.06.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(2px)';">AgentSmith</span></div>
+	<div style="font-size: 11px">version from 19.06.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(1.5px)';">AgentSmith</span></div>
 	<div style="right: 5px; top: 5px; position: fixed;">
 		<button id="btnThemeSwitch" onclick="switchTheme()">Light</button>
 		<button onclick="minimizeAll()">Minimize all</button>
 	</div>
 
-	<h1 id="ee" style="text-align: center; transition: transform 4s;" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)';}}">How to use WSE/LUA</h1>
+	<h1 id="ee" style="text-align: center; transition: transform 4s;" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)'}};try{new Audio(sound_path + 'woman_hit_b_7.wav').play();}catch{}">How to use WSE/LUA</h1>
 
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
-	<p>WSE/LUA uses a modified version of LuaJIT 2.0.4, which is based on and ABI compatible to Lua 5.1</p>
-	<p>LUA will run on top of module system code. That means you can add features to modules even if you don't have the source code.</p>
-	<p>This guide is solely a documentation of the provided WSE/Game API, to learn Lua itself there exist many tutorials online.</p>
-	<p>There is some example code at the end of this file that can help you to get started.</p>
+	<p>
+		WSE/LUA uses a modified version of LuaJIT 2.0.4, which is based on and ABI compatible to Lua 5.1<br>
+		LUA will run on top of module system code. You could code almost an entire module without touching the modsys,<br> or add features to modules even if you don't have the source code.<br>
+		This guide is solely a documentation of the provided WSE/Game API, to learn Lua itself there exist many tutorials online.<br>
+		There is some example code at the end of this file that can help you to get started.</p>
+	<p>
+		<a href="https://www.lua.org/manual/5.1/" target="_blank" rel="noopener noreferrer">Lua Reference Manual</a><br>
+		<a href="https://studio.zerobrane.com/download?not-this-time" target="_blank" rel="noopener noreferrer">Lua IDE for testing code snippets</a>
+	</p>
 	<p>&nbsp;</p>
-	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASIC SETUP</span></h2>
+	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASICS</span></h2>
 	<hr/>
 	<div class="setup_content">
+		<h3 style="margin-left: 20px;">Why use Lua?</h3>
 		<ul>
-			<li>Create "[warband_dir]\Modules\[module_name]\lua\", [module_name] should be e.g. Native</li>
-			<li>Create main.lua inside it. This file, if it exists, gets loaded and executed by WSE at startup, before any of the module system code.</li>
+			<li>Way nicer syntax, datastructures (no more troop slots for arrays), real functions with return values, easy string handling, etc.</li>
+			<li>No compilation needed, no python needed</li>
+			<li>
+				Hot reloading
+				<span id="asterix" class="asterix" onmousemove="document.getElementById('asterix_box').hidden=false" style="position: relative;">
+					*
+					<div id="asterix_box" style="position: absolute; left: -10px; top: -10px; padding: 20px;" onmouseleave="document.getElementById('asterix_box').hidden=true" hidden>
+						<div class="code" style="margin-left: 0; width: 35em">
+							Lua is a dynamic scripting language, so you can execute code from disk at any time with dofile().<br>
+							A <span class="keyword">dofile("main.lua")</span> is enough to test your changes in many cases.<br>
+							It isn't equivalent to a full restart though, because the lua state will not get reset, only overwritten.
+							Any triggers you added or any other changed game state remain too. This must be managed manually.
+						</div>
+					</div>
+				</span> (don't need to restart to test changes)
+			</li>
+			<li>Better performance</li>
+			<li>Use any Lua code from the internet</li>
+			<li>No confusing fixed point multiplier, easy (vector) math
+				<br>
+				<div style="display: flex; align-items: center;">
+					<pre class="code code2">local area = math.pi * r^2</pre>
+					&nbsp;&nbsp;instead of&nbsp;&nbsp;
+					<pre class="code code2">
+						(store_mul, ":area", ":r", ":r"),
+						(val_mul, ":area", 314159),
+						(val_div, ":area", 100000), <span class="comment"># *(314159/100000)</span>
+					</pre>
+				</div>
+			</li>
+		</ul>
+
+		<h3 style="margin-left: 20px; margin-top: 30px">Setup</h3>
+		<ul>
+			<li>Create "[warband_dir]\Modules\[module_name]\lua\", e.g. "C:\Program Files (x86)\Steam\steamapps\common\MountBlade Warband\Modules\Native\lua\"</li>
+			<li>
+				Create main.lua inside it. This file, if it exists, gets loaded and executed by WSE at startup, before any of the module system code.<br>
+				Typically, here you load other files, run some init code, and/or register triggers.<br>
+				In normal modsys, for something to happen you would for example write a trigger in module_mission_templates.py.<br>
+				It's the same in lua, but you register the trigger at runtime in main.lua (or load a file that does it).
+			</li>
 			<p></p>
 			<li>Create "[warband_dir]\Modules\[module_name]\lua\msfiles\" (msfiles - "Module System files")</li>
 			<li>Copy header_operations.py to your msfiles folder. This is so that WSE can translate operation names to opcodes and is neccessary for calling module system operations from lua.</li>
@@ -329,12 +392,13 @@
 					boolDidNotFail, intResult, intError	= game.cf_lhs_operation(lhs_arg, arg1, arg2, ...) for operations which are both can_fail and lhs
 					intError														= game.operation(arg1, arg2, ...) for all other operations
 					
-					(lhs = left hand side? Operations that assign a value)
-					(cf = can fail)
+					(lhs = left hand side? Operations that assign a value, e.g. val_add)
+					(cf  = can fail, e.g. agent_is_active)
 				</pre>
-				<p>While most Lhs operations don't require an actual value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
-				<p>Real-world lhs_operation example:</p>
+				<p>While most Lhs operations don't require an actual initial value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
+				<p>lhs_operation example:</p>
 				<pre class="code">
+					local val = game.val_add(5, 10)
 					local gold = game.player_get_gold(0, playerId)
 				</pre>
 				<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
@@ -344,7 +408,7 @@
 
 
 		<div class="content_block">
-			<div class="content_block_caption">Registers</div>
+			<div class="content_block_caption">Registers, Global Variables</div>
 			<div>
 				<p>To access registers, use <span class="keyword">game.reg[n]</span> , <span class="keyword">game.sreg[n]</span> and <span class="keyword">game.preg[n]</span></p>
 				<p style="padding-left: 30px;">Example:</p>
@@ -366,8 +430,15 @@
 					p:rotX(30)
 					game.preg[0] = p
 				</pre>
+				<p class="border-top"><br>To access global variables, use <span class="keyword">game.gvar[gvar_name]</span></p>
+				<pre class="code">
+					game.gvar["g_encountered_party"] = 123
+					print(game.gvar["g_encountered_party"])
+				</pre>
+				<p>WSE will read variables.txt at startup to translate gvar_name. If this file is incorrect for any reason, accessing a gvar may produce an error or access a random gvar. You can't set new gvars.</p>
 			</div>
 		</div>
+
 
 		<div class="content_block">
 			<div class="content_block_caption">Constants</div>
@@ -635,6 +706,12 @@
 								local no = game.getScriptNo("game_start")
 								game.call_script(no)
 							</pre>
+							<p style="padding-left: 20px;">
+								WSE Update now provides a wrapper: <span class="keyword">game.scripts.[name]</span>
+								<pre class="code">
+									game.call_script(game.scripts.game_start)
+								</pre>
+							</p>
 						</div>
 					</li>
 					<li>
@@ -744,7 +821,7 @@
 						</ul>
 					</li>
 					<li style="padding-left: 20px; padding-top: 10px;">
-						<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt">Lua startup code (sourceforge)</a>
+						<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt" target="_blank" rel="noopener noreferrer">Lua startup code (sourceforge)</a>
 					</li>
 				</ul>
 			</div>
@@ -834,6 +911,7 @@
 				function spawnSquad(troop, amount, position)
 						local sideLen = math.floor(math.sqrt(amount))
 						local leftovers = amount - sideLen * sideLen
+						local spawnSpreadDistance = 1
 						position.o.x = position.o.x - math.floor(sideLen/2) * spawnSpreadDistance
 						position.o.y = position.o.y - math.floor(sideLen/2) * spawnSpreadDistance
 					
@@ -871,70 +949,89 @@
 		</div>
 
 		<div class="content_block">
-			<div class="content_block_caption">Simple event manager</div>
-			<p>Does only add to deathmatch, and no control over SP/MP triggers.</p>
+			<div class="content_block_caption">Event Manager</div>
+			<p>
+				The idea is to have a wrapper for game.addTrigger so we have more control (for example this is useful for hot reloading), and to have a single interface for all events - mission template, scene prop, and item triggers, as well as your own events.<br>
+				Does only add to deathmatch, and no management of SP/MP triggers.
+			</p>
 			<pre class="code code2">
-				local events = {}
-				
-				local function starts_with(str, start)
-					return str:sub(1, #start) == start
+				<span class="comment">--[[
+				  Usage:
+				  event_mgr.subscribe(event_id, callback)
+				    event_id:
+				      "ti_constant", e.g. "ti_before_mission_start"
+				      "timer_x.y", e.g. "timer_1.5" or "timer_0"
+				      "itm_a:ti_constant", e.g. "itm_french_cav_pistol:ti_on_weapon_attack"
+				      "spr_b:ti_constant", same thing
+				      "your_own_event_id", can be used with dispatch()
+
+				    returns an index which you can use with unsubscribe
+
+				  event_mgr.unsubscribe(event_id, index)
+				    will not shift other indices
+
+				  event_mgr.dispatch(event_id, ...)
+				]]</span>
+
+				event_mgr = {
+				  events = {}
+				}
+
+				function event_mgr.subscribe(event_id, callback)
+				  if not event_mgr.events[event_id] then
+				    event_mgr.events[event_id] = {}
+				    
+				    local cb = function()
+				      event_mgr.dispatch(event_id)
+				      return false
+				    end
+						local starts_with = function(str, start) return str:sub(1, #start) == start end
+
+				    if starts_with(event_id, "ti_") then
+				      local const = game.const.triggers[event_id]
+				      game.addTrigger("mst_multiplayer_dm", const, 0, 0, cb)
+				    
+				    elseif starts_with(event_id, "timer_") then
+				      local const = tonumber(string.match(event_id, "%d+%.?%d*"))
+				      game.addTrigger("mst_multiplayer_dm", const, 0, 0, cb)
+
+				    elseif starts_with(event_id, "itm_") then
+				      local itm, const = string.match(event_id, "([%w_]+):([%w_]+)")
+				      itm = game.const[itm]
+				      const = game.const[const]
+				      game.addItemTrigger(itm, const, cb)
+
+				    elseif starts_with(event_id, "spr_") then
+				      local spr, const = string.match(event_id, "([%w_]+):([%w_]+)")
+				      spr = game.const[spr]
+				      const = game.const[const]
+				      game.addScenePropTrigger(spr, const, cb)
+				    end
+				  end
+
+				  local i = 1
+				  while event_mgr.events[event_id][i] ~= nil do i = i + 1 end
+				  event_mgr.events[event_id][i] = callback
+				  return i
 				end
-				
-				local function make(_table, ...) <span class="comment">--util function for quickly creating table trees</span>
-					local curTable = _table
-				
-					for i = 1, select("#", ...) do
-						local curKey = select(i, ...)
-						if not curTable[curKey] then curTable[curKey] = {} end
-						curTable = curTable[curKey]
-					end
-				
-					return curTable
+
+				function event_mgr.unsubscribe(event_id, index)
+				  event_mgr.events[event_id][index] = nil
 				end
-				
-				local function initTrigger(event_id, trigger_const)
-					if not events[event_id] then
-						local cb = function()
-							dispatch(event_id)
-							return false
-						end
-				
-						game.addTrigger("mst_multiplayer_dm", trigger_const, 0, 0, cb)
-						make(events, event_id)
-					end
-				end
-				
-				function subscribe(event_id, callback)
-					if starts_with(event_id, "ti_") then
-						initTrigger(event_id, game.const.triggers[event_id])
-					else 
-						if starts_with(event_id, "timer_") then
-							initTrigger(event_id, tonumber(string.match(event_id, "%d+%.?%d*")) )
-						end
-					end
-				
-					table.insert(events[event_id], callback)
-				
-					return #events[event_id]
-				end
-				
-				function unsubscribe(event_id, index)
-					table.remove(events[event_id], index)
-				end
-				
-				function dispatch(event_id, ...)
-					if events[event_id] then
-						for i = 1, #events[event_id] do
-							events[event_id][i](...)
-						end
-					end
+
+				function event_mgr.dispatch(event_id, ...)
+				  if event_mgr.events[event_id] then
+				    for _, v in pairs(event_mgr.events[event_id]) do
+				      v(...)
+				    end
+				  end
 				end
 			</pre>
 		</div>
 
 		<div class="content_block">
 			<div class="content_block_caption">Timeouts</div>
-			<p>Execute modssys script or function with a delay. Uses previous event manager.</p>
+			<p>Execute modssys script or lua function with a delay. Uses previous event manager.</p>
 			<pre class="code code2">
 				local timeouts = {}
 				
@@ -964,8 +1061,8 @@
 					table.insert(timeouts, { t = game.store_mission_timer_a_msec(0) + time, cb = callback })
 				end
 				
-				subscribe("ti_before_mission_start", function() timeouts = {} end)
-				subscribe("timer_0", timeoutsTick)
+				event_mgr.subscribe("ti_before_mission_start", function() timeouts = {} end)
+				event_mgr.subscribe("timer_0", timeoutsTick)
 			</pre>
 			<br><br>
 			<p style="margin-bottom: 0;">Modsys example:</p>
@@ -979,9 +1076,147 @@
 				(lua_set_top, 0), <span class="comment">#Just make sure its cleaned up</span>
 			</pre>
 		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">Map Scripts</div>
+			<p>
+				Before map start, searches for ./lua/map_scripts/&lt;mapname&gt;.lua and executes it in its own environment (using setfenv).<br>
+				Uses previous event manager. The script can read from root _G via the metatable, event_mgr is wrapped though in order to auto-unsub at map change.
+			</p>
+			<pre class="code code2">
+				local subbed_events = {}
+
+				<span class="comment">--wrap event_mgr so we can log all subscriptions and auto-unsub at map change</span>
+				local fenv_mt = {
+				  __index = setmetatable({
+				    event_mgr = {
+				      subscribe = function(event_id, callback)
+				        local idx = _G.event_mgr.subscribe(event_id, callback)
+				        table.insert(subbed_events, {event_id = event_id, idx = idx})
+				        return idx
+				      end,
+
+				      unsubscribe = function(event_id, index)
+				        for i,v in ipairs(subbed_events) do
+				          if v.idx == index then
+				            table.remove(subbed_events, i)
+				            return _G.event_mgr.unsubscribe(event_id, index)
+				          end
+				        end
+				      end,
+
+				      dispatch = _G.event_mgr.dispatch
+				    }   
+				  }, {__index = _G})
+				}
+
+				local scene_names = {}
+				for k,v in pairs(game.const.scenes) do scene_names[v] = k end
+
+				local function load_map_script(map_name)
+				  local fname = "map_scripts\\" .. map_name .. ".lua"
+				  local f = io.open(fname, r)
+				  if not f then return end
+				  f:close()
+
+				  local func, error = loadfile(fname)
+				  if not func then print("Error loading " .. fname .. ": " .. error); return end
+
+				  local fenv = {}
+				  setmetatable(fenv, fenv_mt)
+
+				  setfenv(func, fenv)
+				  func()
+				end
+
+				event_mgr.subscribe("ti_before_mission_start", function()
+				  <span class="comment">--clean events from last map</span>
+				  for _,v in pairs(subbed_events) do
+				    event_mgr.unsubscribe(v.event_id, v.idx)
+				  end
+				  subbed_events = {}
+
+				  local scene = game.store_current_scene(0)
+				  load_map_script(scene_names[scene])
+				end)
+			</pre>
+			<p><br>Example: <span class="keyword">lua/map_scripts/scn_mp_custom_map_3.lua</span></p>
+			<pre class="code code2">
+				print("custom_map_3 script loaded")
+
+				event_mgr.subscribe("spr_apple_a:ti_on_init_scene_prop", 
+				  function() 
+				    print("apple")
+				    do_something()
+				  end)
+
+				event_mgr.subscribe("itm_birch_trunk:ti_on_weapon_attack", 
+				  function() 
+				    print("attack")
+				    explode_player()
+				  end)
+			</pre>
+		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">Presentation with a clock and a white center dot (for aiming)</div>
+			<p>I ripped this out of a larger file without testing, be careful.</p>
+			<pre class="code code2">
+				local clockOverlay
+				local nextRefreshTime
+
+				prsnt = addPrsnt({
+					id = "clock",
+					flags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},
+					triggers = {
+							[game.const.ti_on_presentation_load] = function()
+									game.presentation_set_duration(99999999)
+
+									clockOverlay = game.create_text_overlay(0, "00:00:00", game.const.tf_left_align)
+
+									local screenPos = game.pos.new()
+									screenPos.o.x = 0
+									screenPos.o.y = 0
+
+									local sizePos = game.pos.new(game.preg[0])
+									sizePos.o.x = 1
+									sizePos.o.y = 1
+
+									game.overlay_set_position(clockOverlay, screenPos)
+									game.overlay_set_size(clockOverlay, sizePos)
+									game.overlay_set_color(clockOverlay, 0xFFFFFA)
+
+									nextRefreshTime = 0
+
+									midDotOverlay = game.create_mesh_overlay(0, game.const.meshes.mesh_white_dot)
+									screenPos.o.x = 0.5 - 0.0002
+									screenPos.o.y = 0.75/2 - 0.0001
+									sizePos.o.x = 0.1
+									sizePos.o.y = 0.1
+									game.overlay_set_position(midDotOverlay, screenPos)
+									game.overlay_set_size(midDotOverlay, sizePos)
+							end,
+							
+							[game.const.ti_on_presentation_run] = function()
+									local curTime = game.store_trigger_param_1(0)
+									if curTime >= nextRefreshTime then
+										nextRefreshTime = nextRefreshTime + 1000
+										game.overlay_set_text(clockOverlay, os.date("%X"))
+									end
+							end
+					}
+				})
+
+				eventMgr.subscribe("ti_after_mission_start", function()
+					game.start_presentation(prsnt)
+				end)
+			</pre>
+		</div>
 	</div>
 
-	<script>	
+	<script>
+		var sound_path = "C:/Program Files (x86)/Steam/steamapps/common/MountBlade Warband/Modules/Napoleonic Wars/Sounds/";
+
 		var contentCaptions = document.getElementsByClassName("content_block_caption");
 		for(var i = 0; i < contentCaptions.length; i++){
 			var nodeCount = 0;

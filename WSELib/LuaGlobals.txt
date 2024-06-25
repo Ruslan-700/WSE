@@ -51,7 +51,7 @@ game.mt = {
 setmetatable(game, game.mt)
 
 
-------------registers------------
+------------registers, gvar------------
 game.regMt = {
 	__index = function(table, key)
 		return game.getReg(table.typeId, key)
@@ -61,10 +61,20 @@ game.regMt = {
 		game.setReg(table.typeId, key, value)
 	end
 }
+game.gvarMt = {
+	__index = function(table, key)
+		return game.getGvar(key)
+	end,
+
+	__newindex = function(table, key, value)
+		game.setGvar(key, value)
+	end
+}
 
 game.reg = setmetatable({typeId = 0}, game.regMt)
 game.sreg = setmetatable({typeId = 1}, game.regMt)
 game.preg = setmetatable({typeId = 2}, game.regMt)
+game.gvar = setmetatable({}, game.gvarMt)
 
 ------------game constants------------
 game.const.mt = {
@@ -77,6 +87,16 @@ game.const.mt = {
 	end
 }
 setmetatable(game.const, game.const.mt)
+
+------------game scripts------------
+game.scripts = {}
+game.scripts.mt = {
+  __index = function(self, k)
+    self[k] = game.getScriptNo(k)
+    return self[k]
+  end
+}
+setmetatable(game.scripts, game.scripts.mt)
 
 ------------vector3------------
 vector3 = {}

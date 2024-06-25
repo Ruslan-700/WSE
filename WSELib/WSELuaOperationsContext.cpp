@@ -248,6 +248,12 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lSetRegHandler);
 	lua_setfield(L, -2, "setReg");
 
+	lua_pushcfunction(L, lGetGvarHandler);
+	lua_setfield(L, -2, "getGvar");
+
+	lua_pushcfunction(L, lSetGvarHandler);
+	lua_setfield(L, -2, "setGvar");
+
 	lua_pushcfunction(L, lGetScriptNo);
 	lua_setfield(L, -2, "getScriptNo");
 
@@ -839,6 +845,24 @@ void WSELuaOperationsContext::loadGameConstants(const std::string &dir)
 	FindClose(hFind);
 }
 
+void WSELuaOperationsContext::loadGlobalVars()
+{
+	std::string path = warband->cur_module_path;
+	path += "\\variables.txt";
+	if (!fileExists(path)) return;
+
+	std::ifstream fStream(path);
+	std::string curLine = "";
+	int i = -1;
+
+	while (std::getline(fStream, curLine))
+	{
+		i++;
+		if (!curLine.length()) continue;
+		gvarMap[curLine] = i;
+	}
+}
+
 inline void WSELuaOperationsContext::initLua()
 {
 	luaState = luaL_newstate();
@@ -850,6 +874,7 @@ inline void WSELuaOperationsContext::initLua()
 
 	loadOperations();
 	loadGameConstants(getLuaScriptDir() + "msfiles\\");
+	loadGlobalVars();
 
 	initLGameTable(luaState);
 	doMainScript();

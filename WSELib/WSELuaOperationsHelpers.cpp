@@ -514,8 +514,7 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		delBlank(curLine);
 		discardComment(curLine);
 
-		if (!curLine.length())
-			continue;
+		if (!curLine.length()) continue;
 
 		gameConst con;
 

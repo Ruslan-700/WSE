@@ -32,6 +32,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int callTriggerOpcode;
 		std::unordered_map<std::string, gameOperation> operationMap;
 		std::vector<gameConstTable> gameConstTables;
+		std::unordered_map<std::string, int> gvarMap;
 		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];
 		std::chrono::steady_clock::time_point tStart;
 		std::vector<bool> lua_call_cfResults;
@@ -56,6 +57,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 
 		void applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile);
 		void loadGameConstants(const std::string &dir);
+		void loadGlobalVars();
 		inline void loadOperations();
 		inline void doMainScript();
 };

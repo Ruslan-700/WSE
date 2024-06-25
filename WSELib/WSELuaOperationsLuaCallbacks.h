@@ -14,6 +14,9 @@ int lGameExecOperationHandler(lua_State *L);
 int lGetRegHandler(lua_State *L);
 int lSetRegHandler(lua_State *L);
 
+int lGetGvarHandler(lua_State *L);
+int lSetGvarHandler(lua_State *L);
+
 int lGetScriptNo(lua_State *L);
 int lGetCurTemplateId(lua_State *L);
 
