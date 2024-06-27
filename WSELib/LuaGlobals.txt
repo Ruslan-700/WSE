@@ -40,6 +40,26 @@ print = function(...)
 	_print(s)
 end
 
+printTable = function(t, prefix)
+    if not prefix then
+        prefix = ""
+    end
+
+    for k,v in pairs(t) do
+        local typ = "[" .. type(v) .. "] "
+        local name = "'" .. k .. "' ="
+        local val = " " .. tostring(v)
+
+        if type(v) == "table" then
+            print(prefix .. typ .. name)
+            printTable(v, prefix .. "___")
+
+        else
+            print(prefix .. typ .. name .. val)
+        end
+    end
+end
+
 ------------access to module operations------------
 game.mt = {
 	__index = function(table, key)
@@ -88,15 +108,20 @@ game.const.mt = {
 }
 setmetatable(game.const, game.const.mt)
 
-------------game scripts------------
-game.scripts = {}
-game.scripts.mt = {
+------------game.script------------
+game.script = {}
+game.script.mt = {
   __index = function(self, k)
-    self[k] = game.getScriptNo(k)
-    return self[k]
+	local no = game.getScriptNo(k)
+	if no then
+		self[k] = no
+		return self[k]
+	else
+		return nil
+	end
   end
 }
-setmetatable(game.scripts, game.scripts.mt)
+setmetatable(game.script, game.script.mt)
 
 ------------vector3------------
 vector3 = {}
