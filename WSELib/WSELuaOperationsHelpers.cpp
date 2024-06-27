@@ -493,11 +493,22 @@ float hexStrToFloat(std::string s)
 
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name)
 {
-	gameConstTable constTable;
-	std::vector<gameConst> &constants = constTable.constants;
-
 	if (!fileExists(filePath))
 		return;
+
+	gameConstTable* constTable = NULL;
+	for (int i = 0; i < gameConstTables.size(); i++){
+		if (gameConstTables[i].name == name){
+			constTable = &gameConstTables[i];
+			break;
+		}
+	}
+	if (constTable == NULL){
+		gameConstTables.emplace_back();
+		constTable = &gameConstTables.back();
+		(*constTable).name = name;
+	}
+	std::vector<gameConst> &constants = (*constTable).constants;
 
 	std::ifstream fStream(filePath);
 	std::string curLine;
@@ -565,27 +576,6 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		}
 
 		constants.push_back(con);
-	}
-
-	if (constants.size())
-	{
-		constTable.name = name;
-
-		size_t i = 0;
-		size_t suffix = 1;
-		while (i < gameConstTables.size())
-		{
-			if (constTable.name == gameConstTables[i].name)
-			{
-				i = 0;
-				constTable.name = name + "_" + std::to_string(suffix);
-				suffix++;
-			}
-			else
-				i++;
-		}
-
-		gameConstTables.push_back(constTable);
 	}
 }
 

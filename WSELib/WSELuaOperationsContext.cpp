@@ -292,6 +292,20 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lPlayersIterInit);
 	lua_setfield(L, -2, "playersI");
 
+	//###Register iterators again with 'It'. Keep 'I' for legacy###
+	lua_pushcfunction(L, lPartiesIterInit);
+	lua_setfield(L, -2, "partiesIt");
+
+	lua_pushcfunction(L, lAgentsIterInit);
+	lua_setfield(L, -2, "agentsIt");
+
+	lua_pushcfunction(L, lPropInstIterInit);
+	lua_setfield(L, -2, "propInstIt");
+
+	lua_pushcfunction(L, lPlayersIterInit);
+	lua_setfield(L, -2, "playersIt");
+	//###
+
 	lua_pushcfunction(L, lHookOperation);
 	lua_setfield(L, -2, "hookOperation");
 
