@@ -972,7 +972,7 @@
 		</div>
 
 		<div class="content_block">
-			<div class="content_block_caption">Event Manager</div>
+			<div class="content_block_caption">event_mgr.lua</div>
 			<p>
 				The idea is to have a wrapper for game.addTrigger so we have more control (for example this is useful for hot reloading), and to have a single interface for all events - mission template, scene prop, and item triggers, as well as your own events.<br>
 				Does only add to deathmatch, and no management of SP/MP triggers.<br>
@@ -1190,7 +1190,7 @@
 				local clockOverlay
 				local nextRefreshTime
 
-				prsnt = addPrsnt({
+				local prsnt = addPrsnt({
 					id = "clock",
 					flags = {game.const.prsntf_read_only, game.const.prsntf_manual_end_only},
 					triggers = {
@@ -1232,9 +1232,27 @@
 					}
 				})
 
-				eventMgr.subscribe("ti_after_mission_start", function()
+				event_mgr.subscribe("ti_after_mission_start", function()
 					game.start_presentation(prsnt)
 				end)
+			</pre>
+		</div>
+
+		<div class="content_block">
+			<div class="content_block_caption">At map start, spawn banhammer at each apple_a with varno1 = 1</div>
+			<p>Uses event_mgr, needs header_triggers.py, ID_items.py in msfiles.</p>
+			<pre class="code code2">
+				event_mgr.subscribe("spr_apple_a:ti_on_init_scene_prop", 
+				  function() 
+				    local inst = game.store_trigger_param_1(0)
+				    if game.prop_instance_get_variation_id(0, inst) == 1 then
+				    	print("found apple " .. inst)
+
+				    	game.prop_instance_get_position(1, inst) <span class="comment">--pos1 translates to 1</span>
+				    	game.set_spawn_position(1)
+				    	game.spawn_item(game.const.itm_banhammer, 0, 0)
+				    end
+				  end)
 			</pre>
 		</div>
 	</div>
