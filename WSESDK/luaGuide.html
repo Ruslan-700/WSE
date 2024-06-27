@@ -42,6 +42,12 @@
 			font-size: 20px;
 			padding-bottom: 3px;
 			border-bottom: 1px dashed black;
+			cursor: pointer;
+			user-select: none;
+		}
+		.content_block_caption:hover
+		{
+			background-color: rgb(55 55 55 / 48%);
 		}
 
 		.border-top
@@ -59,7 +65,6 @@
 			width: 20px;
 			height: 20px;
 			text-align: center;
-			cursor: pointer;
 
 			-webkit-user-select: none;
 			-khtml-user-select: none;
@@ -113,6 +118,11 @@
 
 		h1, h2{
 			color: #003366;
+			cursor: pointer;
+			user-select: none;
+		}
+		h2:hover{
+			background-color: rgb(70 70 70 / 48%);
 		}
 
 		#asterix{
@@ -171,6 +181,10 @@
 		.content_block_caption{
 			color: cornflowerblue;
 		}
+		.content_block_caption:hover
+		{
+			background-color: rgb(55 55 55 / 10%);
+		}
 
 		.keyword{
 			background-color: #C5FFE3;
@@ -183,6 +197,10 @@
 
 		.comment{
 			color: rgb(0,170,0);
+		}
+
+		h2:hover{
+			background-color: rgb(55 55 55 / 10%);
 		}
 	</style>
 
@@ -262,7 +280,7 @@
 			forceHide = true;
 			var btns = document.getElementsByClassName("button_hide");
 			for(var i = 0; i < btns.length; i++){
-				btns[i].onclick();
+				btns[i].parentNode.onclick();
 			}
 			forceHide = false;
 		}
@@ -300,13 +318,13 @@
 </head>
 
 <body id="bd">
-	<div style="font-size: 11px">version from 19.06.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(1.5px)';">AgentSmith</span></div>
+	<div style="font-size: 11px">version from 25.06.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(1.5px)';">AgentSmith</span></div>
 	<div style="right: 5px; top: 5px; position: fixed;">
 		<button id="btnThemeSwitch" onclick="switchTheme()">Light</button>
 		<button onclick="minimizeAll()">Minimize all</button>
 	</div>
 
-	<h1 id="ee" style="text-align: center; transition: transform 4s;" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)'}};try{new Audio(sound_path + 'woman_hit_b_7.wav').play();}catch{}">How to use WSE/LUA</h1>
+	<h1 id="ee" style="text-align: center; transition: transform 4s; cursor: pointer;" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)'}};try{new Audio(sound_path + 'woman_hit_b_7.wav').play();}catch{}">How to use WSE/LUA</h1>
 
 	<p>&nbsp;</p>
 	<p>&nbsp;</p>
@@ -320,7 +338,7 @@
 		<a href="https://studio.zerobrane.com/download?not-this-time" target="_blank" rel="noopener noreferrer">Lua IDE for testing code snippets</a>
 	</p>
 	<p>&nbsp;</p>
-	<h2><div id="setup_button" class="button_hide" onclick="toggleHide('setup')">&nbsp;</div><span>BASICS</span></h2>
+	<h2 onclick="toggleHide('setup')"><div id="setup_button" class="button_hide">&nbsp;</div><span>BASICS</span></h2>
 	<hr/>
 	<div class="setup_content">
 		<h3 style="margin-left: 20px;">Why use Lua?</h3>
@@ -370,11 +388,11 @@
 			<li>Create "[warband_dir]\Modules\[module_name]\lua\msfiles\" (msfiles - "Module System files")</li>
 			<li>Copy header_operations.py to your msfiles folder. This is so that WSE can translate operation names to opcodes and is neccessary for calling module system operations from lua.</li>
 		</ul>
-		<h2>&nbsp;</h2>
+		<p>&nbsp;</p>
 	</div>
 
 
-	<h2><div id="game_table_button" class="button_hide" onclick="toggleHide('game_table')">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
+	<h2 onclick="toggleHide('game_table')"><div id="game_table_button" class="button_hide">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
 	<hr/>
 	<div class="game_table_content">
 		<p style="margin-left: 20px;"><em>The game table is a predefined global table that allows you access to the game from lua.</em></p>
@@ -435,7 +453,7 @@
 					game.gvar["g_encountered_party"] = 123
 					print(game.gvar["g_encountered_party"])
 				</pre>
-				<p>WSE will read variables.txt at startup to translate gvar_name. If this file is incorrect for any reason, accessing a gvar may produce an error or access a random gvar. You can't set new gvars.</p>
+				<p>WSE will read variables.txt at startup to translate gvar_name. If this file is incorrect for any reason, accessing a gvar may produce an error or access a random gvar. You can't create new gvars.</p>
 			</div>
 		</div>
 
@@ -443,8 +461,10 @@
 		<div class="content_block">
 			<div class="content_block_caption">Constants</div>
 			<div>
-				<p>For every header_[name].py or ID_[name].py file you copied to your "msfiles" folder (except header_operations.py), a new table will be generated: <span class="keyword">game.const.[name]</span></p>
-				<p>This table will be filled with all the constants from that file.</p>
+				<p>
+					For every <span class="keyword">header_[name].py</span> or <span class="keyword">ID_[name].py</span> file you copied to your "msfiles" folder (except header_operations.py), a new table will be generated: <span class="keyword">game.const.[name]</span><br>
+					This table will be filled with all the constants from that file.<br>
+					If there are two files with the same <span class="keyword">[name]</span>, e.g. header_scenes and ID_scenes, the tables will get merged.</p>
 				<p>As of the current version, only lines that match one of the two following regexes (regular expressions) will be accepted:</p>
 				<pre class="code">
 					^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$
@@ -452,8 +472,8 @@
 				</pre>
 				<p>This probably looks intimidating to you, but really all it says is that your constant must either be a number, a hex number, or another constant (from the same file, currently).</p>
 				<p>In other words: <span class="keyword">constant = num|hexNum|otherConstant</span>
-				<p>If the match fails, the line will be ignored and a warning message will be triggered which you can safely ignore.</p>
-				<p>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
+				<p>If the match fails, the line will be ignored and a warning message will be triggered which you can safely ignore. You can also supress warnings by setting <span class="keyword">[lua] disable_game_const_warnings = 1</span> in wse_settings.ini.</p>
+				<p><br>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
 				<p>So let's say you want to add a deathmatch trigger for <span class="keyword">ti_on_agent_hit</span>. Instead of this:</p>
 				<pre class="code">
 					game.addTrigger("mst_multiplayer_dm", -28, 0, 0, condCB)
@@ -506,11 +526,11 @@
 		<div class="content_block">
 			<div class="content_block_caption">Iterators</div>
 			<div>
-				<p>To use iterators (try_for_agents, try_for_players, ...), use the provided iterator functions <span class="keyword">game.partiesI, game.agentsI, game.propInstI, game.playersI</span></p>
+				<p>To use iterators (try_for_agents, try_for_players, ...), use the provided iterator functions <span class="keyword">game.partiesIt, game.agentsIt, game.propInstIt, game.playersIt</span></p>
 				<p>These work exactly like module system iterators and take the same arguments.</p>
 				<p style="padding-left: 30px;">Example:</p>
 				<pre class="code">
-					for curPlayer in game.playersI(true) do <span class="comment">--skip server</span>
+					for curPlayer in game.playersIt(true) do <span class="comment">--skip server</span>
 						foo(curPlayer)
 					end
 				</pre>
@@ -707,9 +727,9 @@
 								game.call_script(no)
 							</pre>
 							<p style="padding-left: 20px;">
-								WSE Update now provides a wrapper: <span class="keyword">game.scripts.[name]</span>
+								WSE Update now provides a wrapper: <span class="keyword">game.script.[name]</span>
 								<pre class="code">
-									game.call_script(game.scripts.game_start)
+									game.call_script(game.script.game_start)
 								</pre>
 							</p>
 						</div>
@@ -768,7 +788,7 @@
 	</div>
 
 
-	<h2><div id="miscellaneous_button" class="button_hide" onclick="toggleHide('miscellaneous')">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
+	<h2 onclick="toggleHide('miscellaneous')"><div id="miscellaneous_button" class="button_hide">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
 	<hr />
 	<div class="miscellaneous_content">
 		<div class="content_block">
@@ -820,6 +840,7 @@
 							</li>
 						</ul>
 					</li>
+					<li style="padding-left: 20px;"><span class="keyword">printTable(t, [prefix])</span> - print an entire table, recursively. Useful for debugging.</li>
 					<li style="padding-left: 20px; padding-top: 10px;">
 						<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt" target="_blank" rel="noopener noreferrer">Lua startup code (sourceforge)</a>
 					</li>
@@ -860,11 +881,13 @@
 		</div>
 	</div>
 
-	<h2><div id="examples_button" class="button_hide" onclick="toggleHide('examples')">&nbsp;</div><span>EXAMPLES</span></h2>
+	<h2 onclick="toggleHide('examples')"><div id="examples_button" class="button_hide">&nbsp;</div><span>EXAMPLES</span></h2>
 	<hr/>
 	<div class="examples_content">
+		<p style="margin-left: 20px;"><em>Some of these are ripped out of larger files without testing, so be careful.</em></p>
 		<div class="content_block">
 			<div class="content_block_caption">Simple custom log</div>
+			<p>Needs header_triggers.py in msfiles.</p>
 			<pre class="code code2">
 				myLog = io.open("custom_log.txt", "a")
 				myLog:write("Server started at " .. os.date("%Y.%m.%d, %X") .. "\\n")
@@ -952,7 +975,8 @@
 			<div class="content_block_caption">Event Manager</div>
 			<p>
 				The idea is to have a wrapper for game.addTrigger so we have more control (for example this is useful for hot reloading), and to have a single interface for all events - mission template, scene prop, and item triggers, as well as your own events.<br>
-				Does only add to deathmatch, and no management of SP/MP triggers.
+				Does only add to deathmatch, and no management of SP/MP triggers.<br>
+				Needs header_triggers.py, ID_scenes.py, ID_items.py in msfiles.
 			</p>
 			<pre class="code code2">
 				<span class="comment">--[[
@@ -1081,7 +1105,8 @@
 			<div class="content_block_caption">Map Scripts</div>
 			<p>
 				Before map start, searches for ./lua/map_scripts/&lt;mapname&gt;.lua and executes it in its own environment (using setfenv).<br>
-				Uses previous event manager. The script can read from root _G via the metatable, event_mgr is wrapped though in order to auto-unsub at map change.
+				Uses previous event manager. The script can read from root _G via the metatable, event_mgr is wrapped though in order to auto-unsub any events at map change.<br>
+				Needs ID_scenes.py in msfiles.
 			</p>
 			<pre class="code code2">
 				local subbed_events = {}
@@ -1160,7 +1185,7 @@
 
 		<div class="content_block">
 			<div class="content_block_caption">Presentation with a clock and a white center dot (for aiming)</div>
-			<p>I ripped this out of a larger file without testing, be careful.</p>
+			<p>Needs header_triggers.py, header_presentations.py, ID_meshes.py in msfiles.</p>
 			<pre class="code code2">
 				local clockOverlay
 				local nextRefreshTime
@@ -1218,7 +1243,7 @@
 		var sound_path = "C:/Program Files (x86)/Steam/steamapps/common/MountBlade Warband/Modules/Napoleonic Wars/Sounds/";
 
 		var contentCaptions = document.getElementsByClassName("content_block_caption");
-		for(var i = 0; i < contentCaptions.length; i++){
+		for(let i = 0; i < contentCaptions.length; i++){
 			var nodeCount = 0;
 			for(var j = 0; j < contentCaptions[i].parentNode.childNodes.length; j++){
 
@@ -1234,11 +1259,11 @@
 				}
 			}
 
+			contentCaptions[i].onclick = ()=>{toggleHide("content_block_" + i)}
+
 			var caption = contentCaptions[i].innerHTML;
 			contentCaptions[i].innerHTML = "<div id='content_block_" + i + "_button'" 
-				+ " class='button_hide button_hide_small' onclick='toggleHide(" + '"content_block_' + i + '")'
-				+ "'>&nbsp;</div>" 
-				+ caption;
+				+ " class='button_hide button_hide_small'>&nbsp;</div>" + caption;
 		}
 
 		var hideBtns = document.getElementsByClassName("button_hide");
