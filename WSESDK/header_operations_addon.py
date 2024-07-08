@@ -38,6 +38,8 @@ player_set_banner_id          = 2902 #(player_set_banner_id, <player_no>, <banne
 player_set_username           = 2903 #(player_set_username, <player_no>, <string_no>), #Sets <player_no>'s username to <string_no>
 player_temp_ban               = 2904 #(player_temp_ban, <player_no>, <ban_time>), #Bans <player_no> temporarily for <ban_time> seconds
 player_get_wse2_version       = 2905 #(player_get_wse2_version, <destination>, <player_no>), #Stores <player_no>'s WSE2 version into <destination>. Works only on servers. 0 - vanilla Warband engine (requires WSE2)
+player_get_party_id           = 2906 #(player_get_party_id, <destination>, <player_no>), #Stores <player_no>'s party reference into <destination>. For multiplayer campaign mode (requires WSE2)
+player_set_party_id           = 2907 #(player_set_party_id, <player_no>, <party_no>), #Sets <player_no>'s party to <party_no>. For multiplayer campaign mode (requires WSE2)
 
 register_get                      = 3000 #(register_get, <destination>, <index>), #Stores the value of register <index> into <destination>
 register_set                      = 3001 #(register_set, <index>, <value>), #Sets the value of register <index> to <value>
@@ -254,6 +256,8 @@ party_stack_upgrade             = 3905 #(party_stack_upgrade, <party_no>, <party
 party_stack_set_num_upgradeable = 3906 #(party_stack_set_num_upgradeable, <party_no>, <party_stack_no>, <value>), #Sets <party_no>'s <party_stack_no>'s amount of upgradeable troops to <value>
 party_get_banner_icon           = 3907 #(party_get_banner_icon, <destination>, <party_no>), #Stores <party_no>'s banner icon into <destination>
 party_get_extra_icon            = 3908 #(party_get_extra_icon, <destination>, <party_no>), #Stores <party_no>'s extra icon into <destination>
+party_get_player_id             = 3909 #(party_get_player_id, <destination>, <party_no>), #Stores <party_no>'s player reference into <destination>. For multiplayer campaign mode (requires WSE2)
+party_is_non_player             = 3910 #(party_is_non_player, <party_no>), #Fails if <party_no> is player. For multiplayer campaign mode (requires WSE2)
 
 position_get_vector_to_position = 4100 #(position_get_vector_to_position, <destination_fixed_point>, <dest_position_register>, <position_register_1>, <position_register_2>), #Stores the vector from <position_register_1> to <position_register_2> into <dest_position_register> and its length into <destination_fixed_point>
 position_align_to_ground        = 4101 #(position_align_to_ground, <position_register>, [<point_up>], [<set_z_to_ground_level>]), #Aligns <position_register> to the ground (or to the ground normal if [<point_up>] is set)
@@ -449,6 +453,7 @@ options_get_damage_to_player                = 260 #(options_get_damage_to_player
 options_set_damage_to_player                = 261 #(options_set_damage_to_player, <value>, [<percentage>]), #Sets damage to player for singleplayer. If set [<percentage>], uses 0-100% range instead default values (0 = 1/4, 1 = 1/2, 2 = 1/1) (requires WSE2)
 options_get_damage_to_friends               = 262 #(options_get_damage_to_friends, <destination>, [<percentage>]), #Stores damage to friends for singleplayer into <destination>. If set [<percentage>], uses 0-100% range instead default values (0 = 1/2, 1 = 3/4, 2 = 1/1) (requires WSE2)
 options_set_damage_to_friends               = 263 #(options_set_damage_to_friends, <value>, [<percentage>]), #Sets damage to friends for singleplayer. If set [<percentage>], uses 0-100% range instead default values (0 = 1/2, 1 = 3/4, 2 = 1/1) (requires WSE2)
+set_camera_follow_party                     = 1021 #(set_camera_follow_party, <party_no>, [<instant>]), #Global map camera follows <party_no>. If [<instant>] sets, camera position sets to party position instatly (requires WSE2)
 start_map_conversation                      = 1025 #(start_map_conversation, <troop_id>, [<troop_dna>], [<set_dialog_state>], [<dialog_state>], [<from_presentation>]), #Starts a conversation with the selected <troop_id>. Can be called directly from global map or game menus. [<troop_dna>] parameter allows you to randomize non-hero troop appearances. If [<set_dialog_state>] sets, then [<dialog_state>] used instead dlg_event_triggered. If [<from_presentation>] sets, then conversation called directly from the presentation. (requires WSE2)
 agent_get_attached_scene_prop               = 1756 #(agent_get_attached_scene_prop, <destination>, <agent_no>, [<attached_prop_index>]), #Stores scene prop instance which is attached to the <agent_no>, or -1 if there isn't any into <destination>. ([<attached_prop_index>]: 0-3) (requires WSE2)
 agent_set_attached_scene_prop               = 1757 #(agent_set_attached_scene_prop, <agent_no>, <prop_instance_no>, [<attached_prop_index>], [<bone_no>], [<use_bone_rotation>]), #Attaches the specified <prop_instance_no> to the <agent_no>. ([<attached_prop_index>]: 0-3) (requires WSE2)
@@ -457,6 +462,7 @@ agent_set_attached_scene_prop_z             = 1759 #(agent_set_attached_scene_pr
 entry_point_get_position                    = 1780 #(entry_point_get_position, <position_register>, <entry_no>, [<shifted>]), #Stores <entry_no>'s position into <position_register>. If [<shifted>] is non-zero stores shifted position (requires WSE2)
 agent_set_attached_scene_prop_y             = 1809 #(agent_set_attached_scene_prop_y, <agent_no>, <value>, [<attached_prop_index>]), #Offsets the position of the attached scene prop in relation to <agent_no>, in centimeters, along the Y axis (backwards/forward). ([<attached_prop_index>]: 0-3) (requires WSE2)
 prop_instance_intersects_with_prop_instance = 1880 #(prop_instance_intersects_with_prop_instance, <checked_scene_prop_no>, <prop_instance_no>, [<check_polygon_to_polygon>]), #Checks if two scene props are intersecting (i.e. collided). Useful when animating scene props movement. Pass -1 for <prop_instance_no> to check the prop against all other props on the scene. Scene props must have active collision meshes. If [<check_polygon_to_polygon>] is non-zero also checks polygon-to-polygon physics models, this is may reduce performance. (requires WSE2)
+str_store_player_username                   = 2350 #(str_store_player_username, <string_register>, <player_no>, [<force_real>]), #Stores <player_no>'s multiplayer username into <string_register>. [<force_real>] uses for real name instead anonymous pseudonym (requires WSE2)
 
 game_key_get_key = 3100 #(game_key_get_key, <destination>, <game_key_no>, [<alternative>], [<modifier>]), #Stores the key mapped to <game_key_no> into <destination> (requires WSE2)
 
@@ -489,6 +495,7 @@ lhs_operations += [
 	val_not,
 	store_not,
 	player_get_wse2_version,
+	player_get_party_id,
 	register_get,
 	store_wse_version,
 	store_current_trigger,
@@ -544,6 +551,7 @@ lhs_operations += [
 	party_stack_get_num_upgradeable,
 	party_get_banner_icon,
 	party_get_extra_icon,
+	party_get_player_id,
 	position_get_vector_to_position,
 	position_get_length,
 	get_dot_product_of_positions,
@@ -607,6 +615,7 @@ can_fail_operations += [
 	cast_ray_agents,
 	troop_has_flag,
 	party_has_flag,
+	party_is_non_player,
 	str_equals,
 	str_contains,
 	str_starts_with,

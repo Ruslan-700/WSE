@@ -828,6 +828,10 @@ void WSEStringOperationsContext::OnLoad()
 		"Stores human-readable key name that's currently assigned to the provided <1> into <0>",
 		"string_register", "game_key_no", "alternative");
 
+	DefineOperation(2350, "str_store_player_username", WSE2Extended, 2, 3,
+		"Stores <1>'s multiplayer username into <0>. <2> uses for real name instead anonymous pseudonym",
+		"string_register", "player_no", "force_real");
+
 	RegisterOperation("str_equals", StrEquals, Both, Cf, 2, 3,
 		"Fails if <0> is not equal to <1>",
 		"string_1", "string_2", "case_insensitive");

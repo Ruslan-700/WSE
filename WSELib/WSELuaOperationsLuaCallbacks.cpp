@@ -318,7 +318,7 @@ int lAddItemTrigger(lua_State *L)
 	newT.interval = (float)lua_tonumber(L, 2);
 	newT.interval_timer = rgl::timer();
 
-	newT.operations.id.format("Item Kind[%d] % s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
+	newT.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
 	newT.operations.num_operations = 1;
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 
@@ -343,7 +343,7 @@ int lAddPropTrigger(lua_State *L)
 	if (lua_type(L, 1) == LUA_TSTRING)
 	{
 		const char *propID = lua_tostring(L, 1);
-		propNo = getItemKindNo(propID);
+		propNo = getScenePropNo(propID);
 
 		if (propNo < 0)
 			luaL_error(L, "invalid scene prop id: %s", propID);
@@ -351,7 +351,7 @@ int lAddPropTrigger(lua_State *L)
 	else
 	{
 		propNo = lua_tointeger(L, 1);
-		if (propNo < 0 || propNo >= warband->num_item_kinds)
+		if (propNo < 0 || propNo >= warband->num_scene_props)
 			luaL_error(L, "invalid scene prop no: %d", propNo);
 	}
 
@@ -360,7 +360,7 @@ int lAddPropTrigger(lua_State *L)
 	newT.interval = (float)lua_tonumber(L, 2);
 	newT.interval_timer = rgl::timer();
 
-	newT.operations.id.format("Scene Prop[%d] % s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
+	newT.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
 	newT.operations.num_operations = 1;
 	newT.operations.operations = rgl::_new<wb::operation>(1);
 

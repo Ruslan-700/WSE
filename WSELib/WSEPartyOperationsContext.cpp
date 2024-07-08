@@ -118,6 +118,10 @@ WSEPartyOperationsContext::WSEPartyOperationsContext() : WSEOperationContext("pa
 
 void WSEPartyOperationsContext::OnLoad()
 {
+	DefineOperation(1021, "set_camera_follow_party", WSE2Extended, 1, 2,
+		"Global map camera follows <0>. If <1> sets, camera position sets to party position instatly",
+		"party_no", "instant");
+
 	RegisterOperation("party_stack_get_experience", PartyStackGetExperience, Both, Lhs, 3, 3,
 		"Stores the experience of <1>'s <2> into <0>",
 		"destination", "party_no", "party_stack_no");
@@ -153,4 +157,12 @@ void WSEPartyOperationsContext::OnLoad()
 	RegisterOperation("party_get_extra_icon", PartyGetExtraIcon, Both, Lhs, 2, 2,
 		"Stores <1>'s extra icon into <0>",
 		"destination", "party_no");
+
+	RegisterOperation("party_get_player_id", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores <1>'s player reference into <0>. For multiplayer campaign mode",
+		"destination", "party_no");
+
+	RegisterOperation("party_is_non_player", nullptr, Both, Cf | WSE2, 1, 1,
+		"Fails if <0> is player. For multiplayer campaign mode",
+		"party_no");
 }

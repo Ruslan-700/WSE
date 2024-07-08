@@ -205,4 +205,12 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_get_wse2_version", nullptr, Server, Lhs | WSE2, 2, 2,
 		"Stores <1>'s WSE2 version into <0>. Works only on servers. 0 - vanilla Warband engine",
 		"destination", "player_no");
+
+	RegisterOperation("player_get_party_id", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores <1>'s party reference into <0>. For multiplayer campaign mode",
+		"destination", "player_no");
+
+	RegisterOperation("player_set_party_id", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s party to <1>. For multiplayer campaign mode",
+		"player_no", "party_no");
 }
