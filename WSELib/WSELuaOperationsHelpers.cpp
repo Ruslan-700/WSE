@@ -497,7 +497,7 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		return;
 
 	gameConstTable* constTable = NULL;
-	for (int i = 0; i < gameConstTables.size(); i++){
+	for (size_t i = 0; i < gameConstTables.size(); i++){
 		if (gameConstTables[i].name == name){
 			constTable = &gameConstTables[i];
 			break;

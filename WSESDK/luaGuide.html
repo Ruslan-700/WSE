@@ -6,6 +6,10 @@
 			font-family: Helvetica, Arial, sans-serif;
 		}
 
+		.smaller_font{
+			font-size: 12px;
+		}
+
 		.code
 		{		
 			margin-left: 60px;
@@ -369,7 +373,7 @@
 					<pre class="code code2">
 						(store_mul, ":area", ":r", ":r"),
 						(val_mul, ":area", 314159),
-						(val_div, ":area", 100000), <span class="comment"># *(314159/100000)</span>
+						(val_div, ":area", 100000), <span class="comment"># *(314159/100000)=*PI</span>
 					</pre>
 				</div>
 			</li>
@@ -377,16 +381,20 @@
 
 		<h3 style="margin-left: 20px; margin-top: 30px">Setup</h3>
 		<ul>
+			<li>Install WSE as usual, make sure lua51.dll is in the same folder as mb_warband.exe</li>
 			<li>Create "[warband_dir]\Modules\[module_name]\lua\", e.g. "C:\Program Files (x86)\Steam\steamapps\common\MountBlade Warband\Modules\Native\lua\"</li>
 			<li>
-				Create main.lua inside it. This file, if it exists, gets loaded and executed by WSE at startup, before any of the module system code.<br>
+				Create main.lua inside it. This file, if it exists, gets loaded and executed by WSE at startup, before any of the module system code. You don't need any compiler.<br>
 				Typically, here you load other files, run some init code, and/or register triggers.<br>
 				In normal modsys, for something to happen you would for example write a trigger in module_mission_templates.py.<br>
 				It's the same in lua, but you register the trigger at runtime in main.lua (or load a file that does it).
 			</li>
 			<p></p>
 			<li>Create "[warband_dir]\Modules\[module_name]\lua\msfiles\" (msfiles - "Module System files")</li>
-			<li>Copy header_operations.py to your msfiles folder. This is so that WSE can translate operation names to opcodes and is neccessary for calling module system operations from lua.</li>
+			<li>
+				Copy header_operations.py to your msfiles folder. This is so that WSE can translate operation names to opcodes and is neccessary for calling module system operations from lua.<br>
+				<span class="smaller_font">It's a good idea to start the game now and see if there any errors parsing this file. Delete any bad lines, but make sure any opcodes you need & the lists at the end (<span class='keyword'>lhs_operations = [...], etc</span>) are intact.</span>
+			</li>
 		</ul>
 		<p>&nbsp;</p>
 	</div>
