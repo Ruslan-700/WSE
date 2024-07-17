@@ -30,7 +30,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 	public: //I really should write getters but meh...
 		lua_State *luaState;
 		int callTriggerOpcode;
-		std::unordered_map<std::string, gameOperation> operationMap;
+		std::unordered_map<std::string, gameOperation*> operationMap;
 		std::vector<gameConstTable> gameConstTables;
 		std::unordered_map<std::string, int> gvarMap;
 		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];

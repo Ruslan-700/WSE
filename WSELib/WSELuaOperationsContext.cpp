@@ -10,6 +10,7 @@
 #include <Windows.h>
 #include "WSELib.rc.h"
 
+
 /************************/
 /*    MS operations    */
 /************************/
@@ -683,7 +684,7 @@ void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std
 			if (op == operationMap.end())
 				gPrintf("WSELuaOperationsContext: Warning reading %s, trying to set flag %s for non-existing operation [%s]", opFile.c_str(), listName.c_str(), curKey.c_str());
 			else
-				op->second.flags |= flag;
+				op->second->flags |= flag;
 		}
 	}
 }
@@ -701,8 +702,9 @@ inline void WSELuaOperationsContext::loadOperations()
 	std::smatch curMatches;
 
 	std::regex opRegEx(R"((\w+)=(((0x)[\da-fA-F]+)|(\d+)).*)");
+	std::regex opRefRegEx(R"((\w+)=(\w+).*)");
 	std::regex opOrRegEx(R"((\w+)=(\w+)\|(\w+).*)");
-	std::regex listStartRegEx(R"((\w+)(\+)?=\[((?:\w+,)*(?:\w+)?)(\]?).*)");
+	std::regex listStartRegEx(R"((\w+)(\+)?=\[.*)");
 
 	std::unordered_map<std::string, std::vector<std::string>*> flagLists;
 
@@ -714,100 +716,104 @@ inline void WSELuaOperationsContext::loadOperations()
 		if (curLine.length() == 0 || curLine[0] == '#')
 			continue;
 
-		if (std::regex_match(curLine, curMatches, opRegEx))
+		try
 		{
-
-			gameOperation newOp;
-			newOp.flags = 0;
-
-			if (curMatches.str(4).length())
-				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 16);
-			else
-				newOp.opcode = std::strtoul(curMatches.str(2).c_str(), 0, 10);
-
-			operationMap[curMatches.str(1)] = newOp;
-
-		}
-		else if (std::regex_match(curLine, curMatches, listStartRegEx))
-		{
-			std::string listName = curMatches.str(1);
-			bool add = curMatches.str(2) == "+";
-			std::string curKeysStr = curMatches.str(3);
-			bool end = curMatches.str(4) == "]";
-
-			auto l = flagLists.find(listName);
-
-			if (!add)
+			if (std::regex_match(curLine, curMatches, opRegEx))
 			{
-				if (l != flagLists.end())
-					delete l->second;
 
-				flagLists[listName] = new std::vector<std::string>();
-			}
-			else
-			{
-				if (l == flagLists.end())
-				{
-					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: trying to extend a non-existing list", opFile.c_str(), curLineNum);
-					continue;
-				}
-			}
+				gameOperation* newOp = new gameOperation();
+				newOp->flags = 0;
 
-			if (curKeysStr.length())
-			{
-				std::vector<std::string> curKeys = split(curKeysStr, ',', true);
-
-				for (size_t i = 0; i < curKeys.size(); i++)
-					flagLists[listName]->push_back(curKeys[i]);
-			}
-
-			curKeysStr = "";
-			while (!end && std::getline(opStream, curLine))
-			{
-				curLineNum++;
-				delBlank(curLine);
-				discardComment(curLine);
-
-				size_t endPos = curLine.find(']');
-
-				if (endPos != std::string::npos)
-				{
-					end = true;
-					curLine.erase(endPos);
-				}
-
-				curKeysStr += curLine;
-			}
-
-			if (curKeysStr.length())
-			{
-				std::vector<std::string> curKeys = split(curKeysStr, ',', true);
-
-				for (size_t i = 0; i < curKeys.size(); i++)
-					flagLists[listName]->push_back(curKeys[i]);
-			}
-		}
-		else if (std::regex_match(curLine, curMatches, opOrRegEx))
-		{
-			auto op1 = operationMap.find(curMatches.str(2));
-			auto op2 = operationMap.find(curMatches.str(3));
-
-			if (op1 == operationMap.end() || op2 == operationMap.end())
-			{
-				gPrintf("WSELuaOperationsContext: Error reading %s, line %i: undefined value", opFile.c_str(), curLineNum);
-			}
-			else
-			{
-				gameOperation newOp;
-				newOp.opcode = op1->second.opcode | op2->second.opcode;
-				newOp.flags = 0;
+				if (curMatches.str(4).length())
+					newOp->opcode = std::strtoul(curMatches.str(2).c_str(), 0, 16);
+				else
+					newOp->opcode = std::strtoul(curMatches.str(2).c_str(), 0, 10);
 
 				operationMap[curMatches.str(1)] = newOp;
 			}
+			else if (std::regex_match(curLine, curMatches, opRefRegEx))
+			{
+				auto ref = operationMap.find(curMatches.str(2));
+
+				if (ref == operationMap.end())
+					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: invalid reference", opFile.c_str(), curLineNum);
+				else
+					operationMap[curMatches.str(1)] = ref->second;
+			}
+			else if (std::regex_match(curLine, curMatches, listStartRegEx))
+			{
+				std::string listName = curMatches.str(1);
+				bool add = curMatches.str(2) == "+";
+
+				auto l = flagLists.find(listName);
+				if (!add)
+				{
+					if (l != flagLists.end())
+						delete l->second;
+
+					flagLists[listName] = new std::vector<std::string>();
+				}
+				else
+				{
+					if (l == flagLists.end())
+					{
+						gPrintf("WSELuaOperationsContext: Error reading %s, line %i: trying to extend a non-existing list", opFile.c_str(), curLineNum);
+						continue;
+					}
+				}
+
+				std::string curKeysStr = curLine;
+				curKeysStr.erase(0, curKeysStr.find('[') + 1);
+
+				size_t endPos = curKeysStr.find(']');
+				if (endPos != std::string::npos) curKeysStr.erase(endPos);
+
+				while (endPos == std::string::npos && std::getline(opStream, curLine))
+				{
+					curLineNum++;
+					delBlank(curLine);
+					discardComment(curLine);
+
+					endPos = curLine.find(']');
+					if (endPos != std::string::npos) curLine.erase(endPos);
+
+					curKeysStr += curLine;
+				}
+
+				if (curKeysStr.length())
+				{
+					std::vector<std::string> curKeys = split(curKeysStr, ',', true);
+
+					for (size_t i = 0; i < curKeys.size(); i++)
+						flagLists[listName]->push_back(curKeys[i]);
+				}
+			}
+			else if (std::regex_match(curLine, curMatches, opOrRegEx))
+			{
+				auto op1 = operationMap.find(curMatches.str(2));
+				auto op2 = operationMap.find(curMatches.str(3));
+
+				if (op1 == operationMap.end() || op2 == operationMap.end())
+				{
+					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: undefined value", opFile.c_str(), curLineNum);
+				}
+				else
+				{
+					gameOperation* newOp = new gameOperation();
+					newOp->opcode = op1->second->opcode | op2->second->opcode;
+					newOp->flags = 0;
+
+					operationMap[curMatches.str(1)] = newOp;
+				}
+			}
+			else
+			{
+				gPrintf("WSELuaOperationsContext: Warning reading %s, could not process line %i", opFile.c_str(), curLineNum);
+			}
 		}
-		else
+		catch (const std::regex_error& e)
 		{
-			gPrintf("WSELuaOperationsContext: Warning reading %s, could not process line %i", opFile.c_str(), curLineNum);
+			gPrintf("WSELuaOperationsContext: Warning reading %s, exception while processing line %i: %s", opFile.c_str(), curLineNum, e.what());
 		}
 	}
 

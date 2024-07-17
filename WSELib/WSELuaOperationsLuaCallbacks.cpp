@@ -22,7 +22,7 @@ int lGameExecOperationHandler(lua_State *L)
 	if (opEntry == WSE->LuaOperations.operationMap.end())
 		luaL_error(L, "undefined module system operation: '%s'", opName.c_str());
 
-	gameOperation op = opEntry->second;
+	gameOperation op = *(opEntry->second);
 
 	wb::operation wop;
 	wop.opcode = op.opcode;
@@ -730,7 +730,7 @@ int lHookOperation(lua_State *L)
 		if (opEntry == WSE->LuaOperations.operationMap.end())
 			luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
 
-		opcode = opEntry->second.opcode;
+		opcode = opEntry->second->opcode;
 	}
 
 	WSE->LuaOperations.hookOperation(L, opcode, luaL_ref(L, LUA_REGISTRYINDEX));
@@ -759,7 +759,7 @@ int lUnhookOperation(lua_State *L)
 		if (opEntry == WSE->LuaOperations.operationMap.end())
 			luaL_error(L, "undefined module system operation: [%s]", opName.c_str());
 
-		opcode = opEntry->second.opcode;
+		opcode = opEntry->second->opcode;
 	}
 	if (!WSE->LuaOperations.unhookOperation(L, opcode))
 		luaL_error(L, "Unable to unhook opcode [%d].", opcode);
