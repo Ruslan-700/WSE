@@ -711,7 +711,7 @@ int lPrint(lua_State *L)
 
 int lHookOperation(lua_State *L)
 {
-	checkLArgs(L, 2, 2, lNum|lStr, lFunc);
+	checkLArgs(L, 2, 2, lNum|lStr, lFunc|lNil);
 
 	int opcode;
 	if (lua_type(L, 1) == LUA_TNUMBER)
@@ -733,7 +733,10 @@ int lHookOperation(lua_State *L)
 		opcode = opEntry->second->opcode;
 	}
 
-	WSE->LuaOperations.hookOperation(L, opcode, luaL_ref(L, LUA_REGISTRYINDEX));
+	if (lua_type(L, 2) == LUA_TFUNCTION)
+		WSE->LuaOperations.hookOperation(L, opcode, luaL_ref(L, LUA_REGISTRYINDEX));
+	else
+		WSE->LuaOperations.hookOperation(L, opcode, LUA_NOREF);
 
 	return 0;
 }
@@ -761,8 +764,23 @@ int lUnhookOperation(lua_State *L)
 
 		opcode = opEntry->second->opcode;
 	}
-	if (!WSE->LuaOperations.unhookOperation(L, opcode))
-		luaL_error(L, "Unable to unhook opcode [%d].", opcode);
+	WSE->LuaOperations.hookOperation(L, opcode, LUA_NOREF);
+
+	return 0;
+}
+
+int lHookScript(lua_State *L)
+{
+	checkLArgs(L, 2, 2, lNum, lFunc|lNil);
+
+	int script_no = lua_tointeger(L, 1);
+	if (script_no < 0 || script_no >= warband->script_manager.num_scripts)
+		luaL_error(L, "invalid script no: %d", script_no);
+
+	if (lua_type(L, 2) == LUA_TFUNCTION)
+		WSE->LuaOperations.hookScript(L, script_no, luaL_ref(L, LUA_REGISTRYINDEX));
+	else
+		WSE->LuaOperations.hookScript(L, script_no, LUA_NOREF);
 
 	return 0;
 }

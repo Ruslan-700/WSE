@@ -145,47 +145,23 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		warband->script_error_occurred = 0;
 	}
 
-	while (operation_no < num_operations)
+	if (WSE->LuaOperations.OnOperationMgrExecute(operation_manager, num_parameters, parameters))
 	{
-		bool statement_success = true;
-		wb::operation *operation = &operation_manager->operations[operation_no];
-		
-		warband->cur_statement_no = operation_no;
-		warband->cur_opcode = operation->opcode & 0xFFFFFFF;
-		
-		if (warband->cur_opcode == wb::call_script || warband->cur_opcode >= wb::store_script_param_1)
+		while (operation_no < num_operations)
 		{
-			if (warband->cur_opcode >= wb::ge)
+			bool statement_success = true;
+			wb::operation *operation = &operation_manager->operations[operation_no];
+
+			warband->cur_statement_no = operation_no;
+			warband->cur_opcode = operation->opcode & 0xFFFFFFF;
+
+			if (warband->cur_opcode == wb::call_script || warband->cur_opcode >= wb::store_script_param_1)
 			{
-				int error = 0;
-
-				statement_success = operation->execute(local_variables, context_flags, error);
-
-				if (statement_success)
+				if (warband->cur_opcode >= wb::ge)
 				{
-					operation_no++;
-				}
-				else
-				{
-					operation_no = operation->end_statement;
-					block_success = false;
-				}
-			}
-			else if (warband->cur_opcode == wb::call_script)
-			{
-				int operand_type;
-				int script_no = (int)operation->get_operand_value(local_variables, 0, operand_type);
+					int error = 0;
 
-				if (script_no >= 0 && script_no < warband->script_manager.num_scripts && depth < MAX_RECURSION_DEPTH)
-				{
-					__int64 script_params[MAX_NUM_STATEMENT_BLOCK_PARAMS];
-
-					for (int i = 1; i < operation->num_operands; ++i)
-					{
-						script_params[i - 1] = operation->get_operand_value(local_variables, i, operand_type);
-					}
-					
-					statement_success = warband->script_manager.scripts[script_no].operations.execute(context_flags, depth + 1, operation->num_operands - 1, script_params);
+					statement_success = operation->execute(local_variables, context_flags, error);
 
 					if (statement_success)
 					{
@@ -197,124 +173,151 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 						block_success = false;
 					}
 				}
+				else if (warband->cur_opcode == wb::call_script)
+				{
+					int operand_type;
+					int script_no = (int)operation->get_operand_value(local_variables, 0, operand_type);
+
+					if (script_no >= 0 && script_no < warband->script_manager.num_scripts && depth < MAX_RECURSION_DEPTH)
+					{
+						__int64 script_params[MAX_NUM_STATEMENT_BLOCK_PARAMS];
+
+						for (int i = 1; i < operation->num_operands; ++i)
+						{
+							script_params[i - 1] = operation->get_operand_value(local_variables, i, operand_type);
+						}
+
+						statement_success = warband->script_manager.scripts[script_no].operations.execute(context_flags, depth + 1, operation->num_operands - 1, script_params);
+
+						if (statement_success)
+						{
+							operation_no++;
+						}
+						else
+						{
+							operation_no = operation->end_statement;
+							block_success = false;
+						}
+					}
+					else
+					{
+						statement_success = false;
+						operation_no = operation->end_statement;
+					}
+				}
+				else if (warband->cur_opcode == wb::store_script_param_1)
+				{
+					if (wb::operation::is_valid_script_parameter(0, num_parameters))
+						operation->set_return_value(local_variables, parameters[0]);
+
+					operation_no++;
+				}
+				else if (warband->cur_opcode == wb::store_script_param_2)
+				{
+					if (wb::operation::is_valid_script_parameter(1, num_parameters))
+						operation->set_return_value(local_variables, parameters[1]);
+
+					operation_no++;
+				}
+				else if (warband->cur_opcode == wb::store_script_param)
+				{
+					int operand_type;
+					int parameter_no = (int)operation->get_operand_value(local_variables, 1, operand_type);
+
+					if (wb::operation::is_valid_script_parameter(parameter_no - 1, num_parameters))
+						operation->set_return_value(local_variables, parameters[parameter_no - 1]);
+
+					operation_no++;
+				}
 				else
 				{
-					statement_success = false;
+					operation_no++;
+				}
+			}
+			else if (operation->opcode == wb::break_loop)
+			{
+				bool found = false;
+
+				for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
+				{
+					wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
+
+					if (loop_operation->opcode != wb::try_begin)
+					{
+						operation_no = loop_operation->end_statement;
+						loop_manager.EndLoop(i);
+						found = true;
+					}
+				}
+
+				operation_no++;
+			}
+			else if (operation->opcode == wb::continue_loop)
+			{
+				bool found = false;
+
+				for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
+				{
+					wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
+
+					if (loop_operation->opcode != wb::try_begin)
+					{
+						operation_no = loop_operation->end_statement;
+						loop_manager.EndLoop(i + 1);
+						found = true;
+					}
+				}
+
+				if (!found)
+					operation_no++;
+			}
+			else if (operation->opcode == wb::try_end)
+			{
+				block_success = true;
+				EndLoop(operation_manager, local_variables, loop_manager, operation_no);
+			}
+			else if (operation->opcode == wb::try_begin)
+			{
+				block_success = true;
+				loop_manager.AddLoop(operation_no, 0);
+				operation_no++;
+			}
+			else if (operation->opcode == wb::else_try)
+			{
+				if (block_success)
+				{
 					operation_no = operation->end_statement;
 				}
-			}
-			else if (warband->cur_opcode == wb::store_script_param_1)
-			{
-				if (wb::operation::is_valid_script_parameter(0, num_parameters))
-					operation->set_return_value(local_variables, parameters[0]);
-
-				operation_no++;
-			}
-			else if (warband->cur_opcode == wb::store_script_param_2)
-			{
-				if (wb::operation::is_valid_script_parameter(1, num_parameters))
-					operation->set_return_value(local_variables, parameters[1]);
-
-				operation_no++;
-			}
-			else if (warband->cur_opcode == wb::store_script_param)
-			{
-				int operand_type;
-				int parameter_no = (int)operation->get_operand_value(local_variables, 1, operand_type);
-
-				if (wb::operation::is_valid_script_parameter(parameter_no - 1, num_parameters))
-					operation->set_return_value(local_variables, parameters[parameter_no - 1]);
-
-				operation_no++;
-			}
-			else
-			{
-				operation_no++;
-			}
-		}
-		else if (operation->opcode == wb::break_loop)
-		{
-			bool found = false;
-
-			for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
-			{
-				wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
-				
-				if (loop_operation->opcode != wb::try_begin)
+				else
 				{
-					operation_no = loop_operation->end_statement;
-					loop_manager.EndLoop(i);
-					found = true;
+					block_success = true;
+					operation_no++;
 				}
-			}
-			
-			operation_no++;
-		}
-		else if (operation->opcode == wb::continue_loop)
-		{
-			bool found = false;
-
-			for (int i = loop_manager.Size() - 1; i >= 0 && !found; --i)
-			{
-				wb::operation *loop_operation = &operation_manager->operations[loop_manager.GetLoop(i)->statement_no];
-
-				if (loop_operation->opcode != wb::try_begin)
-				{
-					operation_no = loop_operation->end_statement;
-					loop_manager.EndLoop(i + 1);
-					found = true;
-				}
-			}
-
-			if (!found)
-				operation_no++;
-		}
-		else if (operation->opcode == wb::try_end)
-		{
-			block_success = true;
-			EndLoop(operation_manager, local_variables, loop_manager, operation_no);
-		}
-		else if (operation->opcode == wb::try_begin)
-		{
-			block_success = true;
-			loop_manager.AddLoop(operation_no, 0);
-			operation_no++;
-		}
-		else if (operation->opcode == wb::else_try)
-		{
-			if (block_success)
-			{
-				operation_no = operation->end_statement;
 			}
 			else
 			{
 				block_success = true;
-				operation_no++;
+				StartLoop(operation_manager, local_variables, loop_manager, operation_no);
 			}
-		}
-		else
-		{
-			block_success = true;
-			StartLoop(operation_manager, local_variables, loop_manager, operation_no);
-		}
 
-		if (!loop_manager.Size())
-			success = statement_success;
-		
-		if (warband->script_error_occurred > 0)
-		{
-			char buf[512];
+			if (!loop_manager.Size())
+				success = statement_success;
 
-			sprintf_s(buf, "At %s.", operation_manager->id.c_str());
+			if (warband->script_error_occurred > 0)
+			{
+				char buf[512];
+
+				sprintf_s(buf, "At %s.", operation_manager->id.c_str());
 #if defined WARBAND
-			warband->window_manager.display_message(buf, 0xFFFF5555, 0);
+				warband->window_manager.display_message(buf, 0xFFFF5555, 0);
 #endif
-			warband->log_stream.write_c_str(buf);
-			warband->log_stream.write_c_str("\n");
-		}
+				warband->log_stream.write_c_str(buf);
+				warband->log_stream.write_c_str("\n");
+			}
 
-		if (!success)
-			break;
+			if (!success)
+				break;
+		}
 	}
 
 	WSE->Profiling.StopProfilingBlock(depth);

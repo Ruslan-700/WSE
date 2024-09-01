@@ -313,6 +313,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lUnhookOperation);
 	lua_setfield(L, -2, "unhookOperation");
 
+	lua_pushcfunction(L, lHookScript);
+	lua_setfield(L, -2, "hookScript");
+
 	lua_pushcfunction(L, lFailMsCall);
 	lua_setfield(L, -2,  "fail");
 
@@ -543,7 +546,15 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 void WSELuaOperationsContext::hookOperation(lua_State *L, int opcode, int lRef)
 {
 	if (operationHookLuaRefs[opcode] != LUA_NOREF)
-		unhookOperation(L, opcode);
+	{
+		luaL_unref(L, LUA_REGISTRYINDEX, operationHookLuaRefs[opcode]);
+		operationHookLuaRefs[opcode] = LUA_NOREF;
+
+		if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
+			WSE->Hooks.UnhookJumptable(this, wb::addresses::operation_Execute_jumptable, opcode - 30);
+	}
+
+	if (lRef == LUA_NOREF) return;
 
 	operationHookLuaRefs[opcode] = lRef;
 
@@ -551,18 +562,25 @@ void WSELuaOperationsContext::hookOperation(lua_State *L, int opcode, int lRef)
 		WSE->Hooks.HookJumptable(this, wb::addresses::operation_Execute_jumptable, opcode - 30, LuaOperationJumptableHook);
 }
 
-bool WSELuaOperationsContext::unhookOperation(lua_State *L, int opcode)
+void WSELuaOperationsContext::hookScript(lua_State *L, int script_no, int lRef)
 {
-	if (operationHookLuaRefs[opcode] == LUA_NOREF)
-		return false;
+	std::stringstream ss;
+	ss << "Script [" << script_no << "] ";
 
-	luaL_unref(L, LUA_REGISTRYINDEX, operationHookLuaRefs[opcode]);
-	operationHookLuaRefs[opcode] = LUA_NOREF;
+	rgl::string id = ss.str().c_str();
+	id += warband->script_manager.scripts[script_no].id;
 
-	if (opcode >= WSE_FIRST_WARBAND_OPCODE && opcode <= WSE_LAST_WARBAND_OPCODE)
-		WSE->Hooks.UnhookJumptable(this, wb::addresses::operation_Execute_jumptable, opcode - 30);
+	//WSE->Log.Info("hook %d, %d, %s", script_no, lRef, id.c_str());
 
-	return true;
+	if (this->operationMgrHookLuaRefs.find(id) != this->operationMgrHookLuaRefs.end())
+	{
+		luaL_unref(L, LUA_REGISTRYINDEX, this->operationMgrHookLuaRefs[id]);
+		this->operationMgrHookLuaRefs.erase(id);
+	}
+
+	if (lRef == LUA_NOREF) return;
+
+	this->operationMgrHookLuaRefs[id] = lRef;
 }
 
 bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
@@ -606,9 +624,9 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 	
 	if (nResults == 2)
 	{
-		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN)
+		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN) //cf
 			*continue_loop = lua_toboolean(luaState, 2 + oldTop) != 0;
-		else if (lua_type(luaState, 2 + oldTop) == LUA_TNUMBER)
+		else if (lua_type(luaState, 2 + oldTop) == LUA_TNUMBER) //lhs
 		{
 			setRetVal = true;
 			retVal = (long long)lua_tointeger(luaState, 2 + oldTop);
@@ -620,7 +638,7 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 			return true;
 		}
 	}
-	else if (nResults == 3) //?
+	else if (nResults == 3) //cf + lhs
 	{
 		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN && lua_type(luaState, 3 + oldTop) == LUA_TNUMBER)
 		{
@@ -669,6 +687,62 @@ void *WSELuaOperationsContext::OnOperationJumptableExecute(wb::operation *operat
 	}
 
 	return NULL;
+}
+
+bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *operation_manager, int& num_parameters, __int64* parameters)
+{
+	//WSE->Log.Info("check %s", operation_manager->id.c_str());
+	auto hook = this->operationMgrHookLuaRefs.find(operation_manager->id);
+	if (hook == this->operationMgrHookLuaRefs.end()) return true;
+	//WSE->Log.Info("found %s", operation_manager->id.c_str());
+
+	int ref = hook->second;
+	if (ref == LUA_NOREF) return true;
+
+	int oldTop = lua_gettop(luaState);
+
+	lua_rawgeti(luaState, LUA_REGISTRYINDEX, ref);
+
+	for (int i = 0; i < num_parameters; i++)
+		lua_pushinteger(luaState, (lua_Integer)parameters[i]);
+
+	if (lua_pcall(luaState, num_parameters, LUA_MULTRET, 0))
+	{
+		printLastLuaError(luaState);
+		return true;
+	}
+
+	bool cont = true;
+	int nResults = lua_gettop(luaState) - oldTop;
+	if (nResults > 0)
+	{
+		if (lua_type(luaState, 1 + oldTop) == LUA_TBOOLEAN)
+			cont = lua_toboolean(luaState, 1 + oldTop) != 0;
+		else
+		{
+			if (nResults > MAX_NUM_STATEMENT_BLOCK_PARAMS)
+				gPrint("too many return values");
+			else
+			{
+				if (num_parameters > nResults)
+					memset(parameters + nResults, 0, (MAX_NUM_STATEMENT_BLOCK_PARAMS - nResults) * sizeof(__int64));
+
+				num_parameters = nResults;
+				for (int i = 0; i < nResults; i++)
+				{
+					if (lua_type(luaState, 1 + oldTop) != LUA_TNUMBER)
+					{
+						gPrintf("invalid return value #%i, must be integer", i + 1);
+						break;
+					}
+					parameters[i] = lua_tointeger(luaState, i + 1 + oldTop);
+				}
+			}
+		}
+	}
+
+	lua_settop(luaState, oldTop);
+	return cont;
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
