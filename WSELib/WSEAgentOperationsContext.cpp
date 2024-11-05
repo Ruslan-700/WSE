@@ -859,4 +859,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_left_hand_weapon_collision", nullptr, Both, WSE2, 2, 2,
 		"Enables or disables <0>'s left hand weapon collision",
 		"agent_no", "value");
+
+	RegisterOperation("agent_ai_set_can_weapon_switch", nullptr, Both, WSE2, 2, 2,
+		"Enables or disables <0>'s weapon switching for ai",
+		"agent_no", "value");
 }
