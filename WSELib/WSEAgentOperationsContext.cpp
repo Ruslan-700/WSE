@@ -863,4 +863,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_ai_set_can_weapon_switch", nullptr, Both, WSE2, 2, 2,
 		"Enables or disables <0>'s weapon switching for ai",
 		"agent_no", "value");
+
+	RegisterOperation("agent_ai_set_can_fight", nullptr, Both, WSE2, 2, 2,
+		"Enables or disables <0>'s engaging enemy for ai",
+		"agent_no", "value");
 }
