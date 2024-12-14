@@ -394,6 +394,49 @@ rgl::matrix lToPos(lua_State *L, int index)
 	return pos;
 }
 
+void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2])
+{
+	if (index < 0) index--; //we always push something before we use index
+
+	//get key1 = t[1]
+	lua_pushinteger(L, 1);
+	lua_gettable(L, index);
+
+		//time = key1[1]
+		lua_pushinteger(L, 1);
+		lua_gettable(L, -2);
+		pair[0].time = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		//mag = key1[2]
+		lua_pushinteger(L, 2);
+		lua_gettable(L, -2);
+		pair[0].magnitude = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+	//pop key1
+	lua_pop(L, 1);
+
+	//get key2 = t[2]
+	lua_pushinteger(L, 2);
+	lua_gettable(L, index);
+
+		//time = key2[1]
+		lua_pushinteger(L, 1);
+		lua_gettable(L, -2);
+		pair[1].time = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		//mag = key2[2]
+		lua_pushinteger(L, 2);
+		lua_gettable(L, -2);
+		pair[1].magnitude = lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+	//pop key2
+	lua_pop(L, 1);
+}
+
 void lPushChild(lua_State *L, const std::string &name)
 {
 	std::stringstream ss;
@@ -943,7 +986,14 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	{
 		for (size_t i = 0; i < pairs.size(); i++)
 		{
-			lua_getfield(L, sIndex, pairs[i].key.name.c_str());
+			if (isStrNumber(pairs[i].key.name)){ //can't use getfield for integer key
+				lua_pushinteger(L, std::stoi(pairs[i].key.name));
+				lua_gettable(L, sIndex);
+			}
+			else
+			{
+				lua_getfield(L, sIndex, pairs[i].key.name.c_str());
+			}
 
 			if (lua_type(L, -1) == LUA_TNIL && pairs[i].key.optional)
 				continue;
@@ -961,6 +1011,25 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	return true;
 }
 
+/*	
+	Compare table value at sIndex with structure string
+	Structure syntax: 
+		"{<key>=<type>, <key>={<key>=<type>, ...}, <key>={(<options>)}, <key>={(<options>) <key>=<type>, ...}, [<optional_key>]=<type>, ...}"
+		
+		<options>:
+			[key]=<type>, [val]=<type>, [min]=<num>, [max]=<num>
+		
+			key means all keys must have certain type
+			same for val
+			min, max limit number of items
+
+		<type>: check lShortTypeNames at the top of this file. You can also use "any", and have multiple allowed types with "|".
+
+		<key>: A string or integer, if int it will in fact not check e.g. table["2"] but table[2]
+
+		Spaces and tabs are fine to use, as many as you want.
+	This comment was written years after the fact, use your own judgement as well!
+*/
 void checkTableStructure(lua_State *L, int sIndex, std::string structure)
 {
 	if (lua_type(L, sIndex) != LUA_TTABLE)

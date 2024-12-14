@@ -30,6 +30,8 @@ int lAddPropTrigger(lua_State *L);
 int lAddPrsnt(lua_State *L);
 int lRemovePrsnt(lua_State *L);
 #endif
+int lAddPsys(lua_State *L);
+int lRemovePsys(lua_State *L);
 
 int lPartiesIterInit(lua_State *L);
 int lAgentsIterInit(lua_State *L);

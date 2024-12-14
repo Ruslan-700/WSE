@@ -456,6 +456,151 @@ int lRemovePrsnt(lua_State *L)
 	lua_pushboolean(L, succ ? 1 : 0);
 	return 1;
 }
+
+int lAddPsys(lua_State *L)
+{
+	checkTableStructure(L, 1, 
+		"{id=str, [flags]={(val=num)}, mesh=str,\
+		num_particles=num, life=num, damping=num, gravity_strength=num, turbulance_size=num, turbulance_strength=num\
+		alpha_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
+		  red_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
+		green_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
+		 blue_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
+		scale_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
+		emit_box_size		= {1=num, 2=num, 3=num}\
+		emit_velocity	= {1=num, 2=num, 3=num}\
+		emit_dir_randomness = num\
+		rotation_speed = num\
+		rotation_damping = num\
+	}");
+
+	wb::particle_system new_sys = *rgl::_new<wb::particle_system>();
+
+	lua_getfield(L, 1, "id");
+	new_sys.id.initialize();
+	new_sys.id = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "mesh");
+	new_sys.mesh_name.initialize();
+	new_sys.mesh_name = lua_tostring(L, -1);
+	lua_pop(L, 1);
+
+	new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name);
+	if (new_sys.mesh == nullptr){
+		rgl::string name = new_sys.mesh_name;
+		rgl::_free((void*)&new_sys);
+		luaL_error(L, "addPsys: Could not find mesh %s", name.c_str());
+	}
+
+	new_sys.flags = 0;
+	lua_getfield(L, 1, "flags");
+	if (lua_type(L, -1))
+	{
+		lua_pushnil(L);
+		while (lua_next(L, -2))
+		{
+			new_sys.flags |= lua_tointeger(L, -1);
+			lua_pop(L, 1);
+		}
+	}
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "num_particles");
+	new_sys.num_particles = (float)lua_tointeger(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "life");
+	new_sys.life = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "damping");
+	new_sys.damping = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "gravity_strength");
+	new_sys.gravity_strength = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "turbulance_size");
+	new_sys.turbulence_size = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "turbulance_strength");
+	new_sys.turbulence_strength = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	// ##Keys##
+	lua_getfield(L, 1, "alpha_keys");
+	lToPsysKeyPair(L, -1, new_sys.alpha);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "red_keys");
+	lToPsysKeyPair(L, -1, new_sys.red);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "green_keys");
+	lToPsysKeyPair(L, -1, new_sys.green);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "blue_keys");
+	lToPsysKeyPair(L, -1, new_sys.blue);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "scale_keys");
+	lToPsysKeyPair(L, -1, new_sys.scale);
+	lua_pop(L, 1);
+	// ###
+
+	lua_getfield(L, 1, "emit_box_size");
+	new_sys.emit_box_size = lToVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "emit_velocity");
+	new_sys.emit_velocity = lToVec3(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "emit_dir_randomness");
+	new_sys.emit_randomness = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "rotation_speed");
+	new_sys.angular_speed = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	lua_getfield(L, 1, "rotation_damping");
+	new_sys.angular_damping = (float)lua_tonumber(L, -1);
+	lua_pop(L, 1);
+
+	/*wb::particle_system &s = new_sys;
+	WSE->Log.Info("id: %s, flags: %i, mesh: %s", s.id, s.flags, s.mesh_name);
+	WSE->Log.Info("particles: %f, life: %f, damping: %f, grav: %f, turbsize: %f, trbstr: %f", s.num_particles, s.life, s.damping, s.gravity_strength, s.turbulence_size, s.turbulence_strength);
+	
+	WSE->Log.Info("alpha: %f, %f | %f %f", s.alpha[0].time, s.alpha[0].magnitude, s.alpha[1].time, s.alpha[1].magnitude);
+	WSE->Log.Info("red: %f, %f | %f %f", s.red[0].time, s.red[0].magnitude, s.red[1].time, s.red[1].magnitude);
+	WSE->Log.Info("green: %f, %f | %f %f", s.green[0].time, s.green[0].magnitude, s.green[1].time, s.green[1].magnitude);
+	WSE->Log.Info("blue: %f, %f | %f %f", s.blue[0].time, s.blue[0].magnitude, s.blue[1].time, s.blue[1].magnitude);
+	WSE->Log.Info("scale: %f, %f | %f %f", s.scale[0].time, s.scale[0].magnitude, s.scale[1].time, s.scale[1].magnitude);
+
+	WSE->Log.Info("emit box size: %f, %f, %f", s.emit_box_size.x, s.emit_box_size.y, s.emit_box_size.z);
+	WSE->Log.Info("emit velocity: %f, %f, %f", s.emit_velocity.x, s.emit_velocity.y, s.emit_velocity.z);
+
+	WSE->Log.Info("emit rand: %f, rotspeed: %f, rotdamp: %f", s.emit_randomness, s.angular_speed, s.angular_damping);*/
+
+	int index = warband->particle_system_manager.add_system(new_sys);
+	lua_pushinteger(L, index);
+	return 1;
+}
+
+int lRemovePsys(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 1, 1, lNum);
+
+	bool succ = warband->particle_system_manager.remove_system(lua_tointeger(L, 1));
+
+	lua_pushboolean(L, succ ? 1 : 0);
+	return 1;
+}
 #endif
 
 /***********

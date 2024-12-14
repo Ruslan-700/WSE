@@ -279,6 +279,12 @@ void initLGameTable(lua_State *L)
 
 	lua_pushcfunction(L, lRemovePrsnt);
 	lua_setfield(L, -2, "removePrsnt");
+
+	lua_pushcfunction(L, lAddPsys);
+	lua_setfield(L, -2, "addPsys");
+
+	lua_pushcfunction(L, lRemovePsys);
+	lua_setfield(L, -2, "removePsys");
 #endif
 
 	lua_pushcfunction(L, lPartiesIterInit);
