@@ -343,6 +343,13 @@ bool lIsPos(lua_State *L, int index)
 	return false;
 }
 
+//It's like lua_toboolean except that 0.0 is false too.
+bool lIsTrue(lua_State *L, int index)
+{
+	if (lua_isnumber(L, index)) return ((float)lua_tonumber(L, index) != 0.0f);
+	return lua_toboolean(L, index);
+}
+
 rgl::vector4 lToVec3(lua_State *L, int index)
 {
 	lua_getfield(L, index, "x");
@@ -405,13 +412,13 @@ void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2])
 		//time = key1[1]
 		lua_pushinteger(L, 1);
 		lua_gettable(L, -2);
-		pair[0].time = lua_tonumber(L, -1);
+		pair[0].time = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 		//mag = key1[2]
 		lua_pushinteger(L, 2);
 		lua_gettable(L, -2);
-		pair[0].magnitude = lua_tonumber(L, -1);
+		pair[0].magnitude = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 	//pop key1
@@ -424,13 +431,13 @@ void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2])
 		//time = key2[1]
 		lua_pushinteger(L, 1);
 		lua_gettable(L, -2);
-		pair[1].time = lua_tonumber(L, -1);
+		pair[1].time = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 		//mag = key2[2]
 		lua_pushinteger(L, 2);
 		lua_gettable(L, -2);
-		pair[1].magnitude = lua_tonumber(L, -1);
+		pair[1].magnitude = (float)lua_tonumber(L, -1);
 		lua_pop(L, 1);
 
 	//pop key2
@@ -621,7 +628,6 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		constants.push_back(con);
 	}
 }
-
 
 /************   table arg checking    ************/
 bool inline isAlphaNumeric(char c)

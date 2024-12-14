@@ -758,7 +758,7 @@ int lAgentsIterInit(lua_State *L)
 			it.pos = lToPos(L, 1);
 
 		it.radius = (float)lua_tonumber(L, 2);
-		it.useGrid = lua_toboolean(L, 3);
+		it.useGrid = lIsTrue(L, 3);
 
 		if (it.useGrid)
 		{
@@ -815,11 +815,9 @@ int lPropInstIterInit(lua_State *L)
 	it.subKindNo = 0;
 	it.metaType = 0;
 
-	if (checkLArgs(L, 0, 2, lNum, lNum))
-	{
-		it.subKindNo = lua_tointeger(L, 1);
-		it.metaType = lua_tointeger(L, 2);
-	}
+	int num_args = checkLArgs(L, 0, 2, lNum, lNum);
+	if (num_args = 1) it.subKindNo = lua_tointeger(L, 1);
+	if (num_args = 2) it.metaType = lua_tointeger(L, 2);
 
 	it.curVal = warband->cur_mission->mission_objects.get_first_valid_index();
 	for (; it.curVal < warband->cur_mission->mission_objects.size(); it.curVal = warband->cur_mission->mission_objects.get_next_valid_index(it.curVal))
@@ -856,7 +854,7 @@ int lPlayersIterInit(lua_State *L)
 	it.advance = lPlayersIterAdvance;
 	it.curValIsValid = lPlayersIterCurValIsValid;
 
-	it.curVal = (checkLArgs(L, 0, 1, lNum) && lua_tointeger(L, 1)) ? 1 : 0;
+	it.curVal = lIsTrue(L, 1);
 
 	for (; it.curVal < NUM_NETWORK_PLAYERS; it.curVal++)
 	{

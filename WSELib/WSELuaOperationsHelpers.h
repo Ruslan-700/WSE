@@ -51,6 +51,7 @@ void checkStackIndex(WSELuaOperationsContext *context, int index);
 bool lIsVec3(lua_State *L, int index);
 bool lIsRot(lua_State *L, int index);
 bool lIsPos(lua_State *L, int index);
+bool lIsTrue(lua_State *L, int index);
 
 rgl::vector4 lToVec3(lua_State *L, int index);
 rgl::orientation lToRot(lua_State *L, int index);
