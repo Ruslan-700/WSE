@@ -26,10 +26,8 @@ int lRemoveTrigger(lua_State *L);
 int lAddItemTrigger(lua_State *L);
 int lAddPropTrigger(lua_State *L);
 
-#if defined WARBAND
 int lAddPrsnt(lua_State *L);
 int lRemovePrsnt(lua_State *L);
-#endif
 int lAddPsys(lua_State *L);
 int lRemovePsys(lua_State *L);
 

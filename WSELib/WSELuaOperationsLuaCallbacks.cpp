@@ -377,9 +377,9 @@ int lAddPropTrigger(lua_State *L)
 	return 1;
 }
 
-#if defined WARBAND
 int lAddPrsnt(lua_State *L)
 {
+#if defined WARBAND
 	checkTableStructure(L, 1, "{id=str, [flags]={(val=num)}, [mesh]=num, triggers={(key=num, val=func, min=1)} }");
 
 	wb::presentation newP = *rgl::_new<wb::presentation>();
@@ -445,20 +445,28 @@ int lAddPrsnt(lua_State *L)
 	int index = warband->presentation_manager.addPresentation(newP);
 	lua_pushinteger(L, index);
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 int lRemovePrsnt(lua_State *L)
 {
+#if defined WARBAND
 	int numArgs = checkLArgs(L, 1, 1, lNum);
 
 	bool succ = warband->presentation_manager.removePresentation(lua_tointeger(L, 1));
 
 	lua_pushboolean(L, succ ? 1 : 0);
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 int lAddPsys(lua_State *L)
 {
+#if defined WARBAND
 	checkTableStructure(L, 1, 
 		"{id=str, [flags]={(val=num)}, mesh=str,\
 		num_particles=num, life=num, damping=num, gravity_strength=num, turbulance_size=num, turbulance_strength=num\
@@ -590,18 +598,24 @@ int lAddPsys(lua_State *L)
 	int index = warband->particle_system_manager.add_system(new_sys);
 	lua_pushinteger(L, index);
 	return 1;
+#else
+	return 0;
+#endif
 }
 
 int lRemovePsys(lua_State *L)
 {
+#if defined WARBAND
 	int numArgs = checkLArgs(L, 1, 1, lNum);
 
 	bool succ = warband->particle_system_manager.remove_system(lua_tointeger(L, 1));
 
 	lua_pushboolean(L, succ ? 1 : 0);
 	return 1;
-}
+#else
+	return 0;
 #endif
+}
 
 /***********
 **Iterators

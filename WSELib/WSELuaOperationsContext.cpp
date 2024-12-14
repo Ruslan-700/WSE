@@ -273,7 +273,6 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lAddPropTrigger);
 	lua_setfield(L, -2, "addScenePropTrigger");
 
-#if defined WARBAND
 	lua_pushcfunction(L, lAddPrsnt);
 	lua_setfield(L, -2, "addPrsnt");
 
@@ -285,7 +284,6 @@ void initLGameTable(lua_State *L)
 
 	lua_pushcfunction(L, lRemovePsys);
 	lua_setfield(L, -2, "removePsys");
-#endif
 
 	lua_pushcfunction(L, lPartiesIterInit);
 	lua_setfield(L, -2, "partiesI");
