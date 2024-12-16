@@ -170,6 +170,7 @@ void setOperandToLocalVar(__int64 &operand, int localsIndex)
 	operand = ((__int64)17 << 56) + localsIndex;
 }
 
+//Return: Number of arguments
 int checkLArgs(lua_State *L, int minCount, int maxCount, ...) //TODO -- maxCount??
 {
 	int numArgs = lua_gettop(L);
@@ -283,6 +284,12 @@ void checkStackIndex(WSELuaOperationsContext *context, int index)
 		context->ScriptError("invalid stack index: %d", index);
 }
 
+//Negative index is used to count from the top, but it will shift when things are added. This function returns a fixed (positive) index.
+inline int lFixedIndex(lua_State *L, int index)
+{
+	return index < 0 ? (index + lua_gettop(L) + 1) : index;
+}
+
 bool lIsVec3(lua_State *L, int index)
 {
 	if (lua_type(L, index) == LUA_TTABLE)
@@ -347,20 +354,40 @@ bool lIsPos(lua_State *L, int index)
 bool lIsTrue(lua_State *L, int index)
 {
 	if (lua_isnumber(L, index)) return ((float)lua_tonumber(L, index) != 0.0f);
-	return lua_toboolean(L, index);
+	return lua_toboolean(L, index) != 0; //Supress warning...
 }
 
 rgl::vector4 lToVec3(lua_State *L, int index)
 {
+	index = lFixedIndex(L, index);
+
 	lua_getfield(L, index, "x");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 1);
+		lua_gettable(L, index);
+	}
 	float x = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "y");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 2);
+		lua_gettable(L, index);
+	}
 	float y = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "z");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 3);
+		lua_gettable(L, index);
+	}
 	float z = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
@@ -908,6 +935,12 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	tableCheckOptions options;
 	std::vector<tableCheckKeyValPair> pairs;
 
+	sIndex = lFixedIndex(L, sIndex);
+
+	//First: check for (options) section
+	//Then: collect all key=val pairs
+	//If has options: do some generic checks
+	//Else: loop through all pairs and call checkDefinedPair on them
 	while (curIndex < end)
 	{
 		if (str[curIndex] == '(')
@@ -926,8 +959,6 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	if (hasOptions)
 	{
 		int numEntries = 0;
-		if (sIndex < 0)
-			sIndex--;
 
 		lua_pushnil(L);  /* first key */
 		while (lua_next(L, sIndex))
@@ -1040,8 +1071,6 @@ void checkTableStructure(lua_State *L, int sIndex, std::string structure)
 {
 	if (lua_type(L, sIndex) != LUA_TTABLE)
 		luaL_error(L, "argument must be a table");
-
-	int sTop = lua_gettop(L);
 
 	delBlank(structure);
 	if (findClosingBracketIndex(structure, 0, structure.length() - 1, '}', true) != structure.length() - 1)

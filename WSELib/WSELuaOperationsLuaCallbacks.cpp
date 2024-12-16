@@ -467,20 +467,22 @@ int lRemovePrsnt(lua_State *L)
 int lAddPsys(lua_State *L)
 {
 #if defined WARBAND
-	checkTableStructure(L, 1, 
+	//WSE->Log.Info("psys check format...");
+	checkTableStructure(L, 1,
 		"{id=str, [flags]={(val=num)}, mesh=str,\
-		num_particles=num, life=num, damping=num, gravity_strength=num, turbulance_size=num, turbulance_strength=num\
+		num_particles=num, life=num, damping=num, gravity_strength=num, turbulance_size=num, turbulance_strength=num,\
 		alpha_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
 		  red_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
 		green_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
 		 blue_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
 		scale_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
-		emit_box_size		= {1=num, 2=num, 3=num}\
-		emit_velocity	= {1=num, 2=num, 3=num}\
-		emit_dir_randomness = num\
-		rotation_speed = num\
-		rotation_damping = num\
+		emit_box_size		= {1=num, 2=num, 3=num},\
+		emit_velocity		= {1=num, 2=num, 3=num},\
+		emit_dir_randomness = num,\
+		rotation_speed		= num,\
+		rotation_damping	= num\
 	}");
+	//WSE->Log.Info("format good");
 
 	wb::particle_system new_sys = *rgl::_new<wb::particle_system>();
 
@@ -494,12 +496,16 @@ int lAddPsys(lua_State *L)
 	new_sys.mesh_name = lua_tostring(L, -1);
 	lua_pop(L, 1);
 
+	if (WSE->SettingsIni.Bool("general", "use_case_insensitive_mesh_searches")) new_sys.mesh_name.lower();
+
 	new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name);
+
 	if (new_sys.mesh == nullptr){
 		rgl::string name = new_sys.mesh_name;
 		rgl::_free((void*)&new_sys);
 		luaL_error(L, "addPsys: Could not find mesh %s", name.c_str());
 	}
+	//WSE->Log.Info("found mesh");
 
 	new_sys.flags = 0;
 	lua_getfield(L, 1, "flags");
@@ -580,22 +586,28 @@ int lAddPsys(lua_State *L)
 	new_sys.angular_damping = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
-	/*wb::particle_system &s = new_sys;
-	WSE->Log.Info("id: %s, flags: %i, mesh: %s", s.id, s.flags, s.mesh_name);
-	WSE->Log.Info("particles: %f, life: %f, damping: %f, grav: %f, turbsize: %f, trbstr: %f", s.num_particles, s.life, s.damping, s.gravity_strength, s.turbulence_size, s.turbulence_strength);
-	
-	WSE->Log.Info("alpha: %f, %f | %f %f", s.alpha[0].time, s.alpha[0].magnitude, s.alpha[1].time, s.alpha[1].magnitude);
-	WSE->Log.Info("red: %f, %f | %f %f", s.red[0].time, s.red[0].magnitude, s.red[1].time, s.red[1].magnitude);
-	WSE->Log.Info("green: %f, %f | %f %f", s.green[0].time, s.green[0].magnitude, s.green[1].time, s.green[1].magnitude);
-	WSE->Log.Info("blue: %f, %f | %f %f", s.blue[0].time, s.blue[0].magnitude, s.blue[1].time, s.blue[1].magnitude);
-	WSE->Log.Info("scale: %f, %f | %f %f", s.scale[0].time, s.scale[0].magnitude, s.scale[1].time, s.scale[1].magnitude);
-
-	WSE->Log.Info("emit box size: %f, %f, %f", s.emit_box_size.x, s.emit_box_size.y, s.emit_box_size.z);
-	WSE->Log.Info("emit velocity: %f, %f, %f", s.emit_velocity.x, s.emit_velocity.y, s.emit_velocity.z);
-
-	WSE->Log.Info("emit rand: %f, rotspeed: %f, rotdamp: %f", s.emit_randomness, s.angular_speed, s.angular_damping);*/
-
 	int index = warband->particle_system_manager.add_system(new_sys);
+	//WSE->Log.Info("done, index=%i", index);
+
+	/*for (int i = 0; i < warband->particle_system_manager.num_particle_systems; i++)
+	{
+		wb::particle_system &s = warband->particle_system_manager.particle_systems[i];
+		WSE->Log.Info("################################################################################");
+		WSE->Log.Info("id: %s, flags: %i, mesh: %s", s.id.c_str(), s.flags, s.mesh_name.c_str());
+		WSE->Log.Info("particles: %f, life: %f, damping: %f, grav: %f, turbsize: %f, trbstr: %f", s.num_particles, s.life, s.damping, s.gravity_strength, s.turbulence_size, s.turbulence_strength);
+
+		WSE->Log.Info("alpha: %f, %f | %f %f", s.alpha[0].time, s.alpha[0].magnitude, s.alpha[1].time, s.alpha[1].magnitude);
+		WSE->Log.Info("red: %f, %f | %f %f", s.red[0].time, s.red[0].magnitude, s.red[1].time, s.red[1].magnitude);
+		WSE->Log.Info("green: %f, %f | %f %f", s.green[0].time, s.green[0].magnitude, s.green[1].time, s.green[1].magnitude);
+		WSE->Log.Info("blue: %f, %f | %f %f", s.blue[0].time, s.blue[0].magnitude, s.blue[1].time, s.blue[1].magnitude);
+		WSE->Log.Info("scale: %f, %f | %f %f", s.scale[0].time, s.scale[0].magnitude, s.scale[1].time, s.scale[1].magnitude);
+
+		WSE->Log.Info("emit box size: %f, %f, %f", s.emit_box_size.x, s.emit_box_size.y, s.emit_box_size.z);
+		WSE->Log.Info("emit velocity: %f, %f, %f", s.emit_velocity.x, s.emit_velocity.y, s.emit_velocity.z);
+
+		WSE->Log.Info("emit rand: %f, rotspeed: %f, rotdamp: %f", s.emit_randomness, s.angular_speed, s.angular_damping);
+	}*/
+
 	lua_pushinteger(L, index);
 	return 1;
 #else
@@ -633,7 +645,7 @@ struct gameIterator
 	rgl::matrix pos;
 	float radius;
 	bool useGrid;
-	bool gridItSucc;
+	bool positional_succ;
 	wb::mission_grid_iterator grid_iterator;
 
 	int subKindNo;
@@ -698,27 +710,31 @@ void lAgentsIterAdvance(gameIterator *it)
 	{
 		if (it->useGrid)
 		{
+			WSE->Log.Info("iter advance: use grid");
 			if (warband->cur_mission->grid.advance_iterator(it->grid_iterator))
 			{
 				it->curVal = it->grid_iterator.agent_obj->agent->no;
-				it->gridItSucc = true;
 			}
 			else
-				it->gridItSucc = false;
+				it->positional_succ = false;
 		}
 		else
 		{
-			warband->cur_mission->agents.get_next_valid_index(it->curVal);
-
-			for (; it->curVal < warband->cur_mission->agents.size(); it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal))
+			WSE->Log.Info("iter advance: use not grid");
+			
+			for (it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal); it->curVal < warband->cur_mission->agents.size(); it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal))
 			{
 				wb::agent *agent = &warband->cur_mission->agents[it->curVal];
-				if ((it->pos.o - agent->position).length() <= it->radius) break;
+				if ((it->pos.o - agent->position).length() <= it->radius){
+					return;
+				}
 			}
+			it->positional_succ = false;
 		}
 	}
 	else
 	{
+		WSE->Log.Info("iter advance: no pos");
 		it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal);
 	}
 }
@@ -726,9 +742,7 @@ void lAgentsIterAdvance(gameIterator *it)
 bool lAgentsIterCurValIsValid(gameIterator *it)
 {
 	if (it->usePos)
-	{
-		return it->gridItSucc;
-	}
+		return it->positional_succ;
 	else
 		return it->curVal < warband->cur_mission->agents.size();
 }
@@ -742,6 +756,8 @@ int lAgentsIterInit(lua_State *L)
 
 	if (checkLArgs(L, 0, 3, lNum|lPos, lNum, lAny)) //pos, radius, use_grid
 	{
+		//Iteration with position and radius
+
 		if (lua_gettop(L) < 2)
 			luaL_error(L, "not enough arguments");
 
@@ -751,7 +767,7 @@ int lAgentsIterInit(lua_State *L)
 		{
 			int preg = lua_tointeger(L, 1);
 			if (preg < 0 || preg >= NUM_REGISTERS)
-				luaL_error(L, "index out of range");
+				luaL_error(L, "pos index out of range");
 			it.pos = warband->basic_game.position_registers[preg];
 		}
 		else
@@ -759,28 +775,31 @@ int lAgentsIterInit(lua_State *L)
 
 		it.radius = (float)lua_tonumber(L, 2);
 		it.useGrid = lIsTrue(L, 3);
+		it.positional_succ = false;
 
 		if (it.useGrid)
 		{
 			if (warband->cur_mission->grid.initialize_iterator(it.grid_iterator, it.pos.o, it.radius))
 			{
 				it.curVal = it.grid_iterator.agent_obj->agent->no;
-				it.gridItSucc = true;
+				it.positional_succ = true;
 			}
-			else
-				it.gridItSucc = false;
 		}
 		else
 		{
 			for (it.curVal = warband->cur_mission->agents.get_first_valid_index(); it.curVal < warband->cur_mission->agents.size(); it.curVal = warband->cur_mission->agents.get_next_valid_index(it.curVal))
 			{
 				wb::agent *agent = &warband->cur_mission->agents[it.curVal];
-				if ((it.pos.o - agent->position).length() <= it.radius) break;
+				if ((it.pos.o - agent->position).length() <= it.radius){
+					it.positional_succ = true;
+					break;
+				}
 			}
 		}
 	}
 	else
 	{
+		//Iterate over all agents
 		it.usePos = false;
 		it.curVal = warband->cur_mission->agents.get_first_valid_index();
 	}
