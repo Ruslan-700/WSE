@@ -1,4 +1,7 @@
 #include <chrono>
+#include <math.h>
+
+#define _USE_MATH_DEFINES
 
 #include "WSELuaOperationsLuaCallbacks.h"
 #include "WSELuaOperationsHelpers.h"
@@ -579,7 +582,7 @@ int lAddPsys(lua_State *L)
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "rotation_speed");
-	new_sys.angular_speed = (float)lua_tonumber(L, -1);
+	new_sys.angular_speed = (float)lua_tonumber(L, -1) * (float)M_PI / 180.0f;
 	lua_pop(L, 1);
 
 	lua_getfield(L, 1, "rotation_damping");
@@ -710,7 +713,6 @@ void lAgentsIterAdvance(gameIterator *it)
 	{
 		if (it->useGrid)
 		{
-			WSE->Log.Info("iter advance: use grid");
 			if (warband->cur_mission->grid.advance_iterator(it->grid_iterator))
 			{
 				it->curVal = it->grid_iterator.agent_obj->agent->no;
@@ -720,8 +722,6 @@ void lAgentsIterAdvance(gameIterator *it)
 		}
 		else
 		{
-			WSE->Log.Info("iter advance: use not grid");
-			
 			for (it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal); it->curVal < warband->cur_mission->agents.size(); it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal))
 			{
 				wb::agent *agent = &warband->cur_mission->agents[it->curVal];
@@ -734,7 +734,6 @@ void lAgentsIterAdvance(gameIterator *it)
 	}
 	else
 	{
-		WSE->Log.Info("iter advance: no pos");
 		it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal);
 	}
 }

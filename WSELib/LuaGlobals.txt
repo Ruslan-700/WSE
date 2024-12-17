@@ -60,6 +60,18 @@ printTable = function(t, prefix)
     end
 end
 
+make = function(_table, ...)
+    local curTable = _table
+
+    for i = 1, select("#", ...) do
+        local curKey = select(i, ...)
+        if not curTable[curKey] then curTable[curKey] = {} end
+        curTable = curTable[curKey]
+    end
+
+    return curTable
+end
+
 ------------access to module operations------------
 game.mt = {
 	__index = function(table, key)
