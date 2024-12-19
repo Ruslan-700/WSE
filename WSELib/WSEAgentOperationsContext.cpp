@@ -867,4 +867,12 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_ai_set_can_fight", nullptr, Both, WSE2, 2, 2,
 		"Enables or disables <0>'s engaging enemy for ai",
 		"agent_no", "value");
+
+	RegisterOperation("agent_fade_out_advanced", nullptr, Both, WSE2, 2, 2,
+		"Makes the <0> disappear within specified time <1>. The agent is not deleted, but made invisible.",
+		"agent_no", "value_fixed_point");
+
+	RegisterOperation("agent_fade_in_advanced", nullptr, Both, WSE2, 2, 2,
+		"Makes the <0> reappear within specified time <1>.",
+		"agent_no", "value_fixed_point");
 }
