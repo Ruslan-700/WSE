@@ -704,9 +704,10 @@
 						set_fixed_point_multiplier(100),
 						position_get_x(":x", 0), <span class="comment">#get pos0_x in centimeters</span>
 					</pre>
-					<p>In Lua it's simpler, "1.0" means 1 meter, "0.01" means 1 centimeter.</p>
+					<p>In Lua it's simpler, you work with floating point numbers. "1.0" always means 1 meter, "0.01" always means 1 centimeter.</p>
 					<pre class="code">
-						print(game.preg[0].o.x) <span class="comment">--meters with decimal places</span>
+						<span class="comment">--this is equivalent to above modsys example</span>
+						print(game.preg[0].o.x) <span class="comment">--pos0_x float</span>
 					</pre>
 
 					<ul>
@@ -1100,6 +1101,9 @@
 						 It will make sure that <span class="keyword">table.a.b</span> exists and return it, but won't overwrite anything that already exists.
 						</li>
 						<li style="padding-left: 20px; padding-top: 10px;">
+							<span class="keyword">getTime()</span> get time in milliseconds since program start, using <span class="keyword">std::chrono::steady_clock</span>
+						</li>
+						<li style="padding-left: 20px; padding-top: 10px;">
 							<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt" target="_blank" rel="noopener noreferrer">Lua startup code (sourceforge)</a>
 						</li>
 					</ul>
@@ -1132,10 +1136,14 @@
 			</div>
 			<div class="content_block">
 				<div class="content_block_caption">Notice</div>
-				<div>
-					<p>The Lua/C stack (used to pass parameters and return values from modsys to lua and back) is automatically cleared when it reaches a size of 100. This is to prevent stack overflows.</p>
-					<p>When using (lua_call) operation, there is always a traceback function pushed to the stack before the call (this is to provide debug info in case of error). WSE should remove this when it's done, but it doesn't, and changing the behaviour now might break user code that relies on fixed stack indices. Therefore you have to keep this in mind when using lua_call, your stack will grow even if there are no return values. It's a good habit to use (lua_set_top, 0) before starting to call lua functions, so you always know you're starting with a clean stack.</p>
-				</div>
+				<ul>
+					<li>The Lua/C stack (used to pass parameters and return values from modsys to lua and back) is automatically cleared when it reaches a size of 100. This is to prevent stack overflows.</li>
+					<li>When using (lua_call) operation, there is always a traceback function pushed to the stack before the call (this is to provide debug info in case of error).
+						WSE should remove this when it's done, but it doesn't, and changing the behaviour now might break user code that relies on fixed stack indices.
+						Therefore you have to keep this in mind when using lua_call, your stack will grow even if there are no return values.
+						It's a good habit to use (lua_set_top, 0) before starting to call lua functions, so you always know you're starting with a clean stack.</li>
+					<li>All lua standard libraries are loaded on game start.</li>
+				</ul>
 			</div>
 		</div>
 
@@ -1531,6 +1539,7 @@
 	<script>
 		var sound_path = "C:/Program Files (x86)/Steam/steamapps/common/MountBlade Warband/Sounds/";
 
+		//Automate hide button creation
 		var contentCaptions = document.getElementsByClassName("content_block_caption");
 		for(let i = 0; i < contentCaptions.length; i++){
 			var nodeCount = 0;
@@ -1553,11 +1562,17 @@
 			var caption = contentCaptions[i].innerHTML;
 			contentCaptions[i].innerHTML = "<div id='content_block_" + i + "_button'" 
 				+ " class='button_hide button_hide_small'>&nbsp;</div>" + caption;
+
 		}
 
 		var hideBtns = document.getElementsByClassName("button_hide");
 		for(var i = 0; i < hideBtns.length; i++){
 			hideBtns[i].innerHTML = "</div><div class='button_hide_inner button_hide_plus'></div><div class='button_hide_inner button_hide_minus'>";
+		}
+
+		//Hide all 2nd level items by default, for overview
+		for(let i = 0; i < contentCaptions.length; i++){
+			toggleHide("content_block_" + i);
 		}
 
 		updateBtnThemeSwitchText();
@@ -1578,7 +1593,7 @@
 			return true;
 		}
 
-		//remove extra whitespace
+		//remove extra whitespace in code blocks
 		for(block of document.getElementsByTagName("pre")) 
 		{
 			if(!block.classList.contains("code")){continue;}
