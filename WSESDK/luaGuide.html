@@ -297,11 +297,100 @@
 			width: 141px;
 			height: 98px;
 		}
+
+		/* syntax highlighting Dark */
+		pre code.hljs {
+			display: block;
+			overflow-x: auto;
+			padding: 1em
+		}
+
+		code.hljs {
+			padding: 3px 5px
+		}
+
+		.hljs {
+			/* color: #abb2bf; */
+			/* background: #282c34 */
+		}
+
+		.hljs-keyword,.hljs-operator,.hljs-pattern-match {
+			color: #f92672
+		}
+
+		.hljs-function,.hljs-pattern-match .hljs-constructor {
+			color: #61aeee
+		}
+
+		.hljs-function .hljs-params {
+			color: #a6e22e
+		}
+
+		.hljs-function .hljs-params .hljs-typing {
+			color: #fd971f
+		}
+
+		.hljs-module-access .hljs-module {
+			color: #7e57c2
+		}
+
+		.hljs-constructor {
+			color: #e2b93d
+		}
+
+		.hljs-constructor .hljs-string {
+			color: #9ccc65
+		}
+
+		.hljs-comment,.hljs-quote {
+			color: #659ad3;
+			font-style: italic
+		}
+
+		.hljs-doctag,.hljs-formula {
+			color: #c678dd
+		}
+
+		.hljs-deletion,.hljs-name,.hljs-section,.hljs-selector-tag,.hljs-subst {
+			color: #e06c75
+		}
+
+		.hljs-literal {
+			color: #56b6c2
+		}
+
+		.hljs-addition,.hljs-attribute,.hljs-meta .hljs-string,.hljs-regexp,.hljs-string {
+			color: #98c379
+		}
+
+		.hljs-built_in,.hljs-class .hljs-title,.hljs-title.class_ {
+			color: #e6c07b
+		}
+
+		.hljs-attr,.hljs-number,.hljs-selector-attr,.hljs-selector-class,.hljs-selector-pseudo,.hljs-template-variable,.hljs-type,.hljs-variable {
+			color: #d19a66
+		}
+
+		.hljs-bullet,.hljs-link,.hljs-meta,.hljs-selector-id,.hljs-symbol,.hljs-title {
+			color: #61aeee
+		}
+
+		.hljs-emphasis {
+			font-style: italic
+		}
+
+		.hljs-strong {
+			font-weight: 700
+		}
+
+		.hljs-link {
+			text-decoration: underline
+		}
 	</style>
 
 	<style> /* light theme */
 		body{
-			background-color: white;
+			background-color: #f1f1f1;
 		}
 
 		.button_hide{
@@ -317,12 +406,13 @@
 		}
 
 		.keyword{
-			background-color: #C5FFE3;
+			background-color: #c6ffc7;
 		}
 
 		.code{
-			background-color: #cde9ff;
+			background-color: #ecf7ff;
 			color: black;
+			border: 1px solid #bebeff;
 		}
 
 		.comment{
@@ -331,6 +421,71 @@
 
 		h2:hover{
 			background-color: rgb(55 55 55 / 10%);
+		}
+
+		/* Syntax highlighting Light*/
+		pre code.hljs {
+			display: block;
+			overflow-x: auto;
+			padding: 1em
+		}
+		code.hljs {
+			padding: 3px 5px
+		}
+		/*
+
+		Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+		*/
+		.hljs {
+			/* background: white; */
+			/* color: black */
+		}
+		.hljs-comment,
+		.hljs-quote,
+		.hljs-variable {
+			color: #008000
+		}
+		.hljs-keyword,
+		.hljs-selector-tag,
+		.hljs-built,
+		.hljs-name,
+		.hljs-tag {
+			color: #00f
+		}
+		.hljs-string,
+		.hljs-title,
+		.hljs-section,
+		.hljs-attribute,
+		.hljs-literal,
+		.hljs-template-tag,
+		.hljs-template-variable,
+		.hljs-type,
+		.hljs-addition {
+			color: #a31515
+		}
+		.hljs-deletion,
+		.hljs-selector-attr,
+		.hljs-selector-pseudo,
+		.hljs-meta {
+			color: #2b91af
+		}
+		.hljs-doctag {
+			color: #808080
+		}
+		.hljs-attr {
+			color: #f00
+		}
+		.hljs-symbol,
+		.hljs-bullet,
+		.hljs-link {
+			color: #00b0e8
+		}
+		.hljs-emphasis {
+			font-style: italic
+		}
+		.hljs-strong {
+			font-weight: bold
 		}
 	</style>
 
@@ -364,7 +519,8 @@
 			font-family: VT323, monospace;
 		}
 
-		.code{
+		.code,
+		.code > code{
 			background-color: #002000;
 			color: #00FF00;
 			font-family: VT323, monospace;
@@ -372,6 +528,11 @@
 
 		.comment{
 			color: rgb(0,120,0);
+		}
+
+		#ee{
+			font-family: VT323, monospace;
+			font-size: xxx-large;
 		}
 
 		#asterix{
@@ -438,18 +599,26 @@
 		{
 			document.getElementById("btnThemeSwitch").innerHTML = themeNames[curTheme];
 		}
-		function switchTheme()
+		function setTheme(index)
+		{
+			index = Math.max(Math.min(index, document.styleSheets.length - 1), 1);
+
+			document.styleSheets[curTheme].disabled = true;
+			document.styleSheets[index].disabled    = false;
+
+			curTheme = index;
+			updateBtnThemeSwitchText();
+
+			localStorage.setItem("theme_index", curTheme);
+		}
+		function cycleTheme()
 		{
 			document.getElementById('bd').style.backgroundImage = "";
-			document.styleSheets[curTheme].disabled = true;
 
-			curTheme++;
-			if(curTheme >= document.styleSheets.length){
-				curTheme = 1;
-			}
-
-			document.styleSheets[curTheme].disabled = false;
-			updateBtnThemeSwitchText();
+			index = curTheme + 1;
+			if(index >= document.styleSheets.length) index = 1;
+			
+			setTheme(index);
 		}
 		for(var i = 1; i < document.styleSheets.length; i++){
 			if(i != curTheme){
@@ -457,13 +626,15 @@
 			}
 		}
 	</script>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.0/highlight.min.js"></script>
 </head>
 
 <body id="bd">
 	<div>
 		<div style="font-size: 11px">version from 23.12.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
-			<button id="btnThemeSwitch" onclick="switchTheme()">Light</button>
+			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
 			<button onclick="minimizeAll()">Minimize all</button>
 		</div>
 
@@ -510,7 +681,7 @@
 					<div style="display: flex; align-items: center;">
 						<pre class="code code2">local area = math.pi * r^2</pre>
 						&nbsp;&nbsp;instead of&nbsp;&nbsp;
-						<pre class="code code2">
+						<pre class="code code2" ms>
 							(store_mul, ":area", ":r", ":r"),
 							(val_mul, ":area", 314159),
 							(val_div, ":area", 100000), <span class="comment"># *(314159/100000)=*PI</span>
@@ -553,7 +724,7 @@
 					<p>String and pos arguments are passed to the game via the games registers (overwritting them), starting from reg[128] and counting downwards.</p>
 					<p>Notice that the argument type matters. For example, if an operation expects an integer, you cannot pass a string that contains a number.</p>
 					<p>Return values are:</p>
-					<pre class="code">
+					<pre class="code" txt>
 						boolDidNotFail, intError						= game.cf_operation(arg1, arg2, ...) for can_fail operations
 						intResult, intError									= game.lhs_operation(lhs_arg, arg1, arg2, ...) for lhs operations
 						boolDidNotFail, intResult, intError	= game.cf_lhs_operation(lhs_arg, arg1, arg2, ...) for operations which are both can_fail and lhs
@@ -615,7 +786,7 @@
 						This table will be filled with all the constants from that file.<br>
 						If there are two files with the same <span class="keyword">[name]</span>, e.g. header_scenes and ID_scenes, the tables will get merged.</p>
 					<p>As of the current version, only lines that match one of the two following regexes (regular expressions) will be accepted:</p>
-					<pre class="code">
+					<pre class="code" txt>
 						^(\w+)=(((-)?0x[\da-fA-F]+)|((-)?\d+(\.\d+)?))$
 						^(\w+)=(\w+)$
 					</pre>
@@ -698,7 +869,7 @@
 					<p>To work with positions, the following "classes" are provided: <span class="keyword">game.rotation, game.pos and vector3</span> (see under miscellaneous)</p>
 					<p>Keep in mind that these don't need the fixed point multiplier that the module system requires you to use.</p>
 					<p>The MS multiplier is essentially a way of specifying the current unit of length.</p>
-					<pre class="code">
+					<pre class="code" ms>
 						set_fixed_point_multiplier(1),
 						position_get_x(":x", 0), <span class="comment">#get pos0_x in meters</span>
 						set_fixed_point_multiplier(100),
@@ -780,7 +951,7 @@
 				<div>
 					<p>You can add presentations using <span class="keyword">index = game.addPrsnt(tablePrsnt)</span></p>
 					<p>tablePrsnt must have the following format</p>
-					<pre class="code">
+					<pre class="code" txt>
 						tablePrsnt = {
 							id = str,
 							[flags] = {int, int, ...},
@@ -829,7 +1000,7 @@
 				<div>
 					<p>You can add particle systems using <span class="keyword">index = game.addPsys(tablePsys)</span></p>
 					<p>tablePsys must have the following format</p>
-					<pre class="code">
+					<pre class="code" txt>
 						tablePsys = {
 							id = str, [flags] = {int, int, ...}, mesh = str,
 							num_particles = int, life = num, damping = num, gravity_strength = num, turbulance_size = num, turbulance_strength = num,
@@ -889,7 +1060,7 @@
 					<p>If the second return value is a number, the module system will think it is executing a lhs operation and try to set the return value</p>
 					<p>If the callback returns three values, the module system will think it is executing a cf/lhs operation. The 2nd return value must be the cf value and the 3rd the lhs value</p>
 					<p>In short, the variants are:</p>
-					<pre class="code">
+					<pre class="code" txt>
 						boolExecute
 						boolExecute, boolFail
 						boolExecute, numLhs
@@ -1001,7 +1172,7 @@
 								<p style="padding-left: 20px;"><span class="keyword">game.fail()</span>, when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
 							</div>
 							<p style="padding-left: 30px;">Example:</p>
-							<pre class="code">
+							<pre class="code" ms>
 								(try_begin),
 										(lua_push_int, 456),
 										(lua_call, "@is123", 1),
@@ -1225,7 +1396,7 @@
 			<div class="content_block">
 				<div class="content_block_caption">Quickly reload main.lua when typing "reloadMain" in server console</div>
 				<p>All this does is call dofile. Be careful, it is not equivalent to a full restart.</p>
-				<pre class="code code2">
+				<pre class="code code2" ms>
 					("wse_console_command_received", [ <span class="comment">#this is a script that WSE adds</span>
 							(store_script_param, ":command_type", 1),
 						
@@ -1358,7 +1529,7 @@
 				</pre>
 				<br><br>
 				<p style="margin-bottom: 0;">Modsys example:</p>
-				<pre class="code code2">
+				<pre class="code code2" ms>
 					(lua_push_int, 2000),
 					(lua_push_int, "script_for_timeout"),
 					(lua_push_int, ":var1"),
@@ -1618,6 +1789,14 @@
 
 			block.innerHTML = "<span>" + lines.join("\n") +  "</span>";
 
+			if(block.hasAttribute("ms"))
+			{
+				block.innerHTML = "<code class='language-python'>" + block.innerHTML + "</code>";
+			}
+			else if(!block.hasAttribute("txt")){
+				block.innerHTML = "<code class='language-lua'>" + block.innerHTML + "</code>";
+			}
+
 			let copy = block.appendChild(document.createElement("div"));
 			copy.className = "code_copy";
 
@@ -1638,5 +1817,10 @@
 				});
 			}
 		};
+
+		var index = localStorage.getItem("theme_index");
+		if(index) setTheme(index);
+
+		hljs.highlightAll(); //syntax highlighting
 	</script>
 </body>
