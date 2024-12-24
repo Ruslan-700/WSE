@@ -51,10 +51,12 @@ void checkStackIndex(WSELuaOperationsContext *context, int index);
 bool lIsVec3(lua_State *L, int index);
 bool lIsRot(lua_State *L, int index);
 bool lIsPos(lua_State *L, int index);
+bool lIsTrue(lua_State *L, int index);
 
 rgl::vector4 lToVec3(lua_State *L, int index);
 rgl::orientation lToRot(lua_State *L, int index);
 rgl::matrix lToPos(lua_State *L, int index);
+void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2]);
 
 void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);

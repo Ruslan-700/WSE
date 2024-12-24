@@ -170,6 +170,7 @@ void setOperandToLocalVar(__int64 &operand, int localsIndex)
 	operand = ((__int64)17 << 56) + localsIndex;
 }
 
+//Return: Number of arguments
 int checkLArgs(lua_State *L, int minCount, int maxCount, ...) //TODO -- maxCount??
 {
 	int numArgs = lua_gettop(L);
@@ -283,6 +284,12 @@ void checkStackIndex(WSELuaOperationsContext *context, int index)
 		context->ScriptError("invalid stack index: %d", index);
 }
 
+//Negative index is used to count from the top, but it will shift when things are added. This function returns a fixed (positive) index.
+inline int lFixedIndex(lua_State *L, int index)
+{
+	return index < 0 ? (index + lua_gettop(L) + 1) : index;
+}
+
 bool lIsVec3(lua_State *L, int index)
 {
 	if (lua_type(L, index) == LUA_TTABLE)
@@ -343,17 +350,44 @@ bool lIsPos(lua_State *L, int index)
 	return false;
 }
 
+//It's like lua_toboolean except that 0.0 is false too.
+bool lIsTrue(lua_State *L, int index)
+{
+	if (lua_isnumber(L, index)) return ((float)lua_tonumber(L, index) != 0.0f);
+	return lua_toboolean(L, index) != 0; //Supress warning...
+}
+
 rgl::vector4 lToVec3(lua_State *L, int index)
 {
+	index = lFixedIndex(L, index);
+
 	lua_getfield(L, index, "x");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 1);
+		lua_gettable(L, index);
+	}
 	float x = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "y");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 2);
+		lua_gettable(L, index);
+	}
 	float y = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
 	lua_getfield(L, index, "z");
+	if (lua_isnil(L, -1))
+	{
+		lua_pop(L, 1);
+		lua_pushinteger(L, 3);
+		lua_gettable(L, index);
+	}
 	float z = (float)lua_tonumber(L, -1);
 	lua_pop(L, 1);
 
@@ -392,6 +426,49 @@ rgl::matrix lToPos(lua_State *L, int index)
 	lua_pop(L, 1);
 
 	return pos;
+}
+
+void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2])
+{
+	if (index < 0) index--; //we always push something before we use index
+
+	//get key1 = t[1]
+	lua_pushinteger(L, 1);
+	lua_gettable(L, index);
+
+		//time = key1[1]
+		lua_pushinteger(L, 1);
+		lua_gettable(L, -2);
+		pair[0].time = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		//mag = key1[2]
+		lua_pushinteger(L, 2);
+		lua_gettable(L, -2);
+		pair[0].magnitude = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+	//pop key1
+	lua_pop(L, 1);
+
+	//get key2 = t[2]
+	lua_pushinteger(L, 2);
+	lua_gettable(L, index);
+
+		//time = key2[1]
+		lua_pushinteger(L, 1);
+		lua_gettable(L, -2);
+		pair[1].time = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+		//mag = key2[2]
+		lua_pushinteger(L, 2);
+		lua_gettable(L, -2);
+		pair[1].magnitude = (float)lua_tonumber(L, -1);
+		lua_pop(L, 1);
+
+	//pop key2
+	lua_pop(L, 1);
 }
 
 void lPushChild(lua_State *L, const std::string &name)
@@ -578,7 +655,6 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		constants.push_back(con);
 	}
 }
-
 
 /************   table arg checking    ************/
 bool inline isAlphaNumeric(char c)
@@ -859,6 +935,12 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	tableCheckOptions options;
 	std::vector<tableCheckKeyValPair> pairs;
 
+	sIndex = lFixedIndex(L, sIndex);
+
+	//First: check for (options) section
+	//Then: collect all key=val pairs
+	//If has options: do some generic checks
+	//Else: loop through all pairs and call checkDefinedPair on them
 	while (curIndex < end)
 	{
 		if (str[curIndex] == '(')
@@ -877,8 +959,6 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	if (hasOptions)
 	{
 		int numEntries = 0;
-		if (sIndex < 0)
-			sIndex--;
 
 		lua_pushnil(L);  /* first key */
 		while (lua_next(L, sIndex))
@@ -943,7 +1023,14 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	{
 		for (size_t i = 0; i < pairs.size(); i++)
 		{
-			lua_getfield(L, sIndex, pairs[i].key.name.c_str());
+			if (isStrNumber(pairs[i].key.name)){ //can't use getfield for integer key
+				lua_pushinteger(L, std::stoi(pairs[i].key.name));
+				lua_gettable(L, sIndex);
+			}
+			else
+			{
+				lua_getfield(L, sIndex, pairs[i].key.name.c_str());
+			}
 
 			if (lua_type(L, -1) == LUA_TNIL && pairs[i].key.optional)
 				continue;
@@ -961,12 +1048,29 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 	return true;
 }
 
+/*	
+	Compare table value at sIndex with structure string
+	Structure syntax: 
+		"{<key>=<type>, <key>={<key>=<type>, ...}, <key>={(<options>)}, <key>={(<options>) <key>=<type>, ...}, [<optional_key>]=<type>, ...}"
+		
+		<options>:
+			[key]=<type>, [val]=<type>, [min]=<num>, [max]=<num>
+		
+			key means all keys must have certain type
+			same for val
+			min, max limit number of items
+
+		<type>: check lShortTypeNames at the top of this file. You can also use "any", and have multiple allowed types with "|".
+
+		<key>: A string or integer, if int it will in fact not check e.g. table["2"] but table[2]
+
+		Spaces and tabs are fine to use, as many as you want.
+	This comment was written years after the fact, use your own judgement as well!
+*/
 void checkTableStructure(lua_State *L, int sIndex, std::string structure)
 {
 	if (lua_type(L, sIndex) != LUA_TTABLE)
 		luaL_error(L, "argument must be a table");
-
-	int sTop = lua_gettop(L);
 
 	delBlank(structure);
 	if (findClosingBracketIndex(structure, 0, structure.length() - 1, '}', true) != structure.length() - 1)
