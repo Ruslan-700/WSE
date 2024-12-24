@@ -18,7 +18,10 @@ int lGetGvarHandler(lua_State *L);
 int lSetGvarHandler(lua_State *L);
 
 int lGetScriptNo(lua_State *L);
+int lGetCurTemplateNo(lua_State *L);
 int lGetCurTemplateId(lua_State *L);
+int lGetNumTemplates(lua_State *L);
+int lGetTemplateId(lua_State *L);
 
 int lAddTrigger(lua_State *L);
 int lRemoveTrigger(lua_State *L);

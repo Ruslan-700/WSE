@@ -243,8 +243,9 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...) //TODO -- maxCount
 int getTemplateNo(const char *id)
 {
 	for (int i = 0; i < warband->num_mission_templates; i++)
-		if (warband->mission_templates[i].id == id)
-			return i;
+	{
+		if (warband->mission_templates[i].id == id) return i;
+	}
 
 	return -1;
 }
@@ -252,8 +253,9 @@ int getTemplateNo(const char *id)
 int getItemKindNo(const char *id)
 {
 	for (int i = 0; i < warband->num_item_kinds; i++)
-		if (warband->item_kinds[i].id == id)
-			return i;
+	{
+		if (warband->item_kinds[i].id == id) return i;
+	}
 
 	return -1;
 }

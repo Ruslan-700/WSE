@@ -258,8 +258,17 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lGetScriptNo);
 	lua_setfield(L, -2, "getScriptNo");
 
+	lua_pushcfunction(L, lGetCurTemplateNo);
+	lua_setfield(L, -2, "getCurTemplateNo");
+
 	lua_pushcfunction(L, lGetCurTemplateId);
 	lua_setfield(L, -2, "getCurTemplateId");
+
+	lua_pushcfunction(L, lGetNumTemplates);
+	lua_setfield(L, -2, "getNumTemplates");
+
+	lua_pushcfunction(L, lGetTemplateId);
+	lua_setfield(L, -2, "getTemplateId");
 
 	lua_pushcfunction(L, lAddTrigger);
 	lua_setfield(L, -2, "addTrigger");

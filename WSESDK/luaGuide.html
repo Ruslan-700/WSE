@@ -165,6 +165,14 @@
 		    font-style: italic;
 		    font-size: xx-large;
 		}
+
+		.padl20{
+			padding-left: 20px;
+		}
+
+		.padli > li{
+			padding-bottom: 1em;
+		}
 	</style>
 
 	<style> /* dark theme */
@@ -810,7 +818,7 @@
 			<div class="content_block">
 				<div class="content_block_caption">Triggers</div>
 				<div>
-					<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
+					<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId|intTemplateNo, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
 					<p>These work exactly like module system triggers. Times can be float values or values from header_triggers.py (the numbers, string names are not supported yet), just like you would do it in the MS. If conditionsCallback returns false, consequencesCallback will not be executed. If it returns true or nothing, consequencesCallback will be executed.</p>
 					<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 					<p style="padding-left: 30px;">Example:</p>
@@ -1137,16 +1145,16 @@
 			<div class="content_block">
 				<div class="content_block_caption">Other functions:</div>
 				<div>
-					<ul>
+					<ul class="padli">
 						<li>
 							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.getScriptNo(script_name)</span>, use in conjunction with game.call_script(scriptNo, ...)</p>
-								<p style="padding-left: 30px;">Example:</p>
+								<p><span class="keyword">game.getScriptNo(script_name)</span> use in conjunction with game.call_script(scriptNo, ...)</p>
+								<p style="padding-left: 10px;">Example:</p>
 								<pre class="code">
 									local no = game.getScriptNo("game_start")
 									game.call_script(no)
 								</pre>
-								<p style="padding-left: 20px;">
+								<p style="padding-left: 10px;">
 									WSE Update now provides a wrapper: <span class="keyword">game.script.[name]</span>
 									<pre class="code">
 										game.call_script(game.script.game_start)
@@ -1155,23 +1163,25 @@
 							</div>
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.getCurTemplateId()</span>, returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.</p>
-							</div>
+							<span class="keyword">game.getCurTemplateNo()</span> returns the index of the current mission template. Note that no template will be loaded at the time main.lua is executed.
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.OnRglLogWrite(str)</span>, this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
-								A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.
-								Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
-								</p>
-							</div>
+							<span class="keyword">game.getCurTemplateId()</span> returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.fail()</span>, when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
-							</div>
-							<p style="padding-left: 30px;">Example:</p>
+							<span class="keyword">game.getNumTemplates()</span> returns number of mission templates.
+						</li>
+						<li>
+							<span class="keyword">game.getTemplateId(index)</span> returns the id/name of mission template at index.
+						</li>
+						<li>
+							<span class="keyword">game.OnRglLogWrite(str)</span> this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
+							A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.
+							Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
+						</li>
+						<li>
+							<p><span class="keyword">game.fail()</span> when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
+							<p style="padding-left: 10px;">Example:</p>
 							<pre class="code" ms>
 								(try_begin),
 										(lua_push_int, 456),
@@ -1191,17 +1201,14 @@
 							</pre>
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span>, this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
-							</div>
+							<p><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span> this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
 						</li>
 					</ul>
-					<p>&nbsp;</p>
 					<p style="padding-left: 10px">Other WSE LUA API functions - these could be useful for advanced users, but you should get along fine without ever using them.</p>
-					<ul>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.execOperation(strOperationName, arg1, arg2, ....)</span> - see operations</p></li>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.getReg(intTypeId, intIndex)</span> typeIds are: 0 = int, 1 = str, 2 = pos</p></li>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.setReg(intTypeId, intIndex, val)</span></p></li>
+					<ul class="padli">
+						<li><span class="keyword">game.execOperation(strOperationName, arg1, arg2, ....)</span> - see operations</li>
+						<li><span class="keyword">game.getReg(intTypeId, intIndex)</span> typeIds are: 0 = int, 1 = str, 2 = pos</li>
+						<li><span class="keyword">game.setReg(intTypeId, intIndex, val)</span></li>
 					</ul>
 				</div>
 			</div>
