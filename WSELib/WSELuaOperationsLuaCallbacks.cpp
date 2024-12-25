@@ -220,20 +220,41 @@ int lGetScriptNo(lua_State *L)
 	return 1;
 }
 
+int lGetCurTemplateNo(lua_State *L)
+{
+	lua_pushinteger(L, warband->cur_mission->cur_mission_template_no);
+	return 1;
+}
+
 int lGetCurTemplateId(lua_State *L)
 {
 	lua_pushstring(L, warband->mission_templates[warband->cur_mission->cur_mission_template_no].id);
 	return 1;
 }
 
+int lGetNumTemplates(lua_State *L)
+{
+	lua_pushinteger(L, warband->num_mission_templates);
+	return 1;
+}
+
+int lGetTemplateId(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lNum);
+
+	int tNo = lua_tointeger(L, 1);
+	if (tNo < 0 || tNo >= warband->num_mission_templates)
+		luaL_error(L, "invalid template no: %d", tNo);
+
+	lua_pushstring(L, warband->mission_templates[tNo].id);
+	return 1;
+}
+
 int lAddTrigger(lua_State *L)
 {
-	int numArgs = checkLArgs(L, 5, 6, lStr, lNum, lNum, lNum, lFunc, lFunc);
+	int numArgs = checkLArgs(L, 5, 6, lStr|lNum, lNum, lNum, lNum, lFunc, lFunc);
 
-	const char *tId = lua_tostring(L, 1);
-	int tNo = getTemplateNo(tId);
-	if (tNo < 0)
-		luaL_error(L, "invalid template id: %s", tId);
+	int tNo = lToTemplateNo(L, 1);
 
 	wb::trigger newT;
 
@@ -281,18 +302,24 @@ int lAddTrigger(lua_State *L)
 
 int lRemoveTrigger(lua_State *L)
 {
-	int numArgs = checkLArgs(L, 2, 2, lStr, lNum);
+	int numArgs = checkLArgs(L, 2, 2, lStr|lNum, lNum);
 
-	const char *tId = lua_tostring(L, 1);
+	int tNo = lToTemplateNo(L, 1);
 	int index = lua_tointeger(L, 2);
-
-	int tNo = getTemplateNo(tId);
-	if (tNo < 0)
-		luaL_error(WSE->LuaOperations.luaState, "invalid template id: %s", tId);
 
 	bool succ = warband->mission_templates[tNo].removeTrigger(index);
 
 	lua_pushboolean(L, succ ? 1 : 0);
+	return 1;
+}
+
+int lGetNumTriggers(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
+
+	int tNo = lToTemplateNo(L, 1);
+	
+	lua_pushinteger(L, warband->mission_templates[tNo].triggers.num_triggers);
 	return 1;
 }
 

@@ -165,6 +165,27 @@
 		    font-style: italic;
 		    font-size: xx-large;
 		}
+
+		.padl20{
+			padding-left: 20px;
+		}
+
+		.padli > li{
+			padding-bottom: 1em;
+		}
+
+		.tw_smiley{
+  			background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABhGlDQ1BJQ0MgcHJvZmlsZQAAKJF9kT1Iw0AcxV9TtSJVBzuoOGSoTnZREcdSxSJYKG2FVh1MLv2CJg1Jiouj4Fpw8GOx6uDirKuDqyAIfoA4OzgpukiJ/0sKLWI8OO7Hu3uPu3eA0Kgw1eyKAqpmGal4TMzmVsXAK4IYwQAi6JGYqSfSixl4jq97+Ph6F+FZ3uf+HP1K3mSATySOMt2wiDeIZzctnfM+cYiVJIX4nHjSoAsSP3JddvmNc9FhgWeGjExqnjhELBY7WO5gVjJU4hnisKJqlC9kXVY4b3FWKzXWuid/YTCvraS5TnMMcSwhgSREyKihjAos6qsMjRQTKdqPefhHHX+SXDK5ymDkWEAVKiTHD/4Hv7s1C9NTblIwBnS/2PbHOBDYBZp12/4+tu3mCeB/Bq60tr/aAOY+Sa+3tfARMLgNXFy3NXkPuNwBhp90yZAcyU9TKBSA9zP6phwwdAv0rbm9tfZx+gBkqKvlG+DgEJgoUva6x7t7O3v790yrvx+9EnLEkbwjDQAAAAZiS0dEAN8A3wDfYl/uvwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB+gMGQ4tMjxB4D4AAAD6SURBVDjLpZNBbsIwEEVfonICpLLhFvQKDuphKq7AHVh3izgDOQCKRALdd1kWgHKE8rswTeJkEglhaWT5j2f+94wHnlxRn8M5pzaWpmnn/ktf4Ha7Br5Be+84fpDgfVaiKli6StpJv2NvF2or0O0TWeruwTvpthIgIAiusFaS8Anag5bo0lXXxCKAjcXekGwpqM5ZrSIO2B9p38TvcYCWpSnZOv+vhoIlAG/vs0Hmtr8u4lcJU8jznOh1KEXu+c5WG4tGwQwDX0AVdRvjDsEP6ASJcwGcOIcyYAQ6DPx/FZ5BmWcR9z2zf2LUOwuLNOzCGeYb1xmqp6fxD8PP1Sx2dqYPAAAAAElFTkSuQmCC");
+			background-size: contain;
+			width: 1em;
+			height: 1em;
+			display: inline-block;
+			content: ":frazz:";
+		}
+
+		#oliveran_yt_root > *{
+			padding-bottom: 1.5em;
+		}
 	</style>
 
 	<style> /* dark theme */
@@ -632,7 +653,7 @@
 
 <body id="bd">
 	<div>
-		<div style="font-size: 11px">version from 23.12.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
+		<div style="font-size: 11px">version from 25.12.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
 			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
 			<button onclick="minimizeAll()">Minimize all</button>
@@ -675,6 +696,7 @@
 					</span> (don't need to restart to test changes)
 				</li>
 				<li>Better performance</li>
+				<li>Multithreading (luaLanes library)</li>
 				<li>Use any Lua code from the internet</li>
 				<li>No confusing fixed point multiplier, easy (vector) math
 					<br>
@@ -810,7 +832,7 @@
 			<div class="content_block">
 				<div class="content_block_caption">Triggers</div>
 				<div>
-					<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
+					<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId|intTemplateNo, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
 					<p>These work exactly like module system triggers. Times can be float values or values from header_triggers.py (the numbers, string names are not supported yet), just like you would do it in the MS. If conditionsCallback returns false, consequencesCallback will not be executed. If it returns true or nothing, consequencesCallback will be executed.</p>
 					<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 					<p style="padding-left: 30px;">Example:</p>
@@ -822,7 +844,27 @@
 						game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)
 					</pre>
 					<p>addTrigger returns an integer that is the index of the added trigger.</p>
-					<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
+					<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId|intTemplateNo, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
+					<p>
+						Useful functions:
+						<ul>
+							<li>
+								<span class="keyword">game.getCurTemplateNo()</span> returns the index of the current mission template. Note that no template will be loaded at the time main.lua is executed.
+							</li>
+							<li>
+								<span class="keyword">game.getCurTemplateId()</span> returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.
+							</li>
+							<li>
+								<span class="keyword">game.getNumTemplates()</span> returns number of mission templates.
+							</li>
+							<li>
+								<span class="keyword">game.getTemplateId(index)</span> returns the id/name of mission template at index.
+							</li>
+							<li>
+								<span class="keyword">game.getNumTriggers(strTemplateId|intTemplateNo)</span> returns the number of triggers for this mission template.
+							</li>
+						</ul>
+					</p>
 					<p>&nbsp;</p>
 					<p>You can also add item triggers with <span class="keyword">intTriggerNo = game.addItemTrigger(strItemID|intItemNo, numTriggerInterval, funcCallback)</span></p>
 					<p style="padding-left: 30px;">Example:</p>
@@ -1137,16 +1179,16 @@
 			<div class="content_block">
 				<div class="content_block_caption">Other functions:</div>
 				<div>
-					<ul>
+					<ul class="padli">
 						<li>
 							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.getScriptNo(script_name)</span>, use in conjunction with game.call_script(scriptNo, ...)</p>
-								<p style="padding-left: 30px;">Example:</p>
+								<p><span class="keyword">game.getScriptNo(script_name)</span> use in conjunction with game.call_script(scriptNo, ...)</p>
+								<p style="padding-left: 10px;">Example:</p>
 								<pre class="code">
 									local no = game.getScriptNo("game_start")
 									game.call_script(no)
 								</pre>
-								<p style="padding-left: 20px;">
+								<p style="padding-left: 10px;">
 									WSE Update now provides a wrapper: <span class="keyword">game.script.[name]</span>
 									<pre class="code">
 										game.call_script(game.script.game_start)
@@ -1155,23 +1197,28 @@
 							</div>
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.getCurTemplateId()</span>, returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.</p>
-							</div>
+							<span class="keyword">game.getCurTemplateNo()</span> returns the index of the current mission template. Note that no template will be loaded at the time main.lua is executed.
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.OnRglLogWrite(str)</span>, this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
-								A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.
-								Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
-								</p>
-							</div>
+							<span class="keyword">game.getCurTemplateId()</span> returns the id/name of the current mission template. Note that no template will be loaded at the time main.lua is executed.
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.fail()</span>, when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
-							</div>
-							<p style="padding-left: 30px;">Example:</p>
+							<span class="keyword">game.getNumTemplates()</span> returns number of mission templates.
+						</li>
+						<li>
+							<span class="keyword">game.getTemplateId(index)</span> returns the id/name of mission template at index.
+						</li>
+						<li>
+							<span class="keyword">game.getNumTriggers(strTemplateId|intTemplateNo)</span> returns the number of triggers for this mission template.
+						</li>
+						<li>
+							<span class="keyword">game.OnRglLogWrite(str)</span> this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
+							A bad idea is to use <span class="keyword">game.display_message</span> in this function, as it will easily cause an infinite loop. You can however use <span class="keyword">print()</span>.
+							Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
+						</li>
+						<li>
+							<p><span class="keyword">game.fail()</span> when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
+							<p style="padding-left: 10px;">Example:</p>
 							<pre class="code" ms>
 								(try_begin),
 										(lua_push_int, 456),
@@ -1191,17 +1238,14 @@
 							</pre>
 						</li>
 						<li>
-							<div>
-								<p style="padding-left: 20px;"><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span>, this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
-							</div>
+							<p><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span> this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
 						</li>
 					</ul>
-					<p>&nbsp;</p>
 					<p style="padding-left: 10px">Other WSE LUA API functions - these could be useful for advanced users, but you should get along fine without ever using them.</p>
-					<ul>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.execOperation(strOperationName, arg1, arg2, ....)</span> - see operations</p></li>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.getReg(intTypeId, intIndex)</span> typeIds are: 0 = int, 1 = str, 2 = pos</p></li>
-						<li style="padding-left: 20px;"><p><span class="keyword">game.setReg(intTypeId, intIndex, val)</span></p></li>
+					<ul class="padli">
+						<li><span class="keyword">game.execOperation(strOperationName, arg1, arg2, ....)</span> - see operations</li>
+						<li><span class="keyword">game.getReg(intTypeId, intIndex)</span> typeIds are: 0 = int, 1 = str, 2 = pos</li>
+						<li><span class="keyword">game.setReg(intTypeId, intIndex, val)</span></li>
 					</ul>
 				</div>
 			</div>
@@ -1214,10 +1258,10 @@
 			<div class="content_block">
 				<div class="content_block_caption">Globals</div>
 				<div>
-					<ul>
-						<li style="padding-left: 20px;"><span class="keyword">tableShallowCopy(t, copyMetatable)</span> - returns a copy of table t, however any object items will still reference the same object. If copyMetatable ~= nil, the returned table will have the same metatable as t, as given by getmetatable(t).</li>
-						<li style="padding-left: 20px; padding-top: 10px;"><span class="keyword">tableRecursiveCopy(t, copyMetatable)</span> - returns a copy of table t. All table items in t and further down the "tree" will be actual copies by value instead of by reference. If copyMetatable ~= nil, all metatables will be copied (by value), as given by getmetatable(t).</li>
-						<li style="padding-left: 20px; padding-top: 10px;">vector3 - class for storing and manipulating 3D vectors
+					<ul class="padli">
+						<li><span class="keyword">tableShallowCopy(t, copyMetatable)</span> - returns a copy of table t, however any object items will still reference the same object. If copyMetatable ~= nil, the returned table will have the same metatable as t, as given by getmetatable(t).</li>
+						<li><span class="keyword">tableRecursiveCopy(t, copyMetatable)</span> - returns a copy of table t. All table items in t and further down the "tree" will be actual copies by value instead of by reference. If copyMetatable ~= nil, all metatables will be copied (by value), as given by getmetatable(t).</li>
+						<li>vector3 - class for storing and manipulating 3D vectors
 							<ul>
 								<li>
 									<p style="padding-left: 20px; padding-top: 10px;"><span class="keyword">vector3.prototype</span></p>
@@ -1260,8 +1304,8 @@
 								</li>
 							</ul>
 						</li>
-						<li style="padding-left: 20px;"><span class="keyword">printTable(t, [prefix])</span> - print an entire table, recursively. Useful for debugging.</li>
-						<li style="padding-left: 20px; padding-top: 10px;"><span class="keyword">make(table, ...)</span> - useful for creating table tree structures.<br>
+						<li><span class="keyword">printTable(t, [prefix])</span> - print an entire table, recursively. Useful for debugging.</li>
+						<li><span class="keyword">make(table, ...)</span> - useful for creating table tree structures.<br>
 							<pre class="code">
 								t = {}
 								  ...
@@ -1269,12 +1313,15 @@
 								<span class="comment">--t: {a = {b = {c = 5}}}</span>
 							</pre>
 							<br>
-						 It will make sure that <span class="keyword">table.a.b</span> exists and return it, but won't overwrite anything that already exists.
+							It will make sure that <span class="keyword">table.a.b</span> exists and return it, but won't overwrite anything that already exists.
 						</li>
-						<li style="padding-left: 20px; padding-top: 10px;">
+						<li>
 							<span class="keyword">getTime()</span> get time in milliseconds since program start, using <span class="keyword">std::chrono::steady_clock</span>
 						</li>
-						<li style="padding-left: 20px; padding-top: 10px;">
+						<li>
+							A library called <a href="https://lualanes.github.io/lanes/" target="_blank" rel="noopener noreferrer">luaLanes</a> v3.10.1 is included for multithreading. Check out Oliveran's AI! (->Examples)
+						</li>
+						<li>
 							<a href="https://sourceforge.net/p/warband-script-enhancer/code/ci/1.170/tree/WSELib/LuaGlobals.txt" target="_blank" rel="noopener noreferrer">Lua startup code (sourceforge)</a>
 						</li>
 					</ul>
@@ -1693,6 +1740,56 @@
 					    end
 					  end)
 				</pre>
+			</div>
+
+			<div class="content_block">
+				<div class="content_block_caption">Oliveran's Combat AI (multithreaded)</div>
+				<p>This was made by Oliveran in 2017. I never ran this myself or reviewed the code in any detail, but the results speak for themselves.</p>
+				<div class="padl20">
+					<p>Original description:</p>
+					<div class="code" style="margin-left: 20px;">
+						<div>
+							I'm a long-time competitive player, who's always really enjoyed all aspects of singleplayer - but as I increased in skill,
+							the AI got dull very quickly, as I grew with the competitive scene's skill.
+							As the game has reached a relatively stagnant point in terms of figuring out mechanics,
+							break down playstyles and ways to play as a team;
+							I figured I could use the knowledge to make an AI that can play more player-like,
+							that can be functional in both singleplayer and mutiplayer (though ofc not at a competitive level <span class="tw_smiley"> </span>)
+						</div>
+					</div>
+					<p>Videos (Youtube):</p>
+					<div id="oliveran_yt_root" class="padl20">
+						<script>
+							var yts = [
+								["https://www.youtube.com/embed/Z5kRdFGdOKY", "Melee AI - Version 0.1 - Blocking and attacking basics"],
+								["https://www.youtube.com/embed/QpL6k8UV4ZA", "Melee AI - Version 0.2 - Footwork and AI feinting"],
+								["https://www.youtube.com/embed/X9XICIGK5yY", "Melee AI 0.2 - Footwork&Feinting - Bot v Bot"],
+								["https://www.youtube.com/embed/7O9hFlkLSNA", "Melee AI 0.3 - Kickin' butt"],
+								["https://www.youtube.com/embed/tgyhKRcFVL8", "Melee AI 0.3 - Kickin' butt - Bot v Bot"],
+								["https://www.youtube.com/embed/ppcOawQ7z1Q", "Melee AI 0.4 - Positioning, target switching"],
+								["https://www.youtube.com/embed/VJyeI1iHoRk", "Archery AI 0.1 - Aiming at different body positions"]
+							];
+
+							var root = document.getElementById("oliveran_yt_root");
+							for (let yt of yts){
+								let div = document.createElement("div");
+
+									let inp = document.createElement("input");
+									inp.setAttribute('type', 'button');
+									inp.setAttribute('value', yt[1]);
+
+								inp.onclick = function(){
+									div.innerHTML = '<iframe width="800" height="450" src="' + yt[0] +'" title="' + yt[1] + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+								}
+
+								div.appendChild(inp);
+								root.appendChild(div);
+							}
+						</script>
+					</div>
+					<a href="https://github.com/kumpuu/-WB-Competitive-style-combat-AI" target="_blank" rel="noopener noreferrer">Code</a><br>
+					<a href="https://forums.taleworlds.com/index.php?threads/wb-competitive-style-combat-ai-playable-version-0-2-out.363466/" target="_blank" rel="noopener noreferrer">Forum Post</a><br>
+				</div>
 			</div>
 		</div>
 	</div>
