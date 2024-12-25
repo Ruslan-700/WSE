@@ -473,6 +473,31 @@ void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2])
 	lua_pop(L, 1);
 }
 
+//Extract mission template index
+//stack[index] must be num or str. Will throw an error if invalid.
+int lToTemplateNo(lua_State *L, int index)
+{
+	int tNo = 0;
+	if (lua_type(L, index) == LUA_TSTRING)
+	{
+		const char *tId = lua_tostring(L, index);
+		tNo = getTemplateNo(tId);
+		if (tNo < 0)
+			luaL_error(L, "invalid template id: %s", tId);
+	}
+	else if (lua_type(L, index) == LUA_TNUMBER)
+	{
+		tNo = lua_tointeger(L, index);
+		if (tNo < 0 || tNo >= warband->num_mission_templates)
+			luaL_error(L, "invalid template no: %d", tNo);
+	}
+	else{
+		luaL_error(L, "error trying to extract template no");
+	}
+
+	return tNo;
+}
+
 void lPushChild(lua_State *L, const std::string &name)
 {
 	std::stringstream ss;

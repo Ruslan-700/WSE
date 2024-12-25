@@ -25,6 +25,7 @@ int lGetTemplateId(lua_State *L);
 
 int lAddTrigger(lua_State *L);
 int lRemoveTrigger(lua_State *L);
+int lGetNumTriggers(lua_State *L);
 
 int lAddItemTrigger(lua_State *L);
 int lAddPropTrigger(lua_State *L);

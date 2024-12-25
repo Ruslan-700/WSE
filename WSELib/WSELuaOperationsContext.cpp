@@ -276,6 +276,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lRemoveTrigger);
 	lua_setfield(L, -2, "removeTrigger");
 
+	lua_pushcfunction(L, lGetNumTriggers);
+	lua_setfield(L, -2, "getNumTriggers");
+
 	lua_pushcfunction(L, lAddItemTrigger);
 	lua_setfield(L, -2, "addItemTrigger");
 
