@@ -40,7 +40,7 @@ namespace wb
 		int mapped_particle_systems[NUM_MAPPED_PARTICLE_SYSTEMS];
 
 		rgl::particle_system *create(const int &particle_system_no, const rgl::vector4 &position, const int &u1 = 0);
-		int add_system(const particle_system &sytem);
+		int add_system(const particle_system &system);
 		bool remove_system(int index);
 	};
 }

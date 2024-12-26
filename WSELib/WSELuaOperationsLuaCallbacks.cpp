@@ -526,9 +526,7 @@ int lAddPsys(lua_State *L)
 	new_sys.mesh_name = lua_tostring(L, -1);
 	lua_pop(L, 1);
 
-	if (WSE->SettingsIni.Bool("general", "use_case_insensitive_mesh_searches")) new_sys.mesh_name.lower();
-
-	new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name);
+	new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name, WSE->ModuleSettingsIni.Bool("", "use_case_insensitive_mesh_searches"));
 
 	if (new_sys.mesh == nullptr){
 		rgl::string name = new_sys.mesh_name;
@@ -861,8 +859,8 @@ int lPropInstIterInit(lua_State *L)
 	it.metaType = 0;
 
 	int num_args = checkLArgs(L, 0, 2, lNum, lNum);
-	if (num_args = 1) it.subKindNo = lua_tointeger(L, 1);
-	if (num_args = 2) it.metaType = lua_tointeger(L, 2);
+	if (num_args >= 1) it.subKindNo = lua_tointeger(L, 1);
+	if (num_args >= 2) it.metaType = lua_tointeger(L, 2);
 
 	it.curVal = warband->cur_mission->mission_objects.get_first_valid_index();
 	for (; it.curVal < warband->cur_mission->mission_objects.size(); it.curVal = warband->cur_mission->mission_objects.get_next_valid_index(it.curVal))

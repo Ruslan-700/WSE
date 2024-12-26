@@ -9,7 +9,7 @@ rgl::particle_system *particle_system_manager::create(const int &particle_system
 	THISCALL3(wb::addresses::particle_system_manager_Create, this, particle_system_no, position, u1);
 }
 
-int particle_system_manager::add_system(const particle_system &sytem)
+int particle_system_manager::add_system(const particle_system &system)
 {
 	particle_system *newSystems = rgl::_new<particle_system>(this->num_particle_systems + 1);
 
@@ -19,7 +19,7 @@ int particle_system_manager::add_system(const particle_system &sytem)
 	}
 	rgl::_free(this->particle_systems);
 	this->particle_systems = newSystems;
-	this->particle_systems[this->num_particle_systems] = sytem;
+	this->particle_systems[this->num_particle_systems] = system;
 
 	return this->num_particle_systems++;
 }

@@ -263,8 +263,9 @@ int getItemKindNo(const char *id)
 int getScenePropNo(const char *id)
 {
 	for (int i = 0; i < warband->num_scene_props; i++)
-		if (warband->scene_props[i].id == id)
-			return i;
+	{
+		if (warband->scene_props[i].id == id) return i;
+	}
 
 	return -1;
 }

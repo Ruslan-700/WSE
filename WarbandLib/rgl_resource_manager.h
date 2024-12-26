@@ -72,8 +72,8 @@ namespace rgl
 #endif
 
 #if !defined WARBAND_DEDICATED
-		stl::vector<mesh *> get_meshes(const string &name);
-		mesh *try_get_mesh(const string &name);
+		stl::vector<mesh *> get_meshes(const string &name, bool case_insensitive = false);
+		mesh *try_get_mesh(const string &name, bool case_insensitive = false);
 		material *try_get_material(const string &name);
 		material *get_material(const string &name);
 		material *get_default_material();

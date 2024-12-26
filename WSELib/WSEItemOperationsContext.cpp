@@ -362,7 +362,7 @@ void CurItemAddMeshWithMaterial(WSEMissionOperationsContext *context)
 			m1n.spaces_to_underscores();
 			m2n.spaces_to_underscores();
 
-			stl::vector<rgl::mesh *> meshes = warband->resource_manager.get_meshes(m1n);
+			stl::vector<rgl::mesh *> meshes = warband->resource_manager.get_meshes(m1n, WSE->ModuleSettingsIni.Bool("", "use_case_insensitive_mesh_searches"));
 			rgl::material *material = warband->resource_manager.get_material(m2n);
 			lod_end = (lod_end) ? lod_end : meta_mesh->num_lods;
 

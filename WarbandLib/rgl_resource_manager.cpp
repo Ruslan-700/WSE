@@ -5,9 +5,11 @@ using namespace rgl;
 
 #if !defined WARBAND_DEDICATED
 
-stl::vector<mesh *> resource_manager::get_meshes(const string &name)
+stl::vector<mesh *> resource_manager::get_meshes(const string &name, bool case_insensitive)
 {
 	string meshName = name;
+	if (case_insensitive)
+		meshName.lower();
 
 	stl::vector<mesh *> meshes;
 	int nameLength = meshName.length();
@@ -50,21 +52,25 @@ stl::vector<mesh *> resource_manager::get_meshes(const string &name)
 	return meshes;
 }
 
-mesh *resource_manager::try_get_mesh(const string &name)
+mesh *resource_manager::try_get_mesh(const string &name, bool case_insensitive)
 {
+	string meshName = name;
+	if (case_insensitive)
+		meshName.lower();
+
 	if (!this->mesh_hashes_up_to_date)
 	{
 		for (int i = 0; i < this->meshes.size(); ++i)
 		{
-			if (this->meshes[i]->name == name)
+			if (this->meshes[i]->name == meshName)
 				return this->meshes[i];
 		}
 
 		return nullptr;
 	}
 
-	int start = this->mesh_hashes[name[0]] - 1;
-	int end = this->mesh_hashes[name[0] + 1] + 1;
+	int start = this->mesh_hashes[meshName[0]] - 1;
+	int end = this->mesh_hashes[meshName[0] + 1] + 1;
 
 	if (end < start)
 		end = this->hashed_meshes.size() - 1;
@@ -72,7 +78,7 @@ mesh *resource_manager::try_get_mesh(const string &name)
 	while (start < end - 1)
 	{
 		int cur = (end + start) >> 1;
-		int cmp = strcmp(name.c_str(), this->hashed_meshes[cur]->name.c_str());
+		int cmp = strcmp(meshName.c_str(), this->hashed_meshes[cur]->name.c_str());
 
 		if (cmp < 0)
 			end = cur;
