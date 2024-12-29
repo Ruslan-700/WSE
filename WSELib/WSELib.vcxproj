@@ -177,7 +177,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
@@ -201,7 +201,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -222,7 +222,7 @@
       <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -241,7 +241,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -271,7 +271,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -301,7 +301,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -331,7 +331,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -361,7 +361,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
