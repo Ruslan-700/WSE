@@ -812,7 +812,8 @@ int lAgentsIterInit(lua_State *L)
 		{
 			it.advance = lAgentsIterAdvance_pos;
 			
-			for (it.curVal = warband->cur_mission->agents.get_first_valid_index(); it.curVal < warband->cur_mission->agents.size(); it.curVal = warband->cur_mission->agents.get_next_valid_index(it.curVal))
+			it.curVal = warband->cur_mission->agents.get_first_valid_index();
+			for (; it.curVal < warband->cur_mission->agents.size(); it.curVal = warband->cur_mission->agents.get_next_valid_index(it.curVal))
 			{
 				wb::agent *agent = &warband->cur_mission->agents[it.curVal];
 				if ((it.pos.o - agent->position).length() <= it.radius){
