@@ -396,7 +396,24 @@ char *makeSafePath(const char *rootDir, const char *path)
 		i++;
 	}
 
-	size_t spSize = strlen(rootDir) + strlen(path) + 1;
+	int rootlen = strlen(rootDir);
+
+	//we skip leading ".\" so we dont have rootDir\.\path
+	if (strlen(path) > 2)
+	{
+		if (path[0] == '.' && path[1] == '\\')
+		{
+			if (rootDir[rootlen - 1] == '\\') //also good idea to make sure that rootDir ends with '\\'
+			{
+				path += 2; 
+			}
+			else{
+				path += 1;
+			}
+		}
+	}
+
+	size_t spSize = rootlen + strlen(path) + 1;
 	char *safePath = (char*)malloc(spSize);
 
 	strcpy(safePath, rootDir);

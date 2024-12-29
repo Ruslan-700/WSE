@@ -624,7 +624,6 @@
     <None Include="LuaGlobals.txt">
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
-    <None Include="..\luaLanes\src\lanes.lua" />
     <None Include="luaSockets\src\ftp.lua">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
     </None>
@@ -656,6 +655,9 @@
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
     </None>
     <None Include="mobDebug.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
+    </None>
+    <None Include="..\luaLanes\src\lanes.lua">
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
   </ItemGroup>
