@@ -174,10 +174,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WIN32;_WIN32;LUASOCKET_DEBUG;_WINDOWS;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
       <RuntimeTypeInfo>
       </RuntimeTypeInfo>
       <BasicRuntimeChecks>StackFrameRuntimeCheck</BasicRuntimeChecks>
@@ -198,10 +198,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WIN32;_WIN32;LUASOCKET_DEBUG;_WINDOWS;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -219,10 +219,10 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;DEBUG;WIN32;_WIN32;LUASOCKET_DEBUG;_WINDOWS;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -241,11 +241,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;WIN32;_WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -271,11 +271,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;WARBAND_NOSSE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_VANILLA;WARBAND_NOSSE;WIN32;_WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -301,11 +301,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_STEAM;WIN32;_WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -331,11 +331,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_STEAM;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND;WARBAND_STEAM;WIN32;_WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
@@ -361,11 +361,11 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src;$(SolutionDir)luaSockets\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)WarbandLib;$(SolutionDir)WSEExternal\include;$(SolutionDir)asmjit\AsmJit-0.8.6;$(SolutionDir)luajit\luajit\src;$(SolutionDir)luaLanes\src</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND_DEDICATED;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32_LEAN_AND_MEAN;PSAPI_VERSION=1;_WIN32_WINNT=_WIN32_WINNT_WS03;WARBAND_DEDICATED;WIN32;_WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <EnableEnhancedInstructionSet>StreamingSIMDExtensions2</EnableEnhancedInstructionSet>
@@ -388,6 +388,26 @@
   <ItemGroup>
     <ClInclude Include="json\json-forwards.h" />
     <ClInclude Include="json\json.h" />
+    <ClInclude Include="luaSockets\src\auxiliar.h" />
+    <ClInclude Include="luaSockets\src\buffer.h" />
+    <ClInclude Include="luaSockets\src\compat.h" />
+    <ClInclude Include="luaSockets\src\except.h" />
+    <ClInclude Include="luaSockets\src\inet.h" />
+    <ClInclude Include="luaSockets\src\io.h" />
+    <ClInclude Include="luaSockets\src\luasocket.h" />
+    <ClInclude Include="luaSockets\src\mime.h" />
+    <ClInclude Include="luaSockets\src\options.h" />
+    <ClInclude Include="luaSockets\src\pierror.h" />
+    <ClInclude Include="luaSockets\src\select.h" />
+    <ClInclude Include="luaSockets\src\socket.h" />
+    <ClInclude Include="luaSockets\src\tcp.h" />
+    <ClInclude Include="luaSockets\src\timeout.h" />
+    <ClInclude Include="luaSockets\src\udp.h" />
+    <ClInclude Include="luaSockets\src\unix.h" />
+    <ClInclude Include="luaSockets\src\unixdgram.h" />
+    <ClInclude Include="luaSockets\src\unixstream.h" />
+    <ClInclude Include="luaSockets\src\usocket.h" />
+    <ClInclude Include="luaSockets\src\wsocket.h" />
     <ClInclude Include="WSELib.rc.h" />
     <ClInclude Include="WSELuaOperationsLuaCallbacks.h" />
     <ClInclude Include="mup\muParser.h" />
@@ -466,6 +486,35 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="json\jsoncpp.cpp" />
+    <ClCompile Include="luaSockets\src\auxiliar.c" />
+    <ClCompile Include="luaSockets\src\buffer.c" />
+    <ClCompile Include="luaSockets\src\compat.c" />
+    <ClCompile Include="luaSockets\src\except.c" />
+    <ClCompile Include="luaSockets\src\inet.c" />
+    <ClCompile Include="luaSockets\src\io.c" />
+    <ClCompile Include="luaSockets\src\luasocket.c" />
+    <ClCompile Include="luaSockets\src\mime.c" />
+    <ClCompile Include="luaSockets\src\options.c" />
+    <ClCompile Include="luaSockets\src\select.c" />
+    <ClCompile Include="luaSockets\src\serial.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseDedicated|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\tcp.c" />
+    <ClCompile Include="luaSockets\src\timeout.c" />
+    <ClCompile Include="luaSockets\src\udp.c" />
+    <ClCompile Include="luaSockets\src\unix.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseDedicated|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\unixdgram.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseDedicated|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\unixstream.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseDedicated|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\usocket.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseDedicated|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\wsocket.c" />
     <ClCompile Include="WSELuaOperationsHelpers.cpp" />
     <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp" />
     <ClCompile Include="mup\muParser.cpp" />

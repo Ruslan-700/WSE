@@ -9,6 +9,7 @@
 #include "lanes.h"
 #include <Windows.h>
 #include "WSELib.rc.h"
+#include "luaSockets/src/luasocket.h"
 
 
 /************************/
@@ -981,6 +982,7 @@ inline void WSELuaOperationsContext::initLua()
 
 	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
 	lua_pop(luaState, 1);
+	luaopen_socket_core(luaState);
 
 	loadOperations();
 	loadGameConstants(getLuaScriptDir() + "msfiles\\");

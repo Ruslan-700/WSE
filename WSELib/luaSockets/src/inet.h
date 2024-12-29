@@ -20,6 +20,7 @@
 
 #ifdef _WIN32
 #define LUASOCKET_INET_ATON
+#define LUASOCKET_INET_PTON
 #endif
 
 #ifndef _WIN32

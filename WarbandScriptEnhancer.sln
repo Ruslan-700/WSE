@@ -18,8 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luajit", "luajit\luajit.vcx
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luaLanes", "luaLanes\luaLanes.vcxproj", "{6EA1766D-106D-416A-A47E-44D4402BA850}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "luaSockets", "luaSockets\luaSockets.vcxproj", "{28B0D7ED-81D4-497B-9BA0-004BFD322911}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Mixed Platforms = Debug|Mixed Platforms
@@ -304,54 +302,6 @@ Global
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|Win32.Build.0 = Release|Win32
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.ActiveCfg = Release|Win32
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|Mixed Platforms.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|Win32.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|Win32.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|x86.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Debug|x86.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|Mixed Platforms.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|Mixed Platforms.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|Win32.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|Win32.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|x86.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugDedicated|x86.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|Mixed Platforms.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|Mixed Platforms.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|Win32.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|Win32.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|x86.ActiveCfg = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.DebugSteam|x86.Build.0 = Debug|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|Mixed Platforms.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|Mixed Platforms.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|Win32.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|Win32.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|x86.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.Release|x86.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|Mixed Platforms.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|Mixed Platforms.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|Win32.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|Win32.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|x86.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseDedicated|x86.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|Mixed Platforms.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|Mixed Platforms.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|Win32.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|Win32.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|x86.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseNoSSE|x86.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|Mixed Platforms.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|Mixed Platforms.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|Win32.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|Win32.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|x86.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteam|x86.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|Mixed Platforms.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|Mixed Platforms.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|Win32.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|Win32.Build.0 = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|x86.ActiveCfg = Release|Win32
-		{28B0D7ED-81D4-497B-9BA0-004BFD322911}.ReleaseSteamNoSSE|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

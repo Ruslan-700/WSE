@@ -60,6 +60,15 @@
     <Filter Include="Source Files\xml">
       <UniqueIdentifier>{50f7dc67-0adb-48ea-9308-21c406229698}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets">
+      <UniqueIdentifier>{eddd5cc0-c740-4d20-8476-bd9971b0bfdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files">
+      <UniqueIdentifier>{6edebcbe-23a2-4f42-8b7f-e27060523a40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files">
+      <UniqueIdentifier>{6ae6575b-eeb3-43f4-a2d3-69226c9b6333}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -293,6 +302,66 @@
     <ClInclude Include="xml\tinyxml2.h">
       <Filter>Header Files\xml</Filter>
     </ClInclude>
+    <ClInclude Include="luaSockets\src\luasocket.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\auxiliar.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\buffer.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\compat.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\except.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\inet.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\io.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\mime.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\options.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\pierror.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\select.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\socket.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\tcp.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\timeout.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\udp.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\unix.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\unixdgram.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\unixstream.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\usocket.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="luaSockets\src\wsocket.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -486,6 +555,63 @@
     </ClCompile>
     <ClCompile Include="xml\tinyxml2.cpp">
       <Filter>Source Files\xml</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\luasocket.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\auxiliar.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\options.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\inet.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\buffer.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\compat.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\except.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\io.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\mime.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\select.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\serial.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\tcp.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\timeout.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\udp.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\unix.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\unixdgram.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\unixstream.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\usocket.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="luaSockets\src\wsocket.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

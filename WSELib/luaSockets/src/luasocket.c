@@ -33,14 +33,14 @@ static int base_open(lua_State *L);
 * Modules and functions
 \*-------------------------------------------------------------------------*/
 static const luaL_Reg mod[] = {
-    {"auxiliar", auxiliar_open},
-    {"except", except_open},
-    {"timeout", timeout_open},
-    {"buffer", buffer_open},
-    {"inet", inet_open},
+    //{"auxiliar", auxiliar_open},
+    //{"except", except_open},
+    //{"timeout", timeout_open},
+    //{"buffer", buffer_open},
+    //{"inet", inet_open},
     {"tcp", tcp_open},
-    {"udp", udp_open},
-    {"select", select_open},
+    //{"udp", udp_open},
+    //{"select", select_open},
     {NULL, NULL}
 };
 
@@ -96,7 +96,7 @@ static int base_open(lua_State *L) {
 /*-------------------------------------------------------------------------*\
 * Initializes all library modules.
 \*-------------------------------------------------------------------------*/
-LUASOCKET_API int luaopen_socket_core(lua_State *L) {
+int luaopen_socket_core(lua_State *L) {
     int i;
     base_open(L);
     for (i = 0; mod[i].name; i++) mod[i].func(L);
