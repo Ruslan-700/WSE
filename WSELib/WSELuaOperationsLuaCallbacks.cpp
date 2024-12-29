@@ -5,6 +5,8 @@
 
 #include "WSELuaOperationsLuaCallbacks.h"
 #include "WSELuaOperationsHelpers.h"
+#include "luaSockets/src/luasocket.h"
+#include "WSELib.rc.h"
 
 int lGameExecOperationHandler(lua_State *L)
 {
@@ -1035,4 +1037,48 @@ int lPrintStack(lua_State *L)
 {
 	printStack(L);
 	return 0;
+}
+
+//Helpers for LoadDebugger
+#define lua_absindex( L, idx) (((idx) >= 0 || (idx) <= LUA_REGISTRYINDEX) ? (idx) : lua_gettop(L) + (idx) +1)
+static int luaL_getsubtable(lua_State *L, int idx, const char *fname)
+{
+	lua_getfield(L, idx, fname);
+	if (lua_istable(L, -1))
+		return 1;  /* table already there */
+	else
+	{
+		lua_pop(L, 1);  /* remove previous result */
+		idx = lua_absindex(L, idx);
+		lua_newtable(L);
+		lua_pushvalue(L, -1);  /* copy to be left at top */
+		lua_setfield(L, idx, fname);  /* assign new table to field */
+		return 0;  /* false, because did not find table there */
+	}
+}
+
+int lLoadDebugger(lua_State *L)
+{
+	luaopen_socket_core(L); //{socket}
+
+	//Now write it to require "loaded" table
+	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");				//	{socket},{_LOADED}
+	lua_pushvalue(L, -2);											//	{socket},{_LOADED},{socket}
+	lua_setfield(L, -2, "socket");  // _LOADED[modname] = module,		{socket},{_LOADED}
+	lua_pop(L, 2);  // remove _LOADED table and luaopen result 			...
+
+	std::string mob = load_resource_str(MAKEINTRESOURCE(IDR_mobDebug));
+
+	if (luaL_dostring(L, mob.c_str()))					//{mobdebug}
+		printLastLuaError(L, "mobDebug");
+
+	//remove socket library again...
+	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");	//{mobdebug},{_LOADED}
+	lua_pushnil(L);										//{mobdebug},{_LOADED},nil
+	lua_setfield(L, -2, "socket");						//{mobdebug},{_LOADED}
+	lua_pop(L, 1);										//{mobdebug}
+
+	gPrint("*** LUA DEBUGGER LOADED ***");
+
+	return 1;
 }

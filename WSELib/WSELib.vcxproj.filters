@@ -69,6 +69,9 @@
     <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files">
       <UniqueIdentifier>{6ae6575b-eeb3-43f4-a2d3-69226c9b6333}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets\Lua">
+      <UniqueIdentifier>{4df0f218-5037-4194-a452-72bc559cad73}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -362,6 +365,9 @@
     <ClInclude Include="luaSockets\src\wsocket.h">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -619,6 +625,39 @@
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
     <None Include="..\luaLanes\src\lanes.lua" />
+    <None Include="luaSockets\src\ftp.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\headers.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\http.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\ltn12.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\mbox.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\mime.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\smtp.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\socket.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\tp.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="luaSockets\src\url.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
+    </None>
+    <None Include="mobDebug.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="WSELib.rc" />

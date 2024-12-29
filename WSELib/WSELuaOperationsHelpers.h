@@ -66,3 +66,5 @@ void lPushPos(lua_State *L, const rgl::matrix &pos);
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name);
 
 void checkTableStructure(lua_State *L, int sIndex, std::string structure);
+
+std::string load_resource_str(LPSTR lpName);

@@ -7,9 +7,7 @@
 #include "WSELuaOperationsLuaCallbacks.h"
 
 #include "lanes.h"
-#include <Windows.h>
 #include "WSELib.rc.h"
-#include "luaSockets/src/luasocket.h"
 
 
 /************************/
@@ -349,6 +347,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lGetTime);
 	lua_setglobal(L, "getTime");
 
+	lua_pushcfunction(L, lLoadDebugger);
+	lua_setglobal(L, "loadDebugger");
+
 	const char *globals =
 		#include "LuaGlobals.txt"
 		;
@@ -359,28 +360,11 @@ void initLGameTable(lua_State *L)
 
 int loadLanesLua(lua_State *L)
 {
-#if defined WARBAND_DEDICATED
-	HMODULE handle = GetModuleHandle("wselibdedicated.dll");
-#elif defined WARBAND
-	HMODULE handle = GetModuleHandle("wselib.dll");
-#elif defined WARBAND_NOSSE
-	HMODULE handle = GetModuleHandle("wselibnosse.dll");
-#endif
+	std::string lanes = load_resource_str(MAKEINTRESOURCE(IDR_LUA_LANES));
 
-	HRSRC rc = FindResource(handle, MAKEINTRESOURCE(IDR_LUA_LANES),
-		MAKEINTRESOURCE(TEXTFILE));
-	HGLOBAL rcData = LoadResource(handle, rc);
-	DWORD size = SizeofResource(handle, rc);
-	const char *data = static_cast<const char*>(::LockResource(rcData));
-
-	char *lanes = (char*)malloc(size + 1);
-	memcpy_s(lanes, size + 1, data, size);
-	lanes[size] = '\0';
-
-	if (luaL_dostring(L, lanes))
+	if (luaL_dostring(L, lanes.c_str()))
 		printLastLuaError(L, "lanes");
 
-	free(lanes);
 	return 1;
 }
 
@@ -982,7 +966,6 @@ inline void WSELuaOperationsContext::initLua()
 
 	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
 	lua_pop(luaState, 1);
-	luaopen_socket_core(luaState);
 
 	loadOperations();
 	loadGameConstants(getLuaScriptDir() + "msfiles\\");
