@@ -1,6 +1,5 @@
 #include <chrono>
 #include <math.h>
-
 #define _USE_MATH_DEFINES
 
 #include "WSELuaOperationsLuaCallbacks.h"
@@ -669,10 +668,8 @@ struct gameIterator
 
 	int curVal;
 
-	bool usePos;
 	rgl::matrix pos;
 	float radius;
-	bool useGrid;
 	bool positional_succ;
 	wb::mission_grid_iterator grid_iterator;
 
@@ -732,51 +729,51 @@ int lPartiesIterInit(lua_State *L)
 	return lPushIterator(L, it);
 }
 
-void lAgentsIterAdvance(gameIterator *it)
+void lAgentsIterAdvance_pos(gameIterator *it)
 {
-	if (it->usePos)
+	it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal);
+
+	for (; it->curVal < warband->cur_mission->agents.size(); it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal))
 	{
-		if (it->useGrid)
-		{
-			if (warband->cur_mission->grid.advance_iterator(it->grid_iterator))
-			{
-				it->curVal = it->grid_iterator.agent_obj->agent->no;
-			}
-			else
-				it->positional_succ = false;
+		wb::agent *agent = &warband->cur_mission->agents[it->curVal];
+		if ((it->pos.o - agent->position).length() <= it->radius){
+			return;
 		}
-		else
-		{
-			for (it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal); it->curVal < warband->cur_mission->agents.size(); it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal))
-			{
-				wb::agent *agent = &warband->cur_mission->agents[it->curVal];
-				if ((it->pos.o - agent->position).length() <= it->radius){
-					return;
-				}
-			}
-			it->positional_succ = false;
-		}
+	}
+	it->positional_succ = false;
+}
+
+void lAgentsIterAdvance_grid(gameIterator *it)
+{
+	if (warband->cur_mission->grid.advance_iterator(it->grid_iterator))
+	{
+		it->curVal = it->grid_iterator.agent_obj->agent->no;
 	}
 	else
 	{
-		it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal);
+		it->positional_succ = false;
 	}
+}
+
+void lAgentsIterAdvance(gameIterator *it)
+{
+	it->curVal = warband->cur_mission->agents.get_next_valid_index(it->curVal);
+}
+
+bool lAgentsIterCurValIsValid_positional(gameIterator *it)
+{
+	return it->positional_succ;
 }
 
 bool lAgentsIterCurValIsValid(gameIterator *it)
 {
-	if (it->usePos)
-		return it->positional_succ;
-	else
-		return it->curVal < warband->cur_mission->agents.size();
+	return it->curVal < warband->cur_mission->agents.size();
 }
 
 int lAgentsIterInit(lua_State *L)
 {
 	gameIterator it;
 	it.valid = true;
-	it.advance = lAgentsIterAdvance;
-	it.curValIsValid = lAgentsIterCurValIsValid;
 
 	if (checkLArgs(L, 0, 3, lNum|lPos, lNum, lAny)) //pos, radius, use_grid
 	{
@@ -784,8 +781,6 @@ int lAgentsIterInit(lua_State *L)
 
 		if (lua_gettop(L) < 2)
 			luaL_error(L, "not enough arguments");
-
-		it.usePos = true;
 
 		if (lua_isnumber(L, 1))
 		{
@@ -795,14 +790,18 @@ int lAgentsIterInit(lua_State *L)
 			it.pos = warband->basic_game.position_registers[preg];
 		}
 		else
+		{
 			it.pos = lToPos(L, 1);
+		}
 
 		it.radius = (float)lua_tonumber(L, 2);
-		it.useGrid = lIsTrue(L, 3);
 		it.positional_succ = false;
+		it.curValIsValid = lAgentsIterCurValIsValid_positional;
 
-		if (it.useGrid)
+		if (lIsTrue(L, 3)) //use_grid
 		{
+			it.advance = lAgentsIterAdvance_grid;
+
 			if (warband->cur_mission->grid.initialize_iterator(it.grid_iterator, it.pos.o, it.radius))
 			{
 				it.curVal = it.grid_iterator.agent_obj->agent->no;
@@ -811,6 +810,8 @@ int lAgentsIterInit(lua_State *L)
 		}
 		else
 		{
+			it.advance = lAgentsIterAdvance_pos;
+			
 			for (it.curVal = warband->cur_mission->agents.get_first_valid_index(); it.curVal < warband->cur_mission->agents.size(); it.curVal = warband->cur_mission->agents.get_next_valid_index(it.curVal))
 			{
 				wb::agent *agent = &warband->cur_mission->agents[it.curVal];
@@ -824,7 +825,8 @@ int lAgentsIterInit(lua_State *L)
 	else
 	{
 		//Iterate over all agents
-		it.usePos = false;
+		it.advance = lAgentsIterAdvance;
+		it.curValIsValid = lAgentsIterCurValIsValid;
 		it.curVal = warband->cur_mission->agents.get_first_valid_index();
 	}
 
