@@ -365,9 +365,6 @@
     <ClInclude Include="luaSockets\src\wsocket.h">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -621,9 +618,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="LuaGlobals.txt">
-      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
-    </None>
     <None Include="luaSockets\src\ftp.lua">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Lua</Filter>
     </None>
@@ -658,6 +652,9 @@
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
     <None Include="..\luaLanes\src\lanes.lua">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
+    </None>
+    <None Include="LuaGlobals.lua">
       <Filter>Source Files\operations\WSELuaOperationsContext\LuaScripts</Filter>
     </None>
   </ItemGroup>

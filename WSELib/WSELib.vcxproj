@@ -408,7 +408,6 @@
     <ClInclude Include="luaSockets\src\unixstream.h" />
     <ClInclude Include="luaSockets\src\usocket.h" />
     <ClInclude Include="luaSockets\src\wsocket.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="WSELib.rc.h" />
     <ClInclude Include="WSELuaOperationsLuaCallbacks.h" />
     <ClInclude Include="mup\muParser.h" />
@@ -625,7 +624,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\luaLanes\src\lanes.lua" />
-    <None Include="LuaGlobals.txt" />
+    <None Include="LuaGlobals.lua" />
     <None Include="luaSockets\src\ftp.lua" />
     <None Include="luaSockets\src\headers.lua" />
     <None Include="luaSockets\src\http.lua" />

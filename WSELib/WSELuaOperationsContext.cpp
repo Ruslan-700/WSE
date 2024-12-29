@@ -350,11 +350,9 @@ void initLGameTable(lua_State *L)
 	lua_pushcfunction(L, lLoadDebugger);
 	lua_setglobal(L, "loadDebugger");
 
-	const char *globals =
-		#include "LuaGlobals.txt"
-		;
+	std::string globals = load_resource_str(MAKEINTRESOURCE(IDR_LuaGlobals));
 
-	if (luaL_dostring(L, globals))
+	if (luaL_dostring(L, globals.c_str()))
 		printLastLuaError(L, "LuaGlobals");
 }
 
