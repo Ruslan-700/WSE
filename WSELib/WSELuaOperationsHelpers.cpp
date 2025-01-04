@@ -1,6 +1,8 @@
 #include <regex>
 #include <string>
 #include <sstream>
+#include <Windows.h>
+#include "WSELib.rc.h"
 #include "WSELuaOperationsHelpers.h"
 
 const char *const lShortTypeNames[] = {
@@ -160,7 +162,9 @@ size_t countChar(const std::string &s, char c)
 std::string getLuaScriptDir()
 {
 	std::string dir = warband->cur_module_path;
-	dir += "\\lua\\";
+	std::replace(dir.begin(), dir.end(), '/', '\\');
+
+	dir += (dir.back() == '\\') ? "lua\\" : "\\lua\\";
 
 	return dir;
 }
@@ -1109,3 +1113,22 @@ void checkTableStructure(lua_State *L, int sIndex, std::string structure)
 		luaL_error(L, errMsg.c_str());
 }
 /************   table arg checking end   ************/
+
+std::string load_resource_str(LPSTR lpName)
+{
+#if defined WARBAND_DEDICATED
+	HMODULE handle = GetModuleHandle("wselibdedicated.dll");
+#elif defined WARBAND
+	HMODULE handle = GetModuleHandle("wselib.dll");
+#elif defined WARBAND_NOSSE
+	HMODULE handle = GetModuleHandle("wselibnosse.dll");
+#endif
+
+	HRSRC rc = FindResource(handle, lpName, MAKEINTRESOURCE(TEXTFILE));
+	HGLOBAL rcData = LoadResource(handle, rc);
+	DWORD size = SizeofResource(handle, rc);
+	const char *data = static_cast<const char*>(::LockResource(rcData));
+
+	std::string res(data, data + size);
+	return res;
+}

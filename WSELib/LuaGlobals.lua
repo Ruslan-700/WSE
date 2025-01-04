@@ -1,4 +1,3 @@
-R"(
 ------------helpers------------
 function tableShallowCopy(t, copyMetatable)
 	local t2 = {}
@@ -444,4 +443,3 @@ game.pos.new = function(obj)
 
     return setmetatable(newObj, game.pos.mt)
 end
-)"

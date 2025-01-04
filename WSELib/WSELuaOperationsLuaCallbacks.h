@@ -50,3 +50,5 @@ int lGetTime(lua_State *L);
 int lFailMsCall(lua_State *L);
 
 int lPrintStack(lua_State *L);
+
+int lLoadDebugger(lua_State *L);
