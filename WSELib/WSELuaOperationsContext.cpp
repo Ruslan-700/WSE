@@ -1,13 +1,14 @@
 #include <regex>
-#include "WSELuaOperationsContext.h"
-#include "WSE.h"
-#include "WSEScriptingContext.h"
+#include <Windows.h>
 
+#include "WSE.h"
+#include "WSELib.rc.h"
+#include "WSEScriptingContext.h"
+#include "WSELuaOperationsContext.h"
 #include "WSELuaOperationsHelpers.h"
 #include "WSELuaOperationsLuaCallbacks.h"
 
 #include "lanes.h"
-#include "WSELib.rc.h"
 
 
 /************************/

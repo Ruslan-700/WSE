@@ -885,6 +885,10 @@
 							print("Apple " .. game.store_trigger_param_1(0) .. " initialized.")
 						end)
 					</pre>
+					<p class="border-top">
+						<br>
+						For technical reasons, if there are modsys errors in a trigger added in lua (for example invalid agent_id), it will report as line 0, opcode 5113.
+					</p>
 				</div>
 			</div>
 
@@ -1038,6 +1042,7 @@
 					</pre>
 					<p>Remove using <span class="keyword">game.removePrsnt(index)</span>. There is not much need to remove these though, you should add once and then reuse it - when adding/removing one, WSE needs to rebuild the entire list in memory. Also remember, removing will shift indices above.</p>
 					<p>On dedicated, add/remove will do and return nothing.</p>
+					<p>For technical reasons, if there are modsys errors in a presentation added in lua (for example invalid agent_id), it will report as line 0, opcode 5113.</p>
 				</div>
 			</div>
 
