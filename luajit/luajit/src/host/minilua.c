@@ -39,7 +39,6 @@ int _CRT_glob = 0;
 #include <setjmp.h>
 #include <errno.h>
 #include <time.h>
-
 typedef enum{
 	TM_INDEX,
 	TM_NEWINDEX,
@@ -486,7 +485,6 @@ struct lua_State{
 	GCObject*gclist;
 	struct lua_longjmp*errorJmp;
 	ptrdiff_t errfunc;
-	char *userDir; /* wse mod */
 };
 #define G(L)(L->l_G)
 union GCObject{
@@ -540,7 +538,7 @@ static void*luaM_growaux_(lua_State*L, void*block, int*size, size_t size_elems,
 	}
 	else{
 		newsize = (*size) * 2;
-		if (newsize < 4)
+		if (newsize<4)
 			newsize = 4;
 	}
 	newblock = luaM_reallocv(L, block, *size, newsize, size_elems);
@@ -604,101 +602,13 @@ static int luaV_tostring(lua_State*L, StkId obj);
 static void luaV_execute(lua_State*L, int nexeccalls);
 static void luaV_concat(lua_State*L, int total, int last);
 static const TValue luaO_nilobject_ = { { NULL }, 0 };
-
-/* wse mod */
-
-static void replaceChar(char *str, char c, char repl)
-{
-	size_t i;
-	for (i = 0; i < strlen(str); i++)
-		if (str[i] == c)
-			str[i] = repl;
-}
-
-static char *getStrCopy(const char *str)
-{
-	char *_str = (char*)malloc(strlen(str) + 1);
-	strcpy(_str, str);
-
-	return _str;
-}
-
-static char *makeSafePath(const char *rootDir, const char *path)
-{
-	if (path == NULL)
-		return NULL;
-
-	if (rootDir == NULL)
-		return getStrCopy(path);
-
-	int curLevel = 0;
-	int points = 0;
-	int others = 0;
-
-	size_t i = 0;
-	while (i < strlen(path))
-	{
-		if (path[i] == ':' || path[i] == '!')
-			return NULL;
-
-		if (path[i] == '.')
-			points++;
-		else if (path[i] != '/' && path[i] != '\\')
-			others++;
-		else // '/' || '\\'
-		{
-			if (others)
-				curLevel++;
-			else if (points >= 2)
-			{
-				curLevel--;
-				if (curLevel < 0)
-					return NULL;
-			}
-
-			points = 0;
-			others = 0;
-		}
-
-		i++;
-	}
-
-	size_t spSize = strlen(rootDir) + strlen(path) + 1;
-	char *safePath = (char*)malloc(spSize);
-
-	strcpy_s(safePath, spSize, rootDir);
-	strcat_s(safePath, spSize, path);
-
-	return safePath;
-}
-
-static FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
-{
-	if (L->userDir)
-	{
-		char *safePath = makeSafePath(L->userDir, filename);
-		if (!safePath)
-		{
-			return NULL;
-		}
-
-		FILE *res = fopen(safePath, mode);
-		free(safePath);
-
-		return res;
-	}
-	else
-		return fopen(filename, mode);
-}
-/* wse mod end ------------- */
-
 static int luaO_int2fb(unsigned int x){
 	int e = 0;
 	while (x >= 16){
 		x = (x + 1) >> 1;
 		e++;
 	}
-	if (x < 8)return x;
+	if (x<8)return x;
 	else return((e + 1) << 3) | (cast_int(x) - 8);
 }
 static int luaO_fb2int(int x){
@@ -761,45 +671,45 @@ static const char*luaO_pushvfstring(lua_State*L, const char*fmt, va_list argp){
 		incr_top(L);
 		switch (*(e + 1)){
 		case's':{
-			const char*s = va_arg(argp, char*);
-			if (s == NULL)s = "(null)";
-			pushstr(L, s);
-			break;
+					const char*s = va_arg(argp, char*);
+					if (s == NULL)s = "(null)";
+					pushstr(L, s);
+					break;
 		}
 		case'c':{
-			char buff[2];
-			buff[0] = cast(char, va_arg(argp, int));
-			buff[1] = '\0';
-			pushstr(L, buff);
-			break;
+					char buff[2];
+					buff[0] = cast(char, va_arg(argp, int));
+					buff[1] = '\0';
+					pushstr(L, buff);
+					break;
 		}
 		case'd':{
-			setnvalue(L->top, cast_num(va_arg(argp, int)));
-			incr_top(L);
-			break;
+					setnvalue(L->top, cast_num(va_arg(argp, int)));
+					incr_top(L);
+					break;
 		}
 		case'f':{
-			setnvalue(L->top, cast_num(va_arg(argp, l_uacNumber)));
-			incr_top(L);
-			break;
+					setnvalue(L->top, cast_num(va_arg(argp, l_uacNumber)));
+					incr_top(L);
+					break;
 		}
 		case'p':{
-			char buff[4 * sizeof(void*) + 8];
-			sprintf(buff, "%p", va_arg(argp, void*));
-			pushstr(L, buff);
-			break;
+					char buff[4 * sizeof(void*)+8];
+					sprintf(buff, "%p", va_arg(argp, void*));
+					pushstr(L, buff);
+					break;
 		}
 		case'%':{
-			pushstr(L, "%");
-			break;
+					pushstr(L, "%");
+					break;
 		}
 		default:{
-			char buff[3];
-			buff[0] = '%';
-			buff[1] = *(e + 1);
-			buff[2] = '\0';
-			pushstr(L, buff);
-			break;
+					char buff[3];
+					buff[0] = '%';
+					buff[1] = *(e + 1);
+					buff[2] = '\0';
+					pushstr(L, buff);
+					break;
 		}
 		}
 		n += 2;
@@ -830,7 +740,7 @@ static void luaO_chunkid(char*out, const char*source, size_t bufflen){
 			bufflen -= sizeof(" '...' ");
 			l = strlen(source);
 			strcpy(out, "");
-			if (l > bufflen){
+			if (l>bufflen){
 				source += (l - bufflen);
 				strcat(out, "...");
 			}
@@ -839,7 +749,7 @@ static void luaO_chunkid(char*out, const char*source, size_t bufflen){
 		else{
 			size_t len = strcspn(source, "\n\r");
 			bufflen -= sizeof(" [string \"...\"] ");
-			if (len > bufflen)len = bufflen;
+			if (len>bufflen)len = bufflen;
 			strcpy(out, "[string \"");
 			if (source[len] != '\0'){
 				strncat(out, source, len);
@@ -873,7 +783,7 @@ static void luaT_init(lua_State*L){
 		"__concat", "__call"
 	};
 	int i;
-	for (i = 0; i < TM_N; i++){
+	for (i = 0; i<TM_N; i++){
 		G(L)->tmname[i] = luaS_new(L, luaT_eventname[i]);
 		luaS_fix(G(L)->tmname[i]);
 	}
@@ -1079,25 +989,25 @@ struct lua_longjmp{
 static void luaD_seterrorobj(lua_State*L, int errcode, StkId oldtop){
 	switch (errcode){
 	case 4:{
-		setsvalue(L, oldtop, luaS_newliteral(L, "not enough memory"));
-		break;
+			   setsvalue(L, oldtop, luaS_newliteral(L, "not enough memory"));
+			   break;
 	}
 	case 5:{
-		setsvalue(L, oldtop, luaS_newliteral(L, "error in error handling"));
-		break;
+			   setsvalue(L, oldtop, luaS_newliteral(L, "error in error handling"));
+			   break;
 	}
 	case 3:
 	case 2:{
-		setobj(L, oldtop, L->top - 1);
-		break;
+			   setobj(L, oldtop, L->top - 1);
+			   break;
 	}
 	}
 	L->top = oldtop + 1;
 }
 static void restore_stack_limit(lua_State*L){
-	if (L->size_ci > 20000){
+	if (L->size_ci>20000){
 		int inuse = cast_int(L->ci - L->base_ci);
-		if (inuse + 1 < 20000)
+		if (inuse + 1<20000)
 			luaD_reallocCI(L, 20000);
 	}
 }
@@ -1172,12 +1082,12 @@ static void luaD_growstack(lua_State*L, int n){
 		luaD_reallocstack(L, L->stacksize + n);
 }
 static CallInfo*growCI(lua_State*L){
-	if (L->size_ci > 20000)
+	if (L->size_ci>20000)
 		luaD_throw(L, 5);
 	else{
 		luaD_reallocCI(L, 2 * L->size_ci);
-		if (L->size_ci > 20000)
-			luaG_runerror(L, "stack overflow (minilua.c:1180)");
+		if (L->size_ci>20000)
+			luaG_runerror(L, "stack overflow");
 	}
 	return++L->ci;
 }
@@ -1186,11 +1096,11 @@ static StkId adjust_varargs(lua_State*L, Proto*p, int actual){
 	int nfixargs = p->numparams;
 	Table*htab = NULL;
 	StkId base, fixed;
-	for (; actual < nfixargs; ++actual)
+	for (; actual<nfixargs; ++actual)
 		setnilvalue(L->top++);
 	fixed = L->top - actual;
 	base = L->top;
-	for (i = 0; i < nfixargs; i++){
+	for (i = 0; i<nfixargs; i++){
 		setobj(L, L->top++, fixed + i);
 		setnilvalue(fixed + i);
 	}
@@ -1205,7 +1115,7 @@ static StkId tryfuncTM(lua_State*L, StkId func){
 	ptrdiff_t funcr = savestack(L, func);
 	if (!ttisfunction(tm))
 		luaG_typeerror(L, func, "call");
-	for (p = L->top; p > func; p--)setobj(L, p, p - 1);
+	for (p = L->top; p>func; p--)setobj(L, p, p - 1);
 	incr_top(L);
 	func = restorestack(L, funcr);
 	setobj(L, func, tm);
@@ -1228,7 +1138,7 @@ static int luaD_precall(lua_State*L, StkId func, int nresults){
 		func = restorestack(L, funcr);
 		if (!p->is_vararg){
 			base = func + 1;
-			if (L->top > base + p->numparams)
+			if (L->top>base + p->numparams)
 				L->top = base + p->numparams;
 		}
 		else{
@@ -1243,7 +1153,7 @@ static int luaD_precall(lua_State*L, StkId func, int nresults){
 		L->savedpc = p->code;
 		ci->tailcalls = 0;
 		ci->nresults = nresults;
-		for (st = L->top; st < ci->top; st++)
+		for (st = L->top; st<ci->top; st++)
 			setnilvalue(st);
 		L->top = ci->top;
 		return 0;
@@ -1258,7 +1168,7 @@ static int luaD_precall(lua_State*L, StkId func, int nresults){
 		ci->top = L->top + 20;
 		ci->nresults = nresults;
 		n = (*curr_func(L)->c.f)(L);
-		if (n < 0)
+		if (n<0)
 			return 2;
 		else{
 			luaD_poscall(L, L->top - n);
@@ -1275,9 +1185,9 @@ static int luaD_poscall(lua_State*L, StkId firstResult){
 	wanted = ci->nresults;
 	L->base = (ci - 1)->base;
 	L->savedpc = (ci - 1)->savedpc;
-	for (i = wanted; i != 0 && firstResult < L->top; i--)
+	for (i = wanted; i != 0 && firstResult<L->top; i--)
 		setobj(L, res++, firstResult++);
-	while (i-- > 0)
+	while (i-->0)
 		setnilvalue(res++);
 	L->top = res;
 	return(wanted - (-1));
@@ -1332,7 +1242,7 @@ static void f_parser(lua_State*L, void*ud){
 		&p->buff, p->name);
 	cl = luaF_newLclosure(L, tf->nups, hvalue(gt(L)));
 	cl->l.p = tf;
-	for (i = 0; i < tf->nups; i++)
+	for (i = 0; i<tf->nups; i++)
 		cl->l.upvals[i] = luaF_newupval(L);
 	setclvalue(L, L->top, cl);
 	incr_top(L);
@@ -1354,8 +1264,8 @@ static void luaS_resize(lua_State*L, int newsize){
 		return;
 	newhash = luaM_newvector(L, newsize, GCObject*);
 	tb = &G(L)->strt;
-	for (i = 0; i < newsize; i++)newhash[i] = NULL;
-	for (i = 0; i < tb->size; i++){
+	for (i = 0; i<newsize; i++)newhash[i] = NULL;
+	for (i = 0; i<tb->size; i++){
 		GCObject*p = tb->hash[i];
 		while (p){
 			GCObject*next = p->gch.next;
@@ -1374,9 +1284,9 @@ static TString*newlstr(lua_State*L, const char*str, size_t l,
 	unsigned int h){
 	TString*ts;
 	stringtable*tb;
-	if (l + 1 > (((size_t)(~(size_t)0) - 2) - sizeof(TString)) / sizeof(char))
+	if (l + 1>(((size_t)(~(size_t)0) - 2) - sizeof(TString)) / sizeof(char))
 		luaM_toobig(L);
-	ts = cast(TString*, luaM_malloc(L, (l + 1)*sizeof(char) + sizeof(TString)));
+	ts = cast(TString*, luaM_malloc(L, (l + 1)*sizeof(char)+sizeof(TString)));
 	ts->tsv.len = l;
 	ts->tsv.hash = h;
 	ts->tsv.marked = luaC_white(G(L));
@@ -1389,7 +1299,7 @@ static TString*newlstr(lua_State*L, const char*str, size_t l,
 	ts->tsv.next = tb->hash[h];
 	tb->hash[h] = obj2gco(ts);
 	tb->nuse++;
-	if (tb->nuse > cast(lu_int32, tb->size) && tb->size <= (INT_MAX - 2) / 2)
+	if (tb->nuse>cast(lu_int32, tb->size) && tb->size <= (INT_MAX - 2) / 2)
 		luaS_resize(L, tb->size * 2);
 	return ts;
 }
@@ -1413,7 +1323,7 @@ static TString*luaS_newlstr(lua_State*L, const char*str, size_t l){
 }
 static Udata*luaS_newudata(lua_State*L, size_t s, Table*e){
 	Udata*u;
-	if (s > ((size_t)(~(size_t)0) - 2) - sizeof(Udata))
+	if (s>((size_t)(~(size_t)0) - 2) - sizeof(Udata))
 		luaM_toobig(L);
 	u = cast(Udata*, luaM_malloc(L, s + sizeof(Udata)));
 	u->uv.marked = luaC_white(G(L));
@@ -1440,7 +1350,7 @@ static Node*hashnum(const Table*t, lua_Number n){
 	if (luai_numeq(n, 0))
 		return gnode(t, 0);
 	memcpy(a, &n, sizeof(a));
-	for (i = 1; i < cast_int(sizeof(lua_Number) / sizeof(int)); i++)a[0] += a[i];
+	for (i = 1; i<cast_int(sizeof(lua_Number) / sizeof(int)); i++)a[0] += a[i];
 	return hashmod(t, a[0]);
 }
 static Node*mainposition(const Table*t, const TValue*key){
@@ -1471,7 +1381,7 @@ static int findindex(lua_State*L, Table*t, StkId key){
 	int i;
 	if (ttisnil(key))return-1;
 	i = arrayindex(key);
-	if (0 < i&&i <= t->sizearray)
+	if (0<i&&i <= t->sizearray)
 		return i - 1;
 	else{
 		Node*n = mainposition(t, key);
@@ -1490,14 +1400,14 @@ static int findindex(lua_State*L, Table*t, StkId key){
 }
 static int luaH_next(lua_State*L, Table*t, StkId key){
 	int i = findindex(L, t, key);
-	for (i++; i < t->sizearray; i++){
+	for (i++; i<t->sizearray; i++){
 		if (!ttisnil(&t->array[i])){
 			setnvalue(key, cast_num(i + 1));
 			setobj(L, key + 1, &t->array[i]);
 			return 1;
 		}
 	}
-	for (i -= t->sizearray; i < (int)sizenode(t); i++){
+	for (i -= t->sizearray; i<(int)sizenode(t); i++){
 		if (!ttisnil(gval(gnode(t, i)))){
 			setobj(L, key, key2tval(gnode(t, i)));
 			setobj(L, key + 1, gval(gnode(t, i)));
@@ -1512,10 +1422,10 @@ static int computesizes(int nums[], int*narray){
 	int a = 0;
 	int na = 0;
 	int n = 0;
-	for (i = 0, twotoi = 1; twotoi / 2 < *narray; i++, twotoi *= 2){
-		if (nums[i] > 0){
+	for (i = 0, twotoi = 1; twotoi / 2<*narray; i++, twotoi *= 2){
+		if (nums[i]>0){
 			a += nums[i];
-			if (a > twotoi / 2){
+			if (a>twotoi / 2){
 				n = twotoi;
 				na = a;
 			}
@@ -1527,7 +1437,7 @@ static int computesizes(int nums[], int*narray){
 }
 static int countint(const TValue*key, int*nums){
 	int k = arrayindex(key);
-	if (0 < k&&k <= (1 << (32 - 2))){
+	if (0<k&&k <= (1 << (32 - 2))){
 		nums[ceillog2(k)]++;
 		return 1;
 	}
@@ -1542,9 +1452,9 @@ static int numusearray(const Table*t, int*nums){
 	for (lg = 0, ttlg = 1; lg <= (32 - 2); lg++, ttlg *= 2){
 		int lc = 0;
 		int lim = ttlg;
-		if (lim > t->sizearray){
+		if (lim>t->sizearray){
 			lim = t->sizearray;
-			if (i > lim)
+			if (i>lim)
 				break;
 		}
 		for (; i <= lim; i++){
@@ -1573,7 +1483,7 @@ static int numusehash(const Table*t, int*nums, int*pnasize){
 static void setarrayvector(lua_State*L, Table*t, int size){
 	int i;
 	luaM_reallocvector(L, t->array, t->sizearray, size, TValue);
-	for (i = t->sizearray; i < size; i++)
+	for (i = t->sizearray; i<size; i++)
 		setnilvalue(&t->array[i]);
 	t->sizearray = size;
 }
@@ -1586,11 +1496,11 @@ static void setnodevector(lua_State*L, Table*t, int size){
 	else{
 		int i;
 		lsize = ceillog2(size);
-		if (lsize > (32 - 2))
+		if (lsize>(32 - 2))
 			luaG_runerror(L, "table overflow");
 		size = twoto(lsize);
 		t->node = luaM_newvector(L, size, Node);
-		for (i = 0; i < size; i++){
+		for (i = 0; i<size; i++){
 			Node*n = gnode(t, i);
 			gnext(n) = NULL;
 			setnilvalue(gkey(n));
@@ -1605,12 +1515,12 @@ static void resize(lua_State*L, Table*t, int nasize, int nhsize){
 	int oldasize = t->sizearray;
 	int oldhsize = t->lsizenode;
 	Node*nold = t->node;
-	if (nasize > oldasize)
+	if (nasize>oldasize)
 		setarrayvector(L, t, nasize);
 	setnodevector(L, t, nhsize);
-	if (nasize < oldasize){
+	if (nasize<oldasize){
 		t->sizearray = nasize;
-		for (i = nasize; i < oldasize; i++){
+		for (i = nasize; i<oldasize; i++){
 			if (!ttisnil(&t->array[i]))
 				setobj(L, luaH_setnum(L, t, i + 1), &t->array[i]);
 		}
@@ -1662,7 +1572,7 @@ static void luaH_free(lua_State*L, Table*t){
 	luaM_free(L, t);
 }
 static Node*getfreepos(Table*t){
-	while (t->lastfree-- > t->node){
+	while (t->lastfree-->t->node){
 		if (ttisnil(gkey(t->lastfree)))
 			return t->lastfree;
 	}
@@ -1696,7 +1606,7 @@ static TValue*newkey(lua_State*L, Table*t, const TValue*key){
 	return gval(mp);
 }
 static const TValue*luaH_getnum(Table*t, int key){
-	if (cast(unsigned int, key - 1) < cast(unsigned int, t->sizearray))
+	if (cast(unsigned int, key - 1)<cast(unsigned int, t->sizearray))
 		return&t->array[key - 1];
 	else{
 		lua_Number nk = cast_num(key);
@@ -1723,20 +1633,20 @@ static const TValue*luaH_get(Table*t, const TValue*key){
 	case 0:return(&luaO_nilobject_);
 	case 4:return luaH_getstr(t, rawtsvalue(key));
 	case 3:{
-		int k;
-		lua_Number n = nvalue(key);
-		lua_number2int(k, n);
-		if (luai_numeq(cast_num(k), nvalue(key)))
-			return luaH_getnum(t, k);
+			   int k;
+			   lua_Number n = nvalue(key);
+			   lua_number2int(k, n);
+			   if (luai_numeq(cast_num(k), nvalue(key)))
+				   return luaH_getnum(t, k);
 	}
 	default:{
-		Node*n = mainposition(t, key);
-		do{
-			if (luaO_rawequalObj(key2tval(n), key))
-				return gval(n);
-			else n = gnext(n);
-		} while (n);
-		return(&luaO_nilobject_);
+				Node*n = mainposition(t, key);
+				do{
+					if (luaO_rawequalObj(key2tval(n), key))
+						return gval(n);
+					else n = gnext(n);
+				} while (n);
+				return(&luaO_nilobject_);
 	}
 	}
 }
@@ -1778,13 +1688,13 @@ static int unbound_search(Table*t, unsigned int j){
 	while (!ttisnil(luaH_getnum(t, j))){
 		i = j;
 		j *= 2;
-		if (j > cast(unsigned int, (INT_MAX - 2))){
+		if (j>cast(unsigned int, (INT_MAX - 2))){
 			i = 1;
 			while (!ttisnil(luaH_getnum(t, i)))i++;
 			return i - 1;
 		}
 	}
-	while (j - i > 1){
+	while (j - i>1){
 		unsigned int m = (i + j) / 2;
 		if (ttisnil(luaH_getnum(t, m)))j = m;
 		else i = m;
@@ -1793,9 +1703,9 @@ static int unbound_search(Table*t, unsigned int j){
 }
 static int luaH_getn(Table*t){
 	unsigned int j = t->sizearray;
-	if (j > 0 && ttisnil(&t->array[j - 1])){
+	if (j>0 && ttisnil(&t->array[j - 1])){
 		unsigned int i = 0;
-		while (j - i > 1){
+		while (j - i>1){
 			unsigned int m = (i + j) / 2;
 			if (ttisnil(&t->array[m - 1]))j = m;
 			else i = m;
@@ -1823,41 +1733,41 @@ static void reallymarkobject(global_State*g, GCObject*o){
 	white2gray(o);
 	switch (o->gch.tt){
 	case 4:{
-		return;
+			   return;
 	}
 	case 7:{
-		Table*mt = gco2u(o)->metatable;
-		gray2black(o);
-		if (mt)markobject(g, mt);
-		markobject(g, gco2u(o)->env);
-		return;
+			   Table*mt = gco2u(o)->metatable;
+			   gray2black(o);
+			   if (mt)markobject(g, mt);
+			   markobject(g, gco2u(o)->env);
+			   return;
 	}
 	case(8 + 2) : {
-		UpVal*uv = gco2uv(o);
-		markvalue(g, uv->v);
-		if (uv->v == &uv->u.value)
-			gray2black(o);
-		return;
+					  UpVal*uv = gco2uv(o);
+					  markvalue(g, uv->v);
+					  if (uv->v == &uv->u.value)
+						  gray2black(o);
+					  return;
 	}
 	case 6:{
-		gco2cl(o)->c.gclist = g->gray;
-		g->gray = o;
-		break;
+			   gco2cl(o)->c.gclist = g->gray;
+			   g->gray = o;
+			   break;
 	}
 	case 5:{
-		gco2h(o)->gclist = g->gray;
-		g->gray = o;
-		break;
+			   gco2h(o)->gclist = g->gray;
+			   g->gray = o;
+			   break;
 	}
 	case 8:{
-		gco2th(o)->gclist = g->gray;
-		g->gray = o;
-		break;
+			   gco2th(o)->gclist = g->gray;
+			   g->gray = o;
+			   break;
 	}
 	case(8 + 1) : {
-		gco2p(o)->gclist = g->gray;
-		g->gray = o;
-		break;
+					  gco2p(o)->gclist = g->gray;
+					  g->gray = o;
+					  break;
 	}
 	default:;
 	}
@@ -1939,17 +1849,17 @@ static int traversetable(global_State*g, Table*h){
 static void traverseproto(global_State*g, Proto*f){
 	int i;
 	if (f->source)stringmark(f->source);
-	for (i = 0; i < f->sizek; i++)
+	for (i = 0; i<f->sizek; i++)
 		markvalue(g, &f->k[i]);
-	for (i = 0; i < f->sizeupvalues; i++){
+	for (i = 0; i<f->sizeupvalues; i++){
 		if (f->upvalues[i])
 			stringmark(f->upvalues[i]);
 	}
-	for (i = 0; i < f->sizep; i++){
+	for (i = 0; i<f->sizep; i++){
 		if (f->p[i])
 			markobject(g, f->p[i]);
 	}
-	for (i = 0; i < f->sizelocvars; i++){
+	for (i = 0; i<f->sizelocvars; i++){
 		if (f->locvars[i].varname)
 			stringmark(f->locvars[i].varname);
 	}
@@ -1958,26 +1868,26 @@ static void traverseclosure(global_State*g, Closure*cl){
 	markobject(g, cl->c.env);
 	if (cl->c.isC){
 		int i;
-		for (i = 0; i < cl->c.nupvalues; i++)
+		for (i = 0; i<cl->c.nupvalues; i++)
 			markvalue(g, &cl->c.upvalue[i]);
 	}
 	else{
 		int i;
 		markobject(g, cl->l.p);
-		for (i = 0; i < cl->l.nupvalues; i++)
+		for (i = 0; i<cl->l.nupvalues; i++)
 			markobject(g, cl->l.upvals[i]);
 	}
 }
 static void checkstacksizes(lua_State*L, StkId max){
 	int ci_used = cast_int(L->ci - L->base_ci);
 	int s_used = cast_int(max - L->stack);
-	if (L->size_ci > 20000)
+	if (L->size_ci>20000)
 		return;
-	if (4 * ci_used < L->size_ci && 2 * 8 < L->size_ci)
+	if (4 * ci_used<L->size_ci && 2 * 8<L->size_ci)
 		luaD_reallocCI(L, L->size_ci / 2);
 	condhardstacktests(luaD_reallocCI(L, ci_used + 1));
-	if (4 * s_used < L->stacksize &&
-		2 * ((2 * 20) + 5) < L->stacksize)
+	if (4 * s_used<L->stacksize &&
+		2 * ((2 * 20) + 5)<L->stacksize)
 		luaD_reallocstack(L, L->stacksize / 2);
 	condhardstacktests(luaD_reallocstack(L, s_used));
 }
@@ -1987,9 +1897,9 @@ static void traversestack(global_State*g, lua_State*l){
 	markvalue(g, gt(l));
 	lim = l->top;
 	for (ci = l->base_ci; ci <= l->ci; ci++){
-		if (lim < ci->top)lim = ci->top;
+		if (lim<ci->top)lim = ci->top;
 	}
-	for (o = l->stack; o < l->top; o++)
+	for (o = l->stack; o<l->top; o++)
 		markvalue(g, o);
 	for (; o <= lim; o++)
 		setnilvalue(o);
@@ -2000,40 +1910,40 @@ static l_mem propagatemark(global_State*g){
 	gray2black(o);
 	switch (o->gch.tt){
 	case 5:{
-		Table*h = gco2h(o);
-		g->gray = h->gclist;
-		if (traversetable(g, h))
-			black2gray(o);
-		return sizeof(Table) + sizeof(TValue)*h->sizearray +
-			sizeof(Node)*sizenode(h);
+			   Table*h = gco2h(o);
+			   g->gray = h->gclist;
+			   if (traversetable(g, h))
+				   black2gray(o);
+			   return sizeof(Table)+sizeof(TValue)*h->sizearray +
+				   sizeof(Node)*sizenode(h);
 	}
 	case 6:{
-		Closure*cl = gco2cl(o);
-		g->gray = cl->c.gclist;
-		traverseclosure(g, cl);
-		return(cl->c.isC) ? sizeCclosure(cl->c.nupvalues) :
-			sizeLclosure(cl->l.nupvalues);
+			   Closure*cl = gco2cl(o);
+			   g->gray = cl->c.gclist;
+			   traverseclosure(g, cl);
+			   return(cl->c.isC) ? sizeCclosure(cl->c.nupvalues) :
+				   sizeLclosure(cl->l.nupvalues);
 	}
 	case 8:{
-		lua_State*th = gco2th(o);
-		g->gray = th->gclist;
-		th->gclist = g->grayagain;
-		g->grayagain = o;
-		black2gray(o);
-		traversestack(g, th);
-		return sizeof(lua_State) + sizeof(TValue)*th->stacksize +
-			sizeof(CallInfo)*th->size_ci;
+			   lua_State*th = gco2th(o);
+			   g->gray = th->gclist;
+			   th->gclist = g->grayagain;
+			   g->grayagain = o;
+			   black2gray(o);
+			   traversestack(g, th);
+			   return sizeof(lua_State)+sizeof(TValue)*th->stacksize +
+				   sizeof(CallInfo)*th->size_ci;
 	}
 	case(8 + 1) : {
-		Proto*p = gco2p(o);
-		g->gray = p->gclist;
-		traverseproto(g, p);
-		return sizeof(Proto) + sizeof(Instruction)*p->sizecode +
-			sizeof(Proto*)*p->sizep +
-			sizeof(TValue)*p->sizek +
-			sizeof(int)*p->sizelineinfo +
-			sizeof(LocVar)*p->sizelocvars +
-			sizeof(TString*)*p->sizeupvalues;
+					  Proto*p = gco2p(o);
+					  g->gray = p->gclist;
+					  traverseproto(g, p);
+					  return sizeof(Proto)+sizeof(Instruction)*p->sizecode +
+						  sizeof(Proto*)*p->sizep +
+						  sizeof(TValue)*p->sizek +
+						  sizeof(int)*p->sizelineinfo +
+						  sizeof(LocVar)*p->sizelocvars +
+						  sizeof(TString*)*p->sizeupvalues;
 	}
 	default:return 0;
 	}
@@ -2082,17 +1992,17 @@ static void freeobj(lua_State*L, GCObject*o){
 	case(8 + 2) : luaF_freeupval(L, gco2uv(o)); break;
 	case 5:luaH_free(L, gco2h(o)); break;
 	case 8:{
-		luaE_freethread(L, gco2th(o));
-		break;
+			   luaE_freethread(L, gco2th(o));
+			   break;
 	}
 	case 4:{
-		G(L)->strt.nuse--;
-		luaM_freemem(L, o, sizestring(gco2ts(o)));
-		break;
+			   G(L)->strt.nuse--;
+			   luaM_freemem(L, o, sizestring(gco2ts(o)));
+			   break;
 	}
 	case 7:{
-		luaM_freemem(L, o, sizeudata(gco2u(o)));
-		break;
+			   luaM_freemem(L, o, sizeudata(gco2u(o)));
+			   break;
 	}
 	default:;
 	}
@@ -2102,7 +2012,7 @@ static GCObject**sweeplist(lua_State*L, GCObject**p, lu_mem count){
 	GCObject*curr;
 	global_State*g = G(L);
 	int deadmask = otherwhite(g);
-	while ((curr = *p) != NULL&&count-- > 0){
+	while ((curr = *p) != NULL&&count-->0){
 		if (curr->gch.tt == 8)
 			sweepwholelist(L, &gco2th(curr)->openupval);
 		if ((curr->gch.marked^bit2mask(0, 1))&deadmask){
@@ -2120,10 +2030,10 @@ static GCObject**sweeplist(lua_State*L, GCObject**p, lu_mem count){
 }
 static void checkSizes(lua_State*L){
 	global_State*g = G(L);
-	if (g->strt.nuse < cast(lu_int32, g->strt.size / 4) &&
+	if (g->strt.nuse<cast(lu_int32, g->strt.size / 4) &&
 		g->strt.size>32 * 2)
 		luaS_resize(L, g->strt.size / 2);
-	if (luaZ_sizebuffer(&g->buff) > 32 * 2){
+	if (luaZ_sizebuffer(&g->buff)>32 * 2){
 		size_t newsize = luaZ_sizebuffer(&g->buff) / 2;
 		luaZ_resizebuffer(L, &g->buff, newsize);
 	}
@@ -2163,13 +2073,13 @@ static void luaC_freeall(lua_State*L){
 	int i;
 	g->currentwhite = bit2mask(0, 1) | bitmask(6);
 	sweepwholelist(L, &g->rootgc);
-	for (i = 0; i < g->strt.size; i++)
+	for (i = 0; i<g->strt.size; i++)
 		sweepwholelist(L, &g->strt.hash[i]);
 }
 static void markmt(global_State*g){
 	int i;
-	for (i = 0; i < (8 + 1); i++)
-		if (g->mt[i])markobject(g, g->mt[i]);
+	for (i = 0; i<(8 + 1); i++)
+	if (g->mt[i])markobject(g, g->mt[i]);
 }
 static void markroot(lua_State*L){
 	global_State*g = G(L);
@@ -2216,47 +2126,47 @@ static l_mem singlestep(lua_State*L){
 	global_State*g = G(L);
 	switch (g->gcstate){
 	case 0:{
-		markroot(L);
-		return 0;
+			   markroot(L);
+			   return 0;
 	}
 	case 1:{
-		if (g->gray)
-			return propagatemark(g);
-		else{
-			atomic(L);
-			return 0;
-		}
+			   if (g->gray)
+				   return propagatemark(g);
+			   else{
+				   atomic(L);
+				   return 0;
+			   }
 	}
 	case 2:{
-		lu_mem old = g->totalbytes;
-		sweepwholelist(L, &g->strt.hash[g->sweepstrgc++]);
-		if (g->sweepstrgc >= g->strt.size)
-			g->gcstate = 3;
-		g->estimate -= old - g->totalbytes;
-		return 10;
+			   lu_mem old = g->totalbytes;
+			   sweepwholelist(L, &g->strt.hash[g->sweepstrgc++]);
+			   if (g->sweepstrgc >= g->strt.size)
+				   g->gcstate = 3;
+			   g->estimate -= old - g->totalbytes;
+			   return 10;
 	}
 	case 3:{
-		lu_mem old = g->totalbytes;
-		g->sweepgc = sweeplist(L, g->sweepgc, 40);
-		if (*g->sweepgc == NULL){
-			checkSizes(L);
-			g->gcstate = 4;
-		}
-		g->estimate -= old - g->totalbytes;
-		return 40 * 10;
+			   lu_mem old = g->totalbytes;
+			   g->sweepgc = sweeplist(L, g->sweepgc, 40);
+			   if (*g->sweepgc == NULL){
+				   checkSizes(L);
+				   g->gcstate = 4;
+			   }
+			   g->estimate -= old - g->totalbytes;
+			   return 40 * 10;
 	}
 	case 4:{
-		if (g->tmudata){
-			GCTM(L);
-			if (g->estimate > 100)
-				g->estimate -= 100;
-			return 100;
-		}
-		else{
-			g->gcstate = 0;
-			g->gcdept = 0;
-			return 0;
-		}
+			   if (g->tmudata){
+				   GCTM(L);
+				   if (g->estimate>100)
+					   g->estimate -= 100;
+				   return 100;
+			   }
+			   else{
+				   g->gcstate = 0;
+				   g->gcdept = 0;
+				   return 0;
+			   }
 	}
 	default:return 0;
 	}
@@ -2271,9 +2181,9 @@ static void luaC_step(lua_State*L){
 		lim -= singlestep(L);
 		if (g->gcstate == 0)
 			break;
-	} while (lim > 0);
+	} while (lim>0);
 	if (g->gcstate != 0){
-		if (g->gcdept < 1024u)
+		if (g->gcdept<1024u)
 			g->GCthreshold = g->totalbytes + 1024u;
 		else{
 			g->gcdept -= 1024u;
@@ -2400,8 +2310,6 @@ static void preinit_state(lua_State*L, global_State*g){
 	setnilvalue(gt(L));
 }
 static void close_state(lua_State*L){
-	free(L->userDir); /* wse mod */
-	
 	global_State*g = G(L);
 	luaF_close(L, L->stack);
 	luaC_freeall(L);
@@ -2453,10 +2361,7 @@ static lua_State*lua_newstate(lua_Alloc f, void*ud){
 	g->gcpause = 200;
 	g->gcstepmul = 200;
 	g->gcdept = 0;
-	
-	L->userDir = NULL; /* wse mod */
-	
-	for (i = 0; i < (8 + 1); i++)g->mt[i] = NULL;
+	for (i = 0; i<(8 + 1); i++)g->mt[i] = NULL;
 	if (luaD_rawrunprotected(L, f_luaopen, NULL) != 0){
 		close_state(L);
 		L = NULL;
@@ -2498,7 +2403,7 @@ static int currentpc(lua_State*L, CallInfo*ci){
 }
 static int currentline(lua_State*L, CallInfo*ci){
 	int pc = currentpc(L, ci);
-	if (pc < 0)
+	if (pc<0)
 		return-1;
 	else
 		return getline_(ci_func(ci)->l.p, pc);
@@ -2506,16 +2411,16 @@ static int currentline(lua_State*L, CallInfo*ci){
 static int lua_getstack(lua_State*L, int level, lua_Debug*ar){
 	int status;
 	CallInfo*ci;
-	for (ci = L->ci; level > 0 && ci > L->base_ci; ci--){
+	for (ci = L->ci; level>0 && ci>L->base_ci; ci--){
 		level--;
 		if (f_isLua(ci))
 			level -= ci->tailcalls;
 	}
-	if (level == 0 && ci > L->base_ci){
+	if (level == 0 && ci>L->base_ci){
 		status = 1;
 		ar->i_ci = cast_int(ci - L->base_ci);
 	}
-	else if (level < 0){
+	else if (level<0){
 		status = 1;
 		ar->i_ci = 0;
 	}
@@ -2556,7 +2461,7 @@ static void collectvalidlines(lua_State*L, Closure*f){
 		Table*t = luaH_new(L, 0, 0);
 		int*lineinfo = f->l.p->lineinfo;
 		int i;
-		for (i = 0; i < f->l.p->sizelineinfo; i++)
+		for (i = 0; i<f->l.p->sizelineinfo; i++)
 			setbvalue(luaH_setnum(L, t, lineinfo[i]), 1);
 		sethvalue(L, L->top, t);
 	}
@@ -2572,24 +2477,24 @@ static int auxgetinfo(lua_State*L, const char*what, lua_Debug*ar,
 	for (; *what; what++){
 		switch (*what){
 		case'S':{
-			funcinfo(ar, f);
-			break;
+					funcinfo(ar, f);
+					break;
 		}
 		case'l':{
-			ar->currentline = (ci) ? currentline(L, ci) : -1;
-			break;
+					ar->currentline = (ci) ? currentline(L, ci) : -1;
+					break;
 		}
 		case'u':{
-			ar->nups = f->c.nupvalues;
-			break;
+					ar->nups = f->c.nupvalues;
+					break;
 		}
 		case'n':{
-			ar->namewhat = (ci) ? NULL : NULL;
-			if (ar->namewhat == NULL){
-				ar->namewhat = "";
-				ar->name = NULL;
-			}
-			break;
+					ar->namewhat = (ci) ? NULL : NULL;
+					if (ar->namewhat == NULL){
+						ar->namewhat = "";
+						ar->name = NULL;
+					}
+					break;
 		}
 		case'L':
 		case'f':
@@ -2626,8 +2531,8 @@ static int lua_getinfo(lua_State*L, const char*what, lua_Debug*ar){
 }
 static int isinstack(CallInfo*ci, const TValue*o){
 	StkId p;
-	for (p = ci->base; p < ci->top; p++)
-		if (o == p)return 1;
+	for (p = ci->base; p<ci->top; p++)
+	if (o == p)return 1;
 	return 0;
 }
 static void luaG_typeerror(lua_State*L, const TValue*o, const char*op){
@@ -2706,8 +2611,8 @@ static void luaZ_init(lua_State*L, ZIO*z, lua_Reader reader, void*data){
 	z->p = NULL;
 }
 static char*luaZ_openspace(lua_State*L, Mbuffer*buff, size_t n){
-	if (n > buff->buffsize){
-		if (n < 32)n = 32;
+	if (n>buff->buffsize){
+		if (n<32)n = 32;
 		luaZ_resizebuffer(L, buff, n);
 	}
 	return buff->buffer;
@@ -2767,7 +2672,7 @@ static const char*const luaX_tokens[] = {
 #define save_and_next(ls)(save(ls,ls->current),next(ls))
 static void save(LexState*ls, int c){
 	Mbuffer*b = ls->buff;
-	if (b->n + 1 > b->buffsize){
+	if (b->n + 1>b->buffsize){
 		size_t newsize;
 		if (b->buffsize >= ((size_t)(~(size_t)0) - 2) / 2)
 			luaX_lexerror(ls, "lexical element too long", 0);
@@ -2778,14 +2683,14 @@ static void save(LexState*ls, int c){
 }
 static void luaX_init(lua_State*L){
 	int i;
-	for (i = 0; i < (cast(int, TK_WHILE - 257 + 1)); i++){
+	for (i = 0; i<(cast(int, TK_WHILE - 257 + 1)); i++){
 		TString*ts = luaS_new(L, luaX_tokens[i]);
 		luaS_fix(ts);
 		ts->tsv.reserved = cast_byte(i + 1);
 	}
 }
 static const char*luaX_token2str(LexState*ls, int token){
-	if (token < 257){
+	if (token<257){
 		return(iscntrl(token)) ? luaO_pushfstring(ls->L, "char(%d)", token) :
 			luaO_pushfstring(ls->L, "%c", token);
 	}
@@ -2854,7 +2759,7 @@ static void buffreplace(LexState*ls, char from, char to){
 	size_t n = luaZ_bufflen(ls->buff);
 	char*p = luaZ_buffer(ls->buff);
 	while (n--)
-		if (p[n] == from)p[n] = to;
+	if (p[n] == from)p[n] = to;
 }
 static void read_numeral(LexState*ls, SemInfo*seminfo){
 	do{
@@ -2892,22 +2797,22 @@ static void read_long_string(LexState*ls, SemInfo*seminfo, int sep){
 			"unfinished long comment", TK_EOS);
 			break;
 		case']':{
-			if (skip_sep(ls) == sep){
-				save_and_next(ls);
-				goto endloop;
-			}
-			break;
+					if (skip_sep(ls) == sep){
+						save_and_next(ls);
+						goto endloop;
+					}
+					break;
 		}
 		case'\n':
 		case'\r':{
-			save(ls, '\n');
-			inclinenumber(ls);
-			if (!seminfo)luaZ_resetbuffer(ls->buff);
-			break;
+					 save(ls, '\n');
+					 inclinenumber(ls);
+					 if (!seminfo)luaZ_resetbuffer(ls->buff);
+					 break;
 		}
 		default:{
-			if (seminfo)save_and_next(ls);
-			else next(ls);
+					if (seminfo)save_and_next(ls);
+					else next(ls);
 		}
 		}
 	}endloop:
@@ -2927,39 +2832,39 @@ static void read_string(LexState*ls, int del, SemInfo*seminfo){
 			luaX_lexerror(ls, "unfinished string", TK_STRING);
 			continue;
 		case'\\':{
-			int c;
-			next(ls);
-			switch (ls->current){
-			case'a':c = '\a'; break;
-			case'b':c = '\b'; break;
-			case'f':c = '\f'; break;
-			case'n':c = '\n'; break;
-			case'r':c = '\r'; break;
-			case't':c = '\t'; break;
-			case'v':c = '\v'; break;
-			case'\n':
-			case'\r':save(ls, '\n'); inclinenumber(ls); continue;
-			case(-1) : continue;
-			default:{
-				if (!isdigit(ls->current))
-					save_and_next(ls);
-				else{
-					int i = 0;
-					c = 0;
-					do{
-						c = 10 * c + (ls->current - '0');
-						next(ls);
-					} while (++i < 3 && isdigit(ls->current));
-					if (c > UCHAR_MAX)
-						luaX_lexerror(ls, "escape sequence too large", TK_STRING);
-					save(ls, c);
-				}
-				continue;
-			}
-			}
-			save(ls, c);
-			next(ls);
-			continue;
+					 int c;
+					 next(ls);
+					 switch (ls->current){
+					 case'a':c = '\a'; break;
+					 case'b':c = '\b'; break;
+					 case'f':c = '\f'; break;
+					 case'n':c = '\n'; break;
+					 case'r':c = '\r'; break;
+					 case't':c = '\t'; break;
+					 case'v':c = '\v'; break;
+					 case'\n':
+					 case'\r':save(ls, '\n'); inclinenumber(ls); continue;
+					 case(-1) : continue;
+					 default:{
+								 if (!isdigit(ls->current))
+									 save_and_next(ls);
+								 else{
+									 int i = 0;
+									 c = 0;
+									 do{
+										 c = 10 * c + (ls->current - '0');
+										 next(ls);
+									 } while (++i<3 && isdigit(ls->current));
+									 if (c>UCHAR_MAX)
+										 luaX_lexerror(ls, "escape sequence too large", TK_STRING);
+									 save(ls, c);
+								 }
+								 continue;
+					 }
+					 }
+					 save(ls, c);
+					 next(ls);
+					 continue;
 		}
 		default:
 			save_and_next(ls);
@@ -2975,104 +2880,104 @@ static int llex(LexState*ls, SemInfo*seminfo){
 		switch (ls->current){
 		case'\n':
 		case'\r':{
-			inclinenumber(ls);
-			continue;
+					 inclinenumber(ls);
+					 continue;
 		}
 		case'-':{
-			next(ls);
-			if (ls->current != '-')return'-';
-			next(ls);
-			if (ls->current == '['){
-				int sep = skip_sep(ls);
-				luaZ_resetbuffer(ls->buff);
-				if (sep >= 0){
-					read_long_string(ls, NULL, sep);
-					luaZ_resetbuffer(ls->buff);
+					next(ls);
+					if (ls->current != '-')return'-';
+					next(ls);
+					if (ls->current == '['){
+						int sep = skip_sep(ls);
+						luaZ_resetbuffer(ls->buff);
+						if (sep >= 0){
+							read_long_string(ls, NULL, sep);
+							luaZ_resetbuffer(ls->buff);
+							continue;
+						}
+					}
+					while (!currIsNewline(ls) && ls->current != (-1))
+						next(ls);
 					continue;
-				}
-			}
-			while (!currIsNewline(ls) && ls->current != (-1))
-				next(ls);
-			continue;
 		}
 		case'[':{
-			int sep = skip_sep(ls);
-			if (sep >= 0){
-				read_long_string(ls, seminfo, sep);
-				return TK_STRING;
-			}
-			else if (sep == -1)return'[';
-			else luaX_lexerror(ls, "invalid long string delimiter", TK_STRING);
+					int sep = skip_sep(ls);
+					if (sep >= 0){
+						read_long_string(ls, seminfo, sep);
+						return TK_STRING;
+					}
+					else if (sep == -1)return'[';
+					else luaX_lexerror(ls, "invalid long string delimiter", TK_STRING);
 		}
 		case'=':{
-			next(ls);
-			if (ls->current != '=')return'=';
-			else{ next(ls); return TK_EQ; }
+					next(ls);
+					if (ls->current != '=')return'=';
+					else{ next(ls); return TK_EQ; }
 		}
 		case'<':{
-			next(ls);
-			if (ls->current != '=')return'<';
-			else{ next(ls); return TK_LE; }
+					next(ls);
+					if (ls->current != '=')return'<';
+					else{ next(ls); return TK_LE; }
 		}
 		case'>':{
-			next(ls);
-			if (ls->current != '=')return'>';
-			else{ next(ls); return TK_GE; }
+					next(ls);
+					if (ls->current != '=')return'>';
+					else{ next(ls); return TK_GE; }
 		}
 		case'~':{
-			next(ls);
-			if (ls->current != '=')return'~';
-			else{ next(ls); return TK_NE; }
+					next(ls);
+					if (ls->current != '=')return'~';
+					else{ next(ls); return TK_NE; }
 		}
 		case'"':
 		case'\'':{
-			read_string(ls, ls->current, seminfo);
-			return TK_STRING;
+					 read_string(ls, ls->current, seminfo);
+					 return TK_STRING;
 		}
 		case'.':{
-			save_and_next(ls);
-			if (check_next(ls, ".")){
-				if (check_next(ls, "."))
-					return TK_DOTS;
-				else return TK_CONCAT;
-			}
-			else if (!isdigit(ls->current))return'.';
-			else{
-				read_numeral(ls, seminfo);
-				return TK_NUMBER;
-			}
+					save_and_next(ls);
+					if (check_next(ls, ".")){
+						if (check_next(ls, "."))
+							return TK_DOTS;
+						else return TK_CONCAT;
+					}
+					else if (!isdigit(ls->current))return'.';
+					else{
+						read_numeral(ls, seminfo);
+						return TK_NUMBER;
+					}
 		}
 		case(-1) : {
-			return TK_EOS;
+					   return TK_EOS;
 		}
 		default:{
-			if (isspace(ls->current)){
-				next(ls);
-				continue;
-			}
-			else if (isdigit(ls->current)){
-				read_numeral(ls, seminfo);
-				return TK_NUMBER;
-			}
-			else if (isalpha(ls->current) || ls->current == '_'){
-				TString*ts;
-				do{
-					save_and_next(ls);
-				} while (isalnum(ls->current) || ls->current == '_');
-				ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
-					luaZ_bufflen(ls->buff));
-				if (ts->tsv.reserved > 0)
-					return ts->tsv.reserved - 1 + 257;
-				else{
-					seminfo->ts = ts;
-					return TK_NAME;
-				}
-			}
-			else{
-				int c = ls->current;
-				next(ls);
-				return c;
-			}
+					if (isspace(ls->current)){
+						next(ls);
+						continue;
+					}
+					else if (isdigit(ls->current)){
+						read_numeral(ls, seminfo);
+						return TK_NUMBER;
+					}
+					else if (isalpha(ls->current) || ls->current == '_'){
+						TString*ts;
+						do{
+							save_and_next(ls);
+						} while (isalnum(ls->current) || ls->current == '_');
+						ts = luaX_newstring(ls, luaZ_buffer(ls->buff),
+							luaZ_bufflen(ls->buff));
+						if (ts->tsv.reserved>0)
+							return ts->tsv.reserved - 1 + 257;
+						else{
+							seminfo->ts = ts;
+							return TK_NAME;
+						}
+					}
+					else{
+						int c = ls->current;
+						next(ls);
+						return c;
+					}
 		}
 		}
 	}
@@ -3095,7 +3000,7 @@ static int isnumeral(expdesc*e){
 }
 static void luaK_nil(FuncState*fs, int from, int n){
 	Instruction*previous;
-	if (fs->pc > fs->lasttarget){
+	if (fs->pc>fs->lasttarget){
 		if (fs->pc == 0){
 			if (from >= fs->nactvar)
 				return;
@@ -3106,7 +3011,7 @@ static void luaK_nil(FuncState*fs, int from, int n){
 				int pfrom = GETARG_A(*previous);
 				int pto = GETARG_B(*previous);
 				if (pfrom <= from&&from <= pto + 1){
-					if (from + n - 1 > pto)
+					if (from + n - 1>pto)
 						SETARG_B(*previous, from + n - 1);
 					return;
 				}
@@ -3133,7 +3038,7 @@ static int condjump(FuncState*fs, OpCode op, int A, int B, int C){
 static void fixjump(FuncState*fs, int pc, int dest){
 	Instruction*jmp = &fs->f->code[pc];
 	int offset = dest - (pc + 1);
-	if (abs(offset) > (((1 << (9 + 9)) - 1) >> 1))
+	if (abs(offset)>(((1 << (9 + 9)) - 1) >> 1))
 		luaX_syntaxerror(fs->ls, "control structure too long");
 	SETARG_sBx(*jmp, offset);
 }
@@ -3216,7 +3121,7 @@ static void luaK_concat(FuncState*fs, int*l1, int l2){
 }
 static void luaK_checkstack(FuncState*fs, int n){
 	int newstack = fs->freereg + n;
-	if (newstack > fs->f->maxstacksize){
+	if (newstack>fs->f->maxstacksize){
 		if (newstack >= 250)
 			luaX_syntaxerror(fs->ls, "function or expression too complex");
 		fs->f->maxstacksize = cast_byte(newstack);
@@ -3247,7 +3152,7 @@ static int addk(FuncState*fs, TValue*k, TValue*v){
 		setnvalue(idx, cast_num(fs->nk));
 		luaM_growvector(L, f->k, fs->nk, f->sizek, TValue,
 			((1 << (9 + 9)) - 1), "constant table overflow");
-		while (oldsize < f->sizek)setnilvalue(&f->k[oldsize++]);
+		while (oldsize<f->sizek)setnilvalue(&f->k[oldsize++]);
 		setobj(L, &f->k[fs->nk], v);
 		luaC_barrier(L, f, v);
 		return fs->nk++;
@@ -3297,30 +3202,30 @@ static void luaK_setoneret(FuncState*fs, expdesc*e){
 static void luaK_dischargevars(FuncState*fs, expdesc*e){
 	switch (e->k){
 	case VLOCAL:{
-		e->k = VNONRELOC;
-		break;
+					e->k = VNONRELOC;
+					break;
 	}
 	case VUPVAL:{
-		e->u.s.info = luaK_codeABC(fs, OP_GETUPVAL, 0, e->u.s.info, 0);
-		e->k = VRELOCABLE;
-		break;
+					e->u.s.info = luaK_codeABC(fs, OP_GETUPVAL, 0, e->u.s.info, 0);
+					e->k = VRELOCABLE;
+					break;
 	}
 	case VGLOBAL:{
-		e->u.s.info = luaK_codeABx(fs, OP_GETGLOBAL, 0, e->u.s.info);
-		e->k = VRELOCABLE;
-		break;
+					 e->u.s.info = luaK_codeABx(fs, OP_GETGLOBAL, 0, e->u.s.info);
+					 e->k = VRELOCABLE;
+					 break;
 	}
 	case VINDEXED:{
-		freereg(fs, e->u.s.aux);
-		freereg(fs, e->u.s.info);
-		e->u.s.info = luaK_codeABC(fs, OP_GETTABLE, 0, e->u.s.info, e->u.s.aux);
-		e->k = VRELOCABLE;
-		break;
+					  freereg(fs, e->u.s.aux);
+					  freereg(fs, e->u.s.info);
+					  e->u.s.info = luaK_codeABC(fs, OP_GETTABLE, 0, e->u.s.info, e->u.s.aux);
+					  e->k = VRELOCABLE;
+					  break;
 	}
 	case VVARARG:
 	case VCALL:{
-		luaK_setoneret(fs, e);
-		break;
+				   luaK_setoneret(fs, e);
+				   break;
 	}
 	default:break;
 	}
@@ -3333,33 +3238,33 @@ static void discharge2reg(FuncState*fs, expdesc*e, int reg){
 	luaK_dischargevars(fs, e);
 	switch (e->k){
 	case VNIL:{
-		luaK_nil(fs, reg, 1);
-		break;
+				  luaK_nil(fs, reg, 1);
+				  break;
 	}
 	case VFALSE:case VTRUE:{
-		luaK_codeABC(fs, OP_LOADBOOL, reg, e->k == VTRUE, 0);
-		break;
+					luaK_codeABC(fs, OP_LOADBOOL, reg, e->k == VTRUE, 0);
+					break;
 	}
 	case VK:{
-		luaK_codeABx(fs, OP_LOADK, reg, e->u.s.info);
-		break;
+				luaK_codeABx(fs, OP_LOADK, reg, e->u.s.info);
+				break;
 	}
 	case VKNUM:{
-		luaK_codeABx(fs, OP_LOADK, reg, luaK_numberK(fs, e->u.nval));
-		break;
+				   luaK_codeABx(fs, OP_LOADK, reg, luaK_numberK(fs, e->u.nval));
+				   break;
 	}
 	case VRELOCABLE:{
-		Instruction*pc = &getcode(fs, e);
-		SETARG_A(*pc, reg);
-		break;
+						Instruction*pc = &getcode(fs, e);
+						SETARG_A(*pc, reg);
+						break;
 	}
 	case VNONRELOC:{
-		if (reg != e->u.s.info)
-			luaK_codeABC(fs, OP_MOVE, reg, e->u.s.info, 0);
-		break;
+					   if (reg != e->u.s.info)
+						   luaK_codeABC(fs, OP_MOVE, reg, e->u.s.info, 0);
+					   break;
 	}
 	default:{
-		return;
+				return;
 	}
 	}
 	e->u.s.info = reg;
@@ -3424,19 +3329,19 @@ static int luaK_exp2RK(FuncState*fs, expdesc*e){
 	case VTRUE:
 	case VFALSE:
 	case VNIL:{
-		if (fs->nk <= ((1 << (9 - 1)) - 1)){
-			e->u.s.info = (e->k == VNIL) ? nilK(fs) :
-				(e->k == VKNUM) ? luaK_numberK(fs, e->u.nval) :
-				boolK(fs, (e->k == VTRUE));
-			e->k = VK;
-			return RKASK(e->u.s.info);
-		}
-		else break;
+				  if (fs->nk <= ((1 << (9 - 1)) - 1)){
+					  e->u.s.info = (e->k == VNIL) ? nilK(fs) :
+						  (e->k == VKNUM) ? luaK_numberK(fs, e->u.nval) :
+						  boolK(fs, (e->k == VTRUE));
+					  e->k = VK;
+					  return RKASK(e->u.s.info);
+				  }
+				  else break;
 	}
 	case VK:{
-		if (e->u.s.info <= ((1 << (9 - 1)) - 1))
-			return RKASK(e->u.s.info);
-		else break;
+				if (e->u.s.info <= ((1 << (9 - 1)) - 1))
+					return RKASK(e->u.s.info);
+				else break;
 	}
 	default:break;
 	}
@@ -3445,27 +3350,27 @@ static int luaK_exp2RK(FuncState*fs, expdesc*e){
 static void luaK_storevar(FuncState*fs, expdesc*var, expdesc*ex){
 	switch (var->k){
 	case VLOCAL:{
-		freeexp(fs, ex);
-		exp2reg(fs, ex, var->u.s.info);
-		return;
+					freeexp(fs, ex);
+					exp2reg(fs, ex, var->u.s.info);
+					return;
 	}
 	case VUPVAL:{
-		int e = luaK_exp2anyreg(fs, ex);
-		luaK_codeABC(fs, OP_SETUPVAL, e, var->u.s.info, 0);
-		break;
+					int e = luaK_exp2anyreg(fs, ex);
+					luaK_codeABC(fs, OP_SETUPVAL, e, var->u.s.info, 0);
+					break;
 	}
 	case VGLOBAL:{
-		int e = luaK_exp2anyreg(fs, ex);
-		luaK_codeABx(fs, OP_SETGLOBAL, e, var->u.s.info);
-		break;
+					 int e = luaK_exp2anyreg(fs, ex);
+					 luaK_codeABx(fs, OP_SETGLOBAL, e, var->u.s.info);
+					 break;
 	}
 	case VINDEXED:{
-		int e = luaK_exp2RK(fs, ex);
-		luaK_codeABC(fs, OP_SETTABLE, var->u.s.info, var->u.s.aux, e);
-		break;
+					  int e = luaK_exp2RK(fs, ex);
+					  luaK_codeABC(fs, OP_SETTABLE, var->u.s.info, var->u.s.aux, e);
+					  break;
 	}
 	default:{
-		break;
+				break;
 	}
 	}
 	freeexp(fs, ex);
@@ -3502,17 +3407,17 @@ static void luaK_goiftrue(FuncState*fs, expdesc*e){
 	luaK_dischargevars(fs, e);
 	switch (e->k){
 	case VK:case VKNUM:case VTRUE:{
-		pc = (-1);
-		break;
+				pc = (-1);
+				break;
 	}
 	case VJMP:{
-		invertjump(fs, e);
-		pc = e->u.s.info;
-		break;
+				  invertjump(fs, e);
+				  pc = e->u.s.info;
+				  break;
 	}
 	default:{
-		pc = jumponcond(fs, e, 0);
-		break;
+				pc = jumponcond(fs, e, 0);
+				break;
 	}
 	}
 	luaK_concat(fs, &e->f, pc);
@@ -3524,16 +3429,16 @@ static void luaK_goiffalse(FuncState*fs, expdesc*e){
 	luaK_dischargevars(fs, e);
 	switch (e->k){
 	case VNIL:case VFALSE:{
-		pc = (-1);
-		break;
+				  pc = (-1);
+				  break;
 	}
 	case VJMP:{
-		pc = e->u.s.info;
-		break;
+				  pc = e->u.s.info;
+				  break;
 	}
 	default:{
-		pc = jumponcond(fs, e, 1);
-		break;
+				pc = jumponcond(fs, e, 1);
+				break;
 	}
 	}
 	luaK_concat(fs, &e->t, pc);
@@ -3544,32 +3449,32 @@ static void codenot(FuncState*fs, expdesc*e){
 	luaK_dischargevars(fs, e);
 	switch (e->k){
 	case VNIL:case VFALSE:{
-		e->k = VTRUE;
-		break;
+				  e->k = VTRUE;
+				  break;
 	}
 	case VK:case VKNUM:case VTRUE:{
-		e->k = VFALSE;
-		break;
+				e->k = VFALSE;
+				break;
 	}
 	case VJMP:{
-		invertjump(fs, e);
-		break;
+				  invertjump(fs, e);
+				  break;
 	}
 	case VRELOCABLE:
 	case VNONRELOC:{
-		discharge2anyreg(fs, e);
-		freeexp(fs, e);
-		e->u.s.info = luaK_codeABC(fs, OP_NOT, 0, e->u.s.info, 0);
-		e->k = VRELOCABLE;
-		break;
+					   discharge2anyreg(fs, e);
+					   freeexp(fs, e);
+					   e->u.s.info = luaK_codeABC(fs, OP_NOT, 0, e->u.s.info, 0);
+					   e->k = VRELOCABLE;
+					   break;
 	}
 	default:{
-		break;
+				break;
 	}
 	}
-{int temp = e->f; e->f = e->t; e->t = temp; }
-removevalues(fs, e->f);
-removevalues(fs, e->t);
+	{int temp = e->f; e->f = e->t; e->t = temp; }
+	removevalues(fs, e->f);
+	removevalues(fs, e->t);
 }
 static void luaK_indexed(FuncState*fs, expdesc*t, expdesc*k){
 	t->u.s.aux = luaK_exp2RK(fs, k);
@@ -3605,7 +3510,7 @@ static void codearith(FuncState*fs, OpCode op, expdesc*e1, expdesc*e2){
 	else{
 		int o2 = (op != OP_UNM&&op != OP_LEN) ? luaK_exp2RK(fs, e2) : 0;
 		int o1 = luaK_exp2RK(fs, e1);
-		if (o1 > o2){
+		if (o1>o2){
 			freeexp(fs, e1);
 			freeexp(fs, e2);
 		}
@@ -3636,16 +3541,16 @@ static void luaK_prefix(FuncState*fs, UnOpr op, expdesc*e){
 	e2.t = e2.f = (-1); e2.k = VKNUM; e2.u.nval = 0;
 	switch (op){
 	case OPR_MINUS:{
-		if (!isnumeral(e))
-			luaK_exp2anyreg(fs, e);
-		codearith(fs, OP_UNM, e, &e2);
-		break;
+					   if (!isnumeral(e))
+						   luaK_exp2anyreg(fs, e);
+					   codearith(fs, OP_UNM, e, &e2);
+					   break;
 	}
 	case OPR_NOT:codenot(fs, e); break;
 	case OPR_LEN:{
-		luaK_exp2anyreg(fs, e);
-		codearith(fs, OP_LEN, e, &e2);
-		break;
+					 luaK_exp2anyreg(fs, e);
+					 codearith(fs, OP_LEN, e, &e2);
+					 break;
 	}
 	default:;
 	}
@@ -3653,54 +3558,54 @@ static void luaK_prefix(FuncState*fs, UnOpr op, expdesc*e){
 static void luaK_infix(FuncState*fs, BinOpr op, expdesc*v){
 	switch (op){
 	case OPR_AND:{
-		luaK_goiftrue(fs, v);
-		break;
+					 luaK_goiftrue(fs, v);
+					 break;
 	}
 	case OPR_OR:{
-		luaK_goiffalse(fs, v);
-		break;
+					luaK_goiffalse(fs, v);
+					break;
 	}
 	case OPR_CONCAT:{
-		luaK_exp2nextreg(fs, v);
-		break;
+						luaK_exp2nextreg(fs, v);
+						break;
 	}
 	case OPR_ADD:case OPR_SUB:case OPR_MUL:case OPR_DIV:
 	case OPR_MOD:case OPR_POW:{
-		if (!isnumeral(v))luaK_exp2RK(fs, v);
-		break;
+					 if (!isnumeral(v))luaK_exp2RK(fs, v);
+					 break;
 	}
 	default:{
-		luaK_exp2RK(fs, v);
-		break;
+				luaK_exp2RK(fs, v);
+				break;
 	}
 	}
 }
 static void luaK_posfix(FuncState*fs, BinOpr op, expdesc*e1, expdesc*e2){
 	switch (op){
 	case OPR_AND:{
-		luaK_dischargevars(fs, e2);
-		luaK_concat(fs, &e2->f, e1->f);
-		*e1 = *e2;
-		break;
+					 luaK_dischargevars(fs, e2);
+					 luaK_concat(fs, &e2->f, e1->f);
+					 *e1 = *e2;
+					 break;
 	}
 	case OPR_OR:{
-		luaK_dischargevars(fs, e2);
-		luaK_concat(fs, &e2->t, e1->t);
-		*e1 = *e2;
-		break;
+					luaK_dischargevars(fs, e2);
+					luaK_concat(fs, &e2->t, e1->t);
+					*e1 = *e2;
+					break;
 	}
 	case OPR_CONCAT:{
-		luaK_exp2val(fs, e2);
-		if (e2->k == VRELOCABLE&&GET_OPCODE(getcode(fs, e2)) == OP_CONCAT){
-			freeexp(fs, e1);
-			SETARG_B(getcode(fs, e2), e1->u.s.info);
-			e1->k = VRELOCABLE; e1->u.s.info = e2->u.s.info;
-		}
-		else{
-			luaK_exp2nextreg(fs, e2);
-			codearith(fs, OP_CONCAT, e1, e2);
-		}
-		break;
+						luaK_exp2val(fs, e2);
+						if (e2->k == VRELOCABLE&&GET_OPCODE(getcode(fs, e2)) == OP_CONCAT){
+							freeexp(fs, e1);
+							SETARG_B(getcode(fs, e2), e1->u.s.info);
+							e1->k = VRELOCABLE; e1->u.s.info = e2->u.s.info;
+						}
+						else{
+							luaK_exp2nextreg(fs, e2);
+							codearith(fs, OP_CONCAT, e1, e2);
+						}
+						break;
 	}
 	case OPR_ADD:codearith(fs, OP_ADD, e1, e2); break;
 	case OPR_SUB:codearith(fs, OP_SUB, e1, e2); break;
@@ -3855,7 +3760,7 @@ static int indexupvalue(FuncState*fs, TString*name, expdesc*v){
 	int i;
 	Proto*f = fs->f;
 	int oldsize = f->sizeupvalues;
-	for (i = 0; i < f->nups; i++){
+	for (i = 0; i<f->nups; i++){
 		if (fs->upvalues[i].k == v->k&&fs->upvalues[i].info == v->u.s.info){
 			return i;
 		}
@@ -3916,13 +3821,13 @@ static void adjust_assign(LexState*ls, int nvars, int nexps, expdesc*e){
 	int extra = nvars - nexps;
 	if (hasmultret(e->k)){
 		extra++;
-		if (extra < 0)extra = 0;
+		if (extra<0)extra = 0;
 		luaK_setreturns(fs, e, extra);
-		if (extra > 1)luaK_reserveregs(fs, extra - 1);
+		if (extra>1)luaK_reserveregs(fs, extra - 1);
 	}
 	else{
 		if (e->k != VVOID)luaK_exp2nextreg(fs, e);
-		if (extra > 0){
+		if (extra>0){
 			int reg = fs->freereg;
 			luaK_reserveregs(fs, extra);
 			luaK_nil(fs, reg, extra);
@@ -3930,7 +3835,7 @@ static void adjust_assign(LexState*ls, int nvars, int nexps, expdesc*e){
 	}
 }
 static void enterlevel(LexState*ls){
-	if (++ls->L->nCcalls > 200)
+	if (++ls->L->nCcalls>200)
 		luaX_lexerror(ls, "chunk has too many syntax levels", 0);
 }
 #define leavelevel(ls)((ls)->L->nCcalls--)
@@ -3958,11 +3863,11 @@ static void pushclosure(LexState*ls, FuncState*func, expdesc*v){
 	int i;
 	luaM_growvector(ls->L, f->p, fs->np, f->sizep, Proto*,
 		((1 << (9 + 9)) - 1), "constant table overflow");
-	while (oldsize < f->sizep)f->p[oldsize++] = NULL;
+	while (oldsize<f->sizep)f->p[oldsize++] = NULL;
 	f->p[fs->np++] = func->f;
 	luaC_objbarrier(ls->L, f, func->f);
 	init_exp(v, VRELOCABLE, luaK_codeABx(fs, OP_CLOSURE, 0, fs->np - 1));
-	for (i = 0; i < func->f->nups; i++){
+	for (i = 0; i<func->f->nups; i++){
 		OpCode o = (func->upvalues[i].k == VLOCAL) ? OP_MOVE : OP_GETUPVAL;
 		luaK_codeABC(fs, o, 0, func->upvalues[i].info, 0);
 	}
@@ -4110,20 +4015,20 @@ static void constructor(LexState*ls, expdesc*t){
 		closelistfield(fs, &cc);
 		switch (ls->t.token){
 		case TK_NAME:{
-			luaX_lookahead(ls);
-			if (ls->lookahead.token != '=')
-				listfield(ls, &cc);
-			else
-				recfield(ls, &cc);
-			break;
+						 luaX_lookahead(ls);
+						 if (ls->lookahead.token != '=')
+							 listfield(ls, &cc);
+						 else
+							 recfield(ls, &cc);
+						 break;
 		}
 		case'[':{
-			recfield(ls, &cc);
-			break;
+					recfield(ls, &cc);
+					break;
 		}
 		default:{
-			listfield(ls, &cc);
-			break;
+					listfield(ls, &cc);
+					break;
 		}
 		}
 	} while (testnext(ls, ',') || testnext(ls, ';'));
@@ -4141,13 +4046,13 @@ static void parlist(LexState*ls){
 		do{
 			switch (ls->t.token){
 			case TK_NAME:{
-				new_localvar(ls, str_checkname(ls), nparams++);
-				break;
+							 new_localvar(ls, str_checkname(ls), nparams++);
+							 break;
 			}
 			case TK_DOTS:{
-				luaX_next(ls);
-				f->is_vararg |= 2;
-				break;
+							 luaX_next(ls);
+							 f->is_vararg |= 2;
+							 break;
 			}
 			default:luaX_syntaxerror(ls, "<name> or "LUA_QL("...")" expected");
 			}
@@ -4191,30 +4096,30 @@ static void funcargs(LexState*ls, expdesc*f){
 	int line = ls->linenumber;
 	switch (ls->t.token){
 	case'(':{
-		if (line != ls->lastline)
-			luaX_syntaxerror(ls, "ambiguous syntax (function call x new statement)");
-		luaX_next(ls);
-		if (ls->t.token == ')')
-			args.k = VVOID;
-		else{
-			explist1(ls, &args);
-			luaK_setmultret(fs, &args);
-		}
-		check_match(ls, ')', '(', line);
-		break;
+				if (line != ls->lastline)
+					luaX_syntaxerror(ls, "ambiguous syntax (function call x new statement)");
+				luaX_next(ls);
+				if (ls->t.token == ')')
+					args.k = VVOID;
+				else{
+					explist1(ls, &args);
+					luaK_setmultret(fs, &args);
+				}
+				check_match(ls, ')', '(', line);
+				break;
 	}
 	case'{':{
-		constructor(ls, &args);
-		break;
+				constructor(ls, &args);
+				break;
 	}
 	case TK_STRING:{
-		codestring(ls, &args, ls->t.seminfo.ts);
-		luaX_next(ls);
-		break;
+					   codestring(ls, &args, ls->t.seminfo.ts);
+					   luaX_next(ls);
+					   break;
 	}
 	default:{
-		luaX_syntaxerror(ls, "function arguments expected");
-		return;
+				luaX_syntaxerror(ls, "function arguments expected");
+				return;
 	}
 	}
 	base = f->u.s.info;
@@ -4232,20 +4137,20 @@ static void funcargs(LexState*ls, expdesc*f){
 static void prefixexp(LexState*ls, expdesc*v){
 	switch (ls->t.token){
 	case'(':{
-		int line = ls->linenumber;
-		luaX_next(ls);
-		expr(ls, v);
-		check_match(ls, ')', '(', line);
-		luaK_dischargevars(ls->fs, v);
-		return;
+				int line = ls->linenumber;
+				luaX_next(ls);
+				expr(ls, v);
+				check_match(ls, ')', '(', line);
+				luaK_dischargevars(ls->fs, v);
+				return;
 	}
 	case TK_NAME:{
-		singlevar(ls, v);
-		return;
+					 singlevar(ls, v);
+					 return;
 	}
 	default:{
-		luaX_syntaxerror(ls, "unexpected symbol");
-		return;
+				luaX_syntaxerror(ls, "unexpected symbol");
+				return;
 	}
 	}
 }
@@ -4255,28 +4160,28 @@ static void primaryexp(LexState*ls, expdesc*v){
 	for (;;){
 		switch (ls->t.token){
 		case'.':{
-			field(ls, v);
-			break;
+					field(ls, v);
+					break;
 		}
 		case'[':{
-			expdesc key;
-			luaK_exp2anyreg(fs, v);
-			yindex(ls, &key);
-			luaK_indexed(fs, v, &key);
-			break;
+					expdesc key;
+					luaK_exp2anyreg(fs, v);
+					yindex(ls, &key);
+					luaK_indexed(fs, v, &key);
+					break;
 		}
 		case':':{
-			expdesc key;
-			luaX_next(ls);
-			checkname(ls, &key);
-			luaK_self(fs, v, &key);
-			funcargs(ls, v);
-			break;
+					expdesc key;
+					luaX_next(ls);
+					checkname(ls, &key);
+					luaK_self(fs, v, &key);
+					funcargs(ls, v);
+					break;
 		}
 		case'(':case TK_STRING:case'{':{
-			luaK_exp2nextreg(fs, v);
-			funcargs(ls, v);
-			break;
+					luaK_exp2nextreg(fs, v);
+					funcargs(ls, v);
+					break;
 		}
 		default:return;
 		}
@@ -4285,46 +4190,46 @@ static void primaryexp(LexState*ls, expdesc*v){
 static void simpleexp(LexState*ls, expdesc*v){
 	switch (ls->t.token){
 	case TK_NUMBER:{
-		init_exp(v, VKNUM, 0);
-		v->u.nval = ls->t.seminfo.r;
-		break;
+					   init_exp(v, VKNUM, 0);
+					   v->u.nval = ls->t.seminfo.r;
+					   break;
 	}
 	case TK_STRING:{
-		codestring(ls, v, ls->t.seminfo.ts);
-		break;
+					   codestring(ls, v, ls->t.seminfo.ts);
+					   break;
 	}
 	case TK_NIL:{
-		init_exp(v, VNIL, 0);
-		break;
+					init_exp(v, VNIL, 0);
+					break;
 	}
 	case TK_TRUE:{
-		init_exp(v, VTRUE, 0);
-		break;
+					 init_exp(v, VTRUE, 0);
+					 break;
 	}
 	case TK_FALSE:{
-		init_exp(v, VFALSE, 0);
-		break;
+					  init_exp(v, VFALSE, 0);
+					  break;
 	}
 	case TK_DOTS:{
-		FuncState*fs = ls->fs;
-		check_condition(ls, fs->f->is_vararg,
-			"cannot use "LUA_QL("...")" outside a vararg function");
-		fs->f->is_vararg &= ~4;
-		init_exp(v, VVARARG, luaK_codeABC(fs, OP_VARARG, 0, 1, 0));
-		break;
+					 FuncState*fs = ls->fs;
+					 check_condition(ls, fs->f->is_vararg,
+						 "cannot use "LUA_QL("...")" outside a vararg function");
+					 fs->f->is_vararg &= ~4;
+					 init_exp(v, VVARARG, luaK_codeABC(fs, OP_VARARG, 0, 1, 0));
+					 break;
 	}
 	case'{':{
-		constructor(ls, v);
-		return;
+				constructor(ls, v);
+				return;
 	}
 	case TK_FUNCTION:{
-		luaX_next(ls);
-		body(ls, v, 0, ls->linenumber);
-		return;
+						 luaX_next(ls);
+						 body(ls, v, 0, ls->linenumber);
+						 return;
 	}
 	default:{
-		primaryexp(ls, v);
-		return;
+				primaryexp(ls, v);
+				return;
 	}
 	}
 	luaX_next(ls);
@@ -4379,7 +4284,7 @@ static BinOpr subexpr(LexState*ls, expdesc*v, unsigned int limit){
 	}
 	else simpleexp(ls, v);
 	op = getbinopr(ls->t.token);
-	while (op != OPR_NOBINOPR&&priority[op].left > limit){
+	while (op != OPR_NOBINOPR&&priority[op].left>limit){
 		expdesc v2;
 		BinOpr nextop;
 		luaX_next(ls);
@@ -4454,7 +4359,7 @@ static void assignment(LexState*ls, struct LHS_assign*lh, int nvars){
 		nexps = explist1(ls, &e);
 		if (nexps != nvars){
 			adjust_assign(ls, nvars, nexps, &e);
-			if (nexps > nvars)
+			if (nexps>nvars)
 				ls->fs->freereg -= nexps - nvars;
 		}
 		else{
@@ -4723,51 +4628,51 @@ static int statement(LexState*ls){
 	int line = ls->linenumber;
 	switch (ls->t.token){
 	case TK_IF:{
-		ifstat(ls, line);
-		return 0;
+				   ifstat(ls, line);
+				   return 0;
 	}
 	case TK_WHILE:{
-		whilestat(ls, line);
-		return 0;
+					  whilestat(ls, line);
+					  return 0;
 	}
 	case TK_DO:{
-		luaX_next(ls);
-		block(ls);
-		check_match(ls, TK_END, TK_DO, line);
-		return 0;
+				   luaX_next(ls);
+				   block(ls);
+				   check_match(ls, TK_END, TK_DO, line);
+				   return 0;
 	}
 	case TK_FOR:{
-		forstat(ls, line);
-		return 0;
+					forstat(ls, line);
+					return 0;
 	}
 	case TK_REPEAT:{
-		repeatstat(ls, line);
-		return 0;
+					   repeatstat(ls, line);
+					   return 0;
 	}
 	case TK_FUNCTION:{
-		funcstat(ls, line);
-		return 0;
+						 funcstat(ls, line);
+						 return 0;
 	}
 	case TK_LOCAL:{
-		luaX_next(ls);
-		if (testnext(ls, TK_FUNCTION))
-			localfunc(ls);
-		else
-			localstat(ls);
-		return 0;
+					  luaX_next(ls);
+					  if (testnext(ls, TK_FUNCTION))
+						  localfunc(ls);
+					  else
+						  localstat(ls);
+					  return 0;
 	}
 	case TK_RETURN:{
-		retstat(ls);
-		return 1;
+					   retstat(ls);
+					   return 1;
 	}
 	case TK_BREAK:{
-		luaX_next(ls);
-		breakstat(ls);
-		return 1;
+					  luaX_next(ls);
+					  breakstat(ls);
+					  return 1;
 	}
 	default:{
-		exprstat(ls);
-		return 0;
+				exprstat(ls);
+				return 0;
 	}
 	}
 }
@@ -4827,7 +4732,7 @@ static void callTM(lua_State*L, const TValue*f, const TValue*p1,
 }
 static void luaV_gettable(lua_State*L, const TValue*t, TValue*key, StkId val){
 	int loop;
-	for (loop = 0; loop < 100; loop++){
+	for (loop = 0; loop<100; loop++){
 		const TValue*tm;
 		if (ttistable(t)){
 			Table*h = hvalue(t);
@@ -4851,7 +4756,7 @@ static void luaV_gettable(lua_State*L, const TValue*t, TValue*key, StkId val){
 static void luaV_settable(lua_State*L, const TValue*t, TValue*key, StkId val){
 	int loop;
 	TValue temp;
-	for (loop = 0; loop < 100; loop++){
+	for (loop = 0; loop<100; loop++){
 		const TValue*tm;
 		if (ttistable(t)){
 			Table*h = hvalue(t);
@@ -4933,7 +4838,7 @@ static int luaV_lessthan(lua_State*L, const TValue*l, const TValue*r){
 	else if (ttisnumber(l))
 		return luai_numlt(nvalue(l), nvalue(r));
 	else if (ttisstring(l))
-		return l_strcmp(rawtsvalue(l), rawtsvalue(r)) < 0;
+		return l_strcmp(rawtsvalue(l), rawtsvalue(r))<0;
 	else if ((res = call_orderTM(L, l, r, TM_LT)) != -1)
 		return res;
 	return luaG_ordererror(L, l, r);
@@ -4960,15 +4865,15 @@ static int luaV_equalval(lua_State*L, const TValue*t1, const TValue*t2){
 	case 1:return bvalue(t1) == bvalue(t2);
 	case 2:return pvalue(t1) == pvalue(t2);
 	case 7:{
-		if (uvalue(t1) == uvalue(t2))return 1;
-		tm = get_compTM(L, uvalue(t1)->metatable, uvalue(t2)->metatable,
-			TM_EQ);
-		break;
+			   if (uvalue(t1) == uvalue(t2))return 1;
+			   tm = get_compTM(L, uvalue(t1)->metatable, uvalue(t2)->metatable,
+				   TM_EQ);
+			   break;
 	}
 	case 5:{
-		if (hvalue(t1) == hvalue(t2))return 1;
-		tm = get_compTM(L, hvalue(t1)->metatable, hvalue(t2)->metatable, TM_EQ);
-		break;
+			   if (hvalue(t1) == hvalue(t2))return 1;
+			   tm = get_compTM(L, hvalue(t1)->metatable, hvalue(t2)->metatable, TM_EQ);
+			   break;
 	}
 	default:return gcvalue(t1) == gcvalue(t2);
 	}
@@ -4990,14 +4895,14 @@ static void luaV_concat(lua_State*L, int total, int last){
 			size_t tl = tsvalue(top - 1)->len;
 			char*buffer;
 			int i;
-			for (n = 1; n < total&&tostring(L, top - n - 1); n++){
+			for (n = 1; n<total&&tostring(L, top - n - 1); n++){
 				size_t l = tsvalue(top - n - 1)->len;
 				if (l >= ((size_t)(~(size_t)0) - 2) - tl)luaG_runerror(L, "string length overflow");
 				tl += l;
 			}
 			buffer = luaZ_openspace(L, &G(L)->buff, tl);
 			tl = 0;
-			for (i = n; i > 0; i--){
+			for (i = n; i>0; i--){
 				size_t l = tsvalue(top - i)->len;
 				memcpy(buffer + tl, svalue(top - i), l);
 				tl += l;
@@ -5006,7 +4911,7 @@ static void luaV_concat(lua_State*L, int total, int last){
 		}
 		total -= n - 1;
 		last -= n - 1;
-	} while (total > 1);
+	} while (total>1);
 }
 static void Arith(lua_State*L, StkId ra, const TValue*rb,
 	const TValue*rc, TMS op){
@@ -5054,352 +4959,352 @@ reentry:
 		ra = RA(i);
 		switch (GET_OPCODE(i)){
 		case OP_MOVE:{
-			setobj(L, ra, RB(i));
-			continue;
+						 setobj(L, ra, RB(i));
+						 continue;
 		}
 		case OP_LOADK:{
-			setobj(L, ra, KBx(i));
-			continue;
+						  setobj(L, ra, KBx(i));
+						  continue;
 		}
 		case OP_LOADBOOL:{
-			setbvalue(ra, GETARG_B(i));
-			if (GETARG_C(i))pc++;
-			continue;
+							 setbvalue(ra, GETARG_B(i));
+							 if (GETARG_C(i))pc++;
+							 continue;
 		}
 		case OP_LOADNIL:{
-			TValue*rb = RB(i);
-			do{
-				setnilvalue(rb--);
-			} while (rb >= ra);
-			continue;
+							TValue*rb = RB(i);
+							do{
+								setnilvalue(rb--);
+							} while (rb >= ra);
+							continue;
 		}
 		case OP_GETUPVAL:{
-			int b = GETARG_B(i);
-			setobj(L, ra, cl->upvals[b]->v);
-			continue;
+							 int b = GETARG_B(i);
+							 setobj(L, ra, cl->upvals[b]->v);
+							 continue;
 		}
 		case OP_GETGLOBAL:{
-			TValue g;
-			TValue*rb = KBx(i);
-			sethvalue(L, &g, cl->env);
-			Protect(luaV_gettable(L, &g, rb, ra));
-			continue;
+							  TValue g;
+							  TValue*rb = KBx(i);
+							  sethvalue(L, &g, cl->env);
+							  Protect(luaV_gettable(L, &g, rb, ra));
+							  continue;
 		}
 		case OP_GETTABLE:{
-			Protect(luaV_gettable(L, RB(i), RKC(i), ra));
-			continue;
+							 Protect(luaV_gettable(L, RB(i), RKC(i), ra));
+							 continue;
 		}
 		case OP_SETGLOBAL:{
-			TValue g;
-			sethvalue(L, &g, cl->env);
-			Protect(luaV_settable(L, &g, KBx(i), ra));
-			continue;
+							  TValue g;
+							  sethvalue(L, &g, cl->env);
+							  Protect(luaV_settable(L, &g, KBx(i), ra));
+							  continue;
 		}
 		case OP_SETUPVAL:{
-			UpVal*uv = cl->upvals[GETARG_B(i)];
-			setobj(L, uv->v, ra);
-			luaC_barrier(L, uv, ra);
-			continue;
+							 UpVal*uv = cl->upvals[GETARG_B(i)];
+							 setobj(L, uv->v, ra);
+							 luaC_barrier(L, uv, ra);
+							 continue;
 		}
 		case OP_SETTABLE:{
-			Protect(luaV_settable(L, ra, RKB(i), RKC(i)));
-			continue;
+							 Protect(luaV_settable(L, ra, RKB(i), RKC(i)));
+							 continue;
 		}
 		case OP_NEWTABLE:{
-			int b = GETARG_B(i);
-			int c = GETARG_C(i);
-			sethvalue(L, ra, luaH_new(L, luaO_fb2int(b), luaO_fb2int(c)));
-			Protect(luaC_checkGC(L));
-			continue;
+							 int b = GETARG_B(i);
+							 int c = GETARG_C(i);
+							 sethvalue(L, ra, luaH_new(L, luaO_fb2int(b), luaO_fb2int(c)));
+							 Protect(luaC_checkGC(L));
+							 continue;
 		}
 		case OP_SELF:{
-			StkId rb = RB(i);
-			setobj(L, ra + 1, rb);
-			Protect(luaV_gettable(L, rb, RKC(i), ra));
-			continue;
+						 StkId rb = RB(i);
+						 setobj(L, ra + 1, rb);
+						 Protect(luaV_gettable(L, rb, RKC(i), ra));
+						 continue;
 		}
 		case OP_ADD:{
-			arith_op(luai_numadd, TM_ADD);
-			continue;
+						arith_op(luai_numadd, TM_ADD);
+						continue;
 		}
 		case OP_SUB:{
-			arith_op(luai_numsub, TM_SUB);
-			continue;
+						arith_op(luai_numsub, TM_SUB);
+						continue;
 		}
 		case OP_MUL:{
-			arith_op(luai_nummul, TM_MUL);
-			continue;
+						arith_op(luai_nummul, TM_MUL);
+						continue;
 		}
 		case OP_DIV:{
-			arith_op(luai_numdiv, TM_DIV);
-			continue;
+						arith_op(luai_numdiv, TM_DIV);
+						continue;
 		}
 		case OP_MOD:{
-			arith_op(luai_nummod, TM_MOD);
-			continue;
+						arith_op(luai_nummod, TM_MOD);
+						continue;
 		}
 		case OP_POW:{
-			arith_op(luai_numpow, TM_POW);
-			continue;
+						arith_op(luai_numpow, TM_POW);
+						continue;
 		}
 		case OP_UNM:{
-			TValue*rb = RB(i);
-			if (ttisnumber(rb)){
-				lua_Number nb = nvalue(rb);
-				setnvalue(ra, luai_numunm(nb));
-			}
-			else{
-				Protect(Arith(L, ra, rb, rb, TM_UNM));
-			}
-			continue;
+						TValue*rb = RB(i);
+						if (ttisnumber(rb)){
+							lua_Number nb = nvalue(rb);
+							setnvalue(ra, luai_numunm(nb));
+						}
+						else{
+							Protect(Arith(L, ra, rb, rb, TM_UNM));
+						}
+						continue;
 		}
 		case OP_NOT:{
-			int res = l_isfalse(RB(i));
-			setbvalue(ra, res);
-			continue;
+						int res = l_isfalse(RB(i));
+						setbvalue(ra, res);
+						continue;
 		}
 		case OP_LEN:{
-			const TValue*rb = RB(i);
-			switch (ttype(rb)){
-			case 5:{
-				setnvalue(ra, cast_num(luaH_getn(hvalue(rb))));
-				break;
-			}
-			case 4:{
-				setnvalue(ra, cast_num(tsvalue(rb)->len));
-				break;
-			}
-			default:{
-				Protect(
-					if (!call_binTM(L, rb, (&luaO_nilobject_), ra, TM_LEN))
-						luaG_typeerror(L, rb, "get length of");
-				)
-			}
-			}
-			continue;
+						const TValue*rb = RB(i);
+						switch (ttype(rb)){
+						case 5:{
+								   setnvalue(ra, cast_num(luaH_getn(hvalue(rb))));
+								   break;
+						}
+						case 4:{
+								   setnvalue(ra, cast_num(tsvalue(rb)->len));
+								   break;
+						}
+						default:{
+									Protect(
+									if (!call_binTM(L, rb, (&luaO_nilobject_), ra, TM_LEN))
+										luaG_typeerror(L, rb, "get length of");
+									)
+						}
+						}
+						continue;
 		}
 		case OP_CONCAT:{
-			int b = GETARG_B(i);
-			int c = GETARG_C(i);
-			Protect(luaV_concat(L, c - b + 1, c); luaC_checkGC(L));
-			setobj(L, RA(i), base + b);
-			continue;
+						   int b = GETARG_B(i);
+						   int c = GETARG_C(i);
+						   Protect(luaV_concat(L, c - b + 1, c); luaC_checkGC(L));
+						   setobj(L, RA(i), base + b);
+						   continue;
 		}
 		case OP_JMP:{
-			dojump(L, pc, GETARG_sBx(i));
-			continue;
+						dojump(L, pc, GETARG_sBx(i));
+						continue;
 		}
 		case OP_EQ:{
-			TValue*rb = RKB(i);
-			TValue*rc = RKC(i);
-			Protect(
-				if (equalobj(L, rb, rc) == GETARG_A(i))
-					dojump(L, pc, GETARG_sBx(*pc));
-			)
-				pc++;
-			continue;
+					   TValue*rb = RKB(i);
+					   TValue*rc = RKC(i);
+					   Protect(
+					   if (equalobj(L, rb, rc) == GETARG_A(i))
+						   dojump(L, pc, GETARG_sBx(*pc));
+					   )
+						   pc++;
+					   continue;
 		}
 		case OP_LT:{
-			Protect(
-				if (luaV_lessthan(L, RKB(i), RKC(i)) == GETARG_A(i))
-					dojump(L, pc, GETARG_sBx(*pc));
-			)
-				pc++;
-			continue;
+					   Protect(
+					   if (luaV_lessthan(L, RKB(i), RKC(i)) == GETARG_A(i))
+						   dojump(L, pc, GETARG_sBx(*pc));
+					   )
+						   pc++;
+					   continue;
 		}
 		case OP_LE:{
-			Protect(
-				if (lessequal(L, RKB(i), RKC(i)) == GETARG_A(i))
-					dojump(L, pc, GETARG_sBx(*pc));
-			)
-				pc++;
-			continue;
+					   Protect(
+					   if (lessequal(L, RKB(i), RKC(i)) == GETARG_A(i))
+						   dojump(L, pc, GETARG_sBx(*pc));
+					   )
+						   pc++;
+					   continue;
 		}
 		case OP_TEST:{
-			if (l_isfalse(ra) != GETARG_C(i))
-				dojump(L, pc, GETARG_sBx(*pc));
-			pc++;
-			continue;
+						 if (l_isfalse(ra) != GETARG_C(i))
+							 dojump(L, pc, GETARG_sBx(*pc));
+						 pc++;
+						 continue;
 		}
 		case OP_TESTSET:{
-			TValue*rb = RB(i);
-			if (l_isfalse(rb) != GETARG_C(i)){
-				setobj(L, ra, rb);
-				dojump(L, pc, GETARG_sBx(*pc));
-			}
-			pc++;
-			continue;
+							TValue*rb = RB(i);
+							if (l_isfalse(rb) != GETARG_C(i)){
+								setobj(L, ra, rb);
+								dojump(L, pc, GETARG_sBx(*pc));
+							}
+							pc++;
+							continue;
 		}
 		case OP_CALL:{
-			int b = GETARG_B(i);
-			int nresults = GETARG_C(i) - 1;
-			if (b != 0)L->top = ra + b;
-			L->savedpc = pc;
-			switch (luaD_precall(L, ra, nresults)){
-			case 0:{
-				nexeccalls++;
-				goto reentry;
-			}
-			case 1:{
-				if (nresults >= 0)L->top = L->ci->top;
-				base = L->base;
-				continue;
-			}
-			default:{
-				return;
-			}
-			}
+						 int b = GETARG_B(i);
+						 int nresults = GETARG_C(i) - 1;
+						 if (b != 0)L->top = ra + b;
+						 L->savedpc = pc;
+						 switch (luaD_precall(L, ra, nresults)){
+						 case 0:{
+									nexeccalls++;
+									goto reentry;
+						 }
+						 case 1:{
+									if (nresults >= 0)L->top = L->ci->top;
+									base = L->base;
+									continue;
+						 }
+						 default:{
+									 return;
+						 }
+						 }
 		}
 		case OP_TAILCALL:{
-			int b = GETARG_B(i);
-			if (b != 0)L->top = ra + b;
-			L->savedpc = pc;
-			switch (luaD_precall(L, ra, (-1))){
-			case 0:{
-				CallInfo*ci = L->ci - 1;
-				int aux;
-				StkId func = ci->func;
-				StkId pfunc = (ci + 1)->func;
-				if (L->openupval)luaF_close(L, ci->base);
-				L->base = ci->base = ci->func + ((ci + 1)->base - pfunc);
-				for (aux = 0; pfunc + aux < L->top; aux++)
-					setobj(L, func + aux, pfunc + aux);
-				ci->top = L->top = func + aux;
-				ci->savedpc = L->savedpc;
-				ci->tailcalls++;
-				L->ci--;
-				goto reentry;
-			}
-			case 1:{
-				base = L->base;
-				continue;
-			}
-			default:{
-				return;
-			}
-			}
+							 int b = GETARG_B(i);
+							 if (b != 0)L->top = ra + b;
+							 L->savedpc = pc;
+							 switch (luaD_precall(L, ra, (-1))){
+							 case 0:{
+										CallInfo*ci = L->ci - 1;
+										int aux;
+										StkId func = ci->func;
+										StkId pfunc = (ci + 1)->func;
+										if (L->openupval)luaF_close(L, ci->base);
+										L->base = ci->base = ci->func + ((ci + 1)->base - pfunc);
+										for (aux = 0; pfunc + aux<L->top; aux++)
+											setobj(L, func + aux, pfunc + aux);
+										ci->top = L->top = func + aux;
+										ci->savedpc = L->savedpc;
+										ci->tailcalls++;
+										L->ci--;
+										goto reentry;
+							 }
+							 case 1:{
+										base = L->base;
+										continue;
+							 }
+							 default:{
+										 return;
+							 }
+							 }
 		}
 		case OP_RETURN:{
-			int b = GETARG_B(i);
-			if (b != 0)L->top = ra + b - 1;
-			if (L->openupval)luaF_close(L, base);
-			L->savedpc = pc;
-			b = luaD_poscall(L, ra);
-			if (--nexeccalls == 0)
-				return;
-			else{
-				if (b)L->top = L->ci->top;
-				goto reentry;
-			}
+						   int b = GETARG_B(i);
+						   if (b != 0)L->top = ra + b - 1;
+						   if (L->openupval)luaF_close(L, base);
+						   L->savedpc = pc;
+						   b = luaD_poscall(L, ra);
+						   if (--nexeccalls == 0)
+							   return;
+						   else{
+							   if (b)L->top = L->ci->top;
+							   goto reentry;
+						   }
 		}
 		case OP_FORLOOP:{
-			lua_Number step = nvalue(ra + 2);
-			lua_Number idx = luai_numadd(nvalue(ra), step);
-			lua_Number limit = nvalue(ra + 1);
-			if (luai_numlt(0, step) ? luai_numle(idx, limit)
-				: luai_numle(limit, idx)){
-				dojump(L, pc, GETARG_sBx(i));
-				setnvalue(ra, idx);
-				setnvalue(ra + 3, idx);
-			}
-			continue;
+							lua_Number step = nvalue(ra + 2);
+							lua_Number idx = luai_numadd(nvalue(ra), step);
+							lua_Number limit = nvalue(ra + 1);
+							if (luai_numlt(0, step) ? luai_numle(idx, limit)
+								: luai_numle(limit, idx)){
+								dojump(L, pc, GETARG_sBx(i));
+								setnvalue(ra, idx);
+								setnvalue(ra + 3, idx);
+							}
+							continue;
 		}
 		case OP_FORPREP:{
-			const TValue*init = ra;
-			const TValue*plimit = ra + 1;
-			const TValue*pstep = ra + 2;
-			L->savedpc = pc;
-			if (!tonumber(init, ra))
-				luaG_runerror(L, LUA_QL("for")" initial value must be a number");
-			else if (!tonumber(plimit, ra + 1))
-				luaG_runerror(L, LUA_QL("for")" limit must be a number");
-			else if (!tonumber(pstep, ra + 2))
-				luaG_runerror(L, LUA_QL("for")" step must be a number");
-			setnvalue(ra, luai_numsub(nvalue(ra), nvalue(pstep)));
-			dojump(L, pc, GETARG_sBx(i));
-			continue;
+							const TValue*init = ra;
+							const TValue*plimit = ra + 1;
+							const TValue*pstep = ra + 2;
+							L->savedpc = pc;
+							if (!tonumber(init, ra))
+								luaG_runerror(L, LUA_QL("for")" initial value must be a number");
+							else if (!tonumber(plimit, ra + 1))
+								luaG_runerror(L, LUA_QL("for")" limit must be a number");
+							else if (!tonumber(pstep, ra + 2))
+								luaG_runerror(L, LUA_QL("for")" step must be a number");
+							setnvalue(ra, luai_numsub(nvalue(ra), nvalue(pstep)));
+							dojump(L, pc, GETARG_sBx(i));
+							continue;
 		}
 		case OP_TFORLOOP:{
-			StkId cb = ra + 3;
-			setobj(L, cb + 2, ra + 2);
-			setobj(L, cb + 1, ra + 1);
-			setobj(L, cb, ra);
-			L->top = cb + 3;
-			Protect(luaD_call(L, cb, GETARG_C(i)));
-			L->top = L->ci->top;
-			cb = RA(i) + 3;
-			if (!ttisnil(cb)){
-				setobj(L, cb - 1, cb);
-				dojump(L, pc, GETARG_sBx(*pc));
-			}
-			pc++;
-			continue;
+							 StkId cb = ra + 3;
+							 setobj(L, cb + 2, ra + 2);
+							 setobj(L, cb + 1, ra + 1);
+							 setobj(L, cb, ra);
+							 L->top = cb + 3;
+							 Protect(luaD_call(L, cb, GETARG_C(i)));
+							 L->top = L->ci->top;
+							 cb = RA(i) + 3;
+							 if (!ttisnil(cb)){
+								 setobj(L, cb - 1, cb);
+								 dojump(L, pc, GETARG_sBx(*pc));
+							 }
+							 pc++;
+							 continue;
 		}
 		case OP_SETLIST:{
-			int n = GETARG_B(i);
-			int c = GETARG_C(i);
-			int last;
-			Table*h;
-			if (n == 0){
-				n = cast_int(L->top - ra) - 1;
-				L->top = L->ci->top;
-			}
-			if (c == 0)c = cast_int(*pc++);
-			runtime_check(L, ttistable(ra));
-			h = hvalue(ra);
-			last = ((c - 1) * 50) + n;
-			if (last > h->sizearray)
-				luaH_resizearray(L, h, last);
-			for (; n > 0; n--){
-				TValue*val = ra + n;
-				setobj(L, luaH_setnum(L, h, last--), val);
-				luaC_barriert(L, h, val);
-			}
-			continue;
+							int n = GETARG_B(i);
+							int c = GETARG_C(i);
+							int last;
+							Table*h;
+							if (n == 0){
+								n = cast_int(L->top - ra) - 1;
+								L->top = L->ci->top;
+							}
+							if (c == 0)c = cast_int(*pc++);
+							runtime_check(L, ttistable(ra));
+							h = hvalue(ra);
+							last = ((c - 1) * 50) + n;
+							if (last>h->sizearray)
+								luaH_resizearray(L, h, last);
+							for (; n>0; n--){
+								TValue*val = ra + n;
+								setobj(L, luaH_setnum(L, h, last--), val);
+								luaC_barriert(L, h, val);
+							}
+							continue;
 		}
 		case OP_CLOSE:{
-			luaF_close(L, ra);
-			continue;
+						  luaF_close(L, ra);
+						  continue;
 		}
 		case OP_CLOSURE:{
-			Proto*p;
-			Closure*ncl;
-			int nup, j;
-			p = cl->p->p[GETARG_Bx(i)];
-			nup = p->nups;
-			ncl = luaF_newLclosure(L, nup, cl->env);
-			ncl->l.p = p;
-			for (j = 0; j < nup; j++, pc++){
-				if (GET_OPCODE(*pc) == OP_GETUPVAL)
-					ncl->l.upvals[j] = cl->upvals[GETARG_B(*pc)];
-				else{
-					ncl->l.upvals[j] = luaF_findupval(L, base + GETARG_B(*pc));
-				}
-			}
-			setclvalue(L, ra, ncl);
-			Protect(luaC_checkGC(L));
-			continue;
+							Proto*p;
+							Closure*ncl;
+							int nup, j;
+							p = cl->p->p[GETARG_Bx(i)];
+							nup = p->nups;
+							ncl = luaF_newLclosure(L, nup, cl->env);
+							ncl->l.p = p;
+							for (j = 0; j<nup; j++, pc++){
+								if (GET_OPCODE(*pc) == OP_GETUPVAL)
+									ncl->l.upvals[j] = cl->upvals[GETARG_B(*pc)];
+								else{
+									ncl->l.upvals[j] = luaF_findupval(L, base + GETARG_B(*pc));
+								}
+							}
+							setclvalue(L, ra, ncl);
+							Protect(luaC_checkGC(L));
+							continue;
 		}
 		case OP_VARARG:{
-			int b = GETARG_B(i) - 1;
-			int j;
-			CallInfo*ci = L->ci;
-			int n = cast_int(ci->base - ci->func) - cl->p->numparams - 1;
-			if (b == (-1)){
-				Protect(luaD_checkstack(L, n));
-				ra = RA(i);
-				b = n;
-				L->top = ra + n;
-			}
-			for (j = 0; j < b; j++){
-				if (j < n){
-					setobj(L, ra + j, ci->base - n + j);
-				}
-				else{
-					setnilvalue(ra + j);
-				}
-			}
-			continue;
+						   int b = GETARG_B(i) - 1;
+						   int j;
+						   CallInfo*ci = L->ci;
+						   int n = cast_int(ci->base - ci->func) - cl->p->numparams - 1;
+						   if (b == (-1)){
+							   Protect(luaD_checkstack(L, n));
+							   ra = RA(i);
+							   b = n;
+							   L->top = ra + n;
+						   }
+						   for (j = 0; j<b; j++){
+							   if (j<n){
+								   setobj(L, ra + j, ci->base - n + j);
+							   }
+							   else{
+								   setnilvalue(ra + j);
+							   }
+						   }
+						   continue;
 		}
 		}
 	}
@@ -5408,30 +5313,30 @@ reentry:
 #define api_checkvalidindex(L,i)luai_apicheck(L,(i)!=(&luaO_nilobject_))
 #define api_incr_top(L){luai_apicheck(L,L->top<L->ci->top);L->top++;}
 static TValue*index2adr(lua_State*L, int idx){
-	if (idx > 0){
+	if (idx>0){
 		TValue*o = L->base + (idx - 1);
 		luai_apicheck(L, idx <= L->ci->top - L->base);
 		if (o >= L->top)return cast(TValue*, (&luaO_nilobject_));
 		else return o;
 	}
-	else if (idx > (-10000)){
+	else if (idx>(-10000)){
 		luai_apicheck(L, idx != 0 && -idx <= L->top - L->base);
 		return L->top + idx;
 	}
 	else switch (idx){
 	case(-10000) : return registry(L);
 	case(-10001) : {
-		Closure*func = curr_func(L);
-		sethvalue(L, &L->env, func->c.env);
-		return&L->env;
+					   Closure*func = curr_func(L);
+					   sethvalue(L, &L->env, func->c.env);
+					   return&L->env;
 	}
 	case(-10002) : return gt(L);
 	default:{
-		Closure*func = curr_func(L);
-		idx = (-10002) - idx;
-		return(idx <= func->c.nupvalues)
-			? &func->c.upvalue[idx - 1]
-			: cast(TValue*, (&luaO_nilobject_));
+				Closure*func = curr_func(L);
+				idx = (-10002) - idx;
+				return(idx <= func->c.nupvalues)
+					? &func->c.upvalue[idx - 1]
+					: cast(TValue*, (&luaO_nilobject_));
 	}
 	}
 }
@@ -5445,11 +5350,11 @@ static Table*getcurrenv(lua_State*L){
 }
 static int lua_checkstack(lua_State*L, int size){
 	int res = 1;
-	if (size > 8000 || (L->top - L->base + size) > 8000)
+	if (size>8000 || (L->top - L->base + size)>8000)
 		res = 0;
-	else if (size > 0){
+	else if (size>0){
 		luaD_checkstack(L, size);
-		if (L->ci->top < L->top + size)
+		if (L->ci->top<L->top + size)
 			L->ci->top = L->top + size;
 	}
 	return res;
@@ -5466,7 +5371,7 @@ static int lua_gettop(lua_State*L){
 static void lua_settop(lua_State*L, int idx){
 	if (idx >= 0){
 		luai_apicheck(L, idx <= L->stack_last - L->base);
-		while (L->top < L->base + idx)
+		while (L->top<L->base + idx)
 			setnilvalue(L->top++);
 		L->top = L->base + idx;
 	}
@@ -5479,7 +5384,7 @@ static void lua_remove(lua_State*L, int idx){
 	StkId p;
 	p = index2adr(L, idx);
 	api_checkvalidindex(L, p);
-	while (++p < L->top)setobj(L, p - 1, p);
+	while (++p<L->top)setobj(L, p - 1, p);
 	L->top--;
 }
 static void lua_insert(lua_State*L, int idx){
@@ -5487,7 +5392,7 @@ static void lua_insert(lua_State*L, int idx){
 	StkId q;
 	p = index2adr(L, idx);
 	api_checkvalidindex(L, p);
-	for (q = L->top; q > p; q--)setobj(L, q, q - 1);
+	for (q = L->top; q>p; q--)setobj(L, q, q - 1);
 	setobj(L, p, L->top);
 }
 static void lua_replace(lua_State*L, int idx){
@@ -5505,7 +5410,7 @@ static void lua_replace(lua_State*L, int idx){
 	}
 	else{
 		setobj(L, o, L->top - 1);
-		if (idx < (-10002))
+		if (idx<(-10002))
 			luaC_barrier(L, curr_func(L), L->top - 1);
 	}
 	L->top--;
@@ -5594,9 +5499,9 @@ static size_t lua_objlen(lua_State*L, int idx){
 	case 7:return uvalue(o)->len;
 	case 5:return luaH_getn(hvalue(o));
 	case 3:{
-		size_t l;
-		l = (luaV_tostring(L, o) ? tsvalue(o)->len : 0);
-		return l;
+			   size_t l;
+			   l = (luaV_tostring(L, o) ? tsvalue(o)->len : 0);
+			   return l;
 	}
 	default:return 0;
 	}
@@ -5801,20 +5706,20 @@ static int lua_setmetatable(lua_State*L, int objindex){
 	}
 	switch (ttype(obj)){
 	case 5:{
-		hvalue(obj)->metatable = mt;
-		if (mt)
-			luaC_objbarriert(L, hvalue(obj), mt);
-		break;
+			   hvalue(obj)->metatable = mt;
+			   if (mt)
+				   luaC_objbarriert(L, hvalue(obj), mt);
+			   break;
 	}
 	case 7:{
-		uvalue(obj)->metatable = mt;
-		if (mt)
-			luaC_objbarrier(L, rawuvalue(obj), mt);
-		break;
+			   uvalue(obj)->metatable = mt;
+			   if (mt)
+				   luaC_objbarrier(L, rawuvalue(obj), mt);
+			   break;
 	}
 	default:{
-		G(L)->mt[ttype(obj)] = mt;
-		break;
+				G(L)->mt[ttype(obj)] = mt;
+				break;
 	}
 	}
 	L->top--;
@@ -5993,7 +5898,7 @@ static void luaL_where(lua_State*L, int level){
 	lua_Debug ar;
 	if (lua_getstack(L, level, &ar)){
 		lua_getinfo(L, "Sl", &ar);
-		if (ar.currentline > 0){
+		if (ar.currentline>0){
 			lua_pushfstring(L, "%s:%d: ", ar.short_src, ar.currentline);
 			return;
 		}
@@ -6116,7 +6021,7 @@ static void luaI_openlib(lua_State*L, const char*libname,
 	}
 	for (; l->name; l++){
 		int i;
-		for (i = 0; i < nup; i++)
+		for (i = 0; i<nup; i++)
 			lua_pushvalue(L, -nup);
 		lua_pushcclosure(L, l->func, nup);
 		lua_setfield(L, -(nup + 2), l->name);
@@ -6161,18 +6066,18 @@ static int emptybuffer(luaL_Buffer*B){
 	}
 }
 static void adjuststack(luaL_Buffer*B){
-	if (B->lvl > 1){
+	if (B->lvl>1){
 		lua_State*L = B->L;
 		int toget = 1;
 		size_t toplen = lua_strlen(L, -1);
 		do{
 			size_t l = lua_strlen(L, -(toget + 1));
-			if (B->lvl - toget + 1 >= (20 / 2) || toplen > l){
+			if (B->lvl - toget + 1 >= (20 / 2) || toplen>l){
 				toplen += l;
 				toget++;
 			}
 			else break;
-		} while (toget < B->lvl);
+		} while (toget<B->lvl);
 		lua_concat(L, toget);
 		B->lvl = B->lvl - toget + 1;
 	}
@@ -6227,7 +6132,7 @@ static const char*getF(lua_State*L, void*ud, size_t*size){
 	}
 	if (feof(lf->f))return NULL;
 	*size = fread(lf->buff, 1, sizeof(lf->buff), lf->f);
-	return(*size > 0) ? lf->buff : NULL;
+	return(*size>0) ? lf->buff : NULL;
 }
 static int errfile(lua_State*L, const char*what, int fnameindex){
 	const char*serr = strerror(errno);
@@ -6248,9 +6153,7 @@ static int luaL_loadfile(lua_State*L, const char*filename){
 	}
 	else{
 		lua_pushfstring(L, "@%s", filename);
-		/* wse mod */
-		//lf.f = fopen(filename, "r");
-		lf.f = fopenInUserDir(L, filename, "r");
+		lf.f = fopen(filename, "r");
 		if (lf.f == NULL)return errfile(L, "open", fnameindex);
 	}
 	c = getc(lf.f);
@@ -6345,7 +6248,7 @@ static int luaB_tonumber(lua_State*L){
 static int luaB_error(lua_State*L){
 	int level = luaL_optint(L, 2, 1);
 	lua_settop(L, 1);
-	if (lua_isstring(L, 1) && level > 0){
+	if (lua_isstring(L, 1) && level>0){
 		luaL_where(L, level);
 		lua_pushvalue(L, 1);
 		lua_concat(L, 2);
@@ -6466,12 +6369,12 @@ static int luaB_unpack(lua_State*L){
 	luaL_checktype(L, 1, 5);
 	i = luaL_optint(L, 2, 1);
 	e = luaL_opt(L, luaL_checkint, 3, luaL_getn(L, 1));
-	if (i > e)return 0;
+	if (i>e)return 0;
 	n = e - i + 1;
 	if (n <= 0 || !lua_checkstack(L, n))
 		return luaL_error(L, "too many results to unpack");
 	lua_rawgeti(L, 1, i);
-	while (i++ < e)
+	while (i++<e)
 		lua_rawgeti(L, 1, i);
 	return n;
 }
@@ -6554,21 +6457,21 @@ static int tinsert(lua_State*L){
 	int pos;
 	switch (lua_gettop(L)){
 	case 2:{
-		pos = e;
-		break;
+			   pos = e;
+			   break;
 	}
 	case 3:{
-		int i;
-		pos = luaL_checkint(L, 2);
-		if (pos > e)e = pos;
-		for (i = e; i > pos; i--){
-			lua_rawgeti(L, 1, i - 1);
-			lua_rawseti(L, 1, i);
-		}
-		break;
+			   int i;
+			   pos = luaL_checkint(L, 2);
+			   if (pos>e)e = pos;
+			   for (i = e; i>pos; i--){
+				   lua_rawgeti(L, 1, i - 1);
+				   lua_rawseti(L, 1, i);
+			   }
+			   break;
 	}
 	default:{
-		return luaL_error(L, "wrong number of arguments to "LUA_QL("insert"));
+				return luaL_error(L, "wrong number of arguments to "LUA_QL("insert"));
 	}
 	}
 	luaL_setn(L, 1, e);
@@ -6582,7 +6485,7 @@ static int tremove(lua_State*L){
 		return 0;
 	luaL_setn(L, 1, e - 1);
 	lua_rawgeti(L, 1, pos);
-	for (; pos < e; pos++){
+	for (; pos<e; pos++){
 		lua_rawgeti(L, 1, pos + 1);
 		lua_rawseti(L, 1, pos);
 	}
@@ -6606,7 +6509,7 @@ static int tconcat(lua_State*L){
 	i = luaL_optint(L, 3, 1);
 	last = luaL_opt(L, luaL_checkint, 4, luaL_getn(L, 1));
 	luaL_buffinit(L, &b);
-	for (; i < last; i++){
+	for (; i<last; i++){
 		addfield(L, &b, i);
 		luaL_addlstring(&b, sep, lsep);
 	}
@@ -6634,7 +6537,7 @@ static int sort_comp(lua_State*L, int a, int b){
 		return lua_lessthan(L, a, b);
 }
 static void auxsort(lua_State*L, int l, int u){
-	while (l < u){
+	while (l<u){
 		int i, j;
 		lua_rawgeti(L, 1, l);
 		lua_rawgeti(L, 1, u);
@@ -6664,14 +6567,14 @@ static void auxsort(lua_State*L, int l, int u){
 		i = l; j = u - 1;
 		for (;;){
 			while (lua_rawgeti(L, 1, ++i), sort_comp(L, -1, -2)){
-				if (i > u)luaL_error(L, "invalid order function for sorting");
+				if (i>u)luaL_error(L, "invalid order function for sorting");
 				lua_pop(L, 1);
 			}
 			while (lua_rawgeti(L, 1, --j), sort_comp(L, -3, -1)){
-				if (j < l)luaL_error(L, "invalid order function for sorting");
+				if (j<l)luaL_error(L, "invalid order function for sorting");
 				lua_pop(L, 1);
 			}
-			if (j < i){
+			if (j<i){
 				lua_pop(L, 3);
 				break;
 			}
@@ -6680,7 +6583,7 @@ static void auxsort(lua_State*L, int l, int u){
 		lua_rawgeti(L, 1, u - 1);
 		lua_rawgeti(L, 1, i);
 		set2(L, u - 1, i);
-		if (i - l < u - i){
+		if (i - l<u - i){
 			j = l; i = i - 1; l = i + 2;
 		}
 		else{
@@ -6795,9 +6698,7 @@ static int io_open(lua_State*L){
 	const char*filename = luaL_checkstring(L, 1);
 	const char*mode = luaL_optstring(L, 2, "r");
 	FILE**pf = newfile(L);
-	/* wse mod */
-	//*pf = fopen(filename, mode);
-	*pf = fopenInUserDir(L, filename, mode);
+	*pf = fopen(filename, mode);
 	return(*pf == NULL) ? pushresult(L, 0, filename) : 1;
 }
 static FILE*getiofile(lua_State*L, int findex){
@@ -6813,9 +6714,7 @@ static int g_iofile(lua_State*L, int f, const char*mode){
 		const char*filename = lua_tostring(L, 1);
 		if (filename){
 			FILE**pf = newfile(L);
-			/* wse mod */
-			//*pf = fopen(filename, mode);
-			*pf = fopenInUserDir(L, filename, mode);
+			*pf = fopen(filename, mode);
 			if (*pf == NULL)
 				fileerror(L, 1, filename);
 		}
@@ -6853,9 +6752,7 @@ static int io_lines(lua_State*L){
 	else{
 		const char*filename = luaL_checkstring(L, 1);
 		FILE**pf = newfile(L);
-		/* wse mod */
-		//*pf = fopen(filename, mode);
-		*pf = fopenInUserDir(L, filename, "r");
+		*pf = fopen(filename, "r");
 		if (*pf == NULL)
 			fileerror(L, 1, filename);
 		aux_lines(L, lua_gettop(L), 1);
@@ -6887,7 +6784,7 @@ static int read_line(lua_State*L, FILE*f){
 		char*p = luaL_prepbuffer(&b);
 		if (fgets(p, BUFSIZ, f) == NULL){
 			luaL_pushresult(&b);
-			return(lua_objlen(L, -1) > 0);
+			return(lua_objlen(L, -1)>0);
 		}
 		l = strlen(p);
 		if (l == 0 || p[l - 1] != '\n')
@@ -6907,13 +6804,13 @@ static int read_chars(lua_State*L, FILE*f, size_t n){
 	rlen = BUFSIZ;
 	do{
 		char*p = luaL_prepbuffer(&b);
-		if (rlen > n)rlen = n;
+		if (rlen>n)rlen = n;
 		nr = fread(p, sizeof(char), rlen, f);
 		luaL_addsize(&b, nr);
 		n -= nr;
-	} while (n > 0 && nr == rlen);
+	} while (n>0 && nr == rlen);
 	luaL_pushresult(&b);
-	return(n == 0 || lua_objlen(L, -1) > 0);
+	return(n == 0 || lua_objlen(L, -1)>0);
 }
 static int g_read(lua_State*L, FILE*f, int first){
 	int nargs = lua_gettop(L) - 1;
@@ -6990,7 +6887,7 @@ static int g_write(lua_State*L, FILE*f, int arg){
 	for (; nargs--; arg++){
 		if (lua_type(L, arg) == 3){
 			status = status&&
-				fprintf(f, "%.14g", lua_tonumber(L, arg)) > 0;
+				fprintf(f, "%.14g", lua_tonumber(L, arg))>0;
 		}
 		else{
 			size_t l;
@@ -7041,7 +6938,7 @@ static void createmeta(lua_State*L){
 }
 static void createstdfile(lua_State*L, FILE*f, int k, const char*fname){
 	*newfile(L) = f;
-	if (k > 0){
+	if (k>0){
 		lua_pushvalue(L, -1);
 		lua_rawseti(L, (-10001), k);
 	}
@@ -7064,11 +6961,10 @@ static int luaopen_io(lua_State*L){
 	createstdfile(L, stdout, 2, "stdout");
 	createstdfile(L, stderr, 0, "stderr");
 	lua_pop(L, 1);
-	/* wse mod */
-	/*lua_getfield(L, -1, "popen");
+	lua_getfield(L, -1, "popen");
 	newfenv(L, io_pclose);
 	lua_setfenv(L, -2);
-	lua_pop(L, 1);*/
+	lua_pop(L, 1);
 	return 1;
 }
 static int os_pushresult(lua_State*L, int i, const char*filename){
@@ -7086,12 +6982,7 @@ static int os_pushresult(lua_State*L, int i, const char*filename){
 }
 static int os_remove(lua_State*L){
 	const char*filename = luaL_checkstring(L, 1);
-	/* wse mod */
-	char *safePath = makeSafePath(L->userDir, filename);
-	int res = os_pushresult(L, remove(safePath) == 0, filename);
-	free(safePath);
-
-	return res;
+	return os_pushresult(L, remove(filename) == 0, filename);
 }
 static int os_exit(lua_State*L){
 	exit(luaL_optint(L, 1, EXIT_SUCCESS));
@@ -7107,7 +6998,7 @@ static int luaopen_os(lua_State*L){
 }
 #define uchar(c)((unsigned char)(c))
 static ptrdiff_t posrelat(ptrdiff_t pos, size_t len){
-	if (pos < 0)pos += (ptrdiff_t)len + 1;
+	if (pos<0)pos += (ptrdiff_t)len + 1;
 	return(pos >= 0) ? pos : 0;
 }
 static int str_sub(lua_State*L){
@@ -7115,8 +7006,8 @@ static int str_sub(lua_State*L){
 	const char*s = luaL_checklstring(L, 1, &l);
 	ptrdiff_t start = posrelat(luaL_checkinteger(L, 2), l);
 	ptrdiff_t end = posrelat(luaL_optinteger(L, 3, -1), l);
-	if (start < 1)start = 1;
-	if (end > (ptrdiff_t)l)end = (ptrdiff_t)l;
+	if (start<1)start = 1;
+	if (end>(ptrdiff_t)l)end = (ptrdiff_t)l;
 	if (start <= end)
 		lua_pushlstring(L, s + start - 1, end - start + 1);
 	else lua_pushliteral(L, "");
@@ -7128,7 +7019,7 @@ static int str_lower(lua_State*L){
 	luaL_Buffer b;
 	const char*s = luaL_checklstring(L, 1, &l);
 	luaL_buffinit(L, &b);
-	for (i = 0; i < l; i++)
+	for (i = 0; i<l; i++)
 		luaL_addchar(&b, tolower(uchar(s[i])));
 	luaL_pushresult(&b);
 	return 1;
@@ -7139,7 +7030,7 @@ static int str_upper(lua_State*L){
 	luaL_Buffer b;
 	const char*s = luaL_checklstring(L, 1, &l);
 	luaL_buffinit(L, &b);
-	for (i = 0; i < l; i++)
+	for (i = 0; i<l; i++)
 		luaL_addchar(&b, toupper(uchar(s[i])));
 	luaL_pushresult(&b);
 	return 1;
@@ -7150,7 +7041,7 @@ static int str_rep(lua_State*L){
 	const char*s = luaL_checklstring(L, 1, &l);
 	int n = luaL_checkint(L, 2);
 	luaL_buffinit(L, &b);
-	while (n-- > 0)
+	while (n-->0)
 		luaL_addlstring(&b, s, l);
 	luaL_pushresult(&b);
 	return 1;
@@ -7162,13 +7053,13 @@ static int str_byte(lua_State*L){
 	ptrdiff_t pose = posrelat(luaL_optinteger(L, 3, posi), l);
 	int n, i;
 	if (posi <= 0)posi = 1;
-	if ((size_t)pose > l)pose = l;
-	if (posi > pose)return 0;
+	if ((size_t)pose>l)pose = l;
+	if (posi>pose)return 0;
 	n = (int)(pose - posi + 1);
 	if (posi + n <= pose)
 		luaL_error(L, "string slice too long");
 	luaL_checkstack(L, n, "string slice too long");
-	for (i = 0; i < n; i++)
+	for (i = 0; i<n; i++)
 		lua_pushinteger(L, uchar(s[posi + i - 1]));
 	return n;
 }
@@ -7197,35 +7088,35 @@ typedef struct MatchState{
 }MatchState;
 static int check_capture(MatchState*ms, int l){
 	l -= '1';
-	if (l < 0 || l >= ms->level || ms->capture[l].len == (-1))
+	if (l<0 || l >= ms->level || ms->capture[l].len == (-1))
 		return luaL_error(ms->L, "invalid capture index");
 	return l;
 }
 static int capture_to_close(MatchState*ms){
 	int level = ms->level;
 	for (level--; level >= 0; level--)
-		if (ms->capture[level].len == (-1))return level;
+	if (ms->capture[level].len == (-1))return level;
 	return luaL_error(ms->L, "invalid pattern capture");
 }
 static const char*classend(MatchState*ms, const char*p){
 	switch (*p++){
 	case'%':{
-		if (*p == '\0')
-			luaL_error(ms->L, "malformed pattern (ends with "LUA_QL("%%")")");
-		return p + 1;
+				if (*p == '\0')
+					luaL_error(ms->L, "malformed pattern (ends with "LUA_QL("%%")")");
+				return p + 1;
 	}
 	case'[':{
-		if (*p == '^')p++;
-		do{
-			if (*p == '\0')
-				luaL_error(ms->L, "malformed pattern (missing "LUA_QL("]")")");
-			if (*(p++) == '%'&&*p != '\0')
-				p++;
-		} while (*p != ']');
-		return p + 1;
+				if (*p == '^')p++;
+				do{
+					if (*p == '\0')
+						luaL_error(ms->L, "malformed pattern (missing "LUA_QL("]")")");
+					if (*(p++) == '%'&&*p != '\0')
+						p++;
+				} while (*p != ']');
+				return p + 1;
 	}
 	default:{
-		return p;
+				return p;
 	}
 	}
 }
@@ -7252,13 +7143,13 @@ static int matchbracketclass(int c, const char*p, const char*ec){
 		sig = 0;
 		p++;
 	}
-	while (++p < ec){
+	while (++p<ec){
 		if (*p == '%'){
 			p++;
 			if (match_class(c, uchar(*p)))
 				return sig;
 		}
-		else if ((*(p + 1) == '-') && (p + 2 < ec)){
+		else if ((*(p + 1) == '-') && (p + 2<ec)){
 			p += 2;
 			if (uchar(*(p - 2)) <= c&&c <= uchar(*p))
 				return sig;
@@ -7285,7 +7176,7 @@ static const char*matchbalance(MatchState*ms, const char*s,
 		int b = *p;
 		int e = *(p + 1);
 		int cont = 1;
-		while (++s < ms->src_end){
+		while (++s<ms->src_end){
 			if (*s == e){
 				if (--cont == 0)return s + 1;
 			}
@@ -7297,7 +7188,7 @@ static const char*matchbalance(MatchState*ms, const char*s,
 static const char*max_expand(MatchState*ms, const char*s,
 	const char*p, const char*ep){
 	ptrdiff_t i = 0;
-	while ((s + i) < ms->src_end&&singlematch(uchar(*(s + i)), p, ep))
+	while ((s + i)<ms->src_end&&singlematch(uchar(*(s + i)), p, ep))
 		i++;
 	while (i >= 0){
 		const char*res = match(ms, (s + i), ep + 1);
@@ -7312,7 +7203,7 @@ static const char*min_expand(MatchState*ms, const char*s,
 		const char*res = match(ms, s, ep + 1);
 		if (res != NULL)
 			return res;
-		else if (s < ms->src_end&&singlematch(uchar(*s), p, ep))
+		else if (s<ms->src_end&&singlematch(uchar(*s), p, ep))
 			s++;
 		else return NULL;
 	}
@@ -7351,87 +7242,87 @@ static const char*match(MatchState*ms, const char*s, const char*p){
 init:
 	switch (*p){
 	case'(':{
-		if (*(p + 1) == ')')
-			return start_capture(ms, s, p + 2, (-2));
-		else
-			return start_capture(ms, s, p + 1, (-1));
+				if (*(p + 1) == ')')
+					return start_capture(ms, s, p + 2, (-2));
+				else
+					return start_capture(ms, s, p + 1, (-1));
 	}
 	case')':{
-		return end_capture(ms, s, p + 1);
+				return end_capture(ms, s, p + 1);
 	}
 	case'%':{
-		switch (*(p + 1)){
-		case'b':{
-			s = matchbalance(ms, s, p + 2);
-			if (s == NULL)return NULL;
-			p += 4; goto init;
-		}
-		case'f':{
-			const char*ep; char previous;
-			p += 2;
-			if (*p != '[')
-				luaL_error(ms->L, "missing "LUA_QL("[")" after "
-				LUA_QL("%%f")" in pattern");
-			ep = classend(ms, p);
-			previous = (s == ms->src_init) ? '\0' : *(s - 1);
-			if (matchbracketclass(uchar(previous), p, ep - 1) ||
-				!matchbracketclass(uchar(*s), p, ep - 1))return NULL;
-			p = ep; goto init;
-		}
-		default:{
-			if (isdigit(uchar(*(p + 1)))){
-				s = match_capture(ms, s, uchar(*(p + 1)));
-				if (s == NULL)return NULL;
-				p += 2; goto init;
-			}
-			goto dflt;
-		}
-		}
+				switch (*(p + 1)){
+				case'b':{
+							s = matchbalance(ms, s, p + 2);
+							if (s == NULL)return NULL;
+							p += 4; goto init;
+				}
+				case'f':{
+							const char*ep; char previous;
+							p += 2;
+							if (*p != '[')
+								luaL_error(ms->L, "missing "LUA_QL("[")" after "
+								LUA_QL("%%f")" in pattern");
+							ep = classend(ms, p);
+							previous = (s == ms->src_init) ? '\0' : *(s - 1);
+							if (matchbracketclass(uchar(previous), p, ep - 1) ||
+								!matchbracketclass(uchar(*s), p, ep - 1))return NULL;
+							p = ep; goto init;
+				}
+				default:{
+							if (isdigit(uchar(*(p + 1)))){
+								s = match_capture(ms, s, uchar(*(p + 1)));
+								if (s == NULL)return NULL;
+								p += 2; goto init;
+							}
+							goto dflt;
+				}
+				}
 	}
 	case'\0':{
-		return s;
+				 return s;
 	}
 	case'$':{
-		if (*(p + 1) == '\0')
-			return(s == ms->src_end) ? s : NULL;
-		else goto dflt;
+				if (*(p + 1) == '\0')
+					return(s == ms->src_end) ? s : NULL;
+				else goto dflt;
 	}
 	default:dflt : {
-		const char*ep = classend(ms, p);
-		int m = s < ms->src_end&&singlematch(uchar(*s), p, ep);
-		switch (*ep){
-		case'?':{
-			const char*res;
-			if (m && ((res = match(ms, s + 1, ep + 1)) != NULL))
-				return res;
-			p = ep + 1; goto init;
-		}
-		case'*':{
-			return max_expand(ms, s, p, ep);
-		}
-		case'+':{
-			return(m ? max_expand(ms, s + 1, p, ep) : NULL);
-		}
-		case'-':{
-			return min_expand(ms, s, p, ep);
-		}
-		default:{
-			if (!m)return NULL;
-			s++; p = ep; goto init;
-		}
-		}
+				const char*ep = classend(ms, p);
+				int m = s<ms->src_end&&singlematch(uchar(*s), p, ep);
+				switch (*ep){
+				case'?':{
+							const char*res;
+							if (m && ((res = match(ms, s + 1, ep + 1)) != NULL))
+								return res;
+							p = ep + 1; goto init;
+				}
+				case'*':{
+							return max_expand(ms, s, p, ep);
+				}
+				case'+':{
+							return(m ? max_expand(ms, s + 1, p, ep) : NULL);
+				}
+				case'-':{
+							return min_expand(ms, s, p, ep);
+				}
+				default:{
+							if (!m)return NULL;
+							s++; p = ep; goto init;
+				}
+				}
 	}
 	}
 }
 static const char*lmemfind(const char*s1, size_t l1,
 	const char*s2, size_t l2){
 	if (l2 == 0)return s1;
-	else if (l2 > l1)return NULL;
+	else if (l2>l1)return NULL;
 	else{
 		const char*init;
 		l2--;
 		l1 = l1 - l2;
-		while (l1 > 0 && (init = (const char*)memchr(s1, *s2, l1)) != NULL){
+		while (l1>0 && (init = (const char*)memchr(s1, *s2, l1)) != NULL){
 			init++;
 			if (memcmp(init, s2 + 1, l2) == 0)
 				return init - 1;
@@ -7464,7 +7355,7 @@ static int push_captures(MatchState*ms, const char*s, const char*e){
 	int i;
 	int nlevels = (ms->level == 0 && s) ? 1 : ms->level;
 	luaL_checkstack(ms->L, nlevels, "too many captures");
-	for (i = 0; i < nlevels; i++)
+	for (i = 0; i<nlevels; i++)
 		push_onecapture(ms, i, s, e);
 	return nlevels;
 }
@@ -7503,7 +7394,7 @@ static int str_find_aux(lua_State*L, int find){
 				else
 					return push_captures(&ms, s1, res);
 			}
-		} while (s1++ < ms.src_end&&!anchor);
+		} while (s1++<ms.src_end&&!anchor);
 	}
 	lua_pushnil(L);
 	return 1;
@@ -7550,7 +7441,7 @@ static void add_s(MatchState*ms, luaL_Buffer*b, const char*s,
 	const char*e){
 	size_t l, i;
 	const char*news = lua_tolstring(ms->L, 3, &l);
-	for (i = 0; i < l; i++){
+	for (i = 0; i<l; i++){
 		if (news[i] != '%')
 			luaL_addchar(b, news[i]);
 		else{
@@ -7572,20 +7463,20 @@ static void add_value(MatchState*ms, luaL_Buffer*b, const char*s,
 	switch (lua_type(L, 3)){
 	case 3:
 	case 4:{
-		add_s(ms, b, s, e);
-		return;
+			   add_s(ms, b, s, e);
+			   return;
 	}
 	case 6:{
-		int n;
-		lua_pushvalue(L, 3);
-		n = push_captures(ms, s, e);
-		lua_call(L, n, 1);
-		break;
+			   int n;
+			   lua_pushvalue(L, 3);
+			   n = push_captures(ms, s, e);
+			   lua_call(L, n, 1);
+			   break;
 	}
 	case 5:{
-		push_onecapture(ms, 0, s, e);
-		lua_gettable(L, 3);
-		break;
+			   push_onecapture(ms, 0, s, e);
+			   lua_gettable(L, 3);
+			   break;
 	}
 	}
 	if (!lua_toboolean(L, -1)){
@@ -7623,7 +7514,7 @@ static int str_gsub(lua_State*L){
 		}
 		if (e&&e>src)
 			src = e;
-		else if (src < ms.src_end)
+		else if (src<ms.src_end)
 			luaL_addchar(&b, *src++);
 		else break;
 		if (anchor)break;
@@ -7640,21 +7531,21 @@ static void addquoted(lua_State*L, luaL_Buffer*b, int arg){
 	while (l--){
 		switch (*s){
 		case'"':case'\\':case'\n':{
-			luaL_addchar(b, '\\');
-			luaL_addchar(b, *s);
-			break;
+					luaL_addchar(b, '\\');
+					luaL_addchar(b, *s);
+					break;
 		}
 		case'\r':{
-			luaL_addlstring(b, "\\r", 2);
-			break;
+					 luaL_addlstring(b, "\\r", 2);
+					 break;
 		}
 		case'\0':{
-			luaL_addlstring(b, "\\000", 4);
-			break;
+					 luaL_addlstring(b, "\\000", 4);
+					 break;
 		}
 		default:{
-			luaL_addchar(b, *s);
-			break;
+					luaL_addchar(b, *s);
+					break;
 		}
 		}
 		s++;
@@ -7709,44 +7600,44 @@ static int str_format(lua_State*L){
 			strfrmt = scanformat(L, strfrmt, form);
 			switch (*strfrmt++){
 			case'c':{
-				sprintf(buff, form, (int)luaL_checknumber(L, arg));
-				break;
+						sprintf(buff, form, (int)luaL_checknumber(L, arg));
+						break;
 			}
 			case'd':case'i':{
-				addintlen(form);
-				sprintf(buff, form, (long)luaL_checknumber(L, arg));
-				break;
+						addintlen(form);
+						sprintf(buff, form, (long)luaL_checknumber(L, arg));
+						break;
 			}
 			case'o':case'u':case'x':case'X':{
-				addintlen(form);
-				sprintf(buff, form, (unsigned long)luaL_checknumber(L, arg));
-				break;
+						addintlen(form);
+						sprintf(buff, form, (unsigned long)luaL_checknumber(L, arg));
+						break;
 			}
 			case'e':case'E':case'f':
 			case'g':case'G':{
-				sprintf(buff, form, (double)luaL_checknumber(L, arg));
-				break;
+						sprintf(buff, form, (double)luaL_checknumber(L, arg));
+						break;
 			}
 			case'q':{
-				addquoted(L, &b, arg);
-				continue;
+						addquoted(L, &b, arg);
+						continue;
 			}
 			case's':{
-				size_t l;
-				const char*s = luaL_checklstring(L, arg, &l);
-				if (!strchr(form, '.') && l >= 100){
-					lua_pushvalue(L, arg);
-					luaL_addvalue(&b);
-					continue;
-				}
-				else{
-					sprintf(buff, form, s);
-					break;
-				}
+						size_t l;
+						const char*s = luaL_checklstring(L, arg, &l);
+						if (!strchr(form, '.') && l >= 100){
+							lua_pushvalue(L, arg);
+							luaL_addvalue(&b);
+							continue;
+						}
+						else{
+							sprintf(buff, form, s);
+							break;
+						}
 			}
 			default:{
-				return luaL_error(L, "invalid option "LUA_QL("%%%c")" to "
-					LUA_QL("format"), *(strfrmt - 1));
+						return luaL_error(L, "invalid option "LUA_QL("%%%c")" to "
+							LUA_QL("format"), *(strfrmt - 1));
 			}
 			}
 			luaL_addlstring(&b, buff, strlen(buff));
@@ -7815,13 +7706,13 @@ static int bnot(lua_State*L){
 	BRET(~barg(L, 1))
 }
 static int band(lua_State*L){
-	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i > 1; i--)b &= barg(L, i); BRET(b)
+	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i>1; i--)b &= barg(L, i); BRET(b)
 }
 static int bor(lua_State*L){
-	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i > 1; i--)b |= barg(L, i); BRET(b)
+	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i>1; i--)b |= barg(L, i); BRET(b)
 }
 static int bxor(lua_State*L){
-	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i > 1; i--)b ^= barg(L, i); BRET(b)
+	int i; UB b = barg(L, 1); for (i = lua_gettop(L); i>1; i--)b ^= barg(L, i); BRET(b)
 }
 static int lshift(lua_State*L){
 	UB b = barg(L, 1), n = barg(L, 2) & 31; BRET(b << n)
@@ -7847,8 +7738,8 @@ static int tohex(lua_State*L){
 	const char*hexdigits = "0123456789abcdef";
 	char buf[8];
 	int i;
-	if (n < 0){ n = -n; hexdigits = "0123456789ABCDEF"; }
-	if (n > 8)n = 8;
+	if (n<0){ n = -n; hexdigits = "0123456789ABCDEF"; }
+	if (n>8)n = 8;
 	for (i = (int)n; --i >= 0;){ buf[i] = hexdigits[b & 15]; b >>= 4; }
 	lua_pushlstring(L, buf, (size_t)n);
 	return 1;
@@ -7873,14 +7764,14 @@ int main(int argc, char**argv){
 	int i;
 	luaL_openlibs(L);
 	luaL_register(L, "bit", bitlib);
-	if (argc < 2)return sizeof(void*);
+	if (argc<2)return sizeof(void*);
 	lua_createtable(L, 0, 1);
 	lua_pushstring(L, argv[1]);
 	lua_rawseti(L, -2, 0);
 	lua_setglobal(L, "arg");
 	if (luaL_loadfile(L, argv[1]))
 		goto err;
-	for (i = 2; i < argc; i++)
+	for (i = 2; i<argc; i++)
 		lua_pushstring(L, argv[i]);
 	if (lua_pcall(L, argc - 2, 0, 0)){
 	err:
