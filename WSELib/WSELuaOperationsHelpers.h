@@ -39,7 +39,7 @@ void split(const std::string &s, char delim, bool skipEmpty, Out result);
 std::vector<std::string> split(const std::string &s, char delim, bool skipEmpty);
 size_t countChar(const std::string &s, char c);
 
-std::string getLuaScriptDir();
+bool str_starts_with(const char* str, const char* s, bool case_insensitive = false);
 void setOperandToLocalVar(__int64 &operand, int localsIndex);
 int checkLArgs(lua_State *L, int minCount, int maxCount, ...);
 int getTemplateNo(const char *id);

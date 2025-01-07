@@ -341,7 +341,8 @@ LUA_API lua_Hook lua_gethook (lua_State *L);
 LUA_API int lua_gethookmask (lua_State *L);
 LUA_API int lua_gethookcount (lua_State *L);
 
-LUA_API void lua_setUserDir(lua_State *L, const char* dir); /* wse mod */
+typedef char* (*str_callback)(const char* path);
+LUA_API void lua_set_sandboxed_path_callback(lua_State *L, str_callback get_sandboxed_path); /* wse mod */
 
 /* From Lua 5.2. */
 LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);

@@ -159,14 +159,25 @@ size_t countChar(const std::string &s, char c)
 	return std::count(s.begin(), s.end(), c);
 }
 
-std::string getLuaScriptDir()
+bool str_starts_with(const char* str, const char* s, bool case_insensitive)
 {
-	std::string dir = warband->cur_module_path;
-	std::replace(dir.begin(), dir.end(), '/', '\\');
+	do
+	{
+		if (case_insensitive)
+		{
+			if (tolower(*str) != tolower(*s)) return false;
+		}
+		else{
+			if (*str != *s) return false;
+		}
 
-	dir += (dir.back() == '\\') ? "lua\\" : "\\lua\\";
+		s++;
+		if (*s == '\0') return true;
 
-	return dir;
+		str++;
+		if (*str == '\0') return false;
+	} 
+	while (true);
 }
 
 void setOperandToLocalVar(__int64 &operand, int localsIndex)

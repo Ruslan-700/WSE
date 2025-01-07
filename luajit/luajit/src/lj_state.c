@@ -154,8 +154,6 @@ static TValue *cpluaopen(lua_State *L, lua_CFunction dummy, void *ud)
 
 static void close_state(lua_State *L)
 {
-  free(L->userDir); /* wse mod */
-
   global_State *g = G(L);
   lj_func_closeuv(L, tvref(L->stack));
   lj_gc_freeall(g);
@@ -221,7 +219,7 @@ LUA_API lua_State *lua_newstate(lua_Alloc f, void *ud)
   }
   L->status = 0;
 
-  L->userDir = NULL;
+  L->get_sandboxed_path = NULL;
 
   return L;
 }

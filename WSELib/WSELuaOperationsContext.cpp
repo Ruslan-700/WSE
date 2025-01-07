@@ -357,6 +357,105 @@ void initLGameTable(lua_State *L)
 		printLastLuaError(L, "LuaGlobals");
 }
 
+//This is a callback for luaJIT
+//We try to restrict all IO to user or storage dir with this middleman.
+#define STORAGE "<storage>"
+char* sandbox_path(const char* _path)
+{
+	if (_path == NULL)
+		return NULL;
+
+	char* path = _strdup(_path);
+	char* path_orig = path; //Might modify path pointer, but still want to free at the end
+
+	//Pick root_dir. Magic prefix <WSE> will access storage dir
+	const char* root_dir;
+	if (str_starts_with(path, STORAGE, true))
+	{
+		root_dir = WSE->LuaOperations.storage_dir.c_str();
+		path += strlen(STORAGE);
+		if (str_starts_with(path, "\\")) path++;
+	}
+	else{
+		root_dir = WSE->LuaOperations.user_dir.c_str();
+	}
+
+	int curLevel = 0;
+	int points = 0;
+	int others = 0;
+
+	/*
+	Abort on : or !
+	Abort when going below start level with ..
+	*/
+	size_t i = 0;
+	while (i < strlen(path))
+	{
+		if (path[i] == ':' || path[i] == '!')
+		{
+			free(path_orig);
+			return NULL;
+		}
+
+		if (path[i] == '.')
+			points++;
+		else if (path[i] != '/' && path[i] != '\\')
+			others++;
+		else // '/' or '\\'
+		{
+			if (path[i] == '/') path[i] = '\\'; //we only want backslash
+
+			if (others)
+				curLevel++;
+			else if (points >= 2)
+			{
+				curLevel--;
+				if (curLevel < 0)
+				{
+					free(path_orig);
+					return NULL;
+				}
+			}
+
+			points = 0;
+			others = 0;
+		}
+
+		i++;
+	}
+	//Path looks safe...
+
+	//we skip leading ".\" so we dont have rootDir\.\path
+	if (str_starts_with(path, ".\\"))
+	{
+		if (root_dir[strlen(root_dir) - 1] == '\\') //also good idea to make sure that root_dir ends with '\\'
+		{
+			path += 2;
+		}
+		else{
+			path += 1;
+		}
+	}
+	else if (str_starts_with(path, "\\")) //skip '\\' also
+	{
+		path++;
+	}
+
+	size_t spSize = strlen(root_dir) + strlen(path) + 1;
+	char *safePath = (char*)malloc(spSize);
+
+	strcpy_s(safePath, spSize, root_dir);
+	strcat_s(safePath, spSize, path);
+
+	/*FILE* f = fopen("dbg.txt", "a");
+	fprintf(f, "%s , %s\n", root_dir, path);
+	fclose(f);*/
+
+	free(path_orig);
+
+	return safePath;
+}
+
 int loadLanesLua(lua_State *L)
 {
 	std::string lanes = load_resource_str(MAKEINTRESOURCE(IDR_LUA_LANES));
@@ -369,19 +468,19 @@ int loadLanesLua(lua_State *L)
 
 void initLaneState(lua_State *L)
 {
-	lua_setUserDir(L, getLuaScriptDir().c_str());
+	lua_set_sandboxed_path_callback(L, sandbox_path);
 	initLGameTable(L);
 }
 
 /***************************/
-
-
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
-	tStart = std::chrono::steady_clock::now();
+	this->tStart = std::chrono::steady_clock::now();
 
 	for (size_t i = 0; i < WSE_MAX_NUM_OPERATIONS; i++)
-		operationHookLuaRefs[i] = LUA_NOREF;
+	{
+		this->operationHookLuaRefs[i] = LUA_NOREF;
+	}
 }
 
 void WSELuaOperationsContext::OnLoad()
@@ -765,7 +864,7 @@ void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std
 
 inline void WSELuaOperationsContext::loadOperations()
 {
-	std::string opFile = getLuaScriptDir() + "msfiles\\" + "header_operations.py";
+	std::string opFile = user_dir + "msfiles\\" + "header_operations.py";
 	if (!fileExists(opFile))
 		return;
 
@@ -959,15 +1058,24 @@ void WSELuaOperationsContext::loadGlobalVars()
 
 inline void WSELuaOperationsContext::initLua()
 {
+	//Find out directories for IO sandbox
+	user_dir = warband->cur_module_path;
+	std::replace(user_dir.begin(), user_dir.end(), '/', '\\'); //only backslash
+
+	user_dir += (user_dir.back() == '\\') ? "lua\\" : "\\lua\\";
+
+	storage_dir = this->CreateStorageDir();
+
+	//Lets go
 	luaState = luaL_newstate();
-	lua_setUserDir(luaState, getLuaScriptDir().c_str());
+	lua_set_sandboxed_path_callback(luaState, sandbox_path);
 	luaL_openlibs(luaState);
 
 	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
 	lua_pop(luaState, 1);
 
 	loadOperations();
-	loadGameConstants(getLuaScriptDir() + "msfiles\\");
+	loadGameConstants(user_dir + "msfiles\\");
 	loadGlobalVars();
 
 	initLGameTable(luaState);
@@ -978,7 +1086,7 @@ inline void WSELuaOperationsContext::initLua()
 
 inline void WSELuaOperationsContext::doMainScript()
 {
-	std::string mainFile = getLuaScriptDir() + "main.lua";
+	std::string mainFile = user_dir + "main.lua";
 
 	if (fileExists(mainFile))
 	{

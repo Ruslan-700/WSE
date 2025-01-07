@@ -42,7 +42,7 @@
 LJLIB_CF(os_remove)
 {
   const char *filename = luaL_checkstring(L, 1);
-  char *safePath = makeSafePath(L->userDir, filename);
+  char *safePath = L->get_sandboxed_path(filename);
 
   int ret = luaL_fileresult(L, remove(safePath) == 0, filename);
   free(safePath);
@@ -56,8 +56,8 @@ LJLIB_CF(os_rename)
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
 
-  char *safeFromPath = makeSafePath(L->userDir, fromname);
-  char *safeToPath = makeSafePath(L->userDir, toname);
+  char *safeFromPath = L->get_sandboxed_path(fromname);
+  char *safeToPath = L->get_sandboxed_path(toname);
 
   int ret = luaL_fileresult(L, rename(safeFromPath, safeToPath) == 0, fromname);
 

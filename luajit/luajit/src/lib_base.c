@@ -379,14 +379,11 @@ LJLIB_CF(loadfile)
   lua_settop(L, 3);  /* Ensure env arg exists. */
 
   /*wse mod*/
-  if (L->userDir && fname)
-  {
-	  char *path = makeSafePath(L->userDir, strdata(fname));
-	  status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
-	  free(path);
-  }
-  else
-	  status = luaL_loadfilex(L, fname ? strdata(fname) : NULL, mode ? strdata(mode) : NULL);
+  char *path = L->get_sandboxed_path(fname ? strdata(fname) : NULL);
+  status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
+  free(path);
+
+  //status = luaL_loadfilex(L, fname ? strdata(fname) : NULL, mode ? strdata(mode) : NULL);
 
   return load_aux(L, status, 3);
 }
@@ -444,7 +441,7 @@ LJLIB_CF(dofile)
   /* wse mod */
   char *path;
   if (fname)
-	  path = makeSafePath(L->userDir, strdata(fname));
+	  path = L->get_sandboxed_path(strdata(fname));
   else
 	  path = NULL;
 

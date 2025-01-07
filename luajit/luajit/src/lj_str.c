@@ -339,105 +339,17 @@ char *lj_str_needbuf(lua_State *L, SBuf *sb, MSize sz)
 
 /* wse mod */
 
-void replaceChar(char *str, char c, char repl)
-{
-	size_t i;
-	for (i = 0; i < strlen(str); i++)
-		if (str[i] == c)
-			str[i] = repl;
-}
-
-char *getStrCopy(const char *str)
-{
-	char *_str = (char*)malloc(strlen(str) + 1);
-	int a = sizeof(_str);
-	strcpy(_str, str);
-
-	return _str;
-}
-
-char *makeSafePath(const char *rootDir, const char *path)
-{
-	if (path == NULL)
-		return NULL;
-
-	if (rootDir == NULL)
-		return getStrCopy(path);
-
-	int curLevel = 0;
-	int points = 0;
-	int others = 0;
-
-	size_t i = 0;
-	while (i < strlen(path))
-	{
-		if (path[i] == ':' || path[i] == '!')
-			return NULL;
-
-		if (path[i] == '.')
-			points++;
-		else if (path[i] != '/' && path[i] != '\\')
-			others++;
-		else // '/' || '\\'
-		{
-			if (others)
-				curLevel++;
-			else if (points >= 2)
-			{
-				curLevel--;
-				if (curLevel < 0)
-					return NULL;
-			}
-
-			points = 0;
-			others = 0;
-		}
-
-		i++;
-	}
-
-	int rootlen = strlen(rootDir);
-
-	//we skip leading ".\" so we dont have rootDir\.\path
-	if (strlen(path) > 2)
-	{
-		if (path[0] == '.' && path[1] == '\\')
-		{
-			if (rootDir[rootlen - 1] == '\\') //also good idea to make sure that rootDir ends with '\\'
-			{
-				path += 2; 
-			}
-			else{
-				path += 1;
-			}
-		}
-	}
-
-	size_t spSize = rootlen + strlen(path) + 1;
-	char *safePath = (char*)malloc(spSize);
-
-	strcpy(safePath, rootDir);
-	strcat_s(safePath, spSize, path);
-
-	return safePath;
-}
-
 FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
 {
-	if (L->userDir)
+	char *safePath = L->get_sandboxed_path(filename);
+	if (!safePath)
 	{
-		char *safePath = makeSafePath(L->userDir, filename);
-		if (!safePath)
-		{
-			return NULL;
-		}
-
-		FILE *res = fopen(safePath, mode);
-		free(safePath);
-
-		return res;
+		return NULL;
 	}
-	else
-		return fopen(filename, mode);
+
+	FILE *res = fopen(safePath, mode);
+	free(safePath);
+
+	return res;
 }
 
