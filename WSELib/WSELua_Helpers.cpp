@@ -3,7 +3,7 @@
 #include <sstream>
 #include <Windows.h>
 #include "WSELib.rc.h"
-#include "WSELuaOperationsHelpers.h"
+#include "WSELua_Helpers.h"
 
 const char *const lShortTypeNames[] = {
 	"none", "nil", "bool", "usrdat", "num", "str",

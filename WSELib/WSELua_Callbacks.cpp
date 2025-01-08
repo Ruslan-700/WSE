@@ -3,8 +3,8 @@
 #include <sstream>
 #define _USE_MATH_DEFINES
 
-#include "WSELuaOperationsLuaCallbacks.h"
-#include "WSELuaOperationsHelpers.h"
+#include "WSELua_Callbacks.h"
+#include "WSELua_Helpers.h"
 #include "WSELua_Iterators.h"
 #include "luaSockets/src/luasocket.h"
 #include "WSELib.rc.h"

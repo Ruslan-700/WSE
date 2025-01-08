@@ -409,7 +409,7 @@
     <ClInclude Include="luaSockets\src\usocket.h" />
     <ClInclude Include="luaSockets\src\wsocket.h" />
     <ClInclude Include="WSELib.rc.h" />
-    <ClInclude Include="WSELuaOperationsLuaCallbacks.h" />
+    <ClInclude Include="WSELua_Callbacks.h" />
     <ClInclude Include="mup\muParser.h" />
     <ClInclude Include="mup\muParserBase.h" />
     <ClInclude Include="mup\muParserBytecode.h" />
@@ -430,7 +430,7 @@
     <ClInclude Include="rcon\rcon.h" />
     <ClInclude Include="rcon\ws-util.h" />
     <ClInclude Include="WSELuaOperationsContext.h" />
-    <ClInclude Include="WSELuaOperationsHelpers.h" />
+    <ClInclude Include="WSELua_Helpers.h" />
     <ClInclude Include="WSELua_Iterators.h" />
     <ClInclude Include="WSESignatureScannerContext.h" />
     <ClInclude Include="WSESimpleCharBuff.h" />
@@ -551,8 +551,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='ReleaseSteamNoSSE|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="luaSockets\src\wsocket.c" />
-    <ClCompile Include="WSELuaOperationsHelpers.cpp" />
-    <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp" />
+    <ClCompile Include="WSELua_Helpers.cpp" />
+    <ClCompile Include="WSELua_Callbacks.cpp" />
     <ClCompile Include="mup\muParser.cpp" />
     <ClCompile Include="mup\muParserBase.cpp" />
     <ClCompile Include="mup\muParserBytecode.cpp" />

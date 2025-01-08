@@ -293,12 +293,6 @@
     <ClInclude Include="WSELuaOperationsContext.h">
       <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
     </ClInclude>
-    <ClInclude Include="WSELuaOperationsHelpers.h">
-      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
-    </ClInclude>
-    <ClInclude Include="WSELuaOperationsLuaCallbacks.h">
-      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
-    </ClInclude>
     <ClInclude Include="WSELib.rc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -366,6 +360,12 @@
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WSELua_Iterators.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELua_Helpers.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
+    </ClInclude>
+    <ClInclude Include="WSELua_Callbacks.h">
       <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
     </ClInclude>
   </ItemGroup>
@@ -553,12 +553,6 @@
     <ClCompile Include="WSELuaOperationsContext.cpp">
       <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
     </ClCompile>
-    <ClCompile Include="WSELuaOperationsHelpers.cpp">
-      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
-    </ClCompile>
-    <ClCompile Include="WSELuaOperationsLuaCallbacks.cpp">
-      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
-    </ClCompile>
     <ClCompile Include="xml\tinyxml2.cpp">
       <Filter>Source Files\xml</Filter>
     </ClCompile>
@@ -618,6 +612,12 @@
     </ClCompile>
     <ClCompile Include="luaSockets\src\wsocket.c">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELua_Helpers.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    </ClCompile>
+    <ClCompile Include="WSELua_Callbacks.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

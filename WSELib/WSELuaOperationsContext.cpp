@@ -5,8 +5,8 @@
 #include "WSELib.rc.h"
 #include "WSEScriptingContext.h"
 #include "WSELuaOperationsContext.h"
-#include "WSELuaOperationsHelpers.h"
-#include "WSELuaOperationsLuaCallbacks.h"
+#include "WSELua_Helpers.h"
+#include "WSELua_Callbacks.h"
 
 #include "lanes.h"
 
