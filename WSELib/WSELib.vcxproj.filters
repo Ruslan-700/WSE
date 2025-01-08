@@ -365,6 +365,9 @@
     <ClInclude Include="luaSockets\src\wsocket.h">
       <Filter>Source Files\operations\WSELuaOperationsContext\luaSockets\Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="WSELua_Iterators.h">
+      <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">

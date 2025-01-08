@@ -431,6 +431,7 @@
     <ClInclude Include="rcon\ws-util.h" />
     <ClInclude Include="WSELuaOperationsContext.h" />
     <ClInclude Include="WSELuaOperationsHelpers.h" />
+    <ClInclude Include="WSELua_Iterators.h" />
     <ClInclude Include="WSESignatureScannerContext.h" />
     <ClInclude Include="WSESimpleCharBuff.h" />
     <ClInclude Include="WSE.h" />

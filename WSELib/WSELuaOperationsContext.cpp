@@ -216,147 +216,6 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 /* init main lua state */
 /***********************/
 
-inline void addGameConstantsToLState(lua_State *L)
-{
-	std::vector<gameConstTable> &constTables = WSE->LuaOperations.gameConstTables;
-
-	lua_newtable(L);
-
-	for (size_t i = 0; i < constTables.size(); i++)
-	{
-		lua_newtable(L);
-		for (size_t j = 0; j < constTables[i].constants.size(); j++)
-		{
-			lua_pushnumber(L, (lua_Number)constTables[i].constants[j].val);
-			lua_setfield(L, -2, constTables[i].constants[j].name.c_str());
-		}
-		lua_setfield(L, -2, constTables[i].name.c_str());
-	}
-
-	lua_setfield(L, -2, "const");
-}
-
-void initLGameTable(lua_State *L)
-{
-	lua_newtable(L);
-
-	lua_pushcfunction(L, lGameExecOperationHandler);
-	lua_setfield(L, -2, "execOperation");
-
-	lua_pushcfunction(L, lGetRegHandler);
-	lua_setfield(L, -2, "getReg");
-
-	lua_pushcfunction(L, lSetRegHandler);
-	lua_setfield(L, -2, "setReg");
-
-	lua_pushcfunction(L, lGetGvarHandler);
-	lua_setfield(L, -2, "getGvar");
-
-	lua_pushcfunction(L, lSetGvarHandler);
-	lua_setfield(L, -2, "setGvar");
-
-	lua_pushcfunction(L, lGetScriptNo);
-	lua_setfield(L, -2, "getScriptNo");
-
-	lua_pushcfunction(L, lGetCurTemplateNo);
-	lua_setfield(L, -2, "getCurTemplateNo");
-
-	lua_pushcfunction(L, lGetCurTemplateId);
-	lua_setfield(L, -2, "getCurTemplateId");
-
-	lua_pushcfunction(L, lGetNumTemplates);
-	lua_setfield(L, -2, "getNumTemplates");
-
-	lua_pushcfunction(L, lGetTemplateId);
-	lua_setfield(L, -2, "getTemplateId");
-
-	lua_pushcfunction(L, lAddTrigger);
-	lua_setfield(L, -2, "addTrigger");
-
-	lua_pushcfunction(L, lRemoveTrigger);
-	lua_setfield(L, -2, "removeTrigger");
-
-	lua_pushcfunction(L, lGetNumTriggers);
-	lua_setfield(L, -2, "getNumTriggers");
-
-	lua_pushcfunction(L, lAddItemTrigger);
-	lua_setfield(L, -2, "addItemTrigger");
-
-	lua_pushcfunction(L, lAddPropTrigger);
-	lua_setfield(L, -2, "addScenePropTrigger");
-
-	lua_pushcfunction(L, lAddPrsnt);
-	lua_setfield(L, -2, "addPrsnt");
-
-	lua_pushcfunction(L, lRemovePrsnt);
-	lua_setfield(L, -2, "removePrsnt");
-
-	lua_pushcfunction(L, lAddPsys);
-	lua_setfield(L, -2, "addPsys");
-
-	lua_pushcfunction(L, lRemovePsys);
-	lua_setfield(L, -2, "removePsys");
-
-	lua_pushcfunction(L, lPartiesIterInit);
-	lua_setfield(L, -2, "partiesI");
-
-	lua_pushcfunction(L, lAgentsIterInit);
-	lua_setfield(L, -2, "agentsI");
-
-	lua_pushcfunction(L, lPropInstIterInit);
-	lua_setfield(L, -2, "propInstI");
-
-	lua_pushcfunction(L, lPlayersIterInit);
-	lua_setfield(L, -2, "playersI");
-
-	//###Register iterators again with 'It'. Keep 'I' for legacy###
-	lua_pushcfunction(L, lPartiesIterInit);
-	lua_setfield(L, -2, "partiesIt");
-
-	lua_pushcfunction(L, lAgentsIterInit);
-	lua_setfield(L, -2, "agentsIt");
-
-	lua_pushcfunction(L, lPropInstIterInit);
-	lua_setfield(L, -2, "propInstIt");
-
-	lua_pushcfunction(L, lPlayersIterInit);
-	lua_setfield(L, -2, "playersIt");
-	//###
-
-	lua_pushcfunction(L, lHookOperation);
-	lua_setfield(L, -2, "hookOperation");
-
-	lua_pushcfunction(L, lUnhookOperation);
-	lua_setfield(L, -2, "unhookOperation");
-
-	lua_pushcfunction(L, lHookScript);
-	lua_setfield(L, -2, "hookScript");
-
-	lua_pushcfunction(L, lFailMsCall);
-	lua_setfield(L, -2,  "fail");
-
-	lua_pushcfunction(L, lPrintStack);
-	lua_setfield(L, -2, "printStack");
-
-	addGameConstantsToLState(L);
-
-	lua_setglobal(L, "game");
-
-	lua_pushcfunction(L, lPrint);
-	lua_setglobal(L, "_print");
-
-	lua_pushcfunction(L, lGetTime);
-	lua_setglobal(L, "getTime");
-
-	lua_pushcfunction(L, lLoadDebugger);
-	lua_setglobal(L, "loadDebugger");
-
-	std::string globals = load_resource_str(MAKEINTRESOURCE(IDR_LuaGlobals));
-
-	if (luaL_dostring(L, globals.c_str()))
-		printLastLuaError(L, "LuaGlobals");
-}
-
 //This is a callback for luaJIT
 //We try to restrict all IO to user or storage dir with this middleman.
 #define STORAGE "<storage>"
@@ -862,7 +721,7 @@ void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std
 	}
 }
 
-inline void WSELuaOperationsContext::loadOperations()
+void WSELuaOperationsContext::loadOperations()
 {
 	std::string opFile = user_dir + "msfiles\\" + "header_operations.py";
 	if (!fileExists(opFile))
@@ -1056,7 +915,7 @@ void WSELuaOperationsContext::loadGlobalVars()
 	}
 }
 
-inline void WSELuaOperationsContext::initLua()
+void WSELuaOperationsContext::initLua()
 {
 	//Find out directories for IO sandbox
 	user_dir = warband->cur_module_path;
@@ -1084,7 +943,7 @@ inline void WSELuaOperationsContext::initLua()
 	luaStateIsReady = true;
 }
 
-inline void WSELuaOperationsContext::doMainScript()
+void WSELuaOperationsContext::doMainScript()
 {
 	std::string mainFile = user_dir + "main.lua";
 

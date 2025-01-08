@@ -57,11 +57,11 @@ class WSELuaOperationsContext : public WSEOperationContext
 		virtual void OnUnload();
 		virtual void OnEvent(WSEContext *sender, WSEEvent evt, void *data);
 
-		inline void initLua();
+		void initLua();
 
 		void applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile);
 		void loadGameConstants(const std::string &dir);
 		void loadGlobalVars();
-		inline void loadOperations();
-		inline void doMainScript();
+		void loadOperations();
+		void doMainScript();
 };
