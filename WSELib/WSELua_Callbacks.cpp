@@ -247,6 +247,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		return 1;
 	} },
 
+/* Triggers */
 	{ "addTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 5, 6, lStr | lNum, lNum, lNum, lNum, lFunc, lFunc);
 
@@ -398,6 +399,106 @@ std::vector<callback_def> _G_game_callbacks = {
 		lua_pushinteger(L, index);
 		return 1;
 	} },
+
+	{ "addSimpleWorldTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 2, 2, lNum, lFunc);
+
+		wb::simple_trigger newT;
+
+		newT.interval = (float)lua_tonumber(L, 1);
+		newT.interval_timer = rgl::timer();
+
+		newT.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
+		newT.operations.num_operations = 1;
+		newT.operations.operations = rgl::_new<wb::operation>(1);
+
+		newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+		newT.operations.operations[0].num_operands = 3;
+
+		newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+		newT.operations.operations[0].operands[1] = triggerPart::consequence;
+		newT.operations.operations[0].operands[2] = (int)newT.interval;
+
+		int index = warband->cur_game->simple_triggers.addTrigger(newT);
+
+		lua_pushinteger(L, index);
+		return 1;
+	} },
+
+	{ "removeSimpleWorldTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 1, 1, lNum);
+
+		int index = lua_tointeger(L, 1);
+
+		bool succ = warband->cur_game->simple_triggers.removeTrigger(index);
+
+		lua_pushboolean(L, succ ? 1 : 0);
+		return 1;
+	} },
+
+	{ "addWorldTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 4, 5, lNum, lNum, lNum, lFunc, lFunc);
+
+		wb::trigger newT;
+
+		newT.check_interval = (float)lua_tonumber(L, 1);
+		newT.delay_interval = (float)lua_tonumber(L, 2);
+		newT.rearm_interval = (float)lua_tonumber(L, 3);
+
+		newT.status = wb::trigger_status::ts_ready;
+		newT.check_interval_timer = rgl::timer(2);
+		newT.delay_interval_timer = rgl::timer(2);
+		newT.rearm_interval_timer = rgl::timer(2);
+
+		if (numArgs == 5)
+		{
+			newT.consequences.num_operations = 1;
+			newT.consequences.operations = rgl::_new<wb::operation>(1);
+
+			newT.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+			newT.consequences.operations[0].num_operands = 3;
+
+			newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+			newT.consequences.operations[0].operands[1] = triggerPart::consequence;
+			newT.consequences.operations[0].operands[2] = (int)newT.check_interval;
+		}
+		else
+		{
+			newT.consequences.num_operations = 0;
+		}
+		newT.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
+
+
+		newT.conditions.num_operations = 1;
+		newT.conditions.operations = rgl::_new<wb::operation>(1);
+
+		newT.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+		newT.conditions.operations[0].num_operands = 3;
+
+		newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+		newT.conditions.operations[0].operands[1] = triggerPart::condition;
+		newT.conditions.operations[0].operands[2] = (int)newT.check_interval;
+
+		newT.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
+
+
+		int index = warband->cur_game->triggers.addTrigger(newT);
+
+		lua_pushinteger(L, index);
+		return 1;
+	} },
+
+	{ "removeWorldTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 1, 1, lNum);
+
+		int index = lua_tointeger(L, 1);
+
+		bool succ = warband->cur_game->triggers.removeTrigger(index);
+
+		lua_pushboolean(L, succ ? 1 : 0);
+		return 1;
+	} },
+/* End Triggers */
 
 	{ "addPrsnt", [](lua_State* L) -> int {
 #if defined WARBAND
