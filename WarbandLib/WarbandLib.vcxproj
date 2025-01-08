@@ -38,6 +38,7 @@
     <ClInclude Include="action.h" />
     <ClInclude Include="agent.h" />
     <ClInclude Include="agent_ai.h" />
+    <ClInclude Include="array_util.h" />
     <ClInclude Include="banner_selection_window.h" />
     <ClInclude Include="basics.h" />
     <ClInclude Include="basic_game.h" />

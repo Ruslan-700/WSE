@@ -599,6 +599,9 @@
     <ClInclude Include="stl_priority_queue.h">
       <Filter>Header Files\stl</Filter>
     </ClInclude>
+    <ClInclude Include="array_util.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="agent.cpp">

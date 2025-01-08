@@ -1,6 +1,6 @@
 #include "trigger.h"
-
 #include "wb.h"
+#include "array_util.h"
 
 using namespace wb;
 
@@ -56,40 +56,10 @@ void trigger_manager::execute(int context)
 
 int trigger_manager::addTrigger(const trigger &newTrigger)
 {
-	trigger *newTriggers = rgl::_new<trigger>(this->num_triggers + 1);
-
-	for (int i = 0; i < this->num_triggers; ++i)
-	{
-		newTriggers[i] = this->triggers[i];
-	}
-	rgl::_free(this->triggers);
-	this->triggers = newTriggers;
-	this->triggers[this->num_triggers] = newTrigger;
-
-	return this->num_triggers++;
+	return array_add_elem(this->triggers, this->num_triggers, newTrigger);
 }
 
 bool trigger_manager::removeTrigger(int index)
 {
-	if (index < 0)
-		index += this->num_triggers;
-
-	if (index < 0 || index >= this->num_triggers)
-		return false;
-
-
-	trigger *newTriggers = rgl::_new<trigger>(this->num_triggers - 1);
-	for (int i = 0; i < index; ++i)
-	{
-		newTriggers[i] = this->triggers[i];
-	}
-	for (int i = index; i < this->num_triggers - 1; ++i)
-	{
-		newTriggers[i] = this->triggers[i + 1];
-	}
-	rgl::_free(this->triggers);
-	this->triggers = newTriggers;
-	this->num_triggers--;
-
-	return true;
+	return array_remove_elem(this->triggers, this->num_triggers, index);
 }
