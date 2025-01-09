@@ -77,6 +77,8 @@ int traceback(lua_State *L)
 	return 1;
 }
 
+//Print error message at top of stack. Pops it.
+//hFile != INVALID_HANDLE_VALUE => Write to file
 void printLastLuaError(lua_State *L, const char *fileName, HANDLE hFile)
 {
 	const char *msg = lua_tostring(L, -1);

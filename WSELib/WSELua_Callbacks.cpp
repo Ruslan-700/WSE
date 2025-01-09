@@ -262,7 +262,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		return 1;
 	} },
 
-	{ "remove_trigger", [](lua_State* L) -> int {
+	{ "removeTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 2, 2, lStr | lNum, lNum);
 
 		int tNo = lToTemplateNo(L, 1);
@@ -343,6 +343,7 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "addSimpleWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 2, 2, lNum, lFunc);
+		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addSimpleWorldTrigger: only allowed during OnGameLoad"); }
 
 		wb::simple_trigger trigg;
 		lFillSimpleTrigger(L, trigg, 1);
@@ -356,9 +357,9 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "removeSimpleWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 1, 1, lNum);
+		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeSimpleWorldTrigger: only allowed during OnGameLoad"); }
 
 		int index = lua_tointeger(L, 1);
-
 		bool succ = warband->cur_game->simple_triggers.remove_trigger(index);
 
 		lua_pushboolean(L, succ ? 1 : 0);
@@ -372,6 +373,7 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "addWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 4, 5, lNum, lNum, lNum, lFunc, lFunc);
+		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addWorldTrigger: only allowed during OnGameLoad"); }
 
 		wb::trigger trigg;
 		lFillTrigger(L, trigg, numArgs == 5, 2);
@@ -386,9 +388,9 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "removeWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 1, 1, lNum);
+		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeWorldTrigger: only allowed during OnGameLoad"); }
 
 		int index = lua_tointeger(L, 1);
-
 		bool succ = warband->cur_game->triggers.remove_trigger(index);
 
 		lua_pushboolean(L, succ ? 1 : 0);

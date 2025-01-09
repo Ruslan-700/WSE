@@ -1226,6 +1226,12 @@
 							Any error (which would normally trigger the event again, which would trigger the error, ...) caused by this function will be catched and logged safely.
 						</li>
 						<li>
+							<p><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span> this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
+						</li>
+						<li>
+							<p><span class="keyword">game.OnGameLoad()</span> this function, if it exists, gets called when the game loads. Register world triggers here.</p>
+						</li>
+						<li>
 							<p><span class="keyword">game.fail()</span> when used during a <span class="keyword">lua_call</span> operation it will make the MS code fail, like any other cf operation can do.</p>
 							<p style="padding-left: 10px;">Example:</p>
 							<pre class="code" ms>
@@ -1245,9 +1251,6 @@
 										end
 								end
 							</pre>
-						</li>
-						<li>
-							<p><span class="keyword">game.OnChatMessageReceived(intPlayerNo, boolIsTeamChat, strMsg)</span> this function, if it exists, gets called when a chat message is received (both client and server). It will be called after the corresponding module system script. If it returns a string the message will be overwritten, if it returns true the message will be supressed. Returning something will overwrite any action the module script may have taken.</p>
 						</li>
 					</ul>
 					<p style="padding-left: 10px">Other WSE LUA API functions - these could be useful for advanced users, but you should get along fine without ever using them.</p>

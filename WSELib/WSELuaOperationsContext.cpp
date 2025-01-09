@@ -426,6 +426,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 	{
 		int top = lua_gettop(luaState);
 		lua_getglobal(luaState, "game");
+		if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
 		lua_pushstring(luaState, "OnChatMessageReceived");
 		lua_rawget(luaState, -2);
 
@@ -471,6 +473,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 	else if (evt == WSEEvent::OnRglLogMsg)
 	{
 		lua_getglobal(luaState, "game");
+		if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
 		lua_pushstring(luaState, "OnRglLogWrite");
 		lua_rawget(luaState, -2);
 
@@ -490,6 +494,32 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 				printLastLuaError(this->luaState, NULL, dt->hFile);
 			}
+
+			lua_pop(luaState, 1);
+		}
+		else
+		{
+			lua_pop(luaState, 2);
+		}
+	}
+	else if (evt == WSEEvent::GameLoad)
+	{
+		lua_getglobal(luaState, "game");
+		if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
+		lua_pushstring(luaState, "OnGameLoad");
+		lua_rawget(luaState, -2);
+
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		{
+			gameLoad_active = true;
+
+			if (lua_pcall(luaState, 0, 0, 0))
+			{
+				printLastLuaError(luaState);
+			}
+
+			gameLoad_active = false;
 
 			lua_pop(luaState, 1);
 		}
