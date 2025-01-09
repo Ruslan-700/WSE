@@ -413,90 +413,89 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 {
 	WSEOperationContext::OnEvent(sender, evt, data);
 	
-	if (luaStateIsReady)
+	if (!luaStateIsReady) return;
+
+	if (evt == WSEEvent::OnFrame)
 	{
-		if(evt == WSEEvent::OnRglLogMsg)
+		if (lua_gettop(this->luaState) > 100)
 		{
-			lua_getglobal(luaState, "game");
-			lua_pushstring(luaState, "OnRglLogWrite");
-			lua_rawget(luaState, -2);
+			lua_settop(this->luaState, 0);
+		}
+	}
+	else if (evt == WSEEvent::OnChatMessageReceived)
+	{
+		int top = lua_gettop(luaState);
+		lua_getglobal(luaState, "game");
+		lua_pushstring(luaState, "OnChatMessageReceived");
+		lua_rawget(luaState, -2);
 
-			if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		{
+			chatMessageReceivedEventData *dt = (chatMessageReceivedEventData*)data;
+			lua_pushinteger(luaState, dt->player);
+			lua_pushboolean(luaState, dt->team_chat);
+			lua_pushstring(luaState, dt->text->c_str());
+
+			if (lua_pcall(luaState, 3, 1, 0))
 			{
-				rglLogWriteEventData *dt = (rglLogWriteEventData*)data;
+				printLastLuaError(luaState);
+			}
+			else
+			{
+				int type = lua_type(luaState, -1);
 
-				lua_pushstring(luaState, dt->str);
-				if (lua_pcall(luaState, 1, 0, 0))
+				if (type == LUA_TBOOLEAN)
 				{
-#if defined WARBAND
-					warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
-#else
-					lua_pushvalue(luaState, -1);
-					printLastLuaError(this->luaState, NULL, GetStdHandle(STD_OUTPUT_HANDLE));
-#endif
-
-					printLastLuaError(this->luaState, NULL, dt->hFile);
+					warband->basic_game.trigger_result = (long long)lua_toboolean(luaState, -1);
+				}
+				else if (type == LUA_TSTRING)
+				{
+					warband->basic_game.trigger_result = 0;
+					warband->basic_game.result_string = rgl::string(lua_tostring(luaState, -1));
+				}
+				else if (type != LUA_TNIL)
+				{
+					luaL_error(luaState, "return value must be int, string or nil");
 				}
 
 				lua_pop(luaState, 1);
 			}
-			else
-			{
-				lua_pop(luaState, 2);
-			}
+
+			lua_pop(luaState, 1); // "game" table
 		}
-		else if (evt == WSEEvent::OnChatMessageReceived)
+		else 
 		{
-			int top = lua_gettop(luaState);
-			lua_getglobal(luaState, "game");
-			lua_pushstring(luaState, "OnChatMessageReceived");
-			lua_rawget(luaState, -2);
-
-			if (lua_type(luaState, -1) == LUA_TFUNCTION)
-			{
-				chatMessageReceivedEventData *dt = (chatMessageReceivedEventData*)data;
-				lua_pushinteger(luaState, dt->player);
-				lua_pushboolean(luaState, dt->team_chat);
-				lua_pushstring(luaState, dt->text->c_str());
-
-				if (lua_pcall(luaState, 3, 1, 0))
-				{
-					printLastLuaError(luaState);
-				}
-				else
-				{
-					int type = lua_type(luaState, -1);
-
-					if (type == LUA_TBOOLEAN)
-					{
-						warband->basic_game.trigger_result = (long long)lua_toboolean(luaState, -1);
-					}
-					else if (type == LUA_TSTRING)
-					{
-						warband->basic_game.trigger_result = 0;
-						warband->basic_game.result_string = rgl::string(lua_tostring(luaState, -1));
-					}
-					else if (type != LUA_TNIL)
-					{
-						luaL_error(luaState, "return value must be int, string or nil");
-					}
-
-					lua_pop(luaState, 1);
-				}
-
-				lua_pop(luaState, 1); // "game" table
-			}
-			else
-			{
-				lua_pop(luaState, 2);
-			}
+			lua_pop(luaState, 2);
 		}
-		else if (evt == WSEEvent::OnFrame)
+	}
+	else if (evt == WSEEvent::OnRglLogMsg)
+	{
+		lua_getglobal(luaState, "game");
+		lua_pushstring(luaState, "OnRglLogWrite");
+		lua_rawget(luaState, -2);
+
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			if (lua_gettop(this->luaState) > 100)
+			rglLogWriteEventData *dt = (rglLogWriteEventData*)data;
+
+			lua_pushstring(luaState, dt->str);
+			if (lua_pcall(luaState, 1, 0, 0))
 			{
-				lua_settop(this->luaState, 0);
+#if defined WARBAND
+				warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
+#else
+				lua_pushvalue(luaState, -1);
+				printLastLuaError(this->luaState, NULL, GetStdHandle(STD_OUTPUT_HANDLE));
+#endif
+
+				printLastLuaError(this->luaState, NULL, dt->hFile);
 			}
+
+			lua_pop(luaState, 1);
+		}
+		else
+		{
+			lua_pop(luaState, 2);
 		}
 	}
 }

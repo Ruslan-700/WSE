@@ -573,6 +573,67 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 	lua_setmetatable(L, -2);
 }
 
+//Callback lua funcs must be at top of stack and will be popped
+//If consequences is true, will pop 2 callbacks
+//first_interval_stack_idx: check_interval, +1 = delay_interval, +2 = rearm_interval
+void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx)
+{
+	trigger.check_interval = (float)lua_tonumber(L, first_interval_stack_idx);
+	trigger.delay_interval = (float)lua_tonumber(L, first_interval_stack_idx + 1);
+	trigger.rearm_interval = (float)lua_tonumber(L, first_interval_stack_idx + 2);
+
+	trigger.status = wb::trigger_status::ts_ready;
+	trigger.check_interval_timer = rgl::timer();
+	trigger.delay_interval_timer = rgl::timer();
+	trigger.rearm_interval_timer = rgl::timer();
+
+	//Consequence
+	if (consequences)
+	{
+		trigger.consequences.num_operations = 1;
+		trigger.consequences.operations = rgl::_new<wb::operation>(1);
+
+		trigger.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+		trigger.consequences.operations[0].num_operands = 3;
+
+		trigger.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+		trigger.consequences.operations[0].operands[1] = triggerPart::consequence;
+		trigger.consequences.operations[0].operands[2] = (int)trigger.check_interval;
+	}
+	else
+	{
+		trigger.consequences.num_operations = 0;
+	}
+
+	//Condition
+	trigger.conditions.num_operations = 1;
+	trigger.conditions.operations = rgl::_new<wb::operation>(1);
+
+	trigger.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+	trigger.conditions.operations[0].num_operands = 3;
+
+	trigger.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	trigger.conditions.operations[0].operands[1] = triggerPart::condition;
+	trigger.conditions.operations[0].operands[2] = (int)trigger.check_interval;
+}
+
+//Callback lua func must be at top of stack and will be popped
+void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx)
+{
+	trigger.interval = (float)lua_tonumber(L, interval_stack_idx);
+	trigger.interval_timer = rgl::timer();
+
+	trigger.operations.num_operations = 1;
+	trigger.operations.operations = rgl::_new<wb::operation>(1);
+
+	trigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
+	trigger.operations.operations[0].num_operands = 3;
+
+	trigger.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
+	trigger.operations.operations[0].operands[1] = triggerPart::consequence;
+	trigger.operations.operations[0].operands[2] = (int)trigger.interval;
+}
+
 float hexStrToFloat(std::string s)
 {
 	size_t mul = 1;

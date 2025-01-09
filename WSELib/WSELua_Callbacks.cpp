@@ -253,45 +253,10 @@ std::vector<callback_def> _G_game_callbacks = {
 
 		int tNo = lToTemplateNo(L, 1);
 
-		wb::trigger newT;
+		wb::trigger trigg;
+		lFillTrigger(L, trigg, numArgs == 6, 2);
 
-		newT.check_interval = (float)lua_tonumber(L, 2);
-		newT.delay_interval = (float)lua_tonumber(L, 3);
-		newT.rearm_interval = (float)lua_tonumber(L, 4);
-
-		newT.status = wb::trigger_status::ts_ready;
-		newT.check_interval_timer = rgl::timer(2);
-		newT.delay_interval_timer = rgl::timer(2);
-		newT.rearm_interval_timer = rgl::timer(2);
-
-		if (numArgs == 6)
-		{
-			newT.consequences.num_operations = 1;
-			newT.consequences.operations = rgl::_new<wb::operation>(1);
-
-			newT.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-			newT.consequences.operations[0].num_operands = 3;
-
-			newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-			newT.consequences.operations[0].operands[1] = triggerPart::consequence;
-			newT.consequences.operations[0].operands[2] = (int)newT.check_interval;
-		}
-		else
-		{
-			newT.consequences.num_operations = 0;
-		}
-
-		newT.conditions.num_operations = 1;
-		newT.conditions.operations = rgl::_new<wb::operation>(1);
-
-		newT.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.conditions.operations[0].num_operands = 3;
-
-		newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-		newT.conditions.operations[0].operands[1] = triggerPart::condition;
-		newT.conditions.operations[0].operands[2] = (int)newT.check_interval;
-
-		int index = warband->mission_templates[tNo].addTrigger(newT, tNo, " (Lua)");
+		int index = warband->mission_templates[tNo].addTrigger(trigg, tNo, " (Lua)");
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -337,23 +302,11 @@ std::vector<callback_def> _G_game_callbacks = {
 				luaL_error(L, "invalid item kind no: %d", itmNo);
 		}
 
-		wb::simple_trigger newT;
+		wb::simple_trigger trigg;
+		lFillSimpleTrigger(L, trigg, 2);
+		trigg.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
 
-		newT.interval = (float)lua_tonumber(L, 2);
-		newT.interval_timer = rgl::timer();
-
-		newT.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
-		newT.operations.num_operations = 1;
-		newT.operations.operations = rgl::_new<wb::operation>(1);
-
-		newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.operations.operations[0].num_operands = 3;
-
-		newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-		newT.operations.operations[0].operands[1] = triggerPart::consequence;
-		newT.operations.operations[0].operands[2] = (int)newT.interval;
-
-		int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(newT);
+		int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -378,23 +331,11 @@ std::vector<callback_def> _G_game_callbacks = {
 				luaL_error(L, "invalid scene prop no: %d", propNo);
 		}
 
-		wb::simple_trigger newT;
+		wb::simple_trigger trigg;
+		lFillSimpleTrigger(L, trigg, 2);
+		trigg.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
 
-		newT.interval = (float)lua_tonumber(L, 2);
-		newT.interval_timer = rgl::timer();
-
-		newT.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
-		newT.operations.num_operations = 1;
-		newT.operations.operations = rgl::_new<wb::operation>(1);
-
-		newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.operations.operations[0].num_operands = 3;
-
-		newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-		newT.operations.operations[0].operands[1] = triggerPart::consequence;
-		newT.operations.operations[0].operands[2] = (int)newT.interval;
-
-		int index = warband->scene_props[propNo].simple_triggers.addTrigger(newT);
+		int index = warband->scene_props[propNo].simple_triggers.addTrigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -403,23 +344,11 @@ std::vector<callback_def> _G_game_callbacks = {
 	{ "addSimpleWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 2, 2, lNum, lFunc);
 
-		wb::simple_trigger newT;
+		wb::simple_trigger trigg;
+		lFillSimpleTrigger(L, trigg, 1);
+		trigg.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
 
-		newT.interval = (float)lua_tonumber(L, 1);
-		newT.interval_timer = rgl::timer();
-
-		newT.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
-		newT.operations.num_operations = 1;
-		newT.operations.operations = rgl::_new<wb::operation>(1);
-
-		newT.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.operations.operations[0].num_operands = 3;
-
-		newT.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-		newT.operations.operations[0].operands[1] = triggerPart::consequence;
-		newT.operations.operations[0].operands[2] = (int)newT.interval;
-
-		int index = warband->cur_game->simple_triggers.addTrigger(newT);
+		int index = warband->cur_game->simple_triggers.addTrigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -448,50 +377,12 @@ std::vector<callback_def> _G_game_callbacks = {
 	{ "addWorldTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 4, 5, lNum, lNum, lNum, lFunc, lFunc);
 
-		wb::trigger newT;
+		wb::trigger trigg;
+		lFillTrigger(L, trigg, numArgs == 5, 2);
+		trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
+		trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
 
-		newT.check_interval = (float)lua_tonumber(L, 1);
-		newT.delay_interval = (float)lua_tonumber(L, 2);
-		newT.rearm_interval = (float)lua_tonumber(L, 3);
-
-		newT.status = wb::trigger_status::ts_ready;
-		newT.check_interval_timer = rgl::timer(2);
-		newT.delay_interval_timer = rgl::timer(2);
-		newT.rearm_interval_timer = rgl::timer(2);
-
-		if (numArgs == 5)
-		{
-			newT.consequences.num_operations = 1;
-			newT.consequences.operations = rgl::_new<wb::operation>(1);
-
-			newT.consequences.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-			newT.consequences.operations[0].num_operands = 3;
-
-			newT.consequences.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-			newT.consequences.operations[0].operands[1] = triggerPart::consequence;
-			newT.consequences.operations[0].operands[2] = (int)newT.check_interval;
-		}
-		else
-		{
-			newT.consequences.num_operations = 0;
-		}
-		newT.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
-
-
-		newT.conditions.num_operations = 1;
-		newT.conditions.operations = rgl::_new<wb::operation>(1);
-
-		newT.conditions.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-		newT.conditions.operations[0].num_operands = 3;
-
-		newT.conditions.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX);
-		newT.conditions.operations[0].operands[1] = triggerPart::condition;
-		newT.conditions.operations[0].operands[2] = (int)newT.check_interval;
-
-		newT.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
-
-
-		int index = warband->cur_game->triggers.addTrigger(newT);
+		int index = warband->cur_game->triggers.addTrigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -566,17 +457,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		while (lua_next(L, -2))
 		{
 			wb::simple_trigger &curTrigger = newP.simple_triggers.simple_triggers[i];
-
-			curTrigger.interval = (float)lua_tonumber(L, -2);
-			curTrigger.interval_timer = rgl::timer(2);
-
-			curTrigger.operations.num_operations = 1;
-			curTrigger.operations.operations = rgl::_new<wb::operation>(1);
-			curTrigger.operations.operations[0].opcode = WSE->LuaOperations.callTriggerOpcode;
-			curTrigger.operations.operations[0].num_operands = 3;
-			curTrigger.operations.operations[0].operands[0] = luaL_ref(L, LUA_REGISTRYINDEX); //pops val
-			curTrigger.operations.operations[0].operands[1] = triggerPart::consequence;
-			curTrigger.operations.operations[0].operands[2] = (int)curTrigger.interval;
+			lFillSimpleTrigger(L, curTrigger, -2);
 
 			i++;
 		}

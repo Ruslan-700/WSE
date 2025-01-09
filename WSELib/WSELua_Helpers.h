@@ -21,6 +21,12 @@ enum lTypeF
 	lAny			= 0xFFFF,
 };
 
+enum triggerPart : int
+{
+	condition,
+	consequence
+};
+
 void gPrint(const char *msg);
 void gPrint(const char *msg);
 void gPrint(const std::string &s);
@@ -62,6 +68,9 @@ int lToTemplateNo(lua_State *L, int index);
 void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);
 void lPushPos(lua_State *L, const rgl::matrix &pos);
+
+void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx);
+void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx);
 
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name);
 
