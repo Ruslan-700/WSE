@@ -53,13 +53,3 @@ void trigger_manager::execute(int context)
 		this->triggers[i].execute(context);
 	}
 }
-
-int trigger_manager::addTrigger(const trigger &newTrigger)
-{
-	return array_add_elem(this->triggers, this->num_triggers, newTrigger);
-}
-
-bool trigger_manager::removeTrigger(int index)
-{
-	return array_remove_elem(this->triggers, this->num_triggers, index);
-}

@@ -256,19 +256,19 @@ std::vector<callback_def> _G_game_callbacks = {
 		wb::trigger trigg;
 		lFillTrigger(L, trigg, numArgs == 6, 2);
 
-		int index = warband->mission_templates[tNo].addTrigger(trigg, tNo, " (Lua)");
+		int index = warband->mission_templates[tNo].add_trigger(trigg, tNo, " (Lua)");
 
 		lua_pushinteger(L, index);
 		return 1;
 	} },
 
-	{ "removeTrigger", [](lua_State* L) -> int {
+	{ "remove_trigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 2, 2, lStr | lNum, lNum);
 
 		int tNo = lToTemplateNo(L, 1);
 		int index = lua_tointeger(L, 2);
 
-		bool succ = warband->mission_templates[tNo].removeTrigger(index);
+		bool succ = warband->mission_templates[tNo].remove_trigger(index);
 
 		lua_pushboolean(L, succ ? 1 : 0);
 		return 1;
@@ -306,7 +306,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		lFillSimpleTrigger(L, trigg, 2);
 		trigg.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
 
-		int index = warband->item_kinds[itmNo].simple_triggers.addTrigger(trigg);
+		int index = warband->item_kinds[itmNo].simple_triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -335,7 +335,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		lFillSimpleTrigger(L, trigg, 2);
 		trigg.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
 
-		int index = warband->scene_props[propNo].simple_triggers.addTrigger(trigg);
+		int index = warband->scene_props[propNo].simple_triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -348,7 +348,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		lFillSimpleTrigger(L, trigg, 1);
 		trigg.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
 
-		int index = warband->cur_game->simple_triggers.addTrigger(trigg);
+		int index = warband->cur_game->simple_triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -359,7 +359,7 @@ std::vector<callback_def> _G_game_callbacks = {
 
 		int index = lua_tointeger(L, 1);
 
-		bool succ = warband->cur_game->simple_triggers.removeTrigger(index);
+		bool succ = warband->cur_game->simple_triggers.remove_trigger(index);
 
 		lua_pushboolean(L, succ ? 1 : 0);
 		return 1;
@@ -378,7 +378,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
 		trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
 
-		int index = warband->cur_game->triggers.addTrigger(trigg);
+		int index = warband->cur_game->triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
@@ -389,7 +389,7 @@ std::vector<callback_def> _G_game_callbacks = {
 
 		int index = lua_tointeger(L, 1);
 
-		bool succ = warband->cur_game->triggers.removeTrigger(index);
+		bool succ = warband->cur_game->triggers.remove_trigger(index);
 
 		lua_pushboolean(L, succ ? 1 : 0);
 		return 1;

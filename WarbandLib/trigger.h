@@ -2,6 +2,7 @@
 
 #include "rgl.h"
 #include "operation.h"
+#include "array_util.h"
 
 namespace wb
 {
@@ -92,7 +93,8 @@ namespace wb
 		int timer_no;
 
 		void execute(int context);
-		int addTrigger(const trigger &newTrigger);
-		bool removeTrigger(int index);
+
+		int add_trigger(const trigger &newTrigger) { return array_add_elem(triggers, num_triggers, newTrigger); };
+		bool remove_trigger(int index) { return array_remove_elem(triggers, num_triggers, index); }
 	};
 }

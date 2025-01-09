@@ -1,6 +1,5 @@
 #include "simple_trigger.h"
 #include "warband.h"
-#include "array_util.h"
 
 using namespace wb;
 
@@ -40,14 +39,4 @@ bool simple_trigger_manager::has_trigger(int trigger_no) const
 	}
 
 	return false;
-}
-
-int simple_trigger_manager::addTrigger(const simple_trigger &newTrigger)
-{
-	return array_add_elem(this->simple_triggers, this->num_simple_triggers, newTrigger);
-}
-
-bool simple_trigger_manager::removeTrigger(int index)
-{
-	return array_remove_elem(this->simple_triggers, this->num_simple_triggers, index);
 }

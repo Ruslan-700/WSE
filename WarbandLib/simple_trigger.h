@@ -2,6 +2,7 @@
 
 #include "rgl.h"
 #include "operation.h"
+#include "array_util.h"
 
 namespace wb
 {
@@ -23,7 +24,7 @@ namespace wb
 		void execute(int context);
 		bool has_trigger(int trigger_no) const;
 
-		int addTrigger(const simple_trigger &newTrigger);
-		bool simple_trigger_manager::removeTrigger(int index);
+		int add_trigger(const simple_trigger &newTrigger) { return array_add_elem(simple_triggers, num_simple_triggers, newTrigger); };
+		bool remove_trigger(int index) {	return array_remove_elem(simple_triggers, num_simple_triggers, index); }
 	};
 }
