@@ -4,6 +4,9 @@
 
 using namespace rgl;
 
+//0 - app timer
+//1 - game timer
+//2 - mission timer
 timer::timer(int timer_no)
 {
 	this->timer_no = timer_no;

@@ -1,8 +1,11 @@
 //Lets you add and remove from static game arrays
+#include "rgl_memory.h"
 
 template <typename T>
 int array_add_elem(T* &buff, int& buffer_size, const T &new_elem)
 {
+	if (buff == NULL) return -1;
+
 	T* new_buff = rgl::_new<T>(buffer_size + 1);
 
 	for (int i = 0; i < buffer_size; ++i)
@@ -19,11 +22,9 @@ int array_add_elem(T* &buff, int& buffer_size, const T &new_elem)
 template <typename T>
 bool array_remove_elem(T* &buff, int& buffer_size, int index)
 {
-	if (index < 0)
-		index += buffer_size;
-
-	if (index < 0 || index >= buffer_size)
-		return false;
+	if (buff == NULL) return -1;
+	if (index < 0) index += buffer_size;
+	if (index < 0 || index >= buffer_size) return false;
 
 	T* new_buff = rgl::_new<T>(buffer_size - 1);
 
