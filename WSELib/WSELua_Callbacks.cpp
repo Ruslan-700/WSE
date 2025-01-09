@@ -366,10 +366,6 @@ std::vector<callback_def> _G_game_callbacks = {
 	} },
 
 	{ "getNumSimpleWorldTriggers", [](lua_State* L) -> int {
-		int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
-
-		int tNo = lToTemplateNo(L, 1);
-
 		lua_pushinteger(L, warband->cur_game->simple_triggers.num_simple_triggers);
 		return 1;
 	} },
@@ -400,10 +396,6 @@ std::vector<callback_def> _G_game_callbacks = {
 	} },
 
 	{ "getNumWorldTriggers", [](lua_State* L) -> int {
-		int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
-
-		int tNo = lToTemplateNo(L, 1);
-
 		lua_pushinteger(L, warband->cur_game->triggers.num_triggers);
 		return 1;
 	} },
