@@ -71,8 +71,8 @@ void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);
 void lPushPos(lua_State *L, const rgl::matrix &pos);
 
-void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx);
-void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx);
+void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx, rgl::timer_kind timer = rgl::timer_kind::app);
+void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx, rgl::timer_kind timer = rgl::timer_kind::app);
 
 void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable> &gameConstTables, std::string name);
 

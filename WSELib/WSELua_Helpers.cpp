@@ -626,16 +626,16 @@ void lPushPos(lua_State *L, const rgl::matrix &pos)
 //Callback lua funcs must be at top of stack and will be popped
 //If consequences is true, will pop 2 callbacks
 //first_interval_stack_idx: check_interval, +1 = delay_interval, +2 = rearm_interval
-void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx)
+void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int first_interval_stack_idx, rgl::timer_kind timer)
 {
 	trigger.check_interval = (float)lua_tonumber(L, first_interval_stack_idx);
 	trigger.delay_interval = (float)lua_tonumber(L, first_interval_stack_idx + 1);
 	trigger.rearm_interval = (float)lua_tonumber(L, first_interval_stack_idx + 2);
 
 	trigger.status = wb::trigger_status::ts_ready;
-	trigger.check_interval_timer = rgl::timer();
-	trigger.delay_interval_timer = rgl::timer();
-	trigger.rearm_interval_timer = rgl::timer();
+	trigger.check_interval_timer = rgl::timer(timer);
+	trigger.delay_interval_timer = rgl::timer(timer);
+	trigger.rearm_interval_timer = rgl::timer(timer);
 
 	//Consequence
 	if (consequences)
@@ -668,10 +668,10 @@ void lFillTrigger(lua_State *L, wb::trigger &trigger, bool consequences, int fir
 }
 
 //Callback lua func must be at top of stack and will be popped
-void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx)
+void lFillSimpleTrigger(lua_State *L, wb::simple_trigger &trigger, int interval_stack_idx, rgl::timer_kind timer)
 {
 	trigger.interval = (float)lua_tonumber(L, interval_stack_idx);
-	trigger.interval_timer = rgl::timer();
+	trigger.interval_timer = rgl::timer(timer);
 
 	trigger.operations.num_operations = 1;
 	trigger.operations.operations = rgl::_new<wb::operation>(1);

@@ -25,4 +25,11 @@ namespace rgl
 	{
 		mission_timer();
 	};
+
+	enum timer_kind
+	{
+		app = 0,
+		game = 1,
+		mission = 2
+	};
 }

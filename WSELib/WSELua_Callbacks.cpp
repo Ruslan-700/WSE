@@ -254,7 +254,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		int tNo = lToTemplateNo(L, 1);
 
 		wb::trigger trigg;
-		lFillTrigger(L, trigg, numArgs == 6, 2);
+		lFillTrigger(L, trigg, numArgs == 6, 2, rgl::timer_kind::mission);
 
 		int index = warband->mission_templates[tNo].add_trigger(trigg, tNo, " (Lua)");
 
@@ -320,7 +320,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		int prop_no = lToScenePropNo(L, 1);
 
 		wb::simple_trigger trigg;
-		lFillSimpleTrigger(L, trigg, 2);
+		lFillSimpleTrigger(L, trigg, 2, rgl::timer_kind::mission);
 		trigg.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", prop_no, warband->scene_props[prop_no].id.c_str(), warband->scene_props[prop_no].simple_triggers.num_simple_triggers);
 
 		int index = warband->scene_props[prop_no].simple_triggers.add_trigger(trigg);
@@ -353,7 +353,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addSimpleWorldTrigger: only allowed during OnGameLoad"); }
 
 		wb::simple_trigger trigg;
-		lFillSimpleTrigger(L, trigg, 1);
+		lFillSimpleTrigger(L, trigg, 1, rgl::timer_kind::game);
 		trigg.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
 
 		int index = warband->cur_game->simple_triggers.add_trigger(trigg);
@@ -383,7 +383,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addWorldTrigger: only allowed during OnGameLoad"); }
 
 		wb::trigger trigg;
-		lFillTrigger(L, trigg, numArgs == 5, 1);
+		lFillTrigger(L, trigg, numArgs == 5, 1, rgl::timer_kind::game);
 		trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
 		trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
 
