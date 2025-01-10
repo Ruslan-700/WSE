@@ -46,7 +46,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		int curLArgIndex = 2;
 		int curOperandIndex = 0;
 
-		if (op.flags & WSEOperationType::LhsOperation)
+		if (op.flags & WSEOperationFlags::Lhs)
 		{
 			locals[0] = lua_tointeger(L, curLArgIndex++);
 			setOperandToLocalVar(wop.operands[curOperandIndex++], 0);
@@ -96,13 +96,13 @@ std::vector<callback_def> _G_game_callbacks = {
 			bool b = wop.execute(locals, WSE->LuaOperations.luaContext, e);
 
 			int retCount = 1;
-			if (op.flags & WSEOperationType::CfOperation)
+			if (op.flags & WSEOperationFlags::Cf)
 			{
 				lua_pushboolean(L, b);
 				retCount++;
 			}
 
-			if (op.flags & WSEOperationType::LhsOperation)
+			if (op.flags & WSEOperationFlags::Lhs)
 			{
 				lua_pushinteger(L, (lua_Integer)locals[0]);
 				retCount++;
@@ -115,6 +115,21 @@ std::vector<callback_def> _G_game_callbacks = {
 
 		return 0;
 	}},
+
+	{ "getOperationFlags", [](lua_State* L) -> int {
+		checkLArgs(L, 1, 1, lStr);
+
+		std::string opName(lua_tostring(L, 1));
+
+		auto opEntry = WSE->LuaOperations.operationMap.find(opName);
+		if (opEntry == WSE->LuaOperations.operationMap.end())
+			luaL_error(L, "undefined module system operation: '%s'", opName.c_str());
+
+		gameOperation op = *(opEntry->second);
+		lua_pushinteger(L, op.flags);
+
+		return 1;
+	} },
 
 	{ "getReg", [](lua_State* L) -> int {
 		checkLArgs(L, 2, 2, lNum, lNum);

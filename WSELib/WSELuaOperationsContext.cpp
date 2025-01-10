@@ -911,7 +911,7 @@ void WSELuaOperationsContext::loadGameConstants(const std::string &dir)
 			if (s != "." && s != "..")
 				loadGameConstants(dir + s + "\\");
 		}
-		else if (s != "header_operations.py")
+		else //if (s != "header_operations.py")
 		{
 			if (std::regex_match(s, curMatches, fnRegEx))
 				loadGameConstantsFromFile(dir + s, gameConstTables, curMatches.str(2));

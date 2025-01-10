@@ -171,6 +171,10 @@
 			padding-left: 20px;
 		}
 
+		.marl20{
+			margin-left: 20px;
+		}
+
 		.padli > li{
 			padding-bottom: 1em;
 		}
@@ -760,14 +764,29 @@
 						(lhs = left hand side? Operations that assign a value, e.g. val_add)
 						(cf  = can fail, e.g. agent_is_active)
 					</pre>
-					<p>While most Lhs operations don't require an actual initial value for lhs_arg (in those cases it's strictly a return variable, for example player_get_gold), some (for example val_add) do, so you have to specify it anyway.</p>
-					<p>lhs_operation example:</p>
-					<pre class="code">
-						local val = game.val_add(5, 10)
-						local gold = game.player_get_gold(0, playerId)
-					</pre>
+
 					<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
 					<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
+					<br>
+					<p>Now with Lhs operations, there is a problem. Their syntax is:<br>
+						<span class="marl20 keyword">(lhs_op, &ltdestination&gt, &ltvar1&gt, &ltvar2&gt, ...)</span>
+					</p>
+					<p>
+						While in lua you want to write:<br>
+						<span class="marl20 keyword">result = game.lhs_op(var1, var2, ...)</span>
+					</p>
+					<p>Why is this a problem?<br>
+						You have different parameter count. WSE could detect that you are calling an Lhs operation and fill in the missing parameter, but: the operation might actually use the initial value of it to affect the result.<br>
+						An obvious example for this is <span class="keyword">val_add</span>. It makes no sense to write <span class="keyword">result = val_add(5)</span>, what is it adding 5 to?
+					</p>
+					<p>Whether or not an operation uses the initial value can't simply be detected by WSE. So it used to be in the past that you had to write <span class="keyword">result = game.lhs_op(some_number, var1, var2, ...)</span> for all lhs operations (some_number was just 0 mostly). Annoying.</p>
+					<p>However, after further inspection, it is reasonable to assume that only <span class="keyword">val_</span> operations do this. Therefore WSE update adds <span class="keyword">game.op</span>:</p>
+					<pre class="code">
+						local val = game.agent_get_slot(0, agent_id, slot_no)
+						local val = game.op.agent_get_slot(agent_id, slot_no)
+					</pre>
+					<p>It will add the 0 automatically for any lhs_operation, except for ones that start with <span class="keyword">val_</span>. If you find operations where this is wrong, please contact <a href="https://forums.taleworlds.com/index.php?members/agentsmith.186495/" target="_blank" rel="noopener noreferrer">AgentSmith</a> on TaleWorlds forum.</p>
+					<p>If you don't want to write the <span class="keyword">.op</span> all the time, call <span class="keyword">game.op.make_default()</span>. It is optional because of legacy code.</p>
 				</div>
 			</div>
 
@@ -809,7 +828,7 @@
 				<div class="content_block_caption">Constants</div>
 				<div>
 					<p>
-						For every <span class="keyword">header_[name].py</span> or <span class="keyword">ID_[name].py</span> file you copied to your "msfiles" folder (except header_operations.py), a new table will be generated: <span class="keyword">game.const.[name]</span><br>
+						For every <span class="keyword">header_[name].py</span> or <span class="keyword">ID_[name].py</span> file you copied to your "msfiles" folder, a new table will be generated: <span class="keyword">game.const.[name]</span><br>
 						This table will be filled with all the constants from that file.<br>
 						If there are two files with the same <span class="keyword">[name]</span>, e.g. header_scenes and ID_scenes, the tables will get merged.</p>
 					<p>As of the current version, only lines that match one of the two following regexes (regular expressions) will be accepted:</p>
@@ -1266,8 +1285,11 @@
 					<p style="padding-left: 10px">Other WSE LUA API functions - these could be useful for advanced users, but you should get along fine without ever using them.</p>
 					<ul class="padli">
 						<li><span class="keyword">game.execOperation(strOperationName, arg1, arg2, ....)</span> - see operations</li>
+						<li><span class="keyword">game.getOperationFlags(strOperationName)</span> - Flags: None = 0x0, Lhs = 0x1, Cf = 0x2 (this is what WSE figured from reading header_operations.py, the engine may not agree).</li>
 						<li><span class="keyword">game.getReg(intTypeId, intIndex)</span> typeIds are: 0 = int, 1 = str, 2 = pos</li>
 						<li><span class="keyword">game.setReg(intTypeId, intIndex, val)</span></li>
+						<li><span class="keyword">game.getGvar(key)</span></li>
+						<li><span class="keyword">game.setGvar(key, value)</span></li>
 					</ul>
 				</div>
 			</div>
@@ -1337,6 +1359,9 @@
 							<br>
 							It will make sure that <span class="keyword">table.a.b</span> exists and return it, but won't overwrite anything that already exists.
 						</li>
+						<li><span class="keyword">starts_with(str, start)</span><br>
+						<li><span class="keyword">ends_with(str, ending)</span><br>
+						<li><span class="keyword">round(num, numDecimalPlaces)</span><br>
 						<li>
 							<span class="keyword">getTime()</span> get time in milliseconds since program start, using <span class="keyword">std::chrono::steady_clock</span>
 						</li>
@@ -1415,7 +1440,7 @@
 						WSE should remove this when it's done, but it doesn't, and changing the behaviour now might break user code that relies on fixed stack indices.
 						Therefore you have to keep this in mind when using lua_call, your stack will grow even if there are no return values.
 						It's a good habit to use (lua_set_top, 0) before starting to call lua functions, so you always know you're starting with a clean stack.</li>
-					<li>All lua standard libraries are loaded on game start.</li>
+					<li>All lua standard libraries are loaded on game start, including <a href="https://bitop.luajit.org/api.html" target="_blank" rel="noopener noreferrer">bitop</a>.</li>
 					<li>If you don't want others to copy your source code, you can minify or obfuscate it. There are many such tools available online. Compiling modsys code is about as secure as minifying it.</li>
 				</ul>
 			</div>

@@ -38,7 +38,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		std::chrono::steady_clock::time_point tStart;
 		std::vector<bool> lua_call_cfResults;
 		int luaContext = 0;
-		std::string user_dir; //    <M&B>\Modules\<Module>\lua
+		std::string user_dir;    // <M&B>\Modules\<Module>\lua
 		std::string storage_dir; // <M&B>\WSE\<Module>  - unless they changed the setting
 		bool gameLoad_active = false;
 

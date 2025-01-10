@@ -1,3 +1,5 @@
+bit = require "bit"
+
 ------------helpers------------
 function tableShallowCopy(t, copyMetatable)
 	local t2 = {}
@@ -29,7 +31,7 @@ function tableRecursiveCopy(t, copyMetatables)
 	return t2
 end
 
-print = function(...)
+function print(...)
 	local s = ""
 	for i = 1, select("#", ...) do
 		s = s .. tostring(select(i, ...)) .. "     "
@@ -39,7 +41,7 @@ print = function(...)
 	_print(s)
 end
 
-printTable = function(t, prefix)
+function printTable(t, prefix)
     if not prefix then
         prefix = ""
     end
@@ -59,7 +61,7 @@ printTable = function(t, prefix)
     end
 end
 
-make = function(_table, ...)
+function make(_table, ...)
     local curTable = _table
 
     for i = 1, select("#", ...) do
@@ -69,6 +71,19 @@ make = function(_table, ...)
     end
 
     return curTable
+end
+
+function starts_with(str, start)
+    return str:sub(1, #start) == start
+end
+ 
+function ends_with(str, ending)
+    return ending == "" or str:sub(-#ending) == ending
+end
+
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    return math.floor(num * mult + 0.5) / mult
 end
 
 ------------access to module operations------------
@@ -81,6 +96,26 @@ game.mt = {
 }
 setmetatable(game, game.mt)
 
+game.op = {}
+for k, v in pairs(game.const.operations) do
+	if not starts_with(k, "val_") then
+		local ok, flags = pcall(game.getOperationFlags, k)
+
+		if ok and (bit.band(flags, 0x1) ~= 0) then
+			game.op[k] = function(...) return game.execOperation(k, 0, ...) end
+		end
+	end
+end
+setmetatable(game.op, game.mt)
+
+function game.op.make_default()
+	for k, v in pairs(game.op) do
+		if type(v) == "function" then
+			if rawget(game, k) then print("WARNING, overwritting game." .. tostring(k)) end
+			game[k] = v
+		end
+	end
+end
 
 ------------registers, gvar------------
 game.regMt = {
@@ -253,7 +288,7 @@ vector3.mt =
 		return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z
 	end,
 }
-vector3.new = function(obj)
+function vector3.new(obj)
 	local newObj
 	if obj then
 		newObj = {}
@@ -346,7 +381,7 @@ game.rotation.mt =
 {
 	__index = game.rotation.prototype
 }
-game.rotation.new = function(obj)
+function game.rotation.new(obj)
     local newObj
     if obj then
         newObj = tableRecursiveCopy(obj)
@@ -430,7 +465,7 @@ game.pos.mt =
 	__index = game.pos.prototype
 }
 
-game.pos.new = function(obj)
+function game.pos.new(obj)
     local newObj
     if obj then
         newObj = tableRecursiveCopy(obj)
