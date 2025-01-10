@@ -1379,6 +1379,10 @@
 						</li>
 						<li>
 							<p>Restrict dofile, loadfile and all IO operations to the lua directory</p>
+							<p>Access storage folder by prefixing <span class="keyword">%storage%</span> (storage folder is <span class="keyword">[warband_dir]\WSE\[Module]\</span> by default)</p>
+							<p><pre class="code">
+								local f, err = io.open("%storage%\\file.json", "r")
+							</pre></p>
 						</li>
 					</ul>
 				</div>

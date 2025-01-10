@@ -218,7 +218,7 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 //This is a callback for luaJIT
 //We try to restrict all IO to user or storage dir with this middleman.
-#define STORAGE "<storage>"
+#define STORAGE "%storage%"
 char* sandbox_path(const char* _path)
 {
 	if (_path == NULL)
