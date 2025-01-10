@@ -819,7 +819,7 @@
 					</pre>
 					<p>This probably looks intimidating to you, but really all it says is that your constant must either be a number, a hex number, or another constant (from the same file, currently).</p>
 					<p>In other words: <span class="keyword">constant = num|hexNum|otherConstant</span>
-					<p>If the match fails, the line will be ignored and a warning message will be triggered which you can safely ignore. You can also supress warnings by setting <span class="keyword">[lua] disable_game_const_warnings = 1</span> in wse_settings.ini.</p>
+					<p>If the match fails, the line will be ignored. To get a warning in this case, set <span class="keyword">[lua] disable_game_const_warnings = 0</span> in wse_settings.ini.</p>
 					<p><br>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
 					<p>So let's say you want to add a deathmatch trigger for <span class="keyword">ti_on_agent_hit</span>. Instead of this:</p>
 					<pre class="code">

@@ -788,7 +788,7 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 
 			if (index == -1)
 			{
-				if (!WSE->SettingsIni.Bool("lua", "disable_game_const_warnings", false))
+				if (!WSE->SettingsIni.Bool("lua", "disable_game_const_warnings", true))
 				{
 					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: could not find %s", filePath.c_str(), curLineNum, con.name.c_str());
 				}
@@ -799,7 +799,7 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		}
 		else
 		{
-			if (!WSE->SettingsIni.Bool("lua", "disable_game_const_warnings", false))
+			if (!WSE->SettingsIni.Bool("lua", "disable_game_const_warnings", true))
 			{
 				gPrintf("WSELuaOperationsContext: Warning reading %s, line %i: could not process line", filePath.c_str(), curLineNum);
 			}
