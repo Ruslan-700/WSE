@@ -2,6 +2,7 @@
 
 #include "rgl.h"
 #include "simple_trigger.h"
+#include "array_util.h"
 
 #define NUM_MAPPED_PRESENTATIONS 7
 
@@ -21,7 +22,7 @@ namespace wb
 		int num_presentations;
 		int mapped_presentations[NUM_MAPPED_PRESENTATIONS];
 
-		int addPresentation(const presentation &newPresentation);
-		bool removePresentation(int index);
+		int addPresentation(const presentation &new_prsnt) { return array_add_elem(presentations, num_presentations, new_prsnt); }
+		bool removePresentation(int index) { return array_remove_elem(presentations, num_presentations, index); }
 	};
 }

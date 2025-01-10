@@ -1,6 +1,7 @@
 #pragma once
 
 #include "rgl.h"
+#include "array_util.h"
 
 #define NUM_MAPPED_PARTICLE_SYSTEMS 11
 
@@ -40,7 +41,7 @@ namespace wb
 		int mapped_particle_systems[NUM_MAPPED_PARTICLE_SYSTEMS];
 
 		rgl::particle_system *create(const int &particle_system_no, const rgl::vector4 &position, const int &u1 = 0);
-		int add_system(const particle_system &system);
-		bool remove_system(int index);
+		int add_system(const particle_system &system) { return array_add_elem(particle_systems, num_particle_systems, system); }
+		bool remove_system(int index) { return array_remove_elem(particle_systems, num_particle_systems, index); }
 	};
 }

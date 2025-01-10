@@ -41,6 +41,7 @@
 		{
 			padding: 3px;
 			font-family: monospace;
+			white-space: pre;
 		}
 
 		.content_block
@@ -836,9 +837,8 @@
 			<div class="content_block">
 				<div class="content_block_caption">Triggers</div>
 				<div>
-					<p>To add mission template triggers, use <span class="keyword">intTriggerNo = game.addTrigger(strTemplateId|intTemplateNo, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
+					<p>To add mission template triggers, use <span class="keyword">index = game.addTrigger(strTemplateId|intTemplateNo, numCheckTime, numDelayTime, numRearmTime, funcConditionsCallback, [funcConsequencesCallback])</span></p>
 					<p>These work exactly like module system triggers. Times can be float values or values from header_triggers.py (the numbers, string names are not supported yet), just like you would do it in the MS. If conditionsCallback returns false, consequencesCallback will not be executed. If it returns true or nothing, consequencesCallback will be executed.</p>
-					<p>This function is fairly expensive, as it involves copying the entire array of triggers and then adding the new one.</p>
 					<p style="padding-left: 30px;">Example:</p>
 					<pre class="code">
 						function condCB()
@@ -848,7 +848,7 @@
 						game.addTrigger("mst_multiplayer_dm", 1, 0, 0, condCB)
 					</pre>
 					<p>addTrigger returns an integer that is the index of the added trigger.</p>
-					<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId|intTemplateNo, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1).</p>
+					<p>You can also remove triggers by using <span class="keyword">game.removeTrigger(strTemplateId|intTemplateNo, intTriggerIndex)</span>. If intTriggerIndex is negative, the trigger with (numTriggers + intTriggerIndex) gets removed (e.g. to remove the last trigger, use -1). Returns success.</p>
 					<p>
 						Useful functions:
 						<ul>
@@ -870,7 +870,12 @@
 						</ul>
 					</p>
 					<p>&nbsp;</p>
-					<p>You can also add item triggers with <span class="keyword">intTriggerNo = game.addItemTrigger(strItemID|intItemNo, numTriggerInterval, funcCallback)</span></p>
+					<p>Item triggers:</p>
+					<ul>
+						<li><span class="keyword">index   = game.addItemTrigger(strItemID|intItemNo, numTriggerInterval, funcCallback)</span></li>
+						<li><span class="keyword">success = game.removeItemTrigger(strItemID|intItemNo, index)</span></li>
+						<li><span class="keyword">num     = game.getNumItemTriggers(strItemID|intItemNo)</span></li>
+					</ul>
 					<p style="padding-left: 30px;">Example:</p>
 					<pre class="code">
 						game.addItemTrigger("itm_fighting_pick", game.const.ti_on_weapon_attack, function()
@@ -878,7 +883,12 @@
 						end)
 					</pre>
 					<p>&nbsp;</p>
-					<p>Scene prop triggers: <span class="keyword">intTriggerNo = game.addScenePropTrigger(strPropID|intPropNo, numTriggerInterval, funcCallback)</span></p>
+					<p>Scene prop triggers:</p>
+					<ul>
+						<li><span class="keyword">index   = game.addScenePropTrigger(strPropID|intPropNo, numTriggerInterval, funcCallback)</span></li>
+						<li><span class="keyword">success = game.removeScenePropTrigger(strPropID|intPropNo, index)</span></li>
+						<li><span class="keyword">num     = game.getNumScenePropTriggers(strPropID|intPropNo)</span></li>
+					</ul>
 					<p style="padding-left: 30px;">Example:</p>
 					<pre class="code">
 						game.addScenePropTrigger(game.const.spr_apple_a, game.const.ti_on_scene_prop_init, function()
@@ -1040,7 +1050,7 @@
 						})
 						game.start_presentation(index)
 					</pre>
-					<p>Remove using <span class="keyword">game.removePrsnt(index)</span>. There is not much need to remove these though, you should add once and then reuse it - when adding/removing one, WSE needs to rebuild the entire list in memory. Also remember, removing will shift indices above.</p>
+					<p>Remove using <span class="keyword">game.removePrsnt(index)</span>. Remember, removing will shift above indices.</p>
 					<p>On dedicated, add/remove will do and return nothing.</p>
 					<p>For technical reasons, if there are modsys errors in a presentation added in lua (for example invalid agent_id), it will report as line 0, opcode 5113.</p>
 				</div>
@@ -1091,7 +1101,7 @@
 							})
 							game.particle_system_burst(psys, game.preg[0], 20)
 					</pre>
-					<p>Remove using <span class="keyword">game.removePsys(index)</span>. There is not much need to remove these though, you should add once and then reuse it - when adding/removing, WSE needs to rebuild the entire list in memory. Also remember, removing will shift indices above.</p>
+					<p>Remove using <span class="keyword">game.removePsys(index)</span>. Remember, removing will shift above indices.</p>
 					<p>On dedicated, add/remove will do and return nothing.</p>
 				</div>
 			</div>
@@ -1505,7 +1515,6 @@
 				<div class="content_block_caption">event_mgr.lua</div>
 				<p>
 					The idea is to have a wrapper for game.addTrigger so we have more control (for example this is useful for hot reloading), and to have a single interface for all events - mission template, scene prop, and item triggers, as well as your own events.<br>
-					Adding/removing triggers to the actual game is a bit inefficient (not that you will notice though, unless you do it in some loop). So event_mgr is smart and only causes the minimum work.<br>
 					It returns a constant index to your trigger. game.addTrigger index will shift if you remove things below.<br>
 					Does only add to deathmatch, and no management of SP/MP triggers. It's up to you to modify to your needs.<br>
 					Needs header_triggers.py, ID_scenes.py, ID_items.py in msfiles.
