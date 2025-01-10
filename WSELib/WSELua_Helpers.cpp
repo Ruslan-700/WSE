@@ -310,6 +310,8 @@ inline int lFixedIndex(lua_State *L, int index)
 	return index < 0 ? (index + lua_gettop(L) + 1) : index;
 }
 
+
+
 bool lIsVec3(lua_State *L, int index)
 {
 	if (lua_type(L, index) == LUA_TTABLE)
@@ -376,6 +378,8 @@ bool lIsTrue(lua_State *L, int index)
 	if (lua_isnumber(L, index)) return ((float)lua_tonumber(L, index) != 0.0f);
 	return lua_toboolean(L, index) != 0; //Supress warning...
 }
+
+
 
 rgl::vector4 lToVec3(lua_State *L, int index)
 {
@@ -515,6 +519,50 @@ int lToTemplateNo(lua_State *L, int index)
 
 	return tNo;
 }
+
+//s[index] can be a string "itm_..." or a number.
+//Will only return a valid itm_no and cause lua error otherwise.
+int lToItemNo(lua_State *L, int index)
+{
+	int itm_no;
+	if (lua_type(L, index) == LUA_TSTRING)
+	{
+		const char *itm_ID = lua_tostring(L, index);
+		itm_no = getItemKindNo(itm_ID);
+
+		if (itm_no < 0) luaL_error(L, "invalid item kind id: %s", itm_ID);
+	}
+	else
+	{
+		itm_no = lua_tointeger(L, index);
+		if (itm_no < 0 || itm_no >= warband->num_item_kinds) luaL_error(L, "invalid item kind no: %d", itm_no);
+	}
+
+	return itm_no;
+}
+
+//s[index] can be a string "spr_..." or a number.
+//Will only return a valid prop_no and cause lua error otherwise.
+int lToScenePropNo(lua_State *L, int index)
+{
+	int prop_no;
+	if (lua_type(L, index) == LUA_TSTRING)
+	{
+		const char *prop_ID = lua_tostring(L, index);
+		prop_no = getScenePropNo(prop_ID);
+
+		if (prop_no < 0) luaL_error(L, "invalid scene prop id: %s", prop_ID);
+	}
+	else
+	{
+		prop_no = lua_tointeger(L, index);
+		if (prop_no < 0 || prop_no >= warband->num_scene_props) luaL_error(L, "invalid scene prop no: %d", prop_no);
+	}
+
+	return prop_no;
+}
+
+
 
 void lPushChild(lua_State *L, const std::string &name)
 {

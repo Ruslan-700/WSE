@@ -276,7 +276,6 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "getNumTriggers", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
-
 		int tNo = lToTemplateNo(L, 1);
 
 		lua_pushinteger(L, warband->mission_templates[tNo].triggers.num_triggers);
@@ -285,59 +284,67 @@ std::vector<callback_def> _G_game_callbacks = {
 
 	{ "addItemTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 3, 3, lStr | lNum, lNum, lFunc);
-
-		int itmNo;
-		if (lua_type(L, 1) == LUA_TSTRING)
-		{
-			const char *itmID = lua_tostring(L, 1);
-			itmNo = getItemKindNo(itmID);
-
-			if (itmNo < 0)
-				luaL_error(L, "invalid item kind id: %s", itmID);
-		}
-		else
-		{
-			itmNo = lua_tointeger(L, 1);
-			if (itmNo < 0 || itmNo >= warband->num_item_kinds)
-				luaL_error(L, "invalid item kind no: %d", itmNo);
-		}
+		int itm_no = lToItemNo(L, 1);
 
 		wb::simple_trigger trigg;
 		lFillSimpleTrigger(L, trigg, 2);
-		trigg.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itmNo, warband->item_kinds[itmNo].id.c_str(), warband->item_kinds[itmNo].simple_triggers.num_simple_triggers);
+		trigg.operations.id.format("Item Kind [%d] %s Trigger [%d] (Lua)", itm_no, warband->item_kinds[itm_no].id.c_str(), warband->item_kinds[itm_no].simple_triggers.num_simple_triggers);
 
-		int index = warband->item_kinds[itmNo].simple_triggers.add_trigger(trigg);
+		int index = warband->item_kinds[itm_no].simple_triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
 		return 1;
 	} },
 
+	{ "removeItemTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 2, 2, lStr | lNum, lNum);
+		int itm_no = lToItemNo(L, 1);
+		int index = lua_tointeger(L, 2);
+
+		bool succ = warband->item_kinds[itm_no].simple_triggers.remove_trigger(index);
+
+		lua_pushboolean(L, succ ? 1 : 0);
+		return 1;
+	} },
+
+	{ "getNumItemTriggers", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
+		int itm_no = lToItemNo(L, 1);
+
+		lua_pushinteger(L, warband->item_kinds[itm_no].simple_triggers.num_simple_triggers);
+		return 1;
+	} },
+
 	{ "addScenePropTrigger", [](lua_State* L) -> int {
 		int numArgs = checkLArgs(L, 3, 3, lStr | lNum, lNum, lFunc);
-
-		int propNo;
-		if (lua_type(L, 1) == LUA_TSTRING)
-		{
-			const char *propID = lua_tostring(L, 1);
-			propNo = getScenePropNo(propID);
-
-			if (propNo < 0)
-				luaL_error(L, "invalid scene prop id: %s", propID);
-		}
-		else
-		{
-			propNo = lua_tointeger(L, 1);
-			if (propNo < 0 || propNo >= warband->num_scene_props)
-				luaL_error(L, "invalid scene prop no: %d", propNo);
-		}
+		int prop_no = lToScenePropNo(L, 1);
 
 		wb::simple_trigger trigg;
 		lFillSimpleTrigger(L, trigg, 2);
-		trigg.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", propNo, warband->scene_props[propNo].id.c_str(), warband->scene_props[propNo].simple_triggers.num_simple_triggers);
+		trigg.operations.id.format("Scene Prop [%d] %s Trigger [%d] (Lua)", prop_no, warband->scene_props[prop_no].id.c_str(), warband->scene_props[prop_no].simple_triggers.num_simple_triggers);
 
-		int index = warband->scene_props[propNo].simple_triggers.add_trigger(trigg);
+		int index = warband->scene_props[prop_no].simple_triggers.add_trigger(trigg);
 
 		lua_pushinteger(L, index);
+		return 1;
+	} },
+
+	{ "removeScenePropTrigger", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 2, 2, lStr | lNum, lNum);
+		int prop_no = lToScenePropNo(L, 1);
+		int index = lua_tointeger(L, 2);
+
+		bool succ = warband->scene_props[prop_no].simple_triggers.remove_trigger(index);
+
+		lua_pushboolean(L, succ ? 1 : 0);
+		return 1;
+	} },
+
+	{ "getNumScenePropTriggers", [](lua_State* L) -> int {
+		int numArgs = checkLArgs(L, 1, 1, lStr | lNum);
+		int prop_no = lToScenePropNo(L, 1);
+
+		lua_pushinteger(L, warband->scene_props[prop_no].simple_triggers.num_simple_triggers);
 		return 1;
 	} },
 
@@ -376,7 +383,7 @@ std::vector<callback_def> _G_game_callbacks = {
 		if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addWorldTrigger: only allowed during OnGameLoad"); }
 
 		wb::trigger trigg;
-		lFillTrigger(L, trigg, numArgs == 5, 2);
+		lFillTrigger(L, trigg, numArgs == 5, 1);
 		trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
 		trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
 

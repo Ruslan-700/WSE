@@ -64,6 +64,8 @@ rgl::orientation lToRot(lua_State *L, int index);
 rgl::matrix lToPos(lua_State *L, int index);
 void lToPsysKeyPair(lua_State *L, int index, rgl::particle_system_key pair[2]);
 int lToTemplateNo(lua_State *L, int index);
+int lToItemNo(lua_State *L, int index);
+int lToScenePropNo(lua_State *L, int index);
 
 void lPushVec3(lua_State *L, const rgl::vector4 &vec);
 void lPushRot(lua_State *L, const rgl::orientation &rot);
