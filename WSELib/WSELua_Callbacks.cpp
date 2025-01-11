@@ -953,17 +953,6 @@ int lc__print(lua_State *L)
 {
 	checkLArgs(L, 1, 1, lStr);
 
-	/*gPrintf("pointer to multiplayer_data.players: %p", (void*)&warband->multiplayer_data.players);
-
-	for(int i = 0; i < warband->multiplayer_data.num_players; i++)
-	{
-	wb::network_player *curPlayer = &warband->multiplayer_data.players[i];
-	//if (curPlayer->status == wb::nps_active && curPlayer->ready)
-	//{
-	gPrintf("pointer to player %d events vector: %p", i, (void*)&curPlayer->events);
-	//}
-	}*/
-
 #if defined WARBAND
 	warband->window_manager.display_message(lua_tostring(L, 1), 0xFFFF5555, 0);
 #else
