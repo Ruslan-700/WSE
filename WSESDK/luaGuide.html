@@ -434,11 +434,12 @@
 		}
 
 		.keyword{
-			background-color: #c6ffc7;
+			background-color: #dcebff;
+			box-shadow: 0px 0px 5px 1px #dcebff;
 		}
 
 		.code{
-			background-color: #ecf7ff;
+			background-color: #F5FBEE;
 			color: black;
 			border: 1px solid #bebeff;
 		}
@@ -574,20 +575,25 @@
 	</style>
 
 	<script>
-		var forceHide = false;
+		var force_hide = false;
+		var force_expand = false;
 
-		function toggleHide(ID)
+		function toggle_hide(ID)
 		{
 			var bElem = document.getElementById(ID + "_button");
 			var cElems = document.getElementsByClassName(ID + "_content");
 
-			var hide = cElems[0].style.display == "" || forceHide;
+			var hide = cElems[0].style.display == "";
+			if(force_hide){hide = true}
+			if(force_expand){hide = false}
 
 			for(var i = 0; i < cElems.length; i++){
+				let elem = cElems[i];
+
 				if(hide){
-					cElems[i].style.display = "none";
+					elem.style.display = "none";
 				}else{
-					cElems[i].style.display = "";
+					elem.style.display = "";
 				}
 			}
 
@@ -606,14 +612,24 @@
 			}
 		}
 
-		function minimizeAll()
+		function collapse_all()
 		{
-			forceHide = true;
+			force_hide = true;
 			var btns = document.getElementsByClassName("button_hide");
 			for(var i = 0; i < btns.length; i++){
 				btns[i].parentNode.onclick();
 			}
-			forceHide = false;
+			force_hide = false;
+		}
+
+		function expand_all()
+		{
+			force_expand = true;
+			var btns = document.getElementsByClassName("button_hide");
+			for(var i = 0; i < btns.length; i++){
+				btns[i].parentNode.onclick();
+			}
+			force_expand = false;
 		}
 
 		curTheme = 1;
@@ -660,10 +676,11 @@
 
 <body id="bd">
 	<div>
-		<div style="font-size: 11px">version from 31.12.2024, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
+		<div style="font-size: 11px">version from 11.01.2025, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
 			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
-			<button onclick="minimizeAll()">Minimize all</button>
+			<button onclick="expand_all()">Expand all</button>
+			<button onclick="collapse_all()">Collapse all</button>
 		</div>
 
 		<h1 id="ee" onclick="if(curTheme==3){document.getElementById('bd').style.backgroundImage = 'url(https://i.giphy.com/Q9aBxHn9fTqKs.gif)';}else{var a=document.getElementById('ee');if(a.style.transform != ''){a.style.transform='';}else{a.style.transform='rotate(4320deg)'}};try{new Audio(sound_path + 'sword_clank_metal_13b.ogg').play();}catch{}">How to use WSE/LUA</h1>
@@ -677,7 +694,7 @@
 			At the end of this file there is some example code that can help you get started.<br>
 		</p>
 		<p>&nbsp;</p>
-		<h2 onclick="toggleHide('setup')"><div id="setup_button" class="button_hide">&nbsp;</div><span>BASICS</span></h2>
+		<h2 onclick="toggle_hide('setup')"><div id="setup_button" class="button_hide">&nbsp;</div><span>BASICS</span></h2>
 		<hr/>
 		<div class="setup_content">
 			<h3 style="margin-left: 20px;">Why use Lua?</h3>
@@ -743,7 +760,7 @@
 		</div>
 
 
-		<h2 onclick="toggleHide('game_table')"><div id="game_table_button" class="button_hide">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
+		<h2 onclick="toggle_hide('game_table')"><div id="game_table_button" class="button_hide">&nbsp;</div><span>THE "GAME" TABLE<br /></span></h2>
 		<hr/>
 		<div class="game_table_content">
 			<p style="margin-left: 20px;"><em>The game table is a predefined global table that allows you access to the game from lua.</em></p>
@@ -769,24 +786,27 @@
 					<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
 					<br>
 					<p>Now with Lhs operations, there is a problem. Their syntax is:<br>
-						<span class="marl20 keyword">(lhs_op, &ltdestination&gt, &ltvar1&gt, &ltvar2&gt, ...)</span>
+						<span class="marl20 keyword">(lhs_op, &ltdestination&gt, &ltparam1&gt, &ltparam1&gt, ...)</span>
 					</p>
 					<p>
 						While in lua you want to write:<br>
-						<span class="marl20 keyword">result = game.lhs_op(var1, var2, ...)</span>
+						<span class="marl20 keyword">result = game.lhs_op(param1, param1, ...)</span>
 					</p>
 					<p>Why is this a problem?<br>
-						You have different parameter count. WSE could detect that you are calling an Lhs operation and fill in the missing parameter, but: the operation might actually use the initial value of it to affect the result.<br>
-						An obvious example for this is <span class="keyword">val_add</span>. It makes no sense to write <span class="keyword">result = val_add(5)</span>, what is it adding 5 to?
+						You have different parameter count... Now, WSE could detect that you are calling an Lhs operation and fill in the missing parameter, but: the operation might actually use the initial value of it to affect the result.<br>
+						An obvious example for this is <span class="keyword">val_add</span>. It makes no sense to write <span class="keyword">result = val_add(5)</span>. What is it adding 5 to?
 					</p>
-					<p>Whether or not an operation uses the initial value can't simply be detected by WSE. So it used to be in the past that you had to write <span class="keyword">result = game.lhs_op(some_number, var1, var2, ...)</span> for all lhs operations (some_number was just 0 mostly). Annoying.</p>
+					<p>Whether or not an operation uses the initial value can't simply be detected by WSE. So in the past it used to be that you had to write <span class="keyword">result = game.lhs_op(some_number, var1, var2, ...)</span> for all lhs operations (some_number was just 0 mostly). Annoying.</p>
 					<p>However, after further inspection, it is reasonable to assume that only <span class="keyword">val_</span> operations do this. Therefore WSE update adds <span class="keyword">game.op</span>:</p>
 					<pre class="code">
 						local val = game.agent_get_slot(0, agent_id, slot_no)
 						local val = game.op.agent_get_slot(agent_id, slot_no)
 					</pre>
 					<p>It will add the 0 automatically for any lhs_operation, except for ones that start with <span class="keyword">val_</span>. If you find operations where this is wrong, please contact <a href="https://forums.taleworlds.com/index.php?members/agentsmith.186495/" target="_blank" rel="noopener noreferrer">AgentSmith</a> on TaleWorlds forum.</p>
-					<p>If you don't want to write the <span class="keyword">.op</span> all the time, call <span class="keyword">game.op.make_default()</span>. It is optional because of legacy code.</p>
+					<p>
+						If you don't want to write the <span class="keyword">.op</span> all the time, call <span class="keyword">game.op.make_default()</span>. It is optional because of legacy code.<br>
+						<span class="keyword">gop = game.op</span> also works.
+					</p>
 				</div>
 			</div>
 
@@ -838,7 +858,7 @@
 					</pre>
 					<p>This probably looks intimidating to you, but really all it says is that your constant must either be a number, a hex number, or another constant (from the same file, currently).</p>
 					<p>In other words: <span class="keyword">constant = num|hexNum|otherConstant</span>
-					<p>If the match fails, the line will be ignored. To get a warning in this case, set <span class="keyword">[lua] disable_game_const_warnings = 0</span> in wse_settings.ini.</p>
+					<p>If the match fails, the line will be ignored. To display a warning in this case, set <span class="keyword">[lua] disable_game_const_warnings = 0</span> in wse_settings.ini.</p>
 					<p><br>You can omit the <span class="keyword">[name]</span> part in <span class="keyword">game.const.[name].[constant]</span>, in which case all tables in <span class="keyword">game.const</span> will be searched for your constant and the first result will be used.</p>
 					<p>So let's say you want to add a deathmatch trigger for <span class="keyword">ti_on_agent_hit</span>. Instead of this:</p>
 					<pre class="code">
@@ -1296,7 +1316,7 @@
 		</div>
 
 
-		<h2 onclick="toggleHide('miscellaneous')"><div id="miscellaneous_button" class="button_hide">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
+		<h2 onclick="toggle_hide('miscellaneous')"><div id="miscellaneous_button" class="button_hide">&nbsp;</div><span>MISCELLANEOUS<br /></span></h2>
 		<hr />
 		<div class="miscellaneous_content">
 			<div class="content_block">
@@ -1446,7 +1466,7 @@
 			</div>
 		</div>
 
-		<h2 onclick="toggleHide('examples')"><div id="examples_button" class="button_hide">&nbsp;</div><span>EXAMPLES</span></h2>
+		<h2 onclick="toggle_hide('examples')"><div id="examples_button" class="button_hide">&nbsp;</div><span>EXAMPLES</span></h2>
 		<hr/>
 		<div class="examples_content">
 			<p style="margin-left: 20px;"><em>Some of these are ripped out of larger files without testing, so be careful.</em></p>
@@ -1905,7 +1925,7 @@
 				}
 			}
 
-			contentCaptions[i].onclick = ()=>{toggleHide("content_block_" + i)}
+			contentCaptions[i].onclick = ()=>{toggle_hide("content_block_" + i)}
 
 			var caption = contentCaptions[i].innerHTML;
 			contentCaptions[i].innerHTML = "<div id='content_block_" + i + "_button'" 
@@ -1920,7 +1940,7 @@
 
 		//Hide all 2nd level items by default, for overview
 		for(let i = 0; i < contentCaptions.length; i++){
-			toggleHide("content_block_" + i);
+			toggle_hide("content_block_" + i);
 		}
 
 		updateBtnThemeSwitchText();

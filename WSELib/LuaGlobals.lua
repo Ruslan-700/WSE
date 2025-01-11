@@ -97,12 +97,14 @@ game.mt = {
 setmetatable(game, game.mt)
 
 game.op = {}
-for k, v in pairs(game.const.operations) do
-	if not starts_with(k, "val_") then
-		local ok, flags = pcall(game.getOperationFlags, k)
+if game.const and game.const.operations then
+	for k, v in pairs(game.const.operations) do
+		if not starts_with(k, "val_") then
+			local ok, flags = pcall(game.getOperationFlags, k)
 
-		if ok and (bit.band(flags, 0x1) ~= 0) then
-			game.op[k] = function(...) return game.execOperation(k, 0, ...) end
+			if ok and (bit.band(flags, 0x1) ~= 0) then
+				game.op[k] = function(...) return game.execOperation(k, 0, ...) end
+			end
 		end
 	end
 end
