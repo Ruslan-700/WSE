@@ -290,7 +290,7 @@ static const char *searchpath(lua_State *L, const char *name,
 		/* wse mod */
 		char *safePath = L->get_sandboxed_path(filename);
 
-		if (readable(L, safePath))  /* does file exist and is readable? */
+		if (safePath && readable(L, safePath))  /* does file exist and is readable? */
 		{
 			lua_pop(L, 1);
 
@@ -579,8 +579,10 @@ static const lua_CFunction package_loaders[] =
 {
 	lj_cf_package_loader_preload,
 	lj_cf_package_loader_lua,
+	/* WSE mod
 	lj_cf_package_loader_c,
 	lj_cf_package_loader_croot,
+	*/
 	NULL
 };
 
