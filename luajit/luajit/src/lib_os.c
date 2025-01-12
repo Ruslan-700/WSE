@@ -1,6 +1,6 @@
 /*
 ** OS library.
-** Copyright (C) 2005-2015 Mike Pall. See Copyright Notice in luajit.h
+** Copyright (C) 2005-2023 Mike Pall. See Copyright Notice in luajit.h
 **
 ** Major portions taken verbatim or adapted from the Lua interpreter.
 ** Copyright (C) 1994-2008 Lua.org, PUC-Rio. See Copyright Notice in lua.h
@@ -17,9 +17,11 @@
 #include "lualib.h"
 
 #include "lj_obj.h"
+#include "lj_gc.h"
 #include "lj_err.h"
-#include "lj_lib.h"
+#include "lj_buf.h"
 #include "lj_str.h"
+#include "lj_lib.h"
 
 #if LJ_TARGET_POSIX
 #include <unistd.h>
@@ -35,43 +37,77 @@
 
 #define LJLIB_MODULE_os
 
-/* wse mod */
-/* removed os_execute */
+LJLIB_CF(os_execute)
+{
+#if LJ_NO_SYSTEM
+#if LJ_52
+  errno = ENOSYS;
+  return luaL_fileresult(L, 0, NULL);
+#else
+  lua_pushinteger(L, -1);
+  return 1;
+#endif
+#else
+  const char *cmd = luaL_optstring(L, 1, NULL);
+  int stat = system(cmd);
+#if LJ_52
+  if (cmd)
+    return luaL_execresult(L, stat);
+  setboolV(L->top++, 1);
+#else
+  setintV(L->top++, stat);
+#endif
+  return 1;
+#endif
+}
 
-/* wse mod */
 LJLIB_CF(os_remove)
 {
   const char *filename = luaL_checkstring(L, 1);
-  char *safePath = L->get_sandboxed_path(filename);
-
-  int ret = luaL_fileresult(L, remove(safePath) == 0, filename);
-  free(safePath);
-
-  return ret;
+  return luaL_fileresult(L, remove(filename) == 0, filename);
 }
 
-/* wse mod */
 LJLIB_CF(os_rename)
 {
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
-
-  char *safeFromPath = L->get_sandboxed_path(fromname);
-  char *safeToPath = L->get_sandboxed_path(toname);
-
-  int ret = luaL_fileresult(L, rename(safeFromPath, safeToPath) == 0, fromname);
-
-  free(safeFromPath);
-  free(safeToPath);
-
-  return ret;
+  return luaL_fileresult(L, rename(fromname, toname) == 0, fromname);
 }
 
-/* wse mod */
-/* removed os_tmpname */
+LJLIB_CF(os_tmpname)
+{
+#if LJ_TARGET_PS3 || LJ_TARGET_PS4 || LJ_TARGET_PS5 || LJ_TARGET_PSVITA || LJ_TARGET_NX
+  lj_err_caller(L, LJ_ERR_OSUNIQF);
+  return 0;
+#else
+#if LJ_TARGET_POSIX
+  char buf[15+1];
+  int fp;
+  strcpy(buf, "/tmp/lua_XXXXXX");
+  fp = mkstemp(buf);
+  if (fp != -1)
+    close(fp);
+  else
+    lj_err_caller(L, LJ_ERR_OSUNIQF);
+#else
+  char buf[L_tmpnam];
+  if (tmpnam(buf) == NULL)
+    lj_err_caller(L, LJ_ERR_OSUNIQF);
+#endif
+  lua_pushstring(L, buf);
+  return 1;
+#endif
+}
 
-/* wse mod */
-/* removed os_getenv */
+LJLIB_CF(os_getenv)
+{
+#if LJ_TARGET_CONSOLE
+  lua_pushnil(L);
+#else
+  lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
+#endif
+  return 1;
+}
 
 LJLIB_CF(os_exit)
 {
@@ -155,7 +191,7 @@ LJLIB_CF(os_date)
 #endif
   }
   if (stm == NULL) {  /* Invalid date? */
-    setnilV(L->top-1);
+    setnilV(L->top++);
   } else if (strcmp(s, "*t") == 0) {
     lua_createtable(L, 0, 9);  /* 9 = number of fields */
     setfield(L, "sec", stm->tm_sec);
@@ -167,23 +203,25 @@ LJLIB_CF(os_date)
     setfield(L, "wday", stm->tm_wday+1);
     setfield(L, "yday", stm->tm_yday+1);
     setboolfield(L, "isdst", stm->tm_isdst);
-  } else {
-    char cc[3];
-    luaL_Buffer b;
-    cc[0] = '%'; cc[2] = '\0';
-    luaL_buffinit(L, &b);
-    for (; *s; s++) {
-      if (*s != '%' || *(s + 1) == '\0') {  /* No conversion specifier? */
-	luaL_addchar(&b, *s);
-      } else {
-	size_t reslen;
-	char buff[200];  /* Should be big enough for any conversion result. */
-	cc[1] = *(++s);
-	reslen = strftime(buff, sizeof(buff), cc, stm);
-	luaL_addlstring(&b, buff, reslen);
+  } else if (*s) {
+    SBuf *sb = &G(L)->tmpbuf;
+    MSize sz = 0, retry = 4;
+    const char *q;
+    for (q = s; *q; q++)
+      sz += (*q == '%') ? 30 : 1;  /* Overflow doesn't matter. */
+    setsbufL(sb, L);
+    while (retry--) {  /* Limit growth for invalid format or empty result. */
+      char *buf = lj_buf_need(sb, sz);
+      size_t len = strftime(buf, sbufsz(sb), s, stm);
+      if (len) {
+	setstrV(L, L->top++, lj_str_new(L, buf, len));
+	lj_gc_check(L);
+	break;
       }
+      sz += (sz|1);
     }
-    luaL_pushresult(&b);
+  } else {
+    setstrV(L, L->top++, &G(L)->strempty);
   }
   return 1;
 }
