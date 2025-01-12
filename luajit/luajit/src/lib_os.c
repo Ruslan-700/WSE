@@ -39,29 +39,7 @@
 #define LJLIB_MODULE_os
 
 /* wse mod */
-// LJLIB_CF(os_execute)
-// {
-// #if LJ_NO_SYSTEM
-// #if LJ_52
-//   errno = ENOSYS;
-//   return luaL_fileresult(L, 0, NULL);
-// #else
-//   lua_pushinteger(L, -1);
-//   return 1;
-// #endif
-// #else
-//   const char *cmd = luaL_optstring(L, 1, NULL);
-//   int stat = system(cmd);
-// #if LJ_52
-//   if (cmd)
-//     return luaL_execresult(L, stat);
-//   setboolV(L->top++, 1);
-// #else
-//   setintV(L->top++, stat);
-// #endif
-//   return 1;
-// #endif
-// }
+/* remove os_execute */
 
 LJLIB_CF(os_remove)
 {
@@ -93,41 +71,10 @@ LJLIB_CF(os_rename)
 }
 
 /* wse mod */
-// LJLIB_CF(os_tmpname)
-// {
-// #if LJ_TARGET_PS3 || LJ_TARGET_PS4 || LJ_TARGET_PS5 || LJ_TARGET_PSVITA || LJ_TARGET_NX
-//   lj_err_caller(L, LJ_ERR_OSUNIQF);
-//   return 0;
-// #else
-// #if LJ_TARGET_POSIX
-//   char buf[15+1];
-//   int fp;
-//   strcpy(buf, "/tmp/lua_XXXXXX");
-//   fp = mkstemp(buf);
-//   if (fp != -1)
-//     close(fp);
-//   else
-//     lj_err_caller(L, LJ_ERR_OSUNIQF);
-// #else
-//   char buf[L_tmpnam];
-//   if (tmpnam(buf) == NULL)
-//     lj_err_caller(L, LJ_ERR_OSUNIQF);
-// #endif
-//   lua_pushstring(L, buf);
-//   return 1;
-// #endif
-// }
+/* remove os_tmpname */
 
 /* wse mod */
-// LJLIB_CF(os_getenv)
-// {
-// #if LJ_TARGET_CONSOLE
-//   lua_pushnil(L);
-// #else
-//   lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
-// #endif
-//   return 1;
-// }
+/* remove os_getenv */
 
 LJLIB_CF(os_exit)
 {

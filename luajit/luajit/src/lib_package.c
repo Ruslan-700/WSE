@@ -333,7 +333,7 @@ static const char *searchpath (lua_State *L, const char *name,
     /* wse mod */
 		char *safePath = L->get_sandboxed_path(filename);
 
-		if (safePath && readable(L, safePath))  /* does file exist and is readable? */
+		if (safePath && readable(safePath))  /* does file exist and is readable? */
 		{
 			lua_pop(L, 1);
 

@@ -7,6 +7,7 @@
 #define _LJ_STR_H
 
 #include <stdarg.h>
+#include <stdio.h> /* wse mod */
 
 #include "lj_obj.h"
 
@@ -29,6 +30,6 @@ LJ_FUNC void LJ_FASTCALL lj_str_init(lua_State *L);
 #define lj_str_size(len)	(sizeof(GCstr) + (((len)+4) & ~(MSize)3))
 
 /* wse mod */
-LJ_FUNC FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode);
+LJ_FUNC FILE* fopenInUserDir(lua_State *L, const char *filename, const char *mode);
 
 #endif

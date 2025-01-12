@@ -165,13 +165,13 @@ LUALIB_API int luaL_loadbufferx(lua_State *L, const char *buf, size_t size,
   StringReaderCtx ctx;
   ctx.str = buf;
   ctx.size = size;
-  return lua_loadx(L, reader_string, &ctx, name, mode, allowBC)/*wse mod*/
+  return lua_loadx(L, reader_string, &ctx, name, mode, allowBC);/*wse mod*/
 }
 
 LUALIB_API int luaL_loadbuffer(lua_State *L, const char *buf, size_t size,
 			       const char *name)
 {
-  return luaL_loadbufferx(L, buf, size, name, NULL, 0)/*wse mod*/
+	return luaL_loadbufferx(L, buf, size, name, NULL, 0);/*wse mod*/
 }
 
 LUALIB_API int luaL_loadstring(lua_State *L, const char *s)
