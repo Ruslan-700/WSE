@@ -1317,3 +1317,7 @@ LUA_API void lua_setallocf(lua_State *L, lua_Alloc f, void *ud)
   g->allocf = f;
 }
 
+LUA_API void lua_set_sandboxed_path_callback(lua_State *L, str_callback get_sandboxed_path) /* wse mod */
+{
+	L->get_sandboxed_path = get_sandboxed_path;
+}

@@ -15,7 +15,9 @@
 @setlocal
 @rem Add more debug flags here, e.g. DEBUGCFLAGS=/DLUA_USE_ASSERT
 @set DEBUGCFLAGS=
-@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
+@rem /* wse mod */
+@set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline /DLUAJIT_DISABLE_FFI
+@REM @set LJCOMPILE=cl /nologo /c /O2 /W3 /D_CRT_SECURE_NO_DEPRECATE /D_CRT_STDIO_INLINE=__declspec(dllexport)__inline
 @set LJDYNBUILD=/DLUA_BUILD_AS_DLL /MD
 @set LJDYNBUILD_DEBUG=/DLUA_BUILD_AS_DLL /MDd 
 @set LJCOMPILETARGET=/Zi
@@ -42,12 +44,16 @@ if exist minilua.exe.manifest^
   %LJMT% -manifest minilua.exe.manifest -outputresource:minilua.exe
 @endlocal
 
-@set DASMFLAGS=-D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU -D P64
+@rem /* wse mod */
+@set DASMFLAGS=-D WIN -D JIT -D ENDIAN_LE -D FPU -D P64
+@REM @set DASMFLAGS=-D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU -D P64
 @set LJARCH=x64
 @minilua
 @if errorlevel 8 goto :NO32
 @set DASC=vm_x86.dasc
-@set DASMFLAGS=-D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU
+@rem /* wse mod */
+@set DASMFLAGS=-D WIN -D JIT -D ENDIAN_LE -D FPU
+@REM @set DASMFLAGS=-D WIN -D JIT -D FFI -D ENDIAN_LE -D FPU
 @set LJARCH=x86
 @set LJCOMPILE=%LJCOMPILE% /arch:SSE2
 @goto :DA

@@ -28,4 +28,7 @@ LJ_FUNC void LJ_FASTCALL lj_str_init(lua_State *L);
 #define lj_str_newlit(L, s)	(lj_str_new(L, "" s, sizeof(s)-1))
 #define lj_str_size(len)	(sizeof(GCstr) + (((len)+4) & ~(MSize)3))
 
+/* wse mod */
+LJ_FUNC FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode);
+
 #endif

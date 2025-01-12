@@ -16,6 +16,7 @@
 #include "lj_obj.h"
 #include "lj_err.h"
 #include "lj_lib.h"
+#include "lj_str.h"
 
 /* ------------------------------------------------------------------------ */
 
@@ -43,7 +44,9 @@ static void ll_unloadlib(void *lib)
 
 static void *ll_load(lua_State *L, const char *path, int gl)
 {
-  void *lib = dlopen(path, RTLD_NOW | (gl ? RTLD_GLOBAL : RTLD_LOCAL));
+  /* wse mod */
+  // void *lib = dlopen(path, RTLD_NOW | (gl ? RTLD_GLOBAL : RTLD_LOCAL));
+  void *lib = NULL;
   if (lib == NULL) lua_pushstring(L, dlerror());
   return lib;
 }
@@ -269,20 +272,21 @@ static int ll_loadfunc(lua_State *L, const char *path, const char *name, int r)
   }
 }
 
-static int lj_cf_package_loadlib(lua_State *L)
-{
-  const char *path = luaL_checkstring(L, 1);
-  const char *init = luaL_checkstring(L, 2);
-  int st = ll_loadfunc(L, path, init, 1);
-  if (st == 0) {  /* no errors? */
-    return 1;  /* return the loaded function */
-  } else {  /* error; error message is on stack top */
-    lua_pushnil(L);
-    lua_insert(L, -2);
-    lua_pushstring(L, (st == PACKAGE_ERR_LIB) ?  PACKAGE_LIB_FAIL : "init");
-    return 3;  /* return nil, error message, and where */
-  }
-}
+/* wse mod */
+// static int lj_cf_package_loadlib(lua_State *L)
+// {
+//   const char *path = luaL_checkstring(L, 1);
+//   const char *init = luaL_checkstring(L, 2);
+//   int st = ll_loadfunc(L, path, init, 1);
+//   if (st == 0) {  /* no errors? */
+//     return 1;  /* return the loaded function */
+//   } else {  /* error; error message is on stack top */
+//     lua_pushnil(L);
+//     lua_insert(L, -2);
+//     lua_pushstring(L, (st == PACKAGE_ERR_LIB) ?  PACKAGE_LIB_FAIL : "init");
+//     return 3;  /* return nil, error message, and where */
+//   }
+// }
 
 static int lj_cf_package_unloadlib(lua_State *L)
 {
@@ -294,7 +298,7 @@ static int lj_cf_package_unloadlib(lua_State *L)
 
 /* ------------------------------------------------------------------------ */
 
-static int readable(const char *filename)
+static int readable(const char *filename) /*wse mod*/
 {
   FILE *f = fopen(filename, "r");  /* try to open file */
   if (f == NULL) return 0;  /* open failed */
@@ -325,8 +329,26 @@ static const char *searchpath (lua_State *L, const char *name,
     const char *filename = luaL_gsub(L, lua_tostring(L, -1),
 				     LUA_PATH_MARK, name);
     lua_remove(L, -2);  /* remove path template */
-    if (readable(filename))  /* does file exist and is readable? */
-      return filename;  /* return that file name */
+
+    /* wse mod */
+		char *safePath = L->get_sandboxed_path(filename);
+
+		if (safePath && readable(L, safePath))  /* does file exist and is readable? */
+		{
+			lua_pop(L, 1);
+
+			luaL_Buffer b;
+			luaL_buffinit(L, &b);
+			
+			luaL_addstring(&b, safePath);
+			free(safePath);
+
+			luaL_pushresult(&b);
+			return lua_tostring(L, -1); /* return that file name */
+		}
+		else
+			free(safePath);
+
     lua_pushfstring(L, "\n\tno file " LUA_QS, filename);
     lua_remove(L, -2);  /* remove file name */
     luaL_addvalue(&msg);  /* concatenate error msg. entry */
@@ -569,7 +591,7 @@ static void setpath(lua_State *L, const char *fieldname, const char *envname,
 }
 
 static const luaL_Reg package_lib[] = {
-  { "loadlib",	lj_cf_package_loadlib },
+  // { "loadlib",	lj_cf_package_loadlib },/* wse mod */
   { "searchpath",  lj_cf_package_searchpath },
   { "seeall",	lj_cf_package_seeall },
   { NULL, NULL }
@@ -585,8 +607,9 @@ static const lua_CFunction package_loaders[] =
 {
   lj_cf_package_loader_preload,
   lj_cf_package_loader_lua,
-  lj_cf_package_loader_c,
-  lj_cf_package_loader_croot,
+  /* wse mod */
+  // lj_cf_package_loader_c,
+  // lj_cf_package_loader_croot,
   NULL
 };
 

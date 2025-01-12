@@ -343,11 +343,14 @@ LUA_API lua_Hook lua_gethook (lua_State *L);
 LUA_API int lua_gethookmask (lua_State *L);
 LUA_API int lua_gethookcount (lua_State *L);
 
+typedef char* (*str_callback)(const char* path);
+LUA_API void lua_set_sandboxed_path_callback(lua_State *L, str_callback get_sandboxed_path); /* wse mod */
+
 /* From Lua 5.2. */
 LUA_API void *lua_upvalueid (lua_State *L, int idx, int n);
 LUA_API void lua_upvaluejoin (lua_State *L, int idx1, int n1, int idx2, int n2);
 LUA_API int lua_loadx (lua_State *L, lua_Reader reader, void *dt,
-		       const char *chunkname, const char *mode);
+		       const char *chunkname, const char *mode, int allowBC);/*wse mod*/
 LUA_API const lua_Number *lua_version (lua_State *L);
 LUA_API void lua_copy (lua_State *L, int fromidx, int toidx);
 LUA_API lua_Number lua_tonumberx (lua_State *L, int idx, int *isnum);

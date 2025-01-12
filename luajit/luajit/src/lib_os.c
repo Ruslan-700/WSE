@@ -22,6 +22,7 @@
 #include "lj_buf.h"
 #include "lj_str.h"
 #include "lj_lib.h"
+#include "lj_str.h" /* wse mod */
 
 #if LJ_TARGET_POSIX
 #include <unistd.h>
@@ -37,77 +38,96 @@
 
 #define LJLIB_MODULE_os
 
-LJLIB_CF(os_execute)
-{
-#if LJ_NO_SYSTEM
-#if LJ_52
-  errno = ENOSYS;
-  return luaL_fileresult(L, 0, NULL);
-#else
-  lua_pushinteger(L, -1);
-  return 1;
-#endif
-#else
-  const char *cmd = luaL_optstring(L, 1, NULL);
-  int stat = system(cmd);
-#if LJ_52
-  if (cmd)
-    return luaL_execresult(L, stat);
-  setboolV(L->top++, 1);
-#else
-  setintV(L->top++, stat);
-#endif
-  return 1;
-#endif
-}
+/* wse mod */
+// LJLIB_CF(os_execute)
+// {
+// #if LJ_NO_SYSTEM
+// #if LJ_52
+//   errno = ENOSYS;
+//   return luaL_fileresult(L, 0, NULL);
+// #else
+//   lua_pushinteger(L, -1);
+//   return 1;
+// #endif
+// #else
+//   const char *cmd = luaL_optstring(L, 1, NULL);
+//   int stat = system(cmd);
+// #if LJ_52
+//   if (cmd)
+//     return luaL_execresult(L, stat);
+//   setboolV(L->top++, 1);
+// #else
+//   setintV(L->top++, stat);
+// #endif
+//   return 1;
+// #endif
+// }
 
 LJLIB_CF(os_remove)
 {
   const char *filename = luaL_checkstring(L, 1);
-  return luaL_fileresult(L, remove(filename) == 0, filename);
+  /* wse mod */
+  char *safePath = L->get_sandboxed_path(filename);
+
+  int ret = luaL_fileresult(L, remove(safePath) == 0, filename);
+  free(safePath);
+
+  return ret;
 }
 
 LJLIB_CF(os_rename)
 {
   const char *fromname = luaL_checkstring(L, 1);
   const char *toname = luaL_checkstring(L, 2);
-  return luaL_fileresult(L, rename(fromname, toname) == 0, fromname);
+
+  /* wse mod */
+  char *safeFromPath = L->get_sandboxed_path(fromname);
+  char *safeToPath = L->get_sandboxed_path(toname);
+
+  int ret = luaL_fileresult(L, rename(safeFromPath, safeToPath) == 0, fromname);
+
+  free(safeFromPath);
+  free(safeToPath);
+
+  return ret;
 }
 
-LJLIB_CF(os_tmpname)
-{
-#if LJ_TARGET_PS3 || LJ_TARGET_PS4 || LJ_TARGET_PS5 || LJ_TARGET_PSVITA || LJ_TARGET_NX
-  lj_err_caller(L, LJ_ERR_OSUNIQF);
-  return 0;
-#else
-#if LJ_TARGET_POSIX
-  char buf[15+1];
-  int fp;
-  strcpy(buf, "/tmp/lua_XXXXXX");
-  fp = mkstemp(buf);
-  if (fp != -1)
-    close(fp);
-  else
-    lj_err_caller(L, LJ_ERR_OSUNIQF);
-#else
-  char buf[L_tmpnam];
-  if (tmpnam(buf) == NULL)
-    lj_err_caller(L, LJ_ERR_OSUNIQF);
-#endif
-  lua_pushstring(L, buf);
-  return 1;
-#endif
-}
+/* wse mod */
+// LJLIB_CF(os_tmpname)
+// {
+// #if LJ_TARGET_PS3 || LJ_TARGET_PS4 || LJ_TARGET_PS5 || LJ_TARGET_PSVITA || LJ_TARGET_NX
+//   lj_err_caller(L, LJ_ERR_OSUNIQF);
+//   return 0;
+// #else
+// #if LJ_TARGET_POSIX
+//   char buf[15+1];
+//   int fp;
+//   strcpy(buf, "/tmp/lua_XXXXXX");
+//   fp = mkstemp(buf);
+//   if (fp != -1)
+//     close(fp);
+//   else
+//     lj_err_caller(L, LJ_ERR_OSUNIQF);
+// #else
+//   char buf[L_tmpnam];
+//   if (tmpnam(buf) == NULL)
+//     lj_err_caller(L, LJ_ERR_OSUNIQF);
+// #endif
+//   lua_pushstring(L, buf);
+//   return 1;
+// #endif
+// }
 
-LJLIB_CF(os_getenv)
-{
-#if LJ_TARGET_CONSOLE
-  lua_pushnil(L);
-#else
-  lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
-#endif
-  return 1;
-}
+/* wse mod */
+// LJLIB_CF(os_getenv)
+// {
+// #if LJ_TARGET_CONSOLE
+//   lua_pushnil(L);
+// #else
+//   lua_pushstring(L, getenv(luaL_checkstring(L, 1)));  /* if NULL push nil */
+// #endif
+//   return 1;
+// }
 
 LJLIB_CF(os_exit)
 {

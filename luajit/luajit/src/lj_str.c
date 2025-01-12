@@ -368,3 +368,18 @@ void LJ_FASTCALL lj_str_init(lua_State *L)
   lj_str_resize(L, LJ_MIN_STRTAB-1);
 }
 
+/* wse mod */
+
+FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
+{
+	char *safePath = L->get_sandboxed_path(filename);
+	if (!safePath)
+	{
+		return NULL;
+	}
+
+	FILE *res = fopen(safePath, mode);
+	free(safePath);
+
+	return res;
+}

@@ -84,7 +84,9 @@ static IOFileUD *io_file_open(lua_State *L, const char *mode)
 {
   const char *fname = strdata(lj_lib_checkstr(L, 1));
   IOFileUD *iof = io_file_new(L);
-  iof->fp = fopen(fname, mode);
+  /* wse mod */
+  //iof->fp = fopen(fname, mode);
+  iof->fp = fopenInUserDir(L, fname, mode);
   if (iof->fp == NULL)
     luaL_argerror(L, 1, lj_strfmt_pushf(L, "%s: %s", fname, strerror(errno)));
   return iof;
@@ -412,29 +414,32 @@ LJLIB_CF(io_open)
   GCstr *s = lj_lib_optstr(L, 2);
   const char *mode = s ? strdata(s) : "r";
   IOFileUD *iof = io_file_new(L);
-  iof->fp = fopen(fname, mode);
+  /* wse mod */
+  //iof->fp = fopen(fname, mode);
+  iof->fp = fopenInUserDir(L, fname, mode);
   return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
 }
 
-LJLIB_CF(io_popen)
-{
-#if LJ_TARGET_POSIX || (LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE && !LJ_TARGET_UWP)
-  const char *fname = strdata(lj_lib_checkstr(L, 1));
-  GCstr *s = lj_lib_optstr(L, 2);
-  const char *mode = s ? strdata(s) : "r";
-  IOFileUD *iof = io_file_new(L);
-  iof->type = IOFILE_TYPE_PIPE;
-#if LJ_TARGET_POSIX
-  fflush(NULL);
-  iof->fp = popen(fname, mode);
-#else
-  iof->fp = _popen(fname, mode);
-#endif
-  return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
-#else
-  return luaL_error(L, LUA_QL("popen") " not supported");
-#endif
-}
+/* wse mod */
+// LJLIB_CF(io_popen)
+// {
+// #if LJ_TARGET_POSIX || (LJ_TARGET_WINDOWS && !LJ_TARGET_XBOXONE && !LJ_TARGET_UWP)
+//   const char *fname = strdata(lj_lib_checkstr(L, 1));
+//   GCstr *s = lj_lib_optstr(L, 2);
+//   const char *mode = s ? strdata(s) : "r";
+//   IOFileUD *iof = io_file_new(L);
+//   iof->type = IOFILE_TYPE_PIPE;
+// #if LJ_TARGET_POSIX
+//   fflush(NULL);
+//   iof->fp = popen(fname, mode);
+// #else
+//   iof->fp = _popen(fname, mode);
+// #endif
+//   return iof->fp != NULL ? 1 : luaL_fileresult(L, 0, fname);
+// #else
+//   return luaL_error(L, LUA_QL("popen") " not supported");
+// #endif
+// }
 
 LJLIB_CF(io_tmpfile)
 {

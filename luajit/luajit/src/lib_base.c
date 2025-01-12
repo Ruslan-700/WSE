@@ -383,8 +383,14 @@ LJLIB_CF(loadfile)
   GCstr *mode = lj_lib_optstr(L, 2);
   int status;
   lua_settop(L, 3);  /* Ensure env arg exists. */
-  status = luaL_loadfilex(L, fname ? strdata(fname) : NULL,
-			  mode ? strdata(mode) : NULL);
+  // status = luaL_loadfilex(L, fname ? strdata(fname) : NULL,
+	// 		  mode ? strdata(mode) : NULL);
+        
+  /*wse mod*/
+  char *path = L->get_sandboxed_path(fname ? strdata(fname) : NULL);
+  status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
+  free(path);
+
   return load_aux(L, status, 3);
 }
 
@@ -428,12 +434,12 @@ LJLIB_CF(load)
     }
     lua_settop(L, 4);  /* Ensure env arg exists. */
     status = luaL_loadbufferx(L, s, len, name ? strdata(name) : s,
-			      mode ? strdata(mode) : NULL);
+			      mode ? strdata(mode) : NULL, 0); /*wse mod*/
   } else {
     lj_lib_checkfunc(L, 1);
     lua_settop(L, 5);  /* Reserve a slot for the string from the reader. */
     status = lua_loadx(L, reader_func, NULL, name ? strdata(name) : "=(load)",
-		       mode ? strdata(mode) : NULL);
+		       mode ? strdata(mode) : NULL, 0); /*wse mod*/
   }
   return load_aux(L, status, 4);
 }
@@ -448,7 +454,17 @@ LJLIB_CF(dofile)
   GCstr *fname = lj_lib_optstr(L, 1);
   setnilV(L->top);
   L->top = L->base+1;
-  if (luaL_loadfile(L, fname ? strdata(fname) : NULL) != LUA_OK)
+  /* wse mod */
+  char *path;
+  if (fname)
+	  path = L->get_sandboxed_path(strdata(fname));
+  else
+	  path = NULL;
+
+  int res = luaL_loadfile(L, path);
+  free(path);
+
+  if (res != LUA_OK)
     lua_error(L);
   lua_call(L, 0, LUA_MULTRET);
   return (int)(L->top - L->base) - 1;
