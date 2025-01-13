@@ -70,3 +70,4 @@ void AgentSetupSoundSampleHook();
 void AgentMakeHandsParallelToGroundHook();
 void RglLogHook();
 void XmlGetServerInfoHook();
+void PostWorldTriggersHook();

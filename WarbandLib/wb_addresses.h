@@ -231,5 +231,8 @@ namespace wb
 		static unsigned int write_to_rgl_log_exit;
 
 		static unsigned int game_data_ptr;
+
+		static unsigned int post_world_triggers;
+		static unsigned int post_world_triggers_exit;
 	};
 }

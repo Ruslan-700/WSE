@@ -401,6 +401,8 @@ void WSELuaOperationsContext::OnLoad()
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
 		"reference", "triggerPart", "context");
 
+	WSE->Hooks.HookFunction(this, wb::addresses::post_world_triggers, PostWorldTriggersHook);
+
 	initLua();
 }
 
@@ -512,15 +514,57 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			gameLoad_active = true;
+			//gameLoad_active = true;
 
 			if (lua_pcall(luaState, 0, 0, 0))
 			{
 				printLastLuaError(luaState);
 			}
 
-			gameLoad_active = false;
+			//gameLoad_active = false;
 
+			lua_pop(luaState, 1);
+		}
+		else
+		{
+			lua_pop(luaState, 2);
+		}
+	}
+	else if (evt == WSEEvent::OnSave)
+	{
+		lua_getglobal(luaState, "game");
+		if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
+		lua_pushstring(luaState, "OnSave");
+		lua_rawget(luaState, -2);
+
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		{
+			if (lua_pcall(luaState, 0, 0, 0))
+			{
+				printLastLuaError(luaState);
+			}
+			lua_pop(luaState, 1);
+		}
+		else
+		{
+			lua_pop(luaState, 2);
+		}
+	}
+	else if (evt == WSEEvent::OnLoadSave)
+	{
+		lua_getglobal(luaState, "game");
+		if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
+		lua_pushstring(luaState, "OnLoadSave");
+		lua_rawget(luaState, -2);
+
+		if (lua_type(luaState, -1) == LUA_TFUNCTION)
+		{
+			if (lua_pcall(luaState, 0, 0, 0))
+			{
+				printLastLuaError(luaState);
+			}
 			lua_pop(luaState, 1);
 		}
 		else
@@ -730,6 +774,30 @@ bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *opera
 
 	lua_settop(luaState, oldTop);
 	return cont;
+}
+
+void WSELuaOperationsContext::OnPostWorldTriggers()
+{
+	lua_getglobal(luaState, "game");
+	if (lua_isnil(luaState, -1)) { lua_pop(luaState, 1); return; };
+
+	lua_pushstring(luaState, "OnWorldTrigger");
+	lua_rawget(luaState, -2);
+
+	if (lua_type(luaState, -1) == LUA_TFUNCTION)
+	{
+		lua_pushnumber(luaState, warband->cur_game->date.get_elapsed_time());
+		if (lua_pcall(luaState, 1, 0, 0))
+		{
+			printLastLuaError(luaState);
+		}
+
+		lua_pop(luaState, 1);
+	}
+	else
+	{
+		lua_pop(luaState, 2);
+	}
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)

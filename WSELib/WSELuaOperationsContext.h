@@ -40,7 +40,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int luaContext = 0;
 		std::string user_dir;    // <M&B>\Modules\<Module>\lua
 		std::string storage_dir; // <M&B>\WSE\<Module>  - unless they changed the setting
-		bool gameLoad_active = false;
+		//bool gameLoad_active = false;
 
 	public:
 		WSELuaOperationsContext();
@@ -49,6 +49,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		bool OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal);
 		void *OnOperationJumptableExecute(wb::operation *operation, int *operand_types, __int64 *operand_values, bool *continue_loop, __int64 *locals, int context_flags);
 		bool OnOperationMgrExecute(wb::operation_manager *operation_manager, int& num_parameters, __int64* parameters);
+		void OnPostWorldTriggers();
 
 	protected:
 		bool luaStateIsReady = false;

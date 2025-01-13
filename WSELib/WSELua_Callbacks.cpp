@@ -405,78 +405,78 @@ int lc_getNumScenePropTriggers(lua_State *L)
 	return 1;
 }
 
-REG(addSimpleWorldTrigger)
-int lc_addSimpleWorldTrigger(lua_State *L)
-{
-	int numArgs = checkLArgs(L, 2, 2, lNum, lFunc);
-	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addSimpleWorldTrigger: only allowed during OnGameLoad"); }
-
-	wb::simple_trigger trigg;
-	lFillSimpleTrigger(L, trigg, 1, rgl::timer_kind::game);
-	trigg.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
-
-	int index = warband->cur_game->simple_triggers.add_trigger(trigg);
-
-	lua_pushinteger(L, index);
-	return 1;
-}
-
-REG(removeSimpleWorldTrigger)
-int lc_removeSimpleWorldTrigger(lua_State *L)
-{
-	int numArgs = checkLArgs(L, 1, 1, lNum);
-	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeSimpleWorldTrigger: only allowed during OnGameLoad"); }
-
-	int index = lua_tointeger(L, 1);
-	bool succ = warband->cur_game->simple_triggers.remove_trigger(index);
-
-	lua_pushboolean(L, succ ? 1 : 0);
-	return 1;
-}
-
-REG(getNumSimpleWorldTriggers)
-int lc_getNumSimpleWorldTriggers(lua_State *L)
-{
-	lua_pushinteger(L, warband->cur_game->simple_triggers.num_simple_triggers);
-	return 1;
-}
-
-REG(addWorldTrigger)
-int lc_addWorldTrigger(lua_State *L)
-{
-	int numArgs = checkLArgs(L, 4, 5, lNum, lNum, lNum, lFunc, lFunc);
-	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addWorldTrigger: only allowed during OnGameLoad"); }
-
-	wb::trigger trigg;
-	lFillTrigger(L, trigg, numArgs == 5, 1, rgl::timer_kind::game);
-	trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
-	trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
-
-	int index = warband->cur_game->triggers.add_trigger(trigg);
-
-	lua_pushinteger(L, index);
-	return 1;
-}
-
-REG(removeWorldTrigger)
-int lc_removeWorldTrigger(lua_State *L)
-{
-	int numArgs = checkLArgs(L, 1, 1, lNum);
-	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeWorldTrigger: only allowed during OnGameLoad"); }
-
-	int index = lua_tointeger(L, 1);
-	bool succ = warband->cur_game->triggers.remove_trigger(index);
-
-	lua_pushboolean(L, succ ? 1 : 0);
-	return 1;
-}
-
-REG(getNumWorldTriggers)
-int lc_getNumWorldTriggers(lua_State *L)
-{
-	lua_pushinteger(L, warband->cur_game->triggers.num_triggers);
-	return 1;
-}
+//REG(addSimpleWorldTrigger)
+//int lc_addSimpleWorldTrigger(lua_State *L)
+//{
+//	int numArgs = checkLArgs(L, 2, 2, lNum, lFunc);
+//	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addSimpleWorldTrigger: only allowed during OnGameLoad"); }
+//
+//	wb::simple_trigger trigg;
+//	lFillSimpleTrigger(L, trigg, 1, rgl::timer_kind::game);
+//	trigg.operations.id.format("Simple Trigger [%d] (Lua)", warband->cur_game->simple_triggers.num_simple_triggers);
+//
+//	int index = warband->cur_game->simple_triggers.add_trigger(trigg);
+//
+//	lua_pushinteger(L, index);
+//	return 1;
+//}
+//
+//REG(removeSimpleWorldTrigger)
+//int lc_removeSimpleWorldTrigger(lua_State *L)
+//{
+//	int numArgs = checkLArgs(L, 1, 1, lNum);
+//	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeSimpleWorldTrigger: only allowed during OnGameLoad"); }
+//
+//	int index = lua_tointeger(L, 1);
+//	bool succ = warband->cur_game->simple_triggers.remove_trigger(index);
+//
+//	lua_pushboolean(L, succ ? 1 : 0);
+//	return 1;
+//}
+//
+//REG(getNumSimpleWorldTriggers)
+//int lc_getNumSimpleWorldTriggers(lua_State *L)
+//{
+//	lua_pushinteger(L, warband->cur_game->simple_triggers.num_simple_triggers);
+//	return 1;
+//}
+//
+//REG(addWorldTrigger)
+//int lc_addWorldTrigger(lua_State *L)
+//{
+//	int numArgs = checkLArgs(L, 4, 5, lNum, lNum, lNum, lFunc, lFunc);
+//	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "addWorldTrigger: only allowed during OnGameLoad"); }
+//
+//	wb::trigger trigg;
+//	lFillTrigger(L, trigg, numArgs == 5, 1, rgl::timer_kind::game);
+//	trigg.consequences.id.format("Trigger [%d] consequences (Lua)", warband->cur_game->triggers.num_triggers);
+//	trigg.conditions.id.format("Trigger [%d] conditions (Lua)", warband->cur_game->triggers.num_triggers);
+//
+//	int index = warband->cur_game->triggers.add_trigger(trigg);
+//
+//	lua_pushinteger(L, index);
+//	return 1;
+//}
+//
+//REG(removeWorldTrigger)
+//int lc_removeWorldTrigger(lua_State *L)
+//{
+//	int numArgs = checkLArgs(L, 1, 1, lNum);
+//	if (!WSE->LuaOperations.gameLoad_active){ luaL_error(L, "removeWorldTrigger: only allowed during OnGameLoad"); }
+//
+//	int index = lua_tointeger(L, 1);
+//	bool succ = warband->cur_game->triggers.remove_trigger(index);
+//
+//	lua_pushboolean(L, succ ? 1 : 0);
+//	return 1;
+//}
+//
+//REG(getNumWorldTriggers)
+//int lc_getNumWorldTriggers(lua_State *L)
+//{
+//	lua_pushinteger(L, warband->cur_game->triggers.num_triggers);
+//	return 1;
+//}
 /* End Triggers */
 
 REG(addPrsnt)

@@ -1232,3 +1232,17 @@ void __declspec(naked) XmlGetServerInfoHook()
 		retn 4
 	}
 }
+
+void __declspec(naked) PostWorldTriggersHook()
+{
+	_asm
+	{
+		FREEZE_REGS
+		CALL_CONTEXT_FUNC(LuaOperations, OnPostWorldTriggers)
+		RESTORE_REGS
+		or ebp, 0xFFFFFFFF
+		cmp dword ptr ds : 0x00AA22BC, 0
+
+		jmp[wb::addresses::post_world_triggers_exit]
+	}
+}

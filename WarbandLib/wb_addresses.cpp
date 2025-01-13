@@ -291,6 +291,10 @@ unsigned int addresses::write_to_rgl_log_exit = write_to_rgl_log + 5;
 
 //unsigned int addresses::game_data_ptr = 0x0094F118;
 unsigned int addresses::game_data_ptr = 0x008681C0;
+
+unsigned int addresses::post_world_triggers = 0x005DD084;
+unsigned int addresses::post_world_triggers_exit = post_world_triggers + 10;
+
 #elif defined WARBAND_STEAM
 unsigned int addresses::operation_Execute_jumptable = 0x0057E410;
 unsigned int addresses::operation_Execute_entry = 0x0057E37C;

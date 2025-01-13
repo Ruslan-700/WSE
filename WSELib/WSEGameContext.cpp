@@ -229,13 +229,17 @@ void WSEGameContext::OnReadGameFiles()
 
 void WSEGameContext::OnSave()
 {
+	WSE->SendContextEvent(this, WSEEvent::OnSave);
 	ExecuteScript(WSE_SCRIPT_GAME_SAVED, 1, warband->cur_game->savegame_slot);
 }
 
 void WSEGameContext::OnLoadSave(int mode)
 {
 	if (mode == 1)
+	{
+		WSE->SendContextEvent(this, WSEEvent::OnLoadSave);
 		ExecuteScript(WSE_SCRIPT_SAVEGAME_LOADED, 1, warband->cur_game->savegame_slot);
+	}
 }
 
 bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *result)
