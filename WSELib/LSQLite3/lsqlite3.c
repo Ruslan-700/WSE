@@ -129,6 +129,14 @@ static const char *sqlite_bu_meta   = ":sqlite3:bu";
 static const char *sqlite_ctx_meta  = ":sqlite3:ctx";
 static int sqlite_ctx_meta_ref;
 
+static str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
+
+static void lsqlite3_set_sandboxed_path(str_callback callback)
+{
+	get_sandboxed_path = callback;
+}
+
+
 /* Lua 5.3 introduced an integer type, but depending on the implementation, it could be 32 
 ** or 64 bits (or something else?). This helper macro tries to do "the right thing."
 */
@@ -2120,11 +2128,17 @@ static int lsqlite_activate_cerod(lua_State *L) {
 #endif
 
 static int lsqlite_do_open(lua_State *L, const char *filename, int flags) {
-    sdb *db = newdb(L); /* create and leave in stack */
+	if (filename == NULL){ /*wse mod*/
+		lua_pushnil(L);
+		lua_pushinteger(L, SQLITE_CANTOPEN);
+		lua_pushstring(L, "Can't access outside WSE allowed folders");
+		return 3;
+	}
 
+    sdb *db = newdb(L); /* create and leave in stack */
     if (SQLITE3_OPEN(filename, &db->db, flags) == SQLITE_OK) {
         /* database handle already in the stack - return it */
-        return 1;
+		return 1;
     }
 
     /* failed to open database */
@@ -2136,13 +2150,16 @@ static int lsqlite_do_open(lua_State *L, const char *filename, int flags) {
     cleanupdb(L, db);
 
     /* return */
-    return 3;
+	return 3;
 }
 
 static int lsqlite_open(lua_State *L) {
     const char *filename = luaL_checkstring(L, 1);
     int flags = luaL_optinteger(L, 2, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
-    return lsqlite_do_open(L, filename, flags);
+	
+	char* safe_path = get_sandboxed_path(filename); /*wse mod*/
+	int res = lsqlite_do_open(L, filename, flags);
+	free(safe_path);
 }
 
 static int lsqlite_open_memory(lua_State *L) {
