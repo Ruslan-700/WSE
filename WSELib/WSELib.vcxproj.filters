@@ -72,6 +72,9 @@
     <Filter Include="Source Files\operations\WSELuaOperationsContext\luaSockets\Lua">
       <UniqueIdentifier>{4df0f218-5037-4194-a452-72bc559cad73}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\LSQLite3">
+      <UniqueIdentifier>{d3d06380-dc87-479a-8fc3-160731f69562}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -368,6 +371,9 @@
     <ClInclude Include="WSELua_Callbacks.h">
       <Filter>Header Files\operations\WSELuaOperationsContext</Filter>
     </ClInclude>
+    <ClInclude Include="LSQLite3\sqlite3.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -618,6 +624,12 @@
     </ClCompile>
     <ClCompile Include="WSELua_Callbacks.cpp">
       <Filter>Source Files\operations\WSELuaOperationsContext</Filter>
+    </ClCompile>
+    <ClCompile Include="LSQLite3\lsqlite3.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
+    </ClCompile>
+    <ClCompile Include="LSQLite3\sqlite3.c">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

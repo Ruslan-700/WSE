@@ -388,6 +388,7 @@
   <ItemGroup>
     <ClInclude Include="json\json-forwards.h" />
     <ClInclude Include="json\json.h" />
+    <ClInclude Include="LSQLite3\sqlite3.h" />
     <ClInclude Include="luaSockets\src\auxiliar.h" />
     <ClInclude Include="luaSockets\src\buffer.h" />
     <ClInclude Include="luaSockets\src\compat.h" />
@@ -487,6 +488,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="json\jsoncpp.cpp" />
+    <ClCompile Include="LSQLite3\lsqlite3.c" />
+    <ClCompile Include="LSQLite3\sqlite3.c" />
     <ClCompile Include="luaSockets\src\auxiliar.c" />
     <ClCompile Include="luaSockets\src\buffer.c" />
     <ClCompile Include="luaSockets\src\compat.c" />
