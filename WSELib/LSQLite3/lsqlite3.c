@@ -269,9 +269,9 @@ static int dbvm_tostring(lua_State *L) {
     char buff[39];
     sdb_vm *svm = lsqlite_getvm(L, 1);
     if (svm->vm == NULL)
-        strcpy(buff, "closed");
+        strcpy_s(buff, 39, "closed");
     else
-        sprintf(buff, "%p", svm);
+        sprintf_s(buff, 39, "%p", svm);
     lua_pushfstring(L, "sqlite virtual machine (%s)", buff);
     return 1;
 }
@@ -361,7 +361,7 @@ static int dbvm_get_value(lua_State *L) {
 
 static int dbvm_get_name(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+    int index = (int)luaL_checknumber(L, 2);
     dbvm_check_index(L, svm, index);
     lua_pushstring(L, sqlite3_column_name(svm->vm, index));
     return 1;
@@ -369,7 +369,7 @@ static int dbvm_get_name(lua_State *L) {
 
 static int dbvm_get_type(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+	int index = (int)luaL_checknumber(L, 2);
     dbvm_check_index(L, svm, index);
     lua_pushstring(L, sqlite3_column_decltype(svm->vm, index));
     return 1;
@@ -522,7 +522,7 @@ static int dbvm_bind_parameter_count(lua_State *L) {
 
 static int dbvm_bind_parameter_name(lua_State *L) {
     sdb_vm *svm = lsqlite_checkvm(L, 1);
-    int index = luaL_checknumber(L, 2);
+	int index = (int)luaL_checknumber(L, 2);
     dbvm_check_bind_index(L, svm, index);
     lua_pushstring(L, sqlite3_bind_parameter_name(svm->vm, index));
     return 1;
@@ -769,9 +769,9 @@ static int lcontext_tostring(lua_State *L) {
     char buff[39];
     lcontext *ctx = lsqlite_getcontext(L, 1);
     if (ctx->ctx == NULL)
-        strcpy(buff, "closed");
+        strcpy_s(buff, 39, "closed");
     else
-        sprintf(buff, "%p", ctx->ctx);
+        sprintf_s(buff, 39, "%p", ctx->ctx);
     lua_pushfstring(L, "sqlite function context (%s)", buff);
     return 1;
 }
@@ -1794,7 +1794,7 @@ static int db_exec_callback(void* user, int columns, char **data, char **names) 
         else
 #endif
         if (lua_isnumber(L, -1))
-            result = lua_tonumber(L, -1);
+			result = (int)lua_tonumber(L, -1);
     }
 
     lua_settop(L, top);
@@ -2015,9 +2015,9 @@ static int db_tostring(lua_State *L) {
     char buff[32];
     sdb *db = lsqlite_getdb(L, 1);
     if (db->db == NULL)
-        strcpy(buff, "closed");
+        strcpy_s(buff, 32, "closed");
     else
-        sprintf(buff, "%p", lua_touserdata(L, 1));
+        sprintf_s(buff, 32, "%p", lua_touserdata(L, 1));
     lua_pushfstring(L, "sqlite database (%s)", buff);
     return 1;
 }
