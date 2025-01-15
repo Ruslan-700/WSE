@@ -33,6 +33,7 @@
 #define LUA_LIB
 #include "lua.h"
 #include "lauxlib.h"
+#include "lsqlite3.h"
 
 #if LUA_VERSION_NUM > 501
 /*
@@ -131,7 +132,7 @@ static int sqlite_ctx_meta_ref;
 
 static str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
 
-static void lsqlite3_set_sandboxed_path(str_callback callback)
+void lsqlite3_set_sandboxed_path_callback(str_callback callback)
 {
 	get_sandboxed_path = callback;
 }
@@ -2158,8 +2159,10 @@ static int lsqlite_open(lua_State *L) {
     int flags = luaL_optinteger(L, 2, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	
 	char* safe_path = get_sandboxed_path(filename); /*wse mod*/
-	int res = lsqlite_do_open(L, filename, flags);
+	int res = lsqlite_do_open(L, safe_path, flags);
 	free(safe_path);
+	
+	return res;
 }
 
 static int lsqlite_open_memory(lua_State *L) {

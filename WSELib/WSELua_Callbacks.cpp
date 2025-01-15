@@ -1,16 +1,17 @@
 #include <chrono>
 #include <math.h>
 #include <sstream>
+#include <string>
 #define _USE_MATH_DEFINES
 
 #include "WSELua_Callbacks.h"
 #include "WSELua_Helpers.h"
 #include "WSELua_Iterators.h"
 #include "luaSockets/src/luasocket.h"
+#include "LSQLite3/lsqlite3.h"
 #include "WSELib.rc.h"
 
-typedef int(*lua_callback)(lua_State*);
-typedef std::pair<std::string, lua_callback> callback_def; //name, callback()
+typedef std::pair<const char*, lua_CFunction> callback_def; //name, callback()
 
 static std::vector<callback_def> _G_game_callbacks;
 static std::vector<callback_def> _G_callbacks;
@@ -974,51 +975,6 @@ int lc_getTime(lua_State *L)
 	return 1;
 }
 
-GREG(loadDebugger)
-int lc_loadDebugger(lua_State *L)
-{
-	luaopen_socket_core(L); //{socket}
-
-	//Now write it to require "loaded" table
-	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");				//	{socket},{_LOADED}
-	lua_pushvalue(L, -2);											//	{socket},{_LOADED},{socket}
-	lua_setfield(L, -2, "socket");  // _LOADED[modname] = module,		{socket},{_LOADED}
-	lua_pop(L, 2);  // remove _LOADED table and luaopen result 			...
-
-	std::string mob = load_resource_str(MAKEINTRESOURCE(IDR_mobDebug));
-
-	if (luaL_dostring(L, mob.c_str()))					//{mobdebug}
-		printLastLuaError(L, "mobDebug");
-
-	//remove socket library again...
-	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");	//{mobdebug},{_LOADED}
-	lua_pushnil(L);										//{mobdebug},{_LOADED},nil
-	lua_setfield(L, -2, "socket");						//{mobdebug},{_LOADED}
-	lua_pop(L, 1);										//{mobdebug}
-
-	gPrint("*** LUA DEBUGGER LOADED ***");
-
-	return 1;
-}
-
-//Helpers for LoadDebugger
-#define lua_absindex( L, idx) (((idx) >= 0 || (idx) <= LUA_REGISTRYINDEX) ? (idx) : lua_gettop(L) + (idx) +1)
-static int luaL_getsubtable(lua_State *L, int idx, const char *fname)
-{
-	lua_getfield(L, idx, fname);
-	if (lua_istable(L, -1))
-		return 1;  /* table already there */
-	else
-	{
-		lua_pop(L, 1);  /* remove previous result */
-		idx = lua_absindex(L, idx);
-		lua_newtable(L);
-		lua_pushvalue(L, -1);  /* copy to be left at top */
-		lua_setfield(L, idx, fname);  /* assign new table to field */
-		return 0;  /* false, because did not find table there */
-	}
-}
-
 void addGameConstantsToLState(lua_State *L)
 {
 	std::vector<gameConstTable> &constTables = WSE->LuaOperations.gameConstTables;
@@ -1075,4 +1031,90 @@ void initLGameTable(lua_State *L)
 	std::string globals = load_resource_str(MAKEINTRESOURCE(IDR_LuaGlobals));
 	if (luaL_dostring(L, globals.c_str()))
 		printLastLuaError(L, "LuaGlobals");
+}
+
+
+
+
+/************ REQUIRE *************/
+
+//Helpers for require_mobDebug
+#define lua_absindex( L, idx) (((idx) >= 0 || (idx) <= LUA_REGISTRYINDEX) ? (idx) : lua_gettop(L) + (idx) +1)
+static int luaL_getsubtable(lua_State *L, int idx, const char *fname)
+{
+	lua_getfield(L, idx, fname);
+	if (lua_istable(L, -1))
+		return 1;  /* table already there */
+	else
+	{
+		lua_pop(L, 1);  /* remove previous result */
+		idx = lua_absindex(L, idx);
+		lua_newtable(L);
+		lua_pushvalue(L, -1);  /* copy to be left at top */
+		lua_setfield(L, idx, fname);  /* assign new table to field */
+		return 0;  /* false, because did not find table there */
+	}
+}
+
+int require_mobDebug(lua_State *L)
+{
+	luaopen_socket_core(L); //{socket}
+
+	//Now write it to require "loaded" table
+	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");				//	{socket},{_LOADED}
+	lua_pushvalue(L, -2);											//	{socket},{_LOADED},{socket}
+	lua_setfield(L, -2, "socket");  // _LOADED[modname] = module,		{socket},{_LOADED}
+	lua_pop(L, 2);  // remove _LOADED table and luaopen result 			...
+
+	std::string mob = load_resource_str(MAKEINTRESOURCE(IDR_mobDebug));
+
+	if (luaL_dostring(L, mob.c_str()))					//{mobdebug}
+		printLastLuaError(L, "mobDebug");
+
+	//remove socket library again...
+	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");	//{mobdebug},{_LOADED}
+	lua_pushnil(L);										//{mobdebug},{_LOADED},nil
+	lua_setfield(L, -2, "socket");						//{mobdebug},{_LOADED}
+	lua_pop(L, 1);										//{mobdebug}
+
+	gPrint("*** LUA DEBUGGER LOADED ***");
+
+	return 1;
+}
+
+static std::vector<callback_def> libs =
+{
+	{ "mobDebug", require_mobDebug },
+	{ "lsqlite3", luaopen_lsqlite3 }
+};
+
+int wse_require_loader(lua_State *L)
+{
+	const char *name = luaL_checkstring(L, 1);
+
+	for (callback_def& cb : libs)
+	{
+		if (strcmp(name, cb.first) == 0){
+			lua_pushcfunction(L, cb.second);
+			return 1;
+		};
+	}
+	return 0;
+}
+
+//Adds our loader in package.loaders
+void register_wse_require_loader(lua_State *L)
+{
+	lua_getglobal(L, "package");
+	if (!lua_isnil(L, -1)){
+		lua_getfield(L, -1, "loaders");
+		if (!lua_isnil(L, -1)){
+			int num_loaders = lua_objlen(L, -1); //{package}, {loaders}
+			lua_pushnumber(L, num_loaders + 1); //{package}, {loaders}, k
+			lua_pushcfunction(L, wse_require_loader); //{package}, {loaders}, k, func
+			lua_settable(L, -3); //{package}, {loaders}
+		}
+		lua_pop(L, 1);
+	}
+	lua_pop(L, 1);
 }

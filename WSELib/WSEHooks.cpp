@@ -1235,6 +1235,7 @@ void __declspec(naked) XmlGetServerInfoHook()
 
 void __declspec(naked) PostWorldTriggersHook()
 {
+#if defined WARBAND_VANILLA
 	_asm
 	{
 		FREEZE_REGS
@@ -1245,4 +1246,5 @@ void __declspec(naked) PostWorldTriggersHook()
 
 		jmp[wb::addresses::post_world_triggers_exit]
 	}
+#endif
 }

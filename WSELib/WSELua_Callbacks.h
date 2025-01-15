@@ -4,6 +4,7 @@
 #include "WSE.h"
 
 void initLGameTable(lua_State *L);
+void register_wse_require_loader(lua_State *L);
 
 //Collect callback into vector for registering later
 //The structs are an ugly hack, but it's the only way I found

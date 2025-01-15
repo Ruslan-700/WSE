@@ -40,7 +40,6 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int luaContext = 0;
 		std::string user_dir;    // <M&B>\Modules\<Module>\lua
 		std::string storage_dir; // <M&B>\WSE\<Module>  - unless they changed the setting
-		//bool gameLoad_active = false;
 
 	public:
 		WSELuaOperationsContext();

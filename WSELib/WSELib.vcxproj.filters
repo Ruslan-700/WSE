@@ -374,6 +374,9 @@
     <ClInclude Include="LSQLite3\sqlite3.h">
       <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
     </ClInclude>
+    <ClInclude Include="LSQLite3\lsqlite3.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">

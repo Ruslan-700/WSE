@@ -8,8 +8,8 @@
 #include "WSELua_Helpers.h"
 #include "WSELua_Callbacks.h"
 
+#include "LSQLite3/lsqlite3.h"
 #include "lanes.h"
-
 
 /************************/
 /*    MS operations    */
@@ -401,7 +401,9 @@ void WSELuaOperationsContext::OnLoad()
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
 		"reference", "triggerPart", "context");
 
+#ifdef WARBAND_VANILLA
 	WSE->Hooks.HookFunction(this, wb::addresses::post_world_triggers, PostWorldTriggersHook);
+#endif
 
 	initLua();
 }
@@ -1025,8 +1027,12 @@ void WSELuaOperationsContext::initLua()
 	//Lets go
 	luaState = luaL_newstate();
 	lua_set_sandboxed_path_callback(luaState, sandbox_path);
+	lsqlite3_set_sandboxed_path_callback(sandbox_path);
 	luaL_openlibs(luaState);
 
+	register_wse_require_loader(luaState);
+
+	//Would be nice to move lanes to wse_require_loader as well. But if it aint broke...
 	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
 	lua_pop(luaState, 1);
 
