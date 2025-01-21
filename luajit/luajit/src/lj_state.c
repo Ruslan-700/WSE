@@ -304,7 +304,6 @@ LUA_API lua_State *lua_newstate(lua_Alloc allocf, void *allocd)
     return NULL;
   }
   L->status = LUA_OK;
-  L->get_sandboxed_path = NULL;/*wse mod*/
   return L;
 }
 

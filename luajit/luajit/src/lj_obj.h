@@ -660,6 +660,7 @@ typedef struct global_State {
   MRef ctype_state;	/* Pointer to C type state. */
   PRNGState prng;	/* Global PRNG state. */
   GCRef gcroot[GCROOT_MAX];  /* GC roots. */
+  str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
 } global_State;
 
 #define mainthread(g)	(&gcref(g->mainthref)->th)
@@ -685,7 +686,6 @@ typedef struct global_State {
 #define hook_restore(g, h) \
   ((g)->hookmask = ((g)->hookmask & HOOK_EVENTMASK) | (h))
 
-typedef char* (*str_callback)(const char* path);/*wse mod*/
 
 /* Per-thread state object. */
 struct lua_State {
@@ -702,7 +702,6 @@ struct lua_State {
   GCRef env;		/* Thread environment (table of globals). */
   void *cframe;		/* End of C stack frame chain. */
   MSize stacksize;	/* True stack size (incl. LJ_STACK_EXTRA). */
-  str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
 };
 
 #define G(L)			(mref(L->glref, global_State))

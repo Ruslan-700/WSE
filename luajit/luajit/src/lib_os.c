@@ -45,7 +45,7 @@ LJLIB_CF(os_remove)
 {
   const char *filename = luaL_checkstring(L, 1);
   /* wse mod */
-  char *safePath = L->get_sandboxed_path(filename);
+  char *safePath = G(L)->get_sandboxed_path(filename);
 
   int ret = luaL_fileresult(L, remove(safePath) == 0, filename);
   free(safePath);
@@ -59,8 +59,8 @@ LJLIB_CF(os_rename)
   const char *toname = luaL_checkstring(L, 2);
 
   /* wse mod */
-  char *safeFromPath = L->get_sandboxed_path(fromname);
-  char *safeToPath = L->get_sandboxed_path(toname);
+  char *safeFromPath = G(L)->get_sandboxed_path(fromname);
+  char *safeToPath = G(L)->get_sandboxed_path(toname);
 
   int ret = luaL_fileresult(L, rename(safeFromPath, safeToPath) == 0, fromname);
 

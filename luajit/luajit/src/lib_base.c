@@ -387,7 +387,7 @@ LJLIB_CF(loadfile)
 	// 		  mode ? strdata(mode) : NULL);
         
   /*wse mod*/
-  char *path = L->get_sandboxed_path(fname ? strdata(fname) : NULL);
+  char *path = G(L)->get_sandboxed_path(fname ? strdata(fname) : NULL);
   status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
   free(path);
 
@@ -457,7 +457,7 @@ LJLIB_CF(dofile)
   /* wse mod */
   char *path;
   if (fname)
-	  path = L->get_sandboxed_path(strdata(fname));
+	  path = G(L)->get_sandboxed_path(strdata(fname));
   else
 	  path = NULL;
 
