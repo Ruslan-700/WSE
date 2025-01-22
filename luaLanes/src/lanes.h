@@ -2,6 +2,7 @@
 #define __lanes_h__ 1
 
 #include "lua.h"
+#include "platform.h"
 
 #if (defined PLATFORM_WIN32) || (defined PLATFORM_POCKETPC)
 #define LANES_API __declspec(dllexport)
@@ -9,22 +10,19 @@
 #define LANES_API
 #endif // (defined PLATFORM_WIN32) || (defined PLATFORM_POCKETPC)
 
-/* wse mod */
-typedef void(*WSECallback)(lua_State *L);
+#define LANES_VERSION_MAJOR 3
+#define LANES_VERSION_MINOR 17
+#define LANES_VERSION_PATCH 0
 
-#ifdef __cplusplus
-extern "C"{
-#endif 
+#define LANES_MIN_VERSION_REQUIRED(MAJOR, MINOR, PATCH)     ((LANES_VERSION_MAJOR>MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR>MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH>=PATCH))))
+#define LANES_VERSION_LESS_THAN(MAJOR, MINOR, PATCH)        ((LANES_VERSION_MAJOR<MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR<MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH<PATCH))))
+#define LANES_VERSION_LESS_OR_EQUAL(MAJOR, MINOR, PATCH)    ((LANES_VERSION_MAJOR<MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR<MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH<=PATCH))))
+#define LANES_VERSION_GREATER_THAN(MAJOR, MINOR, PATCH)     ((LANES_VERSION_MAJOR>MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR>MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH>PATCH))))
+#define LANES_VERSION_GREATER_OR_EQUAL(MAJOR, MINOR, PATCH) ((LANES_VERSION_MAJOR>MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR>MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH>=PATCH))))
 
-	extern int LANES_API luaopen_lanes_core(lua_State* L);
+extern int LANES_API luaopen_lanes_core( lua_State* L);
 
-	// Call this to work with embedded Lanes instead of calling luaopen_lanes_core()
-	/* wse mod */
-	extern void LANES_API luaopen_lanes_embedded(lua_State* L, WSECallback laneNewCB, lua_CFunction _luaopen_lanes);
-
-	extern void set_new_lane_callback(WSECallback cb);
-#ifdef __cplusplus
-}
-#endif
+// Call this to work with embedded Lanes instead of calling luaopen_lanes_core()
+extern void LANES_API luaopen_lanes_embedded( lua_State* L, lua_CFunction _luaopen_lanes);
 
 #endif // __lanes_h__
