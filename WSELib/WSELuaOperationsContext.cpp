@@ -2,14 +2,12 @@
 #include <Windows.h>
 
 #include "WSE.h"
-#include "WSELib.rc.h"
 #include "WSEScriptingContext.h"
 #include "WSELuaOperationsContext.h"
 #include "WSELua_Helpers.h"
 #include "WSELua_Callbacks.h"
-
-#include "LSQLite3/lsqlite3.h"
 #include "lanes.h"
+#include "LSQLite3/lsqlite3.h"
 
 /************************/
 /*    MS operations    */
@@ -315,22 +313,11 @@ char* sandbox_path(const char* _path)
 	return safePath;
 }
 
-int loadLanesLua(lua_State *L)
-{
-	std::string lanes = load_resource_str(MAKEINTRESOURCE(IDR_LUA_LANES));
-
-	if (luaL_dostring(L, lanes.c_str()))
-		printLastLuaError(L, "lanes");
-
-	return 1;
-}
-
+//Lanes will create entirely new lua states, we have to properly initialize those
 void initLaneState(lua_State *L)
 {
-	lua_set_sandboxed_path_callback(L, sandbox_path);
 	initLGameTable(L);
 }
-
 /***************************/
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
@@ -1024,21 +1011,22 @@ void WSELuaOperationsContext::initLua()
 
 	storage_dir = this->CreateStorageDir();
 
-	//Lets go
+	/** Lets go **/
 	luaState = luaL_newstate();
+
+	//Some patches for included libs
 	lua_set_sandboxed_path_callback(luaState, sandbox_path);
 	lsqlite3_set_sandboxed_path_callback(sandbox_path);
-	luaL_openlibs(luaState);
-
+	set_new_lane_callback(initLaneState);
+	
 	register_wse_require_loader(luaState);
 
-	//Would be nice to move lanes to wse_require_loader as well. But if it aint broke...
-	luaopen_lanes_embedded(luaState, initLaneState, loadLanesLua);
-	lua_pop(luaState, 1);
+	//Open all vanilla libs
+	luaL_openlibs(luaState);
 
-	loadOperations();
-	loadGameConstants(user_dir + "msfiles\\");
-	loadGlobalVars();
+	loadOperations(); //header_operations
+	loadGameConstants(user_dir + "msfiles\\"); //game.const
+	loadGlobalVars(); //game.gvar
 
 	initLGameTable(luaState);
 	doMainScript();

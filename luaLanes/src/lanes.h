@@ -22,6 +22,7 @@ extern "C"{
 	/* wse mod */
 	extern void LANES_API luaopen_lanes_embedded(lua_State* L, WSECallback laneNewCB, lua_CFunction _luaopen_lanes);
 
+	extern void set_new_lane_callback(WSECallback cb);
 #ifdef __cplusplus
 }
 #endif

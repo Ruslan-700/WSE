@@ -7,6 +7,7 @@
 #include "WSELua_Callbacks.h"
 #include "WSELua_Helpers.h"
 #include "WSELua_Iterators.h"
+#include "lanes.h"
 #include "luaSockets/src/luasocket.h"
 #include "LSQLite3/lsqlite3.h"
 #include "WSELib.rc.h"
@@ -1082,10 +1083,25 @@ int require_mobDebug(lua_State *L)
 	return 1;
 }
 
+int require_luaLanes(lua_State *L)
+{
+	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");
+	luaopen_lanes_core(L);
+	lua_setfield(L, -2, "lanes.core");
+	lua_pop(L, 1);
+
+	std::string lanes = load_resource_str(MAKEINTRESOURCE(IDR_LUA_LANES));
+	if (luaL_dostring(L, lanes.c_str()))
+		printLastLuaError(L, "lanes");
+
+	return 1;
+}
+
 static std::vector<callback_def> libs =
 {
 	{ "mobDebug", require_mobDebug },
-	{ "lsqlite3", luaopen_lsqlite3 }
+	{ "lsqlite3", luaopen_lsqlite3 },
+	{ "lanes", require_luaLanes }
 };
 
 int wse_require_loader(lua_State *L)
@@ -1102,7 +1118,7 @@ int wse_require_loader(lua_State *L)
 	return 0;
 }
 
-//Adds our loader in package.loaders
+//Adds our loader in package.loaders, to be used with require
 void register_wse_require_loader(lua_State *L)
 {
 	lua_getglobal(L, "package");

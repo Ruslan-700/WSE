@@ -93,7 +93,7 @@ THE SOFTWARE.
 #include "lanes.h"
 
 /*wse mod */
-WSECallback laneNewCallback;
+static WSECallback laneNewCallback;
 
 #if !(defined( PLATFORM_XBOX) || defined( PLATFORM_WIN32) || defined( PLATFORM_POCKETPC))
 # include <sys/time.h>
@@ -3318,7 +3318,6 @@ static int default_luaopen_lanes( lua_State* L)
 // call this instead of luaopen_lanes_core() when embedding Lua and Lanes in a custom application
 void LANES_API luaopen_lanes_embedded( lua_State* L, WSECallback laneNewCB, lua_CFunction _luaopen_lanes)
 {
-	/* wse mod */
 	laneNewCallback = laneNewCB;
 
 	STACK_CHECK(L);
@@ -3329,4 +3328,10 @@ void LANES_API luaopen_lanes_embedded( lua_State* L, WSECallback laneNewCB, lua_
 	// call user-provided function that runs the chunk "lanes.lua" from wherever they stored it
 	luaL_requiref( L, "lanes", _luaopen_lanes ? _luaopen_lanes : default_luaopen_lanes, 0);       // ... lanes
 	STACK_END(L, 1);
+}
+
+/* wse mod */
+void set_new_lane_callback(WSECallback cb)
+{
+	laneNewCallback = cb;
 }
