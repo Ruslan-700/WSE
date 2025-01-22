@@ -1464,7 +1464,7 @@ static void inter_copy_keyvaluepair( Universe* U, lua_State* L2, uint_t L2_cache
                 size_t const keyRawLen = lua_rawlen( L, key_i);
                 size_t const bufLen = strlen( upName_) + keyRawLen + 2;
                 valPath = (char*) alloca( bufLen);
-                sprintf( valPath, "%s.%*s", upName_, (int) keyRawLen, key);
+				sprintf_s(valPath, bufLen, "%s.%*s", upName_, (int)keyRawLen, key);
                 key = NULL;
             }
 #if defined LUA_LNUM || LUA_VERSION_NUM >= 503
@@ -1479,19 +1479,19 @@ static void inter_copy_keyvaluepair( Universe* U, lua_State* L2, uint_t L2_cache
             {
                 lua_Number key = lua_tonumber( L, key_i);
                 valPath = (char*) alloca( strlen( upName_) + 32 + 3);
-                sprintf( valPath, "%s[" LUA_NUMBER_FMT "]", upName_, key);
+				sprintf_s(valPath, strlen(upName_) + 32 + 3, "%s[" LUA_NUMBER_FMT "]", upName_, key);
             }
             else if( lua_type( L, key_i) == LUA_TLIGHTUSERDATA)
             {
                 void* key = lua_touserdata( L, key_i);
                 valPath = (char*) alloca( strlen( upName_) + 16 + 5);
-                sprintf( valPath, "%s[U:%p]", upName_, key);
+				sprintf_s(valPath, strlen(upName_) + 16 + 5, "%s[U:%p]", upName_, key);
             }
             else if( lua_type( L, key_i) == LUA_TBOOLEAN)
             {
                 int key = lua_toboolean( L, key_i);
                 valPath = (char*) alloca( strlen( upName_) + 8);
-                sprintf( valPath, "%s[%s]", upName_, key ? "true" : "false");
+				sprintf_s(valPath, strlen(upName_) + 8, "%s[%s]", upName_, key ? "true" : "false");
             }
         }
         /*
@@ -2004,7 +2004,7 @@ InterCopyResult luaG_inter_copy( Universe* U, lua_State* L, lua_State* L2, uint_
     {
         if( U->verboseErrors)
         {
-            sprintf( tmpBuf, "arg_%d", j);
+            sprintf_s( tmpBuf, 16, "arg_%d", j);
         }
         copyok = inter_copy_one( U, L2, top_L2 + 1, L, i, VT_NORMAL, mode_, pBuf);                    // ... cache {}n
         if( !copyok)

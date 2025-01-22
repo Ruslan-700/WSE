@@ -659,9 +659,9 @@ static int linda_tostring( lua_State* L, int idx_, bool_t opt_)
         char text[128];
         int len;
         if( linda->name[0])
-            len = sprintf( text, "Linda: %.*s", (int)sizeof(text) - 8, linda->name);
+            len = sprintf_s( text, 128, "Linda: %.*s", (int)sizeof(text) - 8, linda->name);
         else
-            len = sprintf( text, "Linda: %p", linda);
+            len = sprintf_s( text, 128, "Linda: %p", linda);
         lua_pushlstring( L, text, len);
         return 1;
     }

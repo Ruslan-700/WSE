@@ -20,9 +20,17 @@
 #define LANES_VERSION_GREATER_THAN(MAJOR, MINOR, PATCH)     ((LANES_VERSION_MAJOR>MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR>MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH>PATCH))))
 #define LANES_VERSION_GREATER_OR_EQUAL(MAJOR, MINOR, PATCH) ((LANES_VERSION_MAJOR>MAJOR) || (LANES_VERSION_MAJOR==MAJOR && (LANES_VERSION_MINOR>MINOR || (LANES_VERSION_MINOR==MINOR && LANES_VERSION_PATCH>=PATCH))))
 
-extern int LANES_API luaopen_lanes_core( lua_State* L);
+/* wse mod */
+typedef void(*WSECallback)(lua_State *L);
 
-// Call this to work with embedded Lanes instead of calling luaopen_lanes_core()
-extern void LANES_API luaopen_lanes_embedded( lua_State* L, lua_CFunction _luaopen_lanes);
+#ifdef __cplusplus
+extern "C"{
+#endif 
+	extern int LANES_API luaopen_lanes_core( lua_State* L);
 
+	// Call this to work with embedded Lanes instead of calling luaopen_lanes_core()
+	extern void LANES_API luaopen_lanes_embedded( lua_State* L, lua_CFunction _luaopen_lanes);
+#ifdef __cplusplus
+}
+#endif
 #endif // __lanes_h__

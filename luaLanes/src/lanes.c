@@ -94,6 +94,9 @@ THE SOFTWARE.
 #include "keeper.h"
 #include "lanes_private.h"
 
+/*wse mod */
+static WSECallback laneNewCallback;
+
 #if !(defined( PLATFORM_XBOX) || defined( PLATFORM_WIN32) || defined( PLATFORM_POCKETPC))
 # include <sys/time.h>
 #endif
@@ -1066,6 +1069,9 @@ LUAG_FUNC( lane_new)
 
     // populate with selected libraries at the same time
     L2 = luaG_newstate( U, L, libs_str);                             // L                                                                      // L2
+
+	/* wse mod */
+	laneNewCallback(L2);
 
     STACK_GROW( L2, nargs + 3);                                                                                                                //
     STACK_CHECK( L2, 0);
@@ -2147,4 +2153,10 @@ void LANES_API luaopen_lanes_embedded( lua_State* L, lua_CFunction _luaopen_lane
     // call user-provided function that runs the chunk "lanes.lua" from wherever they stored it
     luaL_requiref( L, "lanes", _luaopen_lanes ? _luaopen_lanes : default_luaopen_lanes, 0);       // ... lanes
     STACK_END( L, 1);
+}
+
+/* wse mod */
+void set_new_lane_callback(WSECallback cb)
+{
+	laneNewCallback = cb;
 }
