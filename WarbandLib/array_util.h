@@ -13,7 +13,8 @@ static std::unordered_map<void*, int> capacities;
 template <typename T>
 int array_add_elem(T* &buff, int& elem_count, const T &new_elem)
 {
-	if (buff == NULL) return -1;
+	//In my tests the elem_count was always 0 for NULL buff anyway, but still good to make sure
+	if (buff == NULL) elem_count = 0;
 
 	int cap;
 

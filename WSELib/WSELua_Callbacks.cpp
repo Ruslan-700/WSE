@@ -479,6 +479,63 @@ int lc_getNumScenePropTriggers(lua_State *L)
 //	lua_pushinteger(L, warband->cur_game->triggers.num_triggers);
 //	return 1;
 //}
+
+//REG(dump_triggers)
+int lc_dump_triggers(lua_State *L){
+ 	wb::trigger_manager* tigs;
+ 	wb::simple_trigger_manager* sigs;
+ 
+ 	int mst = warband->cur_mission->cur_mission_template_no;
+ 
+ 	if (mst >= 0 && mst < warband->num_mission_templates)
+ 	{
+ 		tigs = &(warband->mission_templates[mst].triggers);
+ 		gPrint("###mst###");
+ 		for (int i = 0; i < tigs->num_triggers; i++)
+ 		{
+ 			gPrintf("  %s, check_interval_timer.timer_no %d", tigs->triggers[i].conditions.id.c_str(), tigs->triggers[i].check_interval_timer.timer_no);
+ 		}
+ 	}
+ 
+	gPrint("###### Items #####");
+	for (int itm = 0; itm < warband->num_item_kinds; itm++)
+	{
+		sigs = &(warband->item_kinds[itm].simple_triggers);
+		for (int i = 0; i < sigs->num_simple_triggers; i++)
+		{
+			gPrintf("  %s, check_interval_timer.timer_no %d", sigs->simple_triggers[i].operations.id.c_str(), sigs->simple_triggers[i].interval_timer.timer_no);
+		}
+	}
+ 	
+ 
+	gPrint("####### Scene Props ########");
+	for (int spr = 0; spr < warband->num_scene_props; spr++)
+	{
+		sigs = &(warband->scene_props[spr].simple_triggers);
+		for (int i = 0; i < sigs->num_simple_triggers; i++)
+		{
+			gPrintf("  %s, check_interval_timer.timer_no %d", sigs->simple_triggers[i].operations.id.c_str(), sigs->simple_triggers[i].interval_timer.timer_no);
+		}
+	}
+ 
+ 
+	if (warband->cur_game)
+	{
+		gPrint("###### world ######");
+		for (int i = 0; i < warband->cur_game->triggers.num_triggers; i++)
+		{
+			gPrintf("  %s, check_interval_timer.timer_no %d", warband->cur_game->triggers.triggers[i].conditions.id.c_str(), warband->cur_game->triggers.triggers[i].check_interval_timer.timer_no);
+		}
+
+		gPrint("###### simple world ######");
+		for (int i = 0; i < warband->cur_game->simple_triggers.num_simple_triggers; i++)
+		{
+			gPrintf("  %s, interval_timer.timer_no %d", warband->cur_game->simple_triggers.simple_triggers[i].operations.id.c_str(), warband->cur_game->simple_triggers.simple_triggers[i].interval_timer.timer_no);
+		}
+	}
+ 
+ 	return 0;
+ }
 /* End Triggers */
 
 REG(addPrsnt)
@@ -962,6 +1019,17 @@ int lc__print(lua_State *L)
 	DWORD a = 0;
 	WriteFile(GetStdHandle(STD_OUTPUT_HANDLE), str, strlen(str), &a, NULL);
 #endif
+
+	return 0;
+}
+
+GREG(_log)
+int lc__log(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lStr);
+
+	warband->log_stream.write_c_str(lua_tostring(L, 1));
+	warband->log_stream.write_c_str("\n");
 
 	return 0;
 }
