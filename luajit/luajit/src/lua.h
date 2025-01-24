@@ -403,3 +403,11 @@ struct lua_Debug {
 
 
 #endif
+
+#define DBG(fffmt, ...) do { \
+	FILE * fffile;\
+	fopen_s(&fffile, "dbg.txt", "a"); \
+	fprintf(fffile, fffmt, __VA_ARGS__); \
+	fprintf(fffile, "\n", 0);\
+	fclose(fffile); \
+} while (0)

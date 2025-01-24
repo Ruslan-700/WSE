@@ -1019,10 +1019,10 @@ void WSELuaOperationsContext::initLua()
 	lsqlite3_set_sandboxed_path_callback(sandbox_path);
 	set_new_lane_callback(initLaneState);
 	
-	register_wse_require_loader(luaState);
-
 	//Open all vanilla libs
 	luaL_openlibs(luaState);
+
+	register_wse_require_loader(luaState); //this must be after openlibs, since we are writing to package.loaders
 
 	loadOperations(); //header_operations
 	loadGameConstants(user_dir + "msfiles\\"); //game.const

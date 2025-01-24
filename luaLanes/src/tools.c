@@ -1258,7 +1258,7 @@ static void copy_func( Universe* U, lua_State* L2, uint_t L2_cache_i, lua_State*
             //
             // TBD: Can we get the function's original name through, as well?
             //
-            if( luaL_loadbuffer( L2, s, sz, name) != 0)                                                // ... {cache} ... p function
+            if( luaL_loadbufferx( L2, s, sz, name, 0, 1) != 0) /* wse mod */                           // ... {cache} ... p function
             {
                 // chunk is precompiled so only LUA_ERRMEM can happen
                 // "Otherwise, it pushes an error message"

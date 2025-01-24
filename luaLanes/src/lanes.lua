@@ -234,7 +234,7 @@ lanes.configure = function( settings_)
         ["utf8"] = true, -- Lua 5.3 only, ignored silently under 5.1 and 5.2
         ["bit"] = true, -- LuaJIT only, ignored silently under PUC-Lua
         ["jit"] = true, -- LuaJIT only, ignored silently under PUC-Lua
-        ["ffi"] = true, -- LuaJIT only, ignored silently under PUC-Lua
+        ["ffi"] = false, --/* wse mod */  LuaJIT only, ignored silently under PUC-Lua
         --
         ["base"] = true,
         ["coroutine"] = true, -- part of "base" in Lua 5.1

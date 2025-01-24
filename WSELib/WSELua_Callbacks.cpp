@@ -1085,11 +1085,6 @@ int require_mobDebug(lua_State *L)
 
 int require_luaLanes(lua_State *L)
 {
-	luaL_getsubtable(L, LUA_REGISTRYINDEX, "_LOADED");
-	luaopen_lanes_core(L);
-	lua_setfield(L, -2, "lanes.core");
-	lua_pop(L, 1);
-
 	std::string lanes = load_resource_str(MAKEINTRESOURCE(IDR_LUA_LANES));
 	if (luaL_dostring(L, lanes.c_str()))
 		printLastLuaError(L, "lanes");
@@ -1101,6 +1096,7 @@ static std::vector<callback_def> libs =
 {
 	{ "mobDebug", require_mobDebug },
 	{ "lsqlite3", luaopen_lsqlite3 },
+	{ "lanes.core", luaopen_lanes_core },
 	{ "lanes", require_luaLanes }
 };
 

@@ -153,7 +153,7 @@ static const luaL_Reg libs[] =
 //#pragma message( "supporting JIT base libs")
     { LUA_BITLIBNAME, luaopen_bit},
     { LUA_JITLIBNAME, luaopen_jit},
-    { LUA_FFILIBNAME, luaopen_ffi},
+    //{ LUA_FFILIBNAME, luaopen_ffi}, /* wse mod */
 #endif // LUAJIT_FLAVOR()
 
 { LUA_DBLIBNAME, luaopen_debug},
