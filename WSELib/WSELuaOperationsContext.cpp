@@ -316,6 +316,8 @@ char* sandbox_path(const char* _path)
 //Lanes will create entirely new lua states, we have to properly initialize those
 void initLaneState(lua_State *L)
 {
+	lua_set_sandboxed_path_callback(L, sandbox_path);
+	register_wse_require_loader(L); 
 	initLGameTable(L);
 }
 /***************************/
