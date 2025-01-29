@@ -1085,7 +1085,7 @@ std::string lToStr_t(lua_State *L, int sIndex)
 bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size_t start, size_t end, std::string curTreePos, std::string &errMsg)
 {
 	size_t curIndex = start;
-	bool hasOptions;
+	bool hasOptions = false;
 	tableCheckOptions options;
 	std::vector<tableCheckKeyValPair> pairs;
 

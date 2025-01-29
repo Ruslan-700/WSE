@@ -9,8 +9,8 @@ int mission_template::add_trigger(const trigger &newTrigger, int templateNo, con
 	int tIndex = this->triggers.add_trigger(newTrigger);
 	trigger &actualNewTrigger = this->triggers.triggers[tIndex];
 
-	actualNewTrigger.conditions.id.format("Mission Template [%i] %s Trigger [%i] Conditions%s", templateNo, this->id.static_c_str(), tIndex, id_suffix.c_str());
-	actualNewTrigger.consequences.id.format("Mission Template [%i] %s Trigger [%i] Consequences%s", templateNo, this->id.static_c_str(), tIndex, id_suffix.c_str());
+	actualNewTrigger.conditions.id.format("Mission Template [%d] %s Trigger [%d] Conditions%s", templateNo, this->id.c_str(), tIndex, id_suffix.c_str());
+	actualNewTrigger.consequences.id.format("Mission Template [%d] %s Trigger [%d] Consequences%s", templateNo, this->id.c_str(), tIndex, id_suffix.c_str());
 
 	return tIndex;
 }

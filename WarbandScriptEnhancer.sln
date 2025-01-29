@@ -300,8 +300,8 @@ Global
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|Mixed Platforms.Build.0 = Release|Win32
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|Win32.ActiveCfg = Release|Win32
 		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|Win32.Build.0 = Release|Win32
-		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.ActiveCfg = Release|Win32
-		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.Build.0 = Release|Win32
+		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.ActiveCfg = ReleaseNoSSE|Win32
+		{6EA1766D-106D-416A-A47E-44D4402BA850}.ReleaseSteamNoSSE|x86.Build.0 = ReleaseNoSSE|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

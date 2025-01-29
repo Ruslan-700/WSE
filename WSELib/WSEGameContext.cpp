@@ -189,8 +189,8 @@ void WSEGameContext::OnReadModuleFiles()
 
 		for (int j = 0; j < warband->menus[i].num_menu_items; ++j)
 		{
-			warband->menus[i].menu_items[j].conditions.id.format("Menu [%d] %s Menu Item [%d] %s Conditions", j, warband->menus[i].id.c_str(), i, warband->menus[i].menu_items[j].id.c_str());
-			warband->menus[i].menu_items[j].consequences.id.format("Menu [%d] %s Menu Item [%d] %s Consequences", j, warband->menus[i].id.c_str(), i, warband->menus[i].menu_items[j].id.c_str());
+			warband->menus[i].menu_items[j].conditions.id.format("Menu [%d] %s Menu Item [%d] %s Conditions", i, warband->menus[i].id.c_str(), j, warband->menus[i].menu_items[j].id.c_str());
+			warband->menus[i].menu_items[j].consequences.id.format("Menu [%d] %s Menu Item [%d] %s Consequences", i, warband->menus[i].id.c_str(), j, warband->menus[i].menu_items[j].id.c_str());
 		}
 	}
 
@@ -220,8 +220,8 @@ void WSEGameContext::OnReadGameFiles()
 	
 	for (int i = 0; i < warband->cur_game->triggers.num_triggers; ++i)
 	{
-		warband->cur_game->triggers.triggers[i].conditions.id.format("Trigger [%d] Conditions", i);
-		warband->cur_game->triggers.triggers[i].consequences.id.format("Trigger [%d] Consequences", i);
+		warband->cur_game->triggers.triggers[i].conditions.id.format("Game Trigger [%d] Conditions", i);
+		warband->cur_game->triggers.triggers[i].consequences.id.format("Game Trigger [%d] Consequences", i);
 	}
 	
 	WSE->SendContextEvent(this, GameLoad);

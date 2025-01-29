@@ -347,7 +347,7 @@ void WSESignatureScannerContext::FindWbAddresses()
 
 	wb::addresses::game_data_ptr = FindSignature("\x2E\xBA\x00\x00\x00\x00\x00\x3F\x00\x00\x00\x00", "xx????xxxxxx") + 12;
 
-	wb::addresses::post_world_triggers = FindSignature("", ""); //TODO
+	wb::addresses::post_world_triggers = FindSignature("\x83\xCD\xFF\x83\x3D", "xxxxx");
 
 #elif defined WARBAND_DEDICATED
 	wb::addresses::operation_Execute_jumptable = FindSignature("\x89\x11\x5B\x8B\xE5\x5D\xC2\x0C\x00\x8B\xFF", "xxxxxxxxxxx") + 11;

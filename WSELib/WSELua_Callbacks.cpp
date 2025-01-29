@@ -209,7 +209,7 @@ int lc_getGvar(lua_State *L)
 	std::string gvar = lua_tostring(L, 1);
 
 	if (WSE->LuaOperations.gvarMap.find(gvar) == WSE->LuaOperations.gvarMap.end())
-		luaL_error(L, "invalid gvar '%s'", gvar);
+		luaL_error(L, "invalid gvar '%s'", gvar.c_str());
 
 	int idx = WSE->LuaOperations.gvarMap[gvar];
 	lua_pushinteger(L, (lua_Integer)warband->basic_game.global_variables.get(idx));
@@ -226,7 +226,7 @@ int lc_setGvar(lua_State *L)
 	lua_Integer val = lua_tointeger(L, 2);
 
 	if (WSE->LuaOperations.gvarMap.find(gvar) == WSE->LuaOperations.gvarMap.end())
-		luaL_error(L, "invalid gvar '%s'", gvar);
+		luaL_error(L, "invalid gvar '%s'", gvar.c_str());
 
 	int idx = WSE->LuaOperations.gvarMap[gvar];
 	warband->basic_game.global_variables.set(idx, val);
@@ -588,7 +588,7 @@ int lc_addPrsnt(lua_State *L)
 	while (lua_next(L, -2))
 	{
 		wb::simple_trigger &curTrigger = newP.simple_triggers.simple_triggers[i];
-		lFillSimpleTrigger(L, curTrigger, -2);
+		lFillSimpleTrigger(L, curTrigger, -2, rgl::timer_kind::mission);
 
 		i++;
 	}

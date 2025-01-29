@@ -3,6 +3,20 @@
 #include <Windows.h>
 #include "WSE.h"
 
+
+void WSEScreenContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
+{
+#if defined WARBAND
+	switch (evt)
+	{
+	case OnFrame:
+		if (WSE->SettingsIni.Bool("messages", "fix_notification_messages", true))
+			warband->window_manager.message_render_queue_cur_y = 0;
+		break;
+	}
+#endif
+}
+
 void WSEScreenContext::Message(unsigned int color, std::string format, ...)
 {
 	char buffer[1024];

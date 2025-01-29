@@ -27,8 +27,3 @@ void timer::increase(float offset)
 {
 	this->value = warband->timers[this->timer_no] + (__int64)(offset * 100000.0f);
 }
-
-
-mission_timer::mission_timer() : timer(0)
-{
-}

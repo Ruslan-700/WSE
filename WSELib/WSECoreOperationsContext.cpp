@@ -494,7 +494,7 @@ void TimerReset(WSECoreOperationsContext *context)
 	context->ExtractRegister(timer_no);
 	context->ExtractBoolean(use_game_time);
 
-	context->m_timer_registers[timer_no].timer_no = use_game_time ? 0 : 2;
+	context->m_timer_registers[timer_no].timer_no = use_game_time ? rgl::timer_kind::app : rgl::timer_kind::mission;
 	context->m_timer_registers[timer_no].update();
 }
 
