@@ -5,11 +5,7 @@
 #include "WSELib.rc.h"
 #include "WSELua_Helpers.h"
 
-const char *const lShortTypeNames[] = {
-	"none", "nil", "bool", "usrdat", "num", "str",
-	"table", "func", "usrdat", "thread", "proto", "cdata"
-};
-
+const char *const lShortTypeNames[] = {"none", "nil", "bool", "lusrdata", "num", "str", "table", "func", "usrdata", "thread", "proto", "cdata"};
 #define numLTypes 12
 
 void gPrint(const char *msg)
@@ -856,21 +852,42 @@ size_t inline findClosingBracketIndex(const std::string &s, size_t start, size_t
 	throw std::logic_error(err);
 }
 
+//LUA_T* -> Flag
 lTypeF inline getLTypeFlag(int type)
 {
 	return (lTypeF)(1 << type);
 }
 
+//short type name -> Flag
 lTypeF inline getLTypeFlag(std::string &str)
 {
 	for (int i = 1; i < numLTypes; i++)
+	{
 		if (lShortTypeNames[i] == str)
 			return getLTypeFlag(i - 1);
+	}
 
 	if (str == "any")
 		return lAny;
 
 	throw std::logic_error("unrecognized flag '" + str + "'");
+}
+
+//Mask for lTypeF -> "int|str", etc
+std::string getLTypeNamesFromMask(int mask)
+{
+	if (mask == 0) return "none";
+	std::string res = "";
+
+	for (int i = 1; i < numLTypes; i++)
+	{
+		if (mask & getLTypeFlag(i))
+		{
+			if (res != "") res += '|';
+			res += lShortTypeNames[i + 1];
+		}
+	}
+	return res;
 }
 
 struct tableCheckOptions
@@ -1032,10 +1049,11 @@ bool inline checkDefinedPair(lua_State *L, int sIndex, const std::string &str, c
 {
 	if (pair.val.isFlag)
 	{
-		if (!(getLTypeFlag(lua_type(L, sIndex)) & pair.val.val))
+		lTypeF t = getLTypeFlag(lua_type(L, sIndex));
+
+		if ( !(t & pair.val.val) )
 		{
-			//errMsg += std::to_string(lua_type(L, sIndex)) + "," + std::to_string(getLTypeFlag(lua_type(L, sIndex))) + "," + std::to_string(pair.val.val);
-			errMsg += "val " + curTreePos + "." + pair.key.name + " has invalid type";
+			errMsg += "val of " + curTreePos + "." + pair.key.name + " has invalid type. Allowed  '" + getLTypeNamesFromMask(pair.val.val) + "', got '" + getLTypeNamesFromMask(t) + "'";
 			return false;
 		}
 	}
@@ -1043,7 +1061,7 @@ bool inline checkDefinedPair(lua_State *L, int sIndex, const std::string &str, c
 	{
 		if (lua_type(L, sIndex) != LUA_TTABLE)
 		{
-			errMsg += "val " + curTreePos + "." + pair.key.name + " must be a table";
+			errMsg += "val of " + curTreePos + "." + pair.key.name + " must be a table";
 			return false;
 		}
 
@@ -1054,13 +1072,13 @@ bool inline checkDefinedPair(lua_State *L, int sIndex, const std::string &str, c
 	{
 		if (lua_type(L, sIndex) != LUA_TNUMBER)
 		{
-			errMsg += "val " + curTreePos + "." + pair.key.name + " must be a num";
+			errMsg += "val of " + curTreePos + "." + pair.key.name + " must be a num";
 			return false;
 		}
 
 		if (pair.val.val != lua_tointeger(L, sIndex))
 		{
-			errMsg += "val " + curTreePos + "." + pair.key.name + " must be " + std::to_string(pair.val.val);
+			errMsg += "val of " + curTreePos + "." + pair.key.name + " must be " + std::to_string(pair.val.val);
 			return false;
 		}
 	}
@@ -1138,14 +1156,14 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 			{
 				if (options.keyF != -1 && !(getLTypeFlag(lua_type(L, -2)) & options.keyF))
 				{
-					errMsg += "key " + curTreePos + "." + lToStr_t(L, -2) + " has invalid type";
+					errMsg += "key of " + curTreePos + "." + lToStr_t(L, -2) + " has invalid type";
 					lua_pop(L, 1);
 					return false;
 				}
 
 				if (options.valF != -1 && !(getLTypeFlag(lua_type(L, -1)) & options.valF))
 				{
-					errMsg += "val " + curTreePos + "." + lToStr_t(L, -1) + " has invalid type";
+					errMsg += "val of " + curTreePos + "." + lToStr_t(L, -1) + " has invalid type";
 					lua_pop(L, 1);
 					return false;
 				}
@@ -1230,8 +1248,8 @@ void checkTableStructure(lua_State *L, int sIndex, std::string structure)
 	if (findClosingBracketIndex(structure, 0, structure.length() - 1, '}', true) != structure.length() - 1)
 		throw std::logic_error("Structure does not stop behind closing bracket");
 
-	std::string errMsg = "invalid argument, ";
-	if (!_checkTableStructure(L, sIndex, structure, 1, structure.length() - 2, "arg", errMsg))
+	std::string errMsg = "bad table, ";
+	if (!_checkTableStructure(L, sIndex, structure, 1, structure.length() - 2, "table", errMsg))
 		luaL_error(L, errMsg.c_str());
 }
 /************   table arg checking end   ************/

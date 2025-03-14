@@ -681,7 +681,7 @@
 
 <body id="bd">
 	<div>
-		<div style="font-size: 11px">version from 24.01.2025, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
+		<div style="font-size: 11px">version from 14.03.2025, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
 			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
 			<button onclick="expand_all()">Expand all</button>
@@ -790,15 +790,15 @@
 					<p>Note that in Lua, you don't have to assign all return values. For example, if you don't care about the error code, just omit the corresponding lhs var.</p>
 					<p>I'm not sure what the error code signalizes, however it should be 0 if there was no error.</p>
 					<br>
-					<p>Now with Lhs operations, there is a problem. Their syntax is:<br>
-						<span class="marl20 keyword">(lhs_op, &ltdestination&gt, &ltparam1&gt, &ltparam1&gt, ...)</span>
+					<p class="border-top"><br>With Lhs operations, there is a slight problem. Their syntax is:<br>
+						<span class="marl20 keyword">(lhs_op, &ltdestination_param&gt, &ltparam1&gt, &ltparam2&gt, ...)</span>
 					</p>
 					<p>
 						While in lua you want to write:<br>
-						<span class="marl20 keyword">result = game.lhs_op(param1, param1, ...)</span>
+						<span class="marl20 keyword">result = game.lhs_op(param1, param2, ...)</span>
 					</p>
 					<p>Why is this a problem?<br>
-						You have different parameter count... Now, WSE could detect that you are calling an Lhs operation and fill in the missing parameter, but: the operation might actually use the initial value of it to affect the result.<br>
+						Because of different parameter count. Now, WSE could detect that you are calling an Lhs operation and fill in the missing parameter, but: the operation might actually use the initial value of it to affect the result.<br>
 						An obvious example for this is <span class="keyword">val_add</span>. It makes no sense to write <span class="keyword">result = val_add(5)</span>. What is it adding 5 to?
 					</p>
 					<p>Whether or not an operation uses the initial value can't simply be detected by WSE. So in the past it used to be that you had to write <span class="keyword">result = game.lhs_op(some_number, var1, var2, ...)</span> for all lhs operations (some_number was just 0 mostly). Annoying.</p>
@@ -1123,7 +1123,7 @@
 					<p>tablePsys must have the following format</p>
 					<pre class="code" txt>
 						tablePsys = {
-							id = str, [flags] = {int, int, ...}, mesh = str,
+							id = str, [flags] = {int, int, ...}, mesh = str|int,
 							num_particles = int, life = num, damping = num, gravity_strength = num, turbulance_size = num, turbulance_strength = num,
 							alpha_keys			= {{num, num}, {num, num}},
 							  red_keys			= {{num, num}, {num, num}},

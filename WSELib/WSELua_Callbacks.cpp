@@ -623,7 +623,7 @@ int lc_addPsys(lua_State *L)
 #if defined WARBAND
 	//WSE->Log.Info("psys check format...");
 	checkTableStructure(L, 1,
-		"{id=str, [flags]={(val=num)}, mesh=str,\
+		"{id=str, [flags]={(val=num)}, mesh=str|num,\
 			num_particles=num, life=num, damping=num, gravity_strength=num, turbulance_size=num, turbulance_strength=num,\
 			alpha_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
 			red_keys			= {1={1=num, 2=num}, 2={1=num, 2=num}},\
@@ -645,19 +645,39 @@ int lc_addPsys(lua_State *L)
 	new_sys.id = lua_tostring(L, -1);
 	lua_pop(L, 1);
 
-	lua_getfield(L, 1, "mesh");
+
 	new_sys.mesh_name.initialize();
-	new_sys.mesh_name = lua_tostring(L, -1);
-	lua_pop(L, 1);
 
-	new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name, WSE->ModuleSettingsIni.Bool("", "use_case_insensitive_mesh_searches"));
+	lua_getfield(L, 1, "mesh");
+	if (lua_type(L, -1) == LUA_TSTRING)
+	{
+		new_sys.mesh_name = lua_tostring(L, -1);
+		lua_pop(L, 1);
 
-	if (new_sys.mesh == nullptr){
-		rgl::string name = new_sys.mesh_name;
-		rgl::_free((void*)&new_sys);
-		luaL_error(L, "addPsys: Could not find mesh %s", name.c_str());
+		new_sys.mesh = warband->resource_manager.try_get_mesh(new_sys.mesh_name, WSE->ModuleSettingsIni.Bool("", "use_case_insensitive_mesh_searches"));
+
+		if (new_sys.mesh == nullptr){
+			rgl::string name = new_sys.mesh_name;
+			rgl::_free((void*)&new_sys);
+			luaL_error(L, "addPsys: Could not find mesh %s", name.c_str());
+		}
+	}
+	else
+	{
+		int idx = lua_tointeger(L, -1);
+		lua_pop(L, 1);
+
+		if (idx < 0 || idx >= warband->resource_manager.meshes.size())
+		{
+			rgl::_free((void*)&new_sys);
+			luaL_error(L, "addPsys: Invalid mesh index %d", idx);
+		}
+
+		new_sys.mesh = warband->resource_manager.meshes[idx];
+		new_sys.mesh_name = new_sys.mesh->name;
 	}
 	//WSE->Log.Info("found mesh");
+
 
 	new_sys.flags = 0;
 	lua_getfield(L, 1, "flags");
