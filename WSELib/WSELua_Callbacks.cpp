@@ -802,6 +802,28 @@ int lc_removePsys(lua_State *L)
 #endif
 }
 
+REG(getMeshId)
+int lc_getMeshId(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lNum);
+
+	int idx = lua_tointeger(L, 1);
+	if (idx < 0 || idx >= warband->resource_manager.meshes.size())
+	{
+		luaL_error(L, "Invalid mesh index %d", idx);
+	}
+
+	lua_pushstring(L, warband->resource_manager.meshes[idx]->name);
+	return 1;
+}
+
+REG(getNumMeshes)
+int lc_getNumMeshes(lua_State *L)
+{
+	lua_pushinteger(L, warband->resource_manager.meshes.size());
+	return 1;
+}
+
 REG2(partiesIt, partiesI)
 int lc_partiesIt(lua_State *L)
 {

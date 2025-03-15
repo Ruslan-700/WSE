@@ -681,7 +681,7 @@
 
 <body id="bd">
 	<div>
-		<div style="font-size: 11px">version from 14.03.2025, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
+		<div style="font-size: 11px">version from 15.03.2025, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
 			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
 			<button onclick="expand_all()">Expand all</button>
@@ -1289,6 +1289,12 @@
 						</li>
 						<li>
 							<span class="keyword">game.getNumTriggers(strTemplateId|intTemplateNo)</span> returns the number of triggers for this mission template.
+						</li>
+						<li>
+							<span class="keyword">game.getMeshId(index)</span> returns name of mesh at index (mesh no). Note: This does not access the mesh list in module_meshes. Index is for the internal list of all meshes loaded from the .brf files.
+						</li>
+						<li>
+							<span class="keyword">game.getNumMeshes()</span> returns number of meshes. Note: This does not access the mesh list in module_meshes. It is for the internal list of all meshes loaded from the .brf files.
 						</li>
 						<li>
 							<span class="keyword">game.OnRglLogWrite(str)</span> this function, if it exists, gets called when something gets written to rgl_log.txt. It receives the log message as its parameter.
