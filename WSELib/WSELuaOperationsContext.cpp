@@ -159,7 +159,7 @@ bool opCall(WSELuaOperationsContext *context)
 
 		if (!count || !subs.length() ) context->ScriptError("bad func_name: %s", funcName.c_str());
 
-		lua_getfield(L, stack_index, funcName.substr(start, end - start).c_str());
+		lua_getfield(L, stack_index, subs.c_str());
 		
 		if (lua_type(L, -1) == LUA_TNIL)
 		{
@@ -237,6 +237,16 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	lua_pop(context->luaState, 1);
 	return true;
+}
+
+bool opTest(WSELuaOperationsContext *context)
+{
+	int index;
+	context->ExtractValue(index);
+
+	checkStackIndex(context, index);
+
+	return lua_toboolean(context->luaState, index) != 0;
 }
 
 /************************/
@@ -413,14 +423,24 @@ void WSELuaOperationsContext::OnLoad()
 		"Stores the type of the value at <1> in the stack into <0>. Return types can be found in header_common(_addon).py (LUA_T*)",
 		"destination", "index");
 
+	std::string ind(65, ' ');
+	ind += '#';
 	RegisterOperation("lua_call", opCall, Both, Cf, 2, 2,
-		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack. You can use underscores and t1.t2.func() in func_name.",
+		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values.\n"\
+		+ ind + "The first argument is pushed first. All arguments get removed from the stack automatically.\n"\
+		+ ind + "The last return value will be at the top of the stack.\n"\
+		+ ind + "You can use underscores and 't1.t2.func()'-syntax in func_name.\n"\
+		+ ind + "Warning: leaves a traceback function on the stack. This won't be fixed in order to not break existing code.",
 		"func_name", "num_args");
 
 	callTriggerOpcode = getOpcodeRangeCur();
 	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 2, 3,
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
 		"reference", "triggerPart", "context");
+
+	RegisterOperation("lua_test", opTest, Both, Cf, 1, 1,
+		"Checks if the lua stack at <0> evaluates to true (any value different from false and nil). If you want to test only actual boolean values, check the type too.",
+		"index");
 
 #ifdef WARBAND_VANILLA
 	WSE->Hooks.HookFunction(this, wb::addresses::post_world_triggers, PostWorldTriggersHook);

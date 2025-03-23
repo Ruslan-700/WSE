@@ -41,24 +41,32 @@ function print(...)
 	_print(s)
 end
 
-function printTable(t, prefix)
-    if not prefix then
-        prefix = ""
-    end
+local function _format(v)
+    if type(v) == "string" then return "'" .. v .. "'" else return tostring(v) end
+end
+
+function printTable(t, prefix, seen)
+    prefix = prefix or ""
+    seen = seen or {}
+    seen[t] = true
 
     for k,v in pairs(t) do
-        local typ = "[" .. type(v) .. "] "
-        local name = "'" .. tostring(k) .. "' ="
-        local val = " " .. tostring(v)
-
         if type(v) == "table" then
-            print(prefix .. typ .. name)
-            printTable(v, prefix .. "___")
-
+            if seen[v] then
+                print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
+                print(prefix .. "    #Reference to parent table#")
+                print(prefix .. "}")   
+            else
+                print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
+                printTable(v, prefix .. "    ", seen)
+                print(prefix .. "}")   
+            end
         else
-            print(prefix .. typ .. name .. val)
+            print(string.format("%s[%s] %s = [%s] %s", prefix, type(k), _format(k), type(v), _format(v)))
         end
     end
+
+    seen[t] = nil
 end
 
 function make(_table, ...)
