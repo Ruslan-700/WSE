@@ -76,7 +76,7 @@ int lc_execOperation(lua_State *L)
 			wop.operands[curOperandIndex] = curPosReg;
 		}
 		else
-			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex, opName.c_str());
+			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex + 1, opName.c_str());
 
 		curOperandIndex++;
 		curLArgIndex++;

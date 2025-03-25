@@ -51,6 +51,12 @@
 			border: 1px solid rgb(200,200,200);
 		}
 
+		.content_block:has(> .spoiler)
+		{
+			border: 1px solid rgba(200, 200, 200, 0.295);
+			margin: 0;
+		}
+
 		.content_block_caption
 		{
 			font-weight: bold;
@@ -63,6 +69,13 @@
 		.content_block_caption:hover
 		{
 			background-color: rgb(55 55 55 / 48%);
+		}
+
+		.spoiler
+		{
+			font-weight: unset !important;
+			font-size: unset !important;
+			border-bottom: none !important;
 		}
 
 		.border-top
@@ -1427,11 +1440,27 @@
 				<div class="content_block_caption">Additional Libraries</div>
 				<ul>
 					<li>
-						<a href="https://lualanes.github.io/lanes/" target="_blank" rel="noopener noreferrer">luaLanes</a> v3.17.1 is included for multithreading. Check out Oliveran's AI! (->Examples). <span class="keyword">lanes = require("lanes").configure()</span>
+						<a href="https://lualanes.github.io/lanes/" target="_blank" rel="noopener noreferrer">luaLanes</a> v3.17.1 is included for multithreading. Check out Oliveran's AI! (->Examples). <span class="keyword">lanes = require("lanes").configure()</span><br>
+						Some things I learned while writing a leaderboard for a dedicated server:
+						<ul>
+							<li>Triggers don't work in a thread.</li>
+							<li>
+								In general, access to the game from a thread is risky. You may get away with a lot, but the proper way is to use a worker type pattern.<br>
+								Create a worker thread that listens for a job message via a shared linda object, then do computing and send the result back to the main thread, where it is applied to the game.<br>
+							</li>
+							<li>I tried to include the sqlite library in an upvalue, it did not work. In the end I wrapped everything inside a function.</li>
+							<li>Runtime errors in your thread are silent. Fortunately you can wrap your worker function in a pcall and print any error.</li>
+						</ul>
+						
+						Full code can be found <a href="https://github.com/kumpuu/Warband-Lua-Examples/blob/master/lua/stats.lua" target="_blank" rel="noopener noreferrer"">here.</a>
 					</li>
 					<li>
 						<a href="http://lua.sqlite.org/index.cgi/doc/tip/doc/lsqlite3.wiki" target="_blank" rel="noopener noreferrer">LSQLite3</a> v0.9.6 (sqlite 3.24.0) library for your database needs. <span class="keyword">sqlite3 = require("lsqlite3")</span>.
 					</li>
+					<li>
+						<a href="https://github.com/orbitalquark/lua-std-regex" target="_blank" rel="noopener noreferrer">lua-std-regex</a> v1.0 (binding for C++ regex which is better than lua's) <span class="keyword">regex = require("regex")</span>.
+					</li>
+					<li>
 						mobDebug, see 'Debugger' chapter.
 					</li>
 				</ul>
@@ -1891,7 +1920,7 @@
 					  end)
 				</pre>
 			</div>
-
+			
 			<div class="content_block">
 				<div class="content_block_caption">Oliveran's Combat AI (multithreaded)</div>
 				<p>This was made by Oliveran in 2017. I never ran this myself or reviewed the code in any detail, but the results speak for themselves.</p>
@@ -1940,6 +1969,12 @@
 					<a href="https://github.com/kumpuu/-WB-Competitive-style-combat-AI" target="_blank" rel="noopener noreferrer">Code</a><br>
 					<a href="https://forums.taleworlds.com/index.php?threads/wb-competitive-style-combat-ai-playable-version-0-2-out.363466/" target="_blank" rel="noopener noreferrer">Forum Post</a><br>
 				</div>
+			</div>
+
+			<div class="content_block">
+				<div class="content_block_caption">Code extract - Dedicated Server</div>
+				<p>Some of the lua code I made for a server. Including a stats database and animation helper.</p>
+				<a href="https://github.com/kumpuu/Warband-Lua-Examples/blob/master/lua/stats.lua" target="_blank" rel="noopener noreferrer"">Github</a>
 			</div>
 		</div>
 	</div>
