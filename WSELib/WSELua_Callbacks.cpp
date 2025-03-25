@@ -11,6 +11,7 @@
 #include "luaSockets/src/luasocket.h"
 #include "LSQLite3/lsqlite3.h"
 #include "WSELib.rc.h"
+#include "lua-std-regex/lregex.h"
 
 typedef std::pair<const char*, lua_CFunction> callback_def; //name, callback()
 
@@ -75,7 +76,7 @@ int lc_execOperation(lua_State *L)
 			wop.operands[curOperandIndex] = curPosReg;
 		}
 		else
-			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex, opName.c_str());
+			luaL_error(L, "invalid operand #%d to module operation '%s'", curOperandIndex + 1, opName.c_str());
 
 		curOperandIndex++;
 		curLArgIndex++;
@@ -1207,7 +1208,8 @@ static std::vector<callback_def> libs =
 	{ "mobDebug", require_mobDebug },
 	{ "lsqlite3", luaopen_lsqlite3 },
 	{ "lanes.core", luaopen_lanes_core },
-	{ "lanes", require_luaLanes }
+	{ "lanes", require_luaLanes },
+	{ "regex", luaopen_regex }
 };
 
 int wse_require_loader(lua_State *L)

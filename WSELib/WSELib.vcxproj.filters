@@ -75,6 +75,9 @@
     <Filter Include="Source Files\operations\WSELuaOperationsContext\LSQLite3">
       <UniqueIdentifier>{d3d06380-dc87-479a-8fc3-160731f69562}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\operations\WSELuaOperationsContext\lua-std-regex">
+      <UniqueIdentifier>{791f3236-5366-4e39-a38b-016cd8fb6c81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WSEMissionContext.h">
@@ -377,6 +380,12 @@
     <ClInclude Include="LSQLite3\lsqlite3.h">
       <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
     </ClInclude>
+    <ClInclude Include="lua-std-regex\lregex.h">
+      <Filter>Source Files\operations\WSELuaOperationsContext\lua-std-regex</Filter>
+    </ClInclude>
+    <ClInclude Include="lua-std-regex\string_view.hpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext\lua-std-regex</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WSEMissionContext.cpp">
@@ -633,6 +642,9 @@
     </ClCompile>
     <ClCompile Include="LSQLite3\sqlite3.c">
       <Filter>Source Files\operations\WSELuaOperationsContext\LSQLite3</Filter>
+    </ClCompile>
+    <ClCompile Include="lua-std-regex\lregex.cpp">
+      <Filter>Source Files\operations\WSELuaOperationsContext\lua-std-regex</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

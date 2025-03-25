@@ -130,13 +130,16 @@ int opGetType(WSELuaOperationsContext *context)
 
 bool opCall(WSELuaOperationsContext *context)
 {
+	lua_State *L = context->luaState;
 	std::string funcName;
 	int numArgs;
 
 	context->ExtractString(funcName);
+	funcName = spaces_to_underscores(funcName);
+
 	context->ExtractValue(numArgs);
 
-	int stackSize = lua_gettop(context->luaState);
+	int stackSize = lua_gettop(L);
 	//gPrintf("lua_call top1: %i", stackSize);
 
 	if (stackSize < numArgs)
@@ -144,25 +147,54 @@ bool opCall(WSELuaOperationsContext *context)
 
 	WSE->LuaOperations.luaContext = context->GetCurrentTrigger();
 
-	lua_getglobal(context->luaState, funcName.c_str());
+	//This loop is because we allow "table1.table2.func" syntax
+	int stack_index = LUA_GLOBALSINDEX;
+	size_t start = 0;
+	size_t end;
+
+	do {
+		end = funcName.find('.', start);
+		size_t count = end - start;
+		std::string subs = funcName.substr(start, count);
+
+		if (!count || !subs.length() ) context->ScriptError("bad func_name: %s", funcName.c_str());
+
+		lua_getfield(L, stack_index, subs.c_str());
+		
+		if (lua_type(L, -1) == LUA_TNIL)
+		{
+			lua_remove(L, -1);
+			context->ScriptError("'_G.%s' is nil", funcName.substr(0, end - start).c_str());
+		}
+
+		if (stack_index > 0) //not LUA_GLOBALSINDEX anymore
+		{
+			lua_remove(L, stack_index);
+		}
+		else{
+			stack_index = lua_gettop(L);
+		}
+		start = end + 1;
+	} 
+	while (end != std::string::npos);
 
 	if (numArgs)
-		lua_insert(context->luaState, stackSize - numArgs + 1);
+		lua_insert(L, stackSize - numArgs + 1);
 
-	lua_pushcfunction(context->luaState, traceback);
-	lua_insert(context->luaState, stackSize - numArgs + 1);
+	lua_pushcfunction(L, traceback);
+	lua_insert(L, stackSize - numArgs + 1);
 
 	context->lua_call_cfResults.push_back(true);
 
-	if (lua_pcall(context->luaState, numArgs, LUA_MULTRET, stackSize - numArgs + 1))
+	if (lua_pcall(L, numArgs, LUA_MULTRET, stackSize - numArgs + 1))
 	{
-		printLastLuaError(context->luaState);
+		printLastLuaError(L);
 	}
 
 	bool cf = context->lua_call_cfResults.back();
 	context->lua_call_cfResults.pop_back();
 
-	//gPrintf("lua_call top2: %i", lua_gettop(context->luaState));
+	//gPrintf("lua_call top2: %i", lua_gettop(L));
 	return cf;
 }
 
@@ -205,6 +237,16 @@ bool opTriggerCallback(WSELuaOperationsContext *context)
 
 	lua_pop(context->luaState, 1);
 	return true;
+}
+
+bool opTest(WSELuaOperationsContext *context)
+{
+	int index;
+	context->ExtractValue(index);
+
+	checkStackIndex(context, index);
+
+	return lua_toboolean(context->luaState, index) != 0;
 }
 
 /************************/
@@ -381,14 +423,24 @@ void WSELuaOperationsContext::OnLoad()
 		"Stores the type of the value at <1> in the stack into <0>. Return types can be found in header_common(_addon).py (LUA_T*)",
 		"destination", "index");
 
+	std::string ind(65, ' ');
+	ind += '#';
 	RegisterOperation("lua_call", opCall, Both, Cf, 2, 2,
-		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values. The first argument is pushed first. All arguments get removed from the stack automatically. The last return value will be at the top of the stack.",
+		"Calls the lua function with name <0>, using the lua stack to pass <1> arguments and to return values.\n"\
+		+ ind + "The first argument is pushed first. All arguments get removed from the stack automatically.\n"\
+		+ ind + "The last return value will be at the top of the stack.\n"\
+		+ ind + "You can use underscores and 't1.t2.func()'-syntax in func_name.\n"\
+		+ ind + "Warning: leaves a traceback function on the stack. This won't be fixed in order to not break existing code.",
 		"func_name", "num_args");
 
 	callTriggerOpcode = getOpcodeRangeCur();
 	RegisterOperation("lua_triggerCallback", opTriggerCallback, Both, Cf, 2, 3,
 		"Calls the lua trigger callback with <0>. This operation is utilized internally and should not be used, unless you know what you are doing.",
 		"reference", "triggerPart", "context");
+
+	RegisterOperation("lua_test", opTest, Both, Cf, 1, 1,
+		"Checks if the lua stack at <0> evaluates to true (any value different from false and nil). If you want to test only actual boolean values, check the type too.",
+		"index");
 
 #ifdef WARBAND_VANILLA
 	WSE->Hooks.HookFunction(this, wb::addresses::post_world_triggers, PostWorldTriggersHook);
