@@ -12,10 +12,10 @@ extern "C" {
  */
 static std::regex get_regex(lua_State *L) {
 	try {
-		return std::regex{luaL_checkstring(L, 2)};
+		return std::regex(luaL_checkstring(L, 2));
 	} catch (const std::regex_error &e) {
 		luaL_argerror(L, 2, (lua_pushfstring(L, "invalid regex: %s", e.what()), lua_tostring(L, -1)));
-		return std::regex{};
+		return std::regex();
 	}
 }
 
@@ -29,11 +29,11 @@ static int get_init(lua_State *L) {
 	return init > 0 && init < len ? init : 0;
 }
 
-using svmatch = std::match_results<nonstd::string_view::const_iterator>;
+typedef std::match_results<nonstd::string_view::const_iterator> svmatch;
 
 /** Returns a regex search result using arguments on the Lua stack. */
 static svmatch search(lua_State *L) {
-	const nonstd::string_view s{luaL_checkstring(L, 1)};
+	const nonstd::string_view s(luaL_checkstring(L, 1));
 	svmatch results;
 	return (std::regex_search(s.cbegin() + get_init(L), s.cend(), results, get_regex(L)), results);
 }
@@ -64,11 +64,11 @@ static int find(lua_State *L) {
  * This class is the "initial state" used in Lua's generic for loop.
  */
 class Generator {
-	using iterator = std::regex_iterator<nonstd::string_view::const_iterator>;
+	typedef std::regex_iterator<nonstd::string_view::const_iterator> iterator;
 
 public:
 	Generator(const char *s_, const std::regex &re_, int init)
-			: s{s_}, sv{s.c_str()}, re{re_}, it{sv.cbegin() + init, sv.cend(), re} {}
+			: s(s_), sv(s.c_str()), re(re_), it(sv.cbegin() + init, sv.cend(), re) {}
 	iterator next() { return it++; }
 	iterator &end() { return last; }
 
@@ -109,13 +109,13 @@ static int gmatch(lua_State *L) {
 
 /** regex.gsub() Lua function. */
 static int gsub(lua_State *L) {
-	const nonstd::string_view s{luaL_checkstring(L, 1)};
+	const nonstd::string_view s(luaL_checkstring(L, 1));
 	const std::regex re = get_regex(L);
 	if (!lua_isstring(L, 3) && !lua_isfunction(L, 3) && !lua_istable(L, 3))
 		return luaL_typerror(L, 3, "string/function/table");
 	int n = 0, N = luaL_optinteger(L, 4, 0), repl = lua_type(L, 3);
 	std::string result;
-	auto it = std::regex_iterator<nonstd::string_view::const_iterator>{s.cbegin(), s.cend(), re},
+	auto it = std::regex_iterator<nonstd::string_view::const_iterator>(s.cbegin(), s.cend(), re),
 			 last_it = it;
 	for (decltype(it) last; it != last && (!N || n < N); last_it = it++) {
 		result.append(&*it->prefix().first, it->prefix().length());
@@ -132,7 +132,7 @@ static int gsub(lua_State *L) {
 				result.append(&*(*it)[0].first, it->length(0)); // keep the original match
 			lua_pop(L, 1), n++;
 		} else {
-			const nonstd::string_view r{lua_tostring(L, 3)};
+			const nonstd::string_view r(lua_tostring(L, 3));
 			it->format(std::back_inserter(result), r.data(), r.data() + r.size()), n++;
 		}
 	}
