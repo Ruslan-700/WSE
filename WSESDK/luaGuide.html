@@ -1512,11 +1512,17 @@
 							<p>Disabled package.loadlib, package.cpath, io.popen. os.execute, os.getenv, os.tmpname, ffi library, loading bytecode (can be exploited)</p>
 						</li>
 						<li>
-							<p>Restrict dofile, loadfile and all IO operations to the lua directory</p>
-							<p>Access storage folder by prefixing <span class="keyword">%storage%</span> (storage folder is <span class="keyword">[warband_dir]\WSE\[Module]\</span> by default)</p>
-							<p><pre class="code">
-								local f, err = io.open("%storage%\\file.json", "r")
-							</pre></p>
+							<p>
+								Restrict dofile, loadfile and all IO operations to the lua directory
+								<p>
+									Access storage folder by prefixing <span class="keyword">%storage%</span>	
+									<p><pre class="code">
+										local f, err = io.open("%storage%\\file.json", "r")
+									</pre></p>
+									For dedicated servers, storage folder is at <span class="keyword">[warband_dir]\WSE\[Module]\</span> by default.<br>
+									For client, look in <span class="keyword">C:\Users\[user]\Documents\Mount&Blade Warband\WSE\[Module]</span> (WSE 2 uses <span class="keyword">Mount&Blade Warband WSE2</span>).
+								</p>
+							</p>
 						</li>
 					</ul>
 				</div>
