@@ -951,6 +951,102 @@ int lc_playersIt(lua_State *L)
 	return lPushIterator(L, it);
 }
 
+char* sandbox_path(const char* _path);
+GREG(lsdir)
+int lc_lsdir(lua_State *L)
+{
+	checkLArgs(L, 1, 1, lStr);
+	const char* path = lua_tostring(L, 1);
+
+	char* safePath = sandbox_path(path);
+	if (!safePath)
+	{
+		lua_pushnil(L);
+		lua_pushfstring(L, "lsdir: Could not create file iterator for path '%s' (sandbox error)", path);
+		return 2;
+	}
+
+	int size = strlen(safePath) + 3;
+	char* s = (char*)realloc(safePath, size);
+	strcat_s(s, size, "\\*");
+
+	int n = lFileIterator_Push(L, s);
+
+	free(safePath);
+	free(s);
+
+	if (!n)
+	{
+		lua_pushnil(L);
+		lua_pushfstring(L, "lsdir: Could not create file iterator for path '%s' (file error)", path);
+		return 2;
+	}
+
+	return n;
+}
+
+GREG(mkdir)
+int lc_mkdir(lua_State* L)
+{
+	checkLArgs(L, 1, 1, lStr);
+	const char* path = lua_tostring(L, 1);
+
+	char* safePath = sandbox_path(path);
+	if (!safePath)
+	{
+		lua_pushnil(L);
+		lua_pushstring(L, "WSE Sandbox error for path '%s'");
+		lua_pushinteger(L, 0);
+		return 3;
+	}
+
+	int ok = CreateDirectory(safePath, nullptr);
+	free(safePath);
+
+	if (ok)
+	{
+		lua_pushboolean(L, 1);
+		return 1;
+	}
+	else{
+		lua_pushnil(L);
+		lua_pushstring(L, GetLastErrorAsString().c_str());
+		lua_pushinteger(L, GetLastError());
+		return 3;
+	}
+}
+
+GREG(rmdir)
+int lc_rmdir(lua_State* L)
+{
+	checkLArgs(L, 1, 1, lStr);
+	const char* path = lua_tostring(L, 1);
+
+	char* safePath = sandbox_path(path);
+	if (!safePath)
+	{
+		lua_pushnil(L);
+		lua_pushstring(L, "WSE Sandbox error for path '%s'");
+		lua_pushinteger(L, 0);
+		return 3;
+	}
+
+	int ok = RemoveDirectory(safePath);
+	free(safePath);
+
+	if (ok)
+	{
+		lua_pushboolean(L, 1);
+		return 1;
+	}
+	else{
+		lua_pushnil(L);
+		lua_pushstring(L, GetLastErrorAsString().c_str());
+		lua_pushinteger(L, GetLastError());
+		return 3;
+	}
+}
+
 REG(hookOperation)
 int lc_hookOperation(lua_State *L)
 {

@@ -79,3 +79,4 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 void checkTableStructure(lua_State *L, int sIndex, std::string structure);
 
 std::string load_resource_str(LPSTR lpName);
+std::string GetLastErrorAsString();
