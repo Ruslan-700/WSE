@@ -132,3 +132,62 @@ bool lPlayersIterCurValIsValid(gameIterator *it)
 {
 	return it->curVal < NUM_NETWORK_PLAYERS;
 }
+
+struct file_iterator
+{
+	bool valid;
+	WIN32_FIND_DATA FindFileData;
+	HANDLE hFind;
+};
+
+int lFileIterator_Free(lua_State *L)
+{
+	file_iterator* data = (file_iterator*)lua_touserdata(L, 1);
+	FindClose(data->hFind);
+
+	return 0;
+}
+
+int lFileIterator_Next(lua_State *L)
+{
+	file_iterator *it = (file_iterator*)lua_touserdata(L, lua_upvalueindex(1));
+
+	if (it && it->valid)
+	{
+		lua_pushstring(L, it->FindFileData.cFileName);
+		lua_pushinteger(L, it->FindFileData.dwFileAttributes);
+
+		if ( !FindNextFile(it->hFind, &(it->FindFileData)) ) it->valid = false;
+
+		return 2;
+	}
+	else
+	{
+		lua_pushnil(L);
+		return 1;
+	}
+}
+
+int lFileIterator_Push(lua_State* L, const char* path)
+{
+	file_iterator* it = (file_iterator*)lua_newuserdata(L, sizeof(file_iterator));
+	
+	//We will create a HANDLE and need to free it when our iterator gets garbace collected
+	if (luaL_newmetatable(L, "file_iterator_mt")) //returns 1 if not yet created. Leaves mt on stack in any case. The metatable will be stored in lua registry
+	{
+		lua_pushcfunction(L, lFileIterator_Free);
+		lua_setfield(L, -2, "__gc");
+	}
+	lua_setmetatable(L, -2);
+
+	it->hFind = FindFirstFile(path, &(it->FindFileData));
+	if (it->hFind == INVALID_HANDLE_VALUE)
+	{
+		it->valid = false;
+		return 0;
+	}
+
+	it->valid = true;
+	lua_pushcclosure(L, lFileIterator_Next, 1);
+	return 1;
+}

@@ -157,7 +157,7 @@ bool opCall(WSELuaOperationsContext *context)
 		size_t count = end - start;
 		std::string subs = funcName.substr(start, count);
 
-		if (!count || !subs.length() ) context->ScriptError("bad func_name: %s", funcName.c_str());
+		if (!count || !subs.length() ) context->ScriptError("bad func_name: '%s'", funcName.c_str());
 
 		lua_getfield(L, stack_index, subs.c_str());
 		
@@ -268,16 +268,22 @@ char* sandbox_path(const char* _path)
 	char* path_orig = path; //Might modify path pointer, but still want to free at the end
 
 	//Pick root_dir. Magic prefix <WSE> will access storage dir
+	std::string root;
 	const char* root_dir;
+
+	bool using_storage = false;
 	if (str_starts_with(path, STORAGE, true))
 	{
-		root_dir = WSE->LuaOperations.storage_dir.c_str();
+		using_storage = true;
+		root = WSE->LuaOperations.CreateStorageDir();
 		path += strlen(STORAGE);
 		if (str_starts_with(path, "\\")) path++;
 	}
-	else{
-		root_dir = WSE->LuaOperations.user_dir.c_str();
+	else
+	{
+		root = WSE->LuaOperations.user_dir;
 	}
+	root_dir = root.c_str();
 
 	int curLevel = 0;
 	int points = 0;
@@ -309,7 +315,7 @@ char* sandbox_path(const char* _path)
 			else if (points >= 2)
 			{
 				curLevel--;
-				if (curLevel < 0)
+				if ((curLevel < 0 && !using_storage) || (curLevel < -1)) //We allow to go back once when using %storage%, in order to access other modules.
 				{
 					free(path_orig);
 					return NULL;
@@ -1062,8 +1068,6 @@ void WSELuaOperationsContext::initLua()
 	std::replace(user_dir.begin(), user_dir.end(), '/', '\\'); //only backslash
 
 	user_dir += (user_dir.back() == '\\') ? "lua\\" : "\\lua\\";
-
-	storage_dir = this->CreateStorageDir();
 
 	/** Lets go **/
 	luaState = luaL_newstate();

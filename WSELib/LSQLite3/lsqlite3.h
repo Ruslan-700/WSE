@@ -2,8 +2,6 @@
 
 #include "lua.h"
 
-typedef char* (*str_callback)(const char* path);
-
 #ifdef __cplusplus
 extern "C"{
 #endif 
