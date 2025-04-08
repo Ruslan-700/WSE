@@ -971,8 +971,6 @@ int lc_lsdir(lua_State *L)
 	strcat_s(s, size, "\\*");
 
 	int n = lFileIterator_Push(L, s);
-
-	free(safePath);
 	free(s);
 
 	if (!n)
@@ -995,7 +993,7 @@ int lc_mkdir(lua_State* L)
 	if (!safePath)
 	{
 		lua_pushnil(L);
-		lua_pushstring(L, "WSE Sandbox error for path '%s'");
+		lua_pushfstring(L, "WSE Sandbox error for path '%s'", path);
 		lua_pushinteger(L, 0);
 		return 3;
 	}
@@ -1026,7 +1024,7 @@ int lc_rmdir(lua_State* L)
 	if (!safePath)
 	{
 		lua_pushnil(L);
-		lua_pushstring(L, "WSE Sandbox error for path '%s'");
+		lua_pushfstring(L, "WSE Sandbox error for path '%s'", path);
 		lua_pushinteger(L, 0);
 		return 3;
 	}
