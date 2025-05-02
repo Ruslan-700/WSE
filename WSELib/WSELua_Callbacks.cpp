@@ -967,11 +967,12 @@ int lc_lsdir(lua_State *L)
 	}
 
 	int size = strlen(safePath) + 3;
-	char* s = (char*)realloc(safePath, size);
-	strcat_s(s, size, "\\*");
+	safePath = (char*)realloc(safePath, size);
+	strcat_s(safePath, size, "\\*");
 
-	int n = lFileIterator_Push(L, s);
-	free(s);
+	int n = lFileIterator_Push(L, safePath);
+
+	free(safePath);
 
 	if (!n)
 	{

@@ -41,6 +41,10 @@ function print(...)
 	_print(s)
 end
 
+function printf(format, ...)
+    _print(string.format(format, ...))
+end
+
 local function _format(v)
     if type(v) == "string" then return "'" .. v .. "'" else return tostring(v) end
 end
