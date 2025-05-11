@@ -443,7 +443,7 @@ protected:
 				if (oldSize < size){
 					curDimPtr->resize(size);
 
-					for (size_t i = (oldSize - 1); i < size; i++){
+					for (size_t i = oldSize; i < size; i++){
 						(*curDimPtr)[i] = buildSubDimension(curDimIndex + 1);
 					}
 				}
