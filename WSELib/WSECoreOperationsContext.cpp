@@ -874,4 +874,7 @@ void WSECoreOperationsContext::OnLoad()
 	RegisterOperation("profiler_mark", ProfilerMark, Both, None, 1, 1,
 		"Add a marker at this point in time with name <0>. Good for analyzing individual parts of a script.",
 		"string_1");
+
+	RegisterOperation("conversation_screen_auto_update_choice", nullptr, Client, WSE2, 0, 0,
+		"Auto update single conversation choice without mouse click. Useful if you need to get text from external scripts.");
 }
