@@ -72,6 +72,28 @@ window_inventory = 7
 window_party = 8
 window_character = 11
 
+#Inventory window modes
+iwm_view        = 0
+iwm_loot        = 1
+iwm_trade       = 2
+iwm_chest       = 3
+iwm_equip_other = 4
+
+#Party window modes
+pwm_view             = 0
+pwm_exchange_members = 1
+pwm_trade_prisoners  = 2
+pwm_buy_mercenaries  = 3
+pwm_battle_result    = 4
+pwm_battle_view      = 5
+pwm_exchange_leader  = 6
+pwm_give_members     = 7
+
+#Character window modes
+cwm_edit  = 0
+cwm_view  = 1
+cwm_train = 2
+
 #Agent body meta meshes
 bmm_head = 0
 bmm_beard = 1

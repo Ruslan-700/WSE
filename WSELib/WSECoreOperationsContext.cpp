@@ -691,6 +691,10 @@ void WSECoreOperationsContext::OnLoad()
 		"Starts a conversation with the selected <0>. Can be called directly from global map or game menus. <1> parameter allows you to randomize non-hero troop appearances. If <2> sets, then <3> used instead dlg_event_triggered. If <4> sets, then conversation called directly from the presentation.",
 		"troop_id", "troop_dna", "set_dialog_state", "dialog_state", "from_presentation");
 
+	DefineOperation(1300, "start_encounter", WSE2Extended, 1, 2,
+		"Forces the <1> to initiate encounter with the <0>. If <1> not specified, main party used.",
+		"encountered_party_no", "party_no");
+
 	ReplaceOperation(2070, "store_trigger_param", StoreTriggerParam, Both, Lhs | Undocumented, 1, 2,
 		"Stores <1> into <0>",
 		"destination", "trigger_param_no");

@@ -10,15 +10,15 @@
 
 struct RconPacket
 {
-	long size;
-	long id;
-	long type;
+	int size;
+	int id;
+	int type;
 	char data[4096];
 };
 
-size_t rconEncode(long id, long type, const char* data, char* buffer, size_t len = 0);
+size_t rconEncode(int id, int type, const char* data, char* buffer, size_t len = 0);
 RconPacket rconDecode(char* buffer);
-void rconPack(long val, char buffer[4]);
-long rconUnpack(char buffer[4]);
+void rconPack(int val, char buffer[4]);
+int rconUnpack(char buffer[4]);
 
 #endif

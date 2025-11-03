@@ -1,6 +1,6 @@
 #include "rcon.h"
 
-size_t rconEncode(long id, long type, const char* data, char* buffer, size_t len)
+size_t rconEncode(int id, int type, const char* data, char* buffer, size_t len)
 {
 	if (len == 0)
 	{
@@ -11,7 +11,7 @@ size_t rconEncode(long id, long type, const char* data, char* buffer, size_t len
 	rconPack(size, buffer);
 	rconPack(id, &buffer[4]);
 	rconPack(type, &buffer[8]);
-	
+
 	for (size_t i = 0; i < len; ++i)
 	{
 		buffer[i + 12] = data[i];
@@ -30,7 +30,7 @@ RconPacket rconDecode(char* buffer)
 	packet.size = rconUnpack(buffer);
 	packet.id = rconUnpack(&buffer[4]);
 	packet.type = rconUnpack(&buffer[8]);
-	
+
 	size_t len = packet.size - 10;
 
 	for (size_t i = 0; i < len; ++i)
@@ -43,18 +43,18 @@ RconPacket rconDecode(char* buffer)
 	return packet;
 }
 
-void rconPack(long val, char buffer[4])
+void rconPack(int val, char buffer[4])
 {
 	for (size_t i = 0; i < 4; ++i)
-		buffer[i] = (val >> (i * 8)) & 0xFF;
+		buffer[i] = static_cast<unsigned char>((val >> (i * 8)) & 0xFF);
 }
 
-long rconUnpack(char buffer[4])
+int rconUnpack(char buffer[4])
 {
-	long val = 0;
+	int val = 0;
 
 	for (size_t i = 0; i < 4; ++i)
-		val |= (buffer[i] << (i * 8));
+		val |= (static_cast<unsigned char>(buffer[i]) << (i * 8));
 
 	return val;
 }

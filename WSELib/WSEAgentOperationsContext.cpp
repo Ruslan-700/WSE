@@ -875,4 +875,12 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_fade_in_advanced", nullptr, Both, WSE2, 2, 2,
 		"Makes the <0> reappear within specified time <1>.",
 		"agent_no", "value_fixed_point");
+
+	RegisterOperation("agent_set_voice_sound", nullptr, Both, WSE2, 3, 3,
+		"Sets <0>'s voice <2> for <1>. For human type: check header_skins.py. For horse only 0 (neigh). For mute use sound_no = -1",
+		"agent_no", "type", "sound_no");
+
+	RegisterOperation("agent_set_enable_tilt", nullptr, Both, WSE2, 2, 2,
+		"Enables or disables <0>'s tilt (for horse)",
+		"agent_no", "value");
 }

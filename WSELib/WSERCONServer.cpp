@@ -127,7 +127,6 @@ void SetupFDSets(fd_set& ReadFDs, fd_set& WriteFDs,
 bool ReadRcon(Connection& conn)
 {
 	char buffer[4100];
-	char ch;
 	int nBytes = recv(conn.sd, buffer, 4, 0);
 	if (nBytes == 0) {
 		return false;
@@ -139,29 +138,23 @@ bool ReadRcon(Connection& conn)
 		return (err == WSAEWOULDBLOCK);
 	}
 
-	long size = rconUnpack(buffer) + 4;
+	int size = rconUnpack(buffer);
 	if (size < 10 || size > 4096)
 	{
 		return true;
 	}
 
-	while (nBytes < size)
+	if (recv(conn.sd, &buffer[4], size, 0) == -1)
 	{
-		int nBytes1 = recv(conn.sd, &ch, sizeof(char), 0);
-		if (nBytes1 <= 0) 
-		{
-			return true;
-		}
-		buffer[nBytes] = ch;
-		++nBytes;
+		return true;
 	}
 
 	RconPacket packet = rconDecode(buffer);
 
 	if (packet.type == SERVERDATA_AUTH)
 	{
-		size_t size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, "", buffer);
-		int nBytes = send(conn.sd, buffer, size, 0);
+		size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, "", buffer);
+		send(conn.sd, buffer, size, 0);
 
 		if (strcmp(packet.data, WSE->Network.m_rcon_server->m_password.c_str()) == 0)
 		{
@@ -176,18 +169,16 @@ bool ReadRcon(Connection& conn)
 			WSE->Log.Info("RCON server: Auth request: Declined");
 		}
 
-		nBytes = send(conn.sd, buffer, size, 0);
-
+		send(conn.sd, buffer, size, 0);
 	}
 	else if (packet.type == SERVERDATA_EXECCOMMAND)
 	{
 		if (conn.auth == true)
 		{
-			WSE->Log.Info("RCON server: Command : %s", packet.data);
-
 			rgl::string command = packet.data;
+			WSE->Log.Info("RCON server: Command : %s", command.length() > 1024 ? command.substr(0, 1024).c_str() : command.c_str());
+
 			rgl::string message = "";
-			
 			EnterCriticalSection(&warband->network_manager.network_critical_section);
 			WSE->Network.m_rcon_server->m_remote_command = true;
 			WSE->Game.ExecuteConsoleCommand(message, command);
@@ -197,44 +188,33 @@ bool ReadRcon(Connection& conn)
 			{
 				rgl::string chunk = "";
 				int offset = 0;
-				int end = 0;
-				int remain = message.str_length;
-				while (remain > 0)
-				{	
-					end = offset + 4086;
-					if (end > message.str_length)
-					{
-						end = message.str_length;
-					}
 
-					chunk = message.substr(offset, end);
+				while (offset < message.length())
+				{
+					chunk = message.substr(offset, rglMin(offset + 4086, message.length()));
 					size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, chunk.c_str(), buffer);
-					nBytes = send(conn.sd, buffer, size, 0);
-					
+					send(conn.sd, buffer, size, 0);
+
 					offset += 4086;
-					remain -= 4086;
 				}
-				
 			}
 			else
 			{
 				size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, "", buffer);
-				nBytes = send(conn.sd, buffer, size, 0);
+				send(conn.sd, buffer, size, 0);
 			}
-
 		}
 		else
 		{
 			size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, "", buffer);
-			nBytes = send(conn.sd, buffer, size, 0);
+			send(conn.sd, buffer, size, 0);
 		}
-		
 	}
 	else if (packet.type == SERVERDATA_RESPONSE_VALUE)
 	{
 		char response[4] = { 0x00, 0x01, 0x00, 0x00 };
 		size = rconEncode(packet.id, SERVERDATA_RESPONSE_VALUE, response, buffer, 4);
-		nBytes = send(conn.sd, buffer, size, 0);
+		send(conn.sd, buffer, size, 0);
 	}
 
 	return true;

@@ -122,6 +122,10 @@ void WSEPartyOperationsContext::OnLoad()
 		"Global map camera follows <0>. If <1> sets, camera position sets to party position instatly",
 		"party_no", "instant");
 
+	DefineOperation(1680, "party_get_battle_opponent", Lhs | WSE2Extended, 2, 2,
+		"When a <1> is engaged in battle with another party, stores its opponent party into <0>. If the <1> is not in the encounter stores -1. For multiplayer campaign mode - stores -2, if <1> is observer player.",
+		"destination", "party_no");
+
 	RegisterOperation("party_stack_get_experience", PartyStackGetExperience, Both, Lhs, 3, 3,
 		"Stores the experience of <1>'s <2> into <0>",
 		"destination", "party_no", "party_stack_no");
