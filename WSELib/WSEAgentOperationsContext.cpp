@@ -883,4 +883,16 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_enable_tilt", nullptr, Both, WSE2, 2, 2,
 		"Enables or disables <0>'s tilt (for horse)",
 		"agent_no", "value");
+
+	RegisterOperation("agent_set_rider_rotation_angles", nullptr, Both, WSE2, 4, 4,
+		"Sets <0>'s rider rotation for <1> to <2> and <3>. For <1>: check amf_rider_rot flags from header_animations.py. From 0 to 11: 0 - without flag, 1 - for bow, etc.",
+		"agent_no", "rotation_type", "right_side_angle_fixed_point", "left_side_angle_fixed_point");
+
+	RegisterOperation("agent_get_rider_rotation_angles", nullptr, Both, Lhs | WSE2, 4, 4,
+		"Stores <1>'s rider rotation angle for <2> and <3> into <0>. Side: 0 - right, 1 - left.",
+		"destination_fixed_point", "agent_no", "rotation_type", "side");
+
+	RegisterOperation("agent_set_default_rider_rotation_angles", nullptr, Both, WSE2, 1, 1,
+		"Sets <0>'s default rider rotation angles.",
+		"agent_no");
 }

@@ -164,6 +164,9 @@ agent_fade_out_advanced                          = 3345 #(agent_fade_out_advance
 agent_fade_in_advanced                           = 3346 #(agent_fade_in_advanced, <agent_no>, <value_fixed_point>), #Makes the <agent_no> reappear within specified time <value_fixed_point>. (requires WSE2)
 agent_set_voice_sound                            = 3347 #(agent_set_voice_sound, <agent_no>, <type>, <sound_no>), #Sets <agent_no>'s voice <sound_no> for <type>. For human type: check header_skins.py. For horse only 0 (neigh). For mute use sound_no = -1 (requires WSE2)
 agent_set_enable_tilt                            = 3348 #(agent_set_enable_tilt, <agent_no>, <value>), #Enables or disables <agent_no>'s tilt (for horse) (requires WSE2)
+agent_set_rider_rotation_angles                  = 3349 #(agent_set_rider_rotation_angles, <agent_no>, <rotation_type>, <right_side_angle_fixed_point>, <left_side_angle_fixed_point>), #Sets <agent_no>'s rider rotation for <rotation_type> to <right_side_angle_fixed_point> and <left_side_angle_fixed_point>. For <rotation_type>: check amf_rider_rot flags from header_animations.py. From 0 to 11: 0 - without flag, 1 - for bow, etc. (requires WSE2)
+agent_get_rider_rotation_angles                  = 3350 #(agent_get_rider_rotation_angles, <destination_fixed_point>, <agent_no>, <rotation_type>, <side>), #Stores <agent_no>'s rider rotation angle for <rotation_type> and <side> into <destination_fixed_point>. Side: 0 - right, 1 - left. (requires WSE2)
+agent_set_default_rider_rotation_angles          = 3351 #(agent_set_default_rider_rotation_angles, <agent_no>), #Sets <agent_no>'s default rider rotation angles. (requires WSE2)
 
 multiplayer_send_chat_message_to_player      = 3400 #(multiplayer_send_chat_message_to_player, <player_no>, <sender_player_no>, <text>, [<type>]), #Sends <text> to <player_no> as a (native compatible) chat message by <sender_player_no>. Works only on servers. [<type>]: 0 = chat, 1 = team chat
 multiplayer_send_composite_message_to_player = 3401 #(multiplayer_send_composite_message_to_player, <player_no>, <message_type>, <message_register>), #Sends <message_register> with <message_type> to <player_no> (requires, for WSE: network_compatible = 0 in wse_settings.ini, for WSE2: bBreakWarbandCompatibility=true in rgl_config.ini)
@@ -543,6 +546,7 @@ lhs_operations += [
 	agent_get_current_ai_mesh_face_group,
 	agent_get_time_speed_multiplier,
 	agent_get_action_speed_modifier,
+	agent_get_rider_rotation_angles,
 	multiplayer_get_cur_profile,
 	multiplayer_get_num_profiles,
 	multiplayer_cur_message_get_int,
