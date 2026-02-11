@@ -290,11 +290,13 @@ bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *re
 	warband->basic_game.result_string.clear();
 
 	bool remote_command = false;
+#if defined WARBAND_DEDICATED
 	if (WSE->Network.m_rcon_server && WSE->Network.m_rcon_server->m_remote_command == true)
 	{
 		WSE->Network.m_rcon_server->m_remote_command = false;
 		remote_command = true;
 	}
+#endif
 		
 	ExecuteScript(WSE_SCRIPT_CONSOLE_COMMAND_RECEIVED, 1, remote_command);
 

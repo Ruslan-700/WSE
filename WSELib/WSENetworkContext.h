@@ -85,7 +85,9 @@ public:
 	wb::network_buffer *m_cur_nbuf;
 	std::deque<HTTPConnection *> m_http_connections;
 	CRITICAL_SECTION m_http_critical_section;
+#if defined WARBAND_DEDICATED
 	WSERCONServer *m_rcon_server;
+#endif
 	int m_compatible_multiplayer_version_no;
 	int m_num_bits_skin;
 

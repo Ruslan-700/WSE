@@ -192,7 +192,9 @@ WSENetworkContext::WSENetworkContext()
 {
 	m_cur_nbuf = nullptr;
 	m_ogp_server = nullptr;
+#if defined WARBAND_DEDICATED
 	m_rcon_server = nullptr;
+#endif
 	m_remote_scripting = false;
 	InitializeCriticalSectionAndSpinCount(&m_http_critical_section, 1000);
 }

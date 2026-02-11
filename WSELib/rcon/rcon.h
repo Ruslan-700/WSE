@@ -1,6 +1,8 @@
 #ifndef FUNCS_H
 #define FUNCS_H
 
+#if defined WARBAND_DEDICATED
+
 #include <winsock.h>
 
 #define SERVERDATA_AUTH 3
@@ -20,5 +22,7 @@ size_t rconEncode(int id, int type, const char* data, char* buffer, size_t len =
 RconPacket rconDecode(char* buffer);
 void rconPack(int val, char buffer[4]);
 int rconUnpack(char buffer[4]);
+
+#endif // WARBAND_DEDICATED
 
 #endif

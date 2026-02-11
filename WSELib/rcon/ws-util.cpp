@@ -7,6 +7,8 @@
 
 #include "ws-util.h"
 
+#if defined WARBAND_DEDICATED
+
 #include <iostream>
 #include <algorithm>
 #include <strstream>
@@ -151,32 +153,36 @@ bool ShutdownConnection(SOCKET sd)
     // Disallow any further data sends.  This will tell the other side
     // that we want to go away now.  If we skip this step, we don't
     // shut the connection down nicely.
-    if (shutdown(sd, SD_SEND) == SOCKET_ERROR) {
-        return false;
-    }
+    shutdown(sd, SD_SEND);
 
-    // Receive any extra data still sitting on the socket.  After all
-    // data is received, this call will block until the remote host
-    // acknowledges the TCP control packet sent by the shutdown above.
-    // Then we'll get a 0 back from recv, signalling that the remote
-    // host has closed its side of the connection.
+    // Drain any remaining data. Use a brief timeout to avoid hanging
+    // on non-blocking sockets that return WSAEWOULDBLOCK.
     char acReadBuffer[kBufferSize];
-    while (1) {
+    int attempts = 0;
+    while (attempts < 50) {
         int nNewBytes = recv(sd, acReadBuffer, kBufferSize, 0);
-        if (nNewBytes == SOCKET_ERROR) {
-            return false;
+        if (nNewBytes > 0) {
+            attempts = 0;
+            continue;
+        }
+        else if (nNewBytes == 0) {
+            break;
         }
         else {
-            // Okay, we're done!
+            int err = WSAGetLastError();
+            if (err == WSAEWOULDBLOCK) {
+                Sleep(1);
+                ++attempts;
+                continue;
+            }
             break;
         }
     }
 
-    // Close the socket.
-    if (closesocket(sd) == SOCKET_ERROR) {
-        return false;
-    }
-
+    // Always close the socket.
+    closesocket(sd);
     return true;
 }
+
+#endif
 

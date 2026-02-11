@@ -1,6 +1,9 @@
 #pragma once
 
+#if defined WARBAND_DEDICATED
+
 #include <Windows.h>
+#include <vector>
 #include "warband.h"
 
 #define RCON_MAX_CLIENT 10
@@ -13,6 +16,13 @@ enum WSERCONServerState
 	RCONStopping,
 };
 
+struct Connection {
+	SOCKET sd;
+	bool auth;
+
+	Connection(SOCKET sd_) : sd(sd_), auth(false) { }
+};
+typedef std::vector<Connection> ConnectionList;
 
 class WSERCONServer
 {
@@ -29,9 +39,17 @@ public:
 	void ResetAuthorizationConnections();
 
 private:
-	WSERCONServerState m_state;
+	void SetupFDSets(fd_set& ReadFDs, fd_set& WriteFDs, fd_set& ExceptFDs);
+	bool ReadRcon(Connection& conn);
+	static bool RecvAll(SOCKET sd, char* buffer, int size);
+	void CloseAllConnections();
+
+	volatile WSERCONServerState m_state;
 	unsigned short m_port;
 	SOCKET m_socket;
-	size_t clientsCnt;
-	
+	HANDLE m_thread;
+	ConnectionList m_connections;
+	size_t m_clientsCnt;
 };
+
+#endif

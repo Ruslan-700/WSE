@@ -1,5 +1,7 @@
 #include "rcon.h"
 
+#if defined WARBAND_DEDICATED
+
 size_t rconEncode(int id, int type, const char* data, char* buffer, size_t len)
 {
 	if (len == 0)
@@ -58,3 +60,5 @@ int rconUnpack(char buffer[4])
 
 	return val;
 }
+
+#endif
