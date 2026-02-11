@@ -37,11 +37,14 @@ void gPrintf(const char *format, ...)
 
 void gPrintf(const std::string &format, ...)
 {
+	char buf[1000];
 	va_list args;
 
 	va_start(args, format);
-	gPrintf(format.c_str(), args);
+	vsprintf_s(buf, format.c_str(), args);
 	va_end(args);
+
+	gPrint(buf);
 }
 
 int traceback(lua_State *L)
@@ -58,18 +61,17 @@ int traceback(lua_State *L)
 	FileTimeToSystemTime(&ltime, &stime);//convert in system time and store in stime
 
 	const char *err = lua_tostring(L, -1);
-	lua_pop(L, 1);
-
 	sprintf_s(msg, "%s\n#Time: %d:%d:%d:%d", err, stime.wHour, stime.wMinute, stime.wSecond, stime.wMilliseconds);
+	lua_pop(L, 1);
 
 	lua_getfield(L, LUA_GLOBALSINDEX, "debug");
 	lua_getfield(L, -1, "traceback");
+	lua_remove(L, -2); // remove debug table
 
 	lua_pushstring(L, msg);
 	lua_pushinteger(L, 2);
 
 	lua_call(L, 2, 1);
-	//fprintf(stderr, "%s\n", lua_tostring(L, -1));
 	return 1;
 }
 
@@ -218,7 +220,7 @@ int checkLArgs(lua_State *L, int minCount, int maxCount, ...) //TODO -- maxCount
 			continue;
 		else if (a & lThread && lua_isthread(L, i))
 			continue;
-		else if (a % lPos && lIsPos(L, i))
+		else if (a & lPos && lIsPos(L, i))
 			continue;
 
 		std::string errorType = "";
@@ -693,7 +695,7 @@ float hexStrToFloat(std::string s)
 		start = 3;
 	}
 
-	for (size_t i = s.length() - 1; i >= start; i--)
+	for (size_t i = s.length(); i-- > start; )
 	{
 		char c = s[i];
 		int curVal = 0;
@@ -760,7 +762,7 @@ void loadGameConstantsFromFile(std::string filePath, std::vector<gameConstTable>
 		{
 			con.name = curMatches.str(1);
 			
-			std::string &valStr = curMatches.str(2);
+			std::string valStr = curMatches.str(2);
 			if (valStr[0] == '0' && valStr[1] == 'x')
 			{
 				con.val = hexStrToFloat(valStr);
@@ -879,7 +881,7 @@ std::string getLTypeNamesFromMask(int mask)
 	if (mask == 0) return "none";
 	std::string res = "";
 
-	for (int i = 1; i < numLTypes; i++)
+	for (int i = 0; i < numLTypes - 1; i++)
 	{
 		if (mask & getLTypeFlag(i))
 		{
@@ -1093,11 +1095,7 @@ std::string lToStr_t(lua_State *L, int sIndex)
 	else if (lua_type(L, sIndex) == LUA_TNUMBER)
 		return std::to_string(lua_tointeger(L, sIndex));
 	
-	std::string s = lua_typename(L, lua_type(L, sIndex));
-	s += ",";
-	s += lua_tostring(L, sIndex);
-
-	return s;
+	return std::string(lua_typename(L, lua_type(L, sIndex)));
 }
 
 bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size_t start, size_t end, std::string curTreePos, std::string &errMsg)
@@ -1148,8 +1146,8 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 					keyName = lua_tostring(L, -2);
 
 				for (size_t i = 0; i < pairs.size(); i++)
-					if (pairs[i].key.name == keyName)
-						pairsIndex = i;
+				if (pairs[i].key.name == keyName)
+					pairsIndex = i;
 			}
 
 			if (pairsIndex == -1)
@@ -1157,14 +1155,14 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 				if (options.keyF != -1 && !(getLTypeFlag(lua_type(L, -2)) & options.keyF))
 				{
 					errMsg += "key of " + curTreePos + "." + lToStr_t(L, -2) + " has invalid type";
-					lua_pop(L, 1);
+					lua_pop(L, 2);
 					return false;
 				}
 
 				if (options.valF != -1 && !(getLTypeFlag(lua_type(L, -1)) & options.valF))
 				{
 					errMsg += "val of " + curTreePos + "." + lToStr_t(L, -1) + " has invalid type";
-					lua_pop(L, 1);
+					lua_pop(L, 2);
 					return false;
 				}
 			}
@@ -1172,7 +1170,7 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 			{
 				if (!checkDefinedPair(L, -1, str, pairs[pairsIndex], curTreePos, errMsg))
 				{
-					lua_pop(L, 1);
+					lua_pop(L, 2);
 					return false;
 				}
 			}
@@ -1205,13 +1203,16 @@ bool _checkTableStructure(lua_State *L, int sIndex, const std::string &str, size
 			}
 
 			if (lua_type(L, -1) == LUA_TNIL && pairs[i].key.optional)
+			{
+				lua_pop(L, 1);
 				continue;
+			}
 			else
-				if (!checkDefinedPair(L, -1, str, pairs[i], curTreePos, errMsg))
-				{
-					lua_pop(L, 1);
-					return false;
-				}
+			if (!checkDefinedPair(L, -1, str, pairs[i], curTreePos, errMsg))
+			{
+				lua_pop(L, 1);
+				return false;
+			}
 
 			lua_pop(L, 1);
 		}

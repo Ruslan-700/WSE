@@ -28,7 +28,6 @@ enum triggerPart : int
 };
 
 void gPrint(const char *msg);
-void gPrint(const char *msg);
 void gPrint(const std::string &s);
 void gPrintf(const char *format, ...);
 void gPrintf(const std::string &format, ...);

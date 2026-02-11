@@ -157,6 +157,8 @@ int lc_getReg(lua_State *L)
 		lua_pushstring(L, warband->basic_game.string_registers[index]);
 	else if (typeId == 2)
 		lPushPos(L, warband->basic_game.position_registers[index]);
+	else
+		luaL_error(L, "invalid typeId %d", typeId);
 
 	return 1;
 }
@@ -1000,6 +1002,7 @@ int lc_mkdir(lua_State* L)
 	}
 
 	int ok = CreateDirectory(safePath, nullptr);
+	DWORD lastErr = GetLastError();
 	free(safePath);
 
 	if (ok)
@@ -1009,8 +1012,9 @@ int lc_mkdir(lua_State* L)
 	}
 	else{
 		lua_pushnil(L);
+		SetLastError(lastErr);
 		lua_pushstring(L, GetLastErrorAsString().c_str());
-		lua_pushinteger(L, GetLastError());
+		lua_pushinteger(L, lastErr);
 		return 3;
 	}
 }
@@ -1031,6 +1035,7 @@ int lc_rmdir(lua_State* L)
 	}
 
 	int ok = RemoveDirectory(safePath);
+	DWORD lastErr = GetLastError();
 	free(safePath);
 
 	if (ok)
@@ -1040,8 +1045,9 @@ int lc_rmdir(lua_State* L)
 	}
 	else{
 		lua_pushnil(L);
+		SetLastError(lastErr);
 		lua_pushstring(L, GetLastErrorAsString().c_str());
-		lua_pushinteger(L, GetLastError());
+		lua_pushinteger(L, lastErr);
 		return 3;
 	}
 }

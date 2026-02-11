@@ -293,8 +293,9 @@ char* sandbox_path(const char* _path)
 	Abort on : or !
 	Abort when going below start level with ..
 	*/
+	size_t pathLen = strlen(path);
 	size_t i = 0;
-	while (i < strlen(path))
+	while (i < pathLen)
 	{
 		if (path[i] == ':' || path[i] == '!')
 		{
@@ -328,6 +329,19 @@ char* sandbox_path(const char* _path)
 
 		i++;
 	}
+
+	// Process final path segment (trailing ".." without separator)
+	if (others)
+		curLevel++;
+	else if (points >= 2)
+	{
+		curLevel--;
+		if ((curLevel < 0 && !using_storage) || (curLevel < -1))
+		{
+			free(path_orig);
+			return NULL;
+		}
+	}
 	//Path looks safe...
 
 	//we skip leading ".\" so we dont have rootDir\.\path
@@ -348,6 +362,11 @@ char* sandbox_path(const char* _path)
 
 	size_t spSize = strlen(root_dir) + strlen(path) + 1;
 	char *safePath = (char*)malloc(spSize);
+	if (!safePath)
+	{
+		free(path_orig);
+		return NULL;
+	}
 
 	strcpy_s(safePath, spSize, root_dir);
 	strcat_s(safePath, spSize, path);
@@ -508,7 +527,7 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 				}
 				else if (type != LUA_TNIL)
 				{
-					luaL_error(luaState, "return value must be int, string or nil");
+					gPrint("return value must be bool, string or nil");
 				}
 
 				lua_pop(luaState, 1);
@@ -516,7 +535,7 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 			lua_pop(luaState, 1); // "game" table
 		}
-		else 
+		else
 		{
 			lua_pop(luaState, 2);
 		}
@@ -538,8 +557,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 			{
 #if defined WARBAND
 				warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
+				lua_pop(luaState, 1);
 #else
-				lua_pushvalue(luaState, -1);
 				printLastLuaError(this->luaState, NULL, GetStdHandle(STD_OUTPUT_HANDLE));
 #endif
 
@@ -810,7 +829,7 @@ bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *opera
 				num_parameters = nResults;
 				for (int i = 0; i < nResults; i++)
 				{
-					if (lua_type(luaState, 1 + oldTop) != LUA_TNUMBER)
+					if (lua_type(luaState, i + 1 + oldTop) != LUA_TNUMBER)
 					{
 						gPrintf("invalid return value #%i, must be integer", i + 1);
 						break;
@@ -898,7 +917,6 @@ void WSELuaOperationsContext::loadOperations()
 		{
 			if (std::regex_match(curLine, curMatches, opRegEx))
 			{
-
 				gameOperation* newOp = new gameOperation();
 				newOp->flags = 0;
 
@@ -908,15 +926,6 @@ void WSELuaOperationsContext::loadOperations()
 					newOp->opcode = std::strtoul(curMatches.str(2).c_str(), 0, 10);
 
 				operationMap[curMatches.str(1)] = newOp;
-			}
-			else if (std::regex_match(curLine, curMatches, opRefRegEx))
-			{
-				auto ref = operationMap.find(curMatches.str(2));
-
-				if (ref == operationMap.end())
-					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: invalid reference", opFile.c_str(), curLineNum);
-				else
-					operationMap[curMatches.str(1)] = ref->second;
 			}
 			else if (std::regex_match(curLine, curMatches, listStartRegEx))
 			{
@@ -983,6 +992,15 @@ void WSELuaOperationsContext::loadOperations()
 
 					operationMap[curMatches.str(1)] = newOp;
 				}
+			}
+			else if (std::regex_match(curLine, curMatches, opRefRegEx))
+			{
+				auto ref = operationMap.find(curMatches.str(2));
+
+				if (ref == operationMap.end())
+					gPrintf("WSELuaOperationsContext: Error reading %s, line %i: invalid reference", opFile.c_str(), curLineNum);
+				else
+					operationMap[curMatches.str(1)] = ref->second;
 			}
 			else
 			{
