@@ -18,6 +18,7 @@ public:
 
 public:
 	WSEOGPServer(unsigned short port);
+	~WSEOGPServer();
 	void Start();
 	void Stop();
 	void Run();
@@ -28,6 +29,8 @@ private:
 	bool m_update;
 	unsigned short m_port;
 	SOCKET m_socket;
+	HANDLE m_thread;
+	CRITICAL_SECTION m_cs;
 	char m_buffer[64 * 1024];
 	sockaddr_in m_from;
 	int m_from_len;

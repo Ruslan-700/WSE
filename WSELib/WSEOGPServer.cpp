@@ -100,29 +100,33 @@ void OGP_UpdateServerData(ogp_serverdata_t *data)
 
 	int index = 0;
 
-	for (int i = (warband->basic_game.is_dedicated_server() ? 1 : 0); i < NUM_NETWORK_PLAYERS && index < warband->multiplayer_data.num_active_players; ++i)
+	for (int i = (warband->basic_game.is_dedicated_server() ? 1 : 0); i < NUM_NETWORK_PLAYERS && index < warband->multiplayer_data.num_active_players && index < OGP_PLAYERLIST_MAX; ++i)
 	{
 		wb::network_player *player = &warband->multiplayer_data.players[i];
 
 		if (player->status != wb::nps_active || !player->ready)
 			continue;
-		
+
 		strncpy_s(data->Player.List[index].Name, player->name.c_str(), 63);
-		strncpy_s(data->Player.List[index].Race, warband->face_generator.skins[player->skin_no].id.c_str(), 63);
+
+		if (player->skin_no >= 0 && player->skin_no < warband->face_generator.num_skins)
+			strncpy_s(data->Player.List[index].Race, warband->face_generator.skins[player->skin_no].id.c_str(), 63);
+
 		if (player->troop_no >= 0)
-		{
 			strncpy_s(data->Player.List[index].Class, warband->cur_game->troops[player->troop_no].name.c_str(), 63);
-		}
+
 		data->Player.List[index].Score = player->score;
 		data->Player.List[index].Kills = player->kills;
 		data->Player.List[index].Death = player->deaths;
 		data->Player.List[index].Slot = i;
-		data->Player.List[index].Ping = player->ping;		
+		data->Player.List[index].Ping = player->ping;
 		data->Player.List[index].TeamNo = player->team_no;
 		data->Player.List[index].ID = player->get_unique_id();
-		data->Team.List[player->team_no].PlayerCount++;
 
-		if (player->agent_no >= 0 && warband->cur_mission->agents[player->agent_no].status == wb::as_alive)
+		if (player->team_no >= 0 && player->team_no < 4)
+			data->Team.List[player->team_no].PlayerCount++;
+
+		if (player->agent_no >= 0 && player->agent_no < warband->cur_mission->agents.num_items && warband->cur_mission->agents[player->agent_no].status == wb::as_alive)
 			data->Player.List[index].Flags.bAlive = 1;
 		else
 			data->Player.List[index].Flags.bDead = 1;
@@ -225,6 +229,13 @@ WSEOGPServer::WSEOGPServer(unsigned short port)
 	m_port = port;
 	m_state = Inactive;
 	m_update = false;
+	m_thread = nullptr;
+	InitializeCriticalSection(&m_cs);
+}
+
+WSEOGPServer::~WSEOGPServer()
+{
+	DeleteCriticalSection(&m_cs);
 }
 
 void WSEOGPServer::Start()
@@ -254,6 +265,7 @@ void WSEOGPServer::Start()
 	if (m_socket == INVALID_SOCKET)
 	{
 		WSE->Log.Error("OGP server: error %d while creating socket", WSAGetLastError());
+		WSACleanup();
 		m_state = Inactive;
 		return;
 	}
@@ -261,24 +273,38 @@ void WSEOGPServer::Start()
 	memset(&addr, 0, sizeof(addr));
 	addr.sin_family = AF_INET;
 	addr.sin_port = htons(m_port);
-		
+
 	if (bind(m_socket, (sockaddr *)&addr, sizeof(addr)))
 	{
 		WSE->Log.Error("OGP server: error %d while binding socket", WSAGetLastError());
+		closesocket(m_socket);
+		WSACleanup();
 		m_state = Inactive;
 		return;
 	}
 
 	WSE->Log.Info("OGP server: listening on port %hd", m_port);
-	CreateThread(nullptr, 0, StartThread, this, 0, nullptr);
+	m_thread = CreateThread(nullptr, 0, StartThread, this, 0, nullptr);
 }
 
 void WSEOGPServer::Stop()
 {
 	m_state = Stopping;
+
+	EnterCriticalSection(&m_cs);
 	m_update = false;
+	LeaveCriticalSection(&m_cs);
+
 	shutdown(m_socket, SD_BOTH);
 	closesocket(m_socket);
+
+	if (m_thread)
+	{
+		WaitForSingleObject(m_thread, 5000);
+		CloseHandle(m_thread);
+		m_thread = nullptr;
+	}
+
 	WSACleanup();
 	WSE->Log.Info("OGP server: stopped listening");
 	m_state = Inactive;
@@ -286,35 +312,68 @@ void WSEOGPServer::Stop()
 
 void WSEOGPServer::Run() // INFO: this has to be executed in the Warband thread (per-frame)
 {
-	if (!m_update)
-		return;
+	EnterCriticalSection(&m_cs);
 
-	OGP_ReceiveFrom(m_buffer, m_recv_len, &m_from, m_from_len, (void *)m_socket);
+	if (!m_update)
+	{
+		LeaveCriticalSection(&m_cs);
+		return;
+	}
+
+	char buffer[OGP_MAX_RECEIVE_SIZE];
+	int recv_len = m_recv_len;
+
+	if (recv_len > OGP_MAX_RECEIVE_SIZE)
+		recv_len = OGP_MAX_RECEIVE_SIZE;
+
+	memcpy(buffer, m_buffer, recv_len);
+	sockaddr_in from = m_from;
+	int from_len = m_from_len;
 	m_update = false;
+
+	LeaveCriticalSection(&m_cs);
+
+	OGP_ReceiveFrom(buffer, recv_len, &from, from_len, (void *)m_socket);
 }
 
 void WSEOGPServer::Listen()
 {
 	m_state = Listening;
 
+	char recv_buffer[OGP_MAX_RECEIVE_SIZE];
+	sockaddr_in recv_from;
+	int recv_from_len;
+	int recv_len;
+
 	while (m_state == Listening)
 	{
-		m_from_len = sizeof(m_from);
-		m_recv_len = recvfrom(m_socket, m_buffer, sizeof(m_buffer), 0, (sockaddr *)&m_from, &m_from_len);
-				
-		if (m_recv_len <= 0)
+		recv_from_len = sizeof(recv_from);
+		recv_len = recvfrom(m_socket, recv_buffer, sizeof(recv_buffer), 0, (sockaddr *)&recv_from, &recv_from_len);
+
+		if (recv_len <= 0)
 		{
 			Sleep(50);
 			continue;
 		}
-		
-		m_update = true;
 
-		while (m_update)
+		EnterCriticalSection(&m_cs);
+		memcpy(m_buffer, recv_buffer, recv_len);
+		m_recv_len = recv_len;
+		m_from = recv_from;
+		m_from_len = recv_from_len;
+		m_update = true;
+		LeaveCriticalSection(&m_cs);
+
+		bool pending = true;
+
+		while (pending && m_state == Listening)
 		{
 			Sleep(20);
+			EnterCriticalSection(&m_cs);
+			pending = m_update;
+			LeaveCriticalSection(&m_cs);
 		}
 	}
-	
+
 	m_state = Inactive;
 }
