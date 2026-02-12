@@ -204,8 +204,8 @@ void ItemSetThrustDamage(WSEItemOperationsContext *context)
 	context->ExtractItemKindNo(item_kind_no);
 	context->ExtractValue(value);
 	
-	warband->item_kinds[item_kind_no].thrust_damage &= ~0xFF;
-	warband->item_kinds[item_kind_no].thrust_damage |= value & 0xFF;
+	warband->item_kinds[item_kind_no].thrust_damage &= ~itk_damage_mask;
+	warband->item_kinds[item_kind_no].thrust_damage |= value & itk_damage_mask;
 }
 
 void ItemSetThrustDamageType(WSEItemOperationsContext *context)
@@ -215,9 +215,9 @@ void ItemSetThrustDamageType(WSEItemOperationsContext *context)
 	
 	context->ExtractItemKindNo(item_kind_no);
 	context->ExtractValue(value);
-	
-	warband->item_kinds[item_kind_no].thrust_damage &= 0xFF;
-	warband->item_kinds[item_kind_no].thrust_damage |= value << 8;
+
+	warband->item_kinds[item_kind_no].thrust_damage &= itk_damage_mask;
+	warband->item_kinds[item_kind_no].thrust_damage |= (value & itk_damage_type_mask) << itk_damage_type_shift;
 }
 
 void ItemSetSwingDamage(WSEItemOperationsContext *context)
@@ -228,8 +228,8 @@ void ItemSetSwingDamage(WSEItemOperationsContext *context)
 	context->ExtractItemKindNo(item_kind_no);
 	context->ExtractValue(value);
 	
-	warband->item_kinds[item_kind_no].swing_damage &= ~0xFF;
-	warband->item_kinds[item_kind_no].swing_damage |= value & 0xFF;
+	warband->item_kinds[item_kind_no].swing_damage &= ~itk_damage_mask;
+	warband->item_kinds[item_kind_no].swing_damage |= value & itk_damage_mask;
 }
 
 void ItemSetSwingDamageType(WSEItemOperationsContext *context)
@@ -239,9 +239,9 @@ void ItemSetSwingDamageType(WSEItemOperationsContext *context)
 	
 	context->ExtractItemKindNo(item_kind_no);
 	context->ExtractValue(value);
-	
-	warband->item_kinds[item_kind_no].swing_damage &= 0xFF;
-	warband->item_kinds[item_kind_no].swing_damage |= value << 8;
+
+	warband->item_kinds[item_kind_no].swing_damage &= itk_damage_mask;
+	warband->item_kinds[item_kind_no].swing_damage |= (value & itk_damage_type_mask) << itk_damage_type_shift;
 }
 
 void ItemSetHeadArmor(WSEItemOperationsContext *context)
@@ -329,6 +329,9 @@ void CurItemMeshSetColor(WSEMissionOperationsContext *context)
 
 		if (meta_mesh)
 		{
+			if (mesh_no < 0)
+				return;
+
 			for (int i = 0; i < meta_mesh->num_lods; ++i)
 			{
 				if (meta_mesh->lods[i].meshes.size() > mesh_no)
@@ -350,6 +353,9 @@ void CurItemAddMeshWithMaterial(WSEMissionOperationsContext *context)
 	context->ExtractValue(lod_begin);
 	context->ExtractValue(lod_end);
 	context->ExtractValue(color);
+
+	if (lod_begin < 0)
+		lod_begin = 0;
 
 	int trigger_no = context->GetCurrentTrigger();
 
@@ -474,15 +480,15 @@ void WSEItemOperationsContext::OnLoad()
 		"destination", "item_kind_no");
 
 	RegisterOperation("item_get_swing_damage", ItemGetSwingDamage, Both, Lhs, 2, 2,
-		"Stores <1>'s thrust damage into <0>",
+		"Stores <1>'s swing damage into <0>",
 		"destination", "item_kind_no");
 
 	RegisterOperation("item_get_swing_damage_type", ItemGetSwingDamageType, Both, Lhs, 2, 2,
-		"Stores <1>'s thrust damage type into <0>",
+		"Stores <1>'s swing damage type into <0>",
 		"destination", "item_kind_no");
 
 	RegisterOperation("item_get_horse_charge_damage", ItemGetThrustDamage, Both, Lhs, 2, 2,
-		"Stores <1>'s thrust damage into <0>",
+		"Stores <1>'s horse charge damage into <0>",
 		"destination", "item_kind_no");
 
 	RegisterOperation("item_has_property", ItemHasProperty, Both, Cf, 2, 2,
@@ -510,11 +516,11 @@ void WSEItemOperationsContext::OnLoad()
 		"item_kind_no", "value");
 
 	RegisterOperation("item_set_swing_damage", ItemSetSwingDamage, Both, None, 2, 2,
-		"Sets <0>'s thrust damage to <1>",
+		"Sets <0>'s swing damage to <1>",
 		"item_kind_no", "value");
 
 	RegisterOperation("item_set_swing_damage_type", ItemSetSwingDamageType, Both, None, 2, 2,
-		"Sets <0>'s thrust damage type to <1>",
+		"Sets <0>'s swing damage type to <1>",
 		"item_kind_no", "value");
 
 	RegisterOperation("item_set_head_armor", ItemSetHeadArmor, Both, None, 2, 2,

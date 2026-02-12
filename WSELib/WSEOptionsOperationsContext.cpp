@@ -41,12 +41,12 @@ void OptionsSetVerboseCasualties(WSEOptionsOperationsContext *context)
 	warband->config.verbose_casualties = value ? 1 : 0;
 }
 
-int OptionsGetCheatMode(WSECoreOperationsContext *context)
+int OptionsGetCheatMode(WSEOptionsOperationsContext *context)
 {
 	return warband->config.cheat_mode;
 }
 
-void OptionsSetCheatMode(WSECoreOperationsContext *context)
+void OptionsSetCheatMode(WSEOptionsOperationsContext *context)
 {
 	bool mode;
 
@@ -55,12 +55,12 @@ void OptionsSetCheatMode(WSECoreOperationsContext *context)
 	warband->config.cheat_mode = mode ? 1 : 0;
 }
 
-int OptionsGetRealisticHeadshots(WSECoreOperationsContext *context)
+int OptionsGetRealisticHeadshots(WSEOptionsOperationsContext *context)
 {
 	return warband->config.realistic_headshots;
 }
 
-void OptionsSetRealisticHeadshots(WSECoreOperationsContext *context)
+void OptionsSetRealisticHeadshots(WSEOptionsOperationsContext *context)
 {
 	bool value;
 

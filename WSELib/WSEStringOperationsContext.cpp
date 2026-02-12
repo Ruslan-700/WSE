@@ -1,6 +1,7 @@
 #include "WSEStringOperationsContext.h"
 
 #include <WinCrypt.h>
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <regex>
@@ -327,9 +328,9 @@ void StrSort(WSEStringOperationsContext *context)
 	}
 
 	if (caseInsensitive)
-		qsort(arr, count, sizeof(CStringW), CompareCStringWNoCase);
+		std::sort(arr, arr + count, [](const CStringW &a, const CStringW &b) { return a.CompareNoCase(b) < 0; });
 	else
-		qsort(arr, count, sizeof(CStringW), CompareCStringW);
+		std::sort(arr, arr + count, [](const CStringW &a, const CStringW &b) { return a.Compare(b) < 0; });
 	
 	for (int i = 0; i < count; ++i)
 	{
@@ -655,11 +656,17 @@ bool StrIsInteger(WSEStringOperationsContext *context)
 
 	str1.Trim();
 
+	if (str1.GetLength() == 0)
+		return false;
+
 	int index = 0;
 
 	if (str1[0] == '-')
 		index = 1;
-	
+
+	if (index >= str1.GetLength())
+		return false;
+
 	for (int i = index; i < str1.GetLength(); ++i)
 	{
 		if (!iswdigit(str1[i]))
@@ -669,7 +676,7 @@ bool StrIsInteger(WSEStringOperationsContext *context)
 	return true;
 }
 
-void StrStoreMultiplayerProfileFaceKeys(WSEMultiplayerOperationsContext *context)
+void StrStoreMultiplayerProfileFaceKeys(WSEStringOperationsContext *context)
 {
 	int sreg, profile_no;
 
@@ -762,6 +769,9 @@ int StrRegexGetMatches(WSEStringOperationsContext *context)
 		std::sregex_iterator end;
 
 		while (next != end && !(max && cur == max)) {
+			if (dReg >= NUM_REGISTERS)
+				break;
+
 			std::smatch match = *next;
 
 			warband->basic_game.string_registers[dReg++] = match.str();
@@ -1036,13 +1046,24 @@ bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash ou
 		return false;
 
 	if(!CryptCreateHash(provider, CALG_MD5, 0, 0, &hash))
+	{
+		CryptReleaseContext(provider, 0);
 		return false;
+	}
 
 	if(!CryptHashData(hash, buffer, size, 0))
+	{
+		CryptDestroyHash(hash);
+		CryptReleaseContext(provider, 0);
 		return false;
-	
+	}
+
 	if(!CryptGetHashParam(hash, HP_HASHVAL, hash_buf, &hash_buf_len, 0))
+	{
+		CryptDestroyHash(hash);
+		CryptReleaseContext(provider, 0);
 		return false;
+	}
 
 	memset(out_hash, 0, sizeof(MD5Hash));
 

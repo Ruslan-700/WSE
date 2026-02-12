@@ -94,7 +94,7 @@ void WriteStrToBuff(WSESimpleCharBuff &buffer, const void *valPtr)
 
 void ReadStrFromMemory(char *ptr, int size, std::string &val)
 {
-	val = std::string(ptr);
+	val = std::string(ptr, size);
 }
 
 
@@ -237,7 +237,7 @@ void ArraySaveToFile(WSEArrayOperationsContext *context)
 
 	typeId = ptr->getTypeID();
 
-	bool succ;
+	bool succ = false;
 	if (typeId == type_id::num){
 		succ = ptr->saveToFile(file, WriteIntToBuff);
 	}
@@ -291,7 +291,7 @@ int ArrayLoadFromFile(WSEArrayOperationsContext *context)
 	return 0; //won't happen
 }
 
-void ArrayDeleteFile(WSEDictionaryOperationsContext *context)
+void ArrayDeleteFile(WSEArrayOperationsContext *context)
 {
 	std::string path;
 

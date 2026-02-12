@@ -96,7 +96,7 @@ void TroopSetFaceKeys(WSETroopOperationsContext *context)
 		warband->cur_game->troops[troop_no].face_keys_2 = WSE->SkinOperations.m_face_key_registers[fkreg];
 }
 */
-bool TroopHasFlag(WSEItemOperationsContext *context)
+bool TroopHasFlag(WSETroopOperationsContext *context)
 {
 	int troop_no, flag;
 	

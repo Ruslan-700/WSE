@@ -251,8 +251,18 @@ bool WSEGameContext::OnConsoleCommandReceived(rgl::string *text, rgl::string *re
 	if (ttext.starts_with("set_max_players"))
 	{
 		int i1 = ttext.index_of(' ');
+		if (i1 < 0)
+		{
+			*result = "Input is not correct for the command. Type 'help' for more information.";
+			return true;
+		}
 		int i2 = ttext.index_of(' ', i1 + 1);
-		
+		if (i2 < 0)
+		{
+			*result = "Input is not correct for the command. Type 'help' for more information.";
+			return true;
+		}
+
 		int max_players = strtol(&ttext.c_str()[i1], NULL, 10);
 		int max_private_players = strtol(&ttext.c_str()[i2], NULL, 10);
 

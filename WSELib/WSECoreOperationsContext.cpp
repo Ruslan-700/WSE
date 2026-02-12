@@ -324,7 +324,8 @@ void SendMessageToUrlAdvanced(WSECoreOperationsContext *context)
 	conn->m_post_data = "";
 	conn->m_post = false;
 
-	CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
+	HANDLE hThread = CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
+	if (hThread) CloseHandle(hThread);
 }
 
 void SendPostMessageToUrlAdvanced(WSECoreOperationsContext *context)
@@ -340,7 +341,8 @@ void SendPostMessageToUrlAdvanced(WSECoreOperationsContext *context)
 	context->ExtractValue(conn->m_timeout, 10);
 	conn->m_post = true;
 
-	CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
+	HANDLE hThread = CreateThread(NULL, 0, HTTPRequestThread, conn, 0, NULL);
+	if (hThread) CloseHandle(hThread);
 }
 
 void Mtsrand(WSECoreOperationsContext *context)
@@ -355,12 +357,12 @@ void Mtsrand(WSECoreOperationsContext *context)
 int Mtrand(WSECoreOperationsContext *context)
 {
 	int min, max;
-	
+
 	context->ExtractValue(min);
 	context->ExtractValue(max);
 
 	std::uniform_int_distribution<int> distribution(min, max);
-	
+
 	return distribution(context->m_mersenne_twister);
 }
 
@@ -374,11 +376,11 @@ int GetTime(WSECoreOperationsContext *context)
 
 	if (local)
 	{
-		long tz;
+		time_t rawtime = (time_t)t;
+		struct tm lt;
 
-		_tzset();
-		_get_timezone(&tz);
-		t -= tz;
+		if (localtime_s(&lt, &rawtime) == 0)
+			t = (int)_mkgmtime(&lt);
 	}
 
 	return t;
@@ -421,8 +423,10 @@ void BinkThread(void *arg)
 {
 	DWORD *params = (DWORD *)arg;
 
-	WaitForSingleObject((HANDLE)params[0], params[1] != 0 ? params[1] : INFINITE);
-	TerminateProcess((HANDLE)params[0], 0);
+	DWORD result = WaitForSingleObject((HANDLE)params[0], params[1] != 0 ? params[1] : INFINITE);
+	if (result == WAIT_TIMEOUT)
+		TerminateProcess((HANDLE)params[0], 0);
+	CloseHandle((HANDLE)params[0]);
 
 	delete[] params;
 }
@@ -464,6 +468,8 @@ void PlayBinkFile(WSECoreOperationsContext *context)
 
 	if (CreateProcess("binkplay.exe", arg_list, NULL, NULL, false, 0, NULL, NULL, &startup_info, &process_info))
 	{
+		CloseHandle(process_info.hThread);
+
 		DWORD *params = new DWORD[2];
 
 		params[0] = (DWORD)process_info.hProcess;
@@ -483,7 +489,9 @@ void SleepMs(WSECoreOperationsContext *context)
 	int ms;
 
 	context->ExtractValue(ms);
-	Sleep(ms);
+
+	if (ms >= 0)
+		Sleep(ms);
 }
 
 void TimerReset(WSECoreOperationsContext *context)

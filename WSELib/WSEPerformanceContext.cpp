@@ -81,7 +81,10 @@ void WSEPerformanceContext::OnLoad()
 void WSEPerformanceContext::OnUnload()
 {
 	if (m_optimizer_thread_handle)
+	{
 		TerminateThread(m_optimizer_thread_handle, EXIT_SUCCESS);
+		CloseHandle(m_optimizer_thread_handle);
+	}
 
 	m_optimizer_thread_handle = nullptr;
 }

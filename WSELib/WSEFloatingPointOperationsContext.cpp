@@ -1,6 +1,7 @@
 #include "WSEFloatingPointOperationsContext.h"
 
 #include <cmath>
+#include <cfloat>
 #include <random>
 #include "WSE.h"
 #include "warband.h"
@@ -30,7 +31,6 @@ void FLdStr(WSEFloatingPointOperationsContext *context)
 void FLdPosX(WSEFloatingPointOperationsContext *context)
 {
 	int freg, preg;
-	rgl::string value;
 
 	context->ExtractRegister(freg);
 	context->ExtractRegister(preg);
@@ -41,7 +41,6 @@ void FLdPosX(WSEFloatingPointOperationsContext *context)
 void FLdPosY(WSEFloatingPointOperationsContext *context)
 {
 	int freg, preg;
-	rgl::string value;
 
 	context->ExtractRegister(freg);
 	context->ExtractRegister(preg);
@@ -52,7 +51,6 @@ void FLdPosY(WSEFloatingPointOperationsContext *context)
 void FLdPosZ(WSEFloatingPointOperationsContext *context)
 {
 	int freg, preg;
-	rgl::string value;
 
 	context->ExtractRegister(freg);
 	context->ExtractRegister(preg);
@@ -82,17 +80,17 @@ void FCpy(WSEFloatingPointOperationsContext *context)
 bool FEq(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 
-	return fabs(context->m_float_registers[freg1] - context->m_float_registers[freg2]) <= DBL_EPSILON;
+	return fabs(context->m_float_registers[freg1] - context->m_float_registers[freg2]) <= FLT_EPSILON;
 }
 
 bool FGt(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 
@@ -102,37 +100,37 @@ bool FGt(WSEFloatingPointOperationsContext *context)
 bool FLt(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
-	
+
 	return context->m_float_registers[freg1] < context->m_float_registers[freg2];
 }
 
 bool FGe(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 
 	float val1 = context->m_float_registers[freg1];
 	float val2 = context->m_float_registers[freg2];
-	
-	return val1 > val2 || fabs(val1 - val2) <= DBL_EPSILON;
+
+	return val1 > val2 || fabs(val1 - val2) <= FLT_EPSILON;
 }
 
 bool FLe(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 
 	float val1 = context->m_float_registers[freg1];
 	float val2 = context->m_float_registers[freg2];
-	
-	return val1 < val2 || fabs(val1 - val2) <= DBL_EPSILON;
+
+	return val1 < val2 || fabs(val1 - val2) <= FLT_EPSILON;
 }
 
 void FAdd(WSEFloatingPointOperationsContext *context)
@@ -171,10 +169,13 @@ void FMul(WSEFloatingPointOperationsContext *context)
 void FDiv(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2, freg3;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 	context->ExtractRegister(freg3);
+
+	if (context->m_float_registers[freg3] == 0.0f)
+		context->ScriptError("Division by zero");
 
 	context->m_float_registers[freg1] = context->m_float_registers[freg2] / context->m_float_registers[freg3];
 }
@@ -190,13 +191,13 @@ void FMin(WSEFloatingPointOperationsContext *context)
 	float min = context->m_float_registers[freg3];
 	float value = context->m_float_registers[freg2];
 
-	context->m_float_registers[freg1] = value < min ? min : value;
+	context->m_float_registers[freg1] = value < min ? value : min;
 }
 
 void FMax(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2, freg3;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 	context->ExtractRegister(freg3);
@@ -204,7 +205,7 @@ void FMax(WSEFloatingPointOperationsContext *context)
 	float max = context->m_float_registers[freg3];
 	float value = context->m_float_registers[freg2];
 
-	context->m_float_registers[freg1] = value > max ? max : value;
+	context->m_float_registers[freg1] = value > max ? value : max;
 }
 
 void FClamp(WSEFloatingPointOperationsContext *context)
@@ -300,10 +301,13 @@ void FLn(WSEFloatingPointOperationsContext *context)
 void FLog(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2, base;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 	context->ExtractValue(base, 10);
+
+	if (base <= 0 || base == 1)
+		context->ScriptError("invalid logarithm base %d", base);
 
 	context->m_float_registers[freg1] = log10(context->m_float_registers[freg2]) / log10((float)base);
 }
@@ -311,10 +315,13 @@ void FLog(WSEFloatingPointOperationsContext *context)
 void FMod(WSEFloatingPointOperationsContext *context)
 {
 	int freg1, freg2, freg3;
-	
+
 	context->ExtractRegister(freg1);
 	context->ExtractRegister(freg2);
 	context->ExtractRegister(freg3);
+
+	if (context->m_float_registers[freg3] == 0.0f)
+		context->ScriptError("Modulo by zero");
 
 	context->m_float_registers[freg1] = fmod(context->m_float_registers[freg2], context->m_float_registers[freg3]);
 }
@@ -607,25 +614,25 @@ void WSEFloatingPointOperationsContext::OnLoad()
 		"Copies <1> into <0>",
 		"fp_register_1", "fp_register_2");
 
-	RegisterOperation("feq", FEq, Both, Cf, 3, 3,
-		"Fails if <1> isn't approximately equal to <2>",
-		"destination_fp_register", "fp_register_1", "fp_register_2");
+	RegisterOperation("feq", FEq, Both, Cf, 2, 2,
+		"Fails if <0> isn't approximately equal to <1>",
+		"fp_register_1", "fp_register_2");
 
-	RegisterOperation("fgt", FGt, Both, Cf, 3, 3,
-		"Fails if <1> isn't greater than <2>",
-		"destination_fp_register", "fp_register_1", "fp_register_2");
+	RegisterOperation("fgt", FGt, Both, Cf, 2, 2,
+		"Fails if <0> isn't greater than <1>",
+		"fp_register_1", "fp_register_2");
 
-	RegisterOperation("flt", FLt, Both, Cf, 3, 3,
-		"Fails if <1> isn't less than <2>",
-		"destination_fp_register", "fp_register_1", "fp_register_2");
+	RegisterOperation("flt", FLt, Both, Cf, 2, 2,
+		"Fails if <0> isn't less than <1>",
+		"fp_register_1", "fp_register_2");
 
-	RegisterOperation("fge", FGe, Both, Cf, 3, 3,
-		"Fails if <1> isn't greater or approximately equal to <2>",
-		"destination_fp_register", "fp_register_1", "fp_register_2");
+	RegisterOperation("fge", FGe, Both, Cf, 2, 2,
+		"Fails if <0> isn't greater or approximately equal to <1>",
+		"fp_register_1", "fp_register_2");
 
-	RegisterOperation("fle", FLe, Both, Cf, 3, 3,
-		"Fails if <1> isn't less or approximately equal to <2>",
-		"destination_fp_register", "fp_register_1", "fp_register_2");
+	RegisterOperation("fle", FLe, Both, Cf, 2, 2,
+		"Fails if <0> isn't less or approximately equal to <1>",
+		"fp_register_1", "fp_register_2");
 
 	RegisterOperation("fsub", FSub, Both, None, 3, 3,
 		"Subtracts <2> from <1> and stores the result into <0>",

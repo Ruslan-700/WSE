@@ -149,7 +149,7 @@ void PlayerTempBan(WSEPlayerOperationsContext *context)
 {
 	int player_no, banTime;
 
-	context->ExtractValue(player_no);
+	context->ExtractPlayerNo(player_no);
 	context->ExtractValue(banTime);
 
 	if (!warband->basic_game.is_server())

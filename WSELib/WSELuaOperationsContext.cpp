@@ -164,7 +164,7 @@ bool opCall(WSELuaOperationsContext *context)
 		if (lua_type(L, -1) == LUA_TNIL)
 		{
 			lua_remove(L, -1);
-			context->ScriptError("'_G.%s' is nil", funcName.substr(0, end - start).c_str());
+			context->ScriptError("'_G.%s' is nil", funcName.substr(0, end).c_str());
 		}
 
 		if (stack_index > 0) //not LUA_GLOBALSINDEX anymore
@@ -190,6 +190,8 @@ bool opCall(WSELuaOperationsContext *context)
 	{
 		printLastLuaError(L);
 	}
+
+	lua_remove(L, stackSize - numArgs + 1);
 
 	bool cf = context->lua_call_cfResults.back();
 	context->lua_call_cfResults.pop_back();

@@ -232,7 +232,7 @@ int AgentGetScale(WSEAgentOperationsContext *context)
 	return rglRound(warband->cur_mission->agents[agent_no].scale * warband->basic_game.fixed_point_multiplier);
 }
 
-void AgentSetForcedLod(WSECoreOperationsContext *context)
+void AgentSetForcedLod(WSEAgentOperationsContext *context)
 {
 	int agent_no, level;
 

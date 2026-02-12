@@ -412,7 +412,10 @@ void WSEMultiplayerOperationsContext::OnLoad()
 wb::network_buffer *WSEMultiplayerOperationsContext::GetCurrentNetworkBuffer()
 {
 	if (!WSE->Network.m_cur_nbuf)
+	{
 		ScriptError("attempting to get data from uninitialized network buffer");
+		return nullptr;
+	}
 
 	return WSE->Network.m_cur_nbuf;
 }

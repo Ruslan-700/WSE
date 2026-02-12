@@ -25,7 +25,7 @@ int PartyStackGetNumUpgradeable(WSEPartyOperationsContext *context)
 	return warband->cur_game->parties[party_no].stacks[party_stack_no].num_upgradeable;
 }
 
-bool PartyHasFlag(WSEItemOperationsContext *context)
+bool PartyHasFlag(WSEPartyOperationsContext *context)
 {
 	int party_no, flag;
 	

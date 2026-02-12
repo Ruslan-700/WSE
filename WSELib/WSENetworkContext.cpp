@@ -76,8 +76,8 @@ bool WSENetworkContext::http_request(const rgl::string &url, rgl::string &respon
 		WinHttpCloseHandle(request);
 	}
 	
-	WinHttpCloseHandle(connect);
-	WinHttpCloseHandle(session);
+	if (connect) WinHttpCloseHandle(connect);
+	if (session) WinHttpCloseHandle(session);
 	rgl::_delete_vec(userAgent);
 	rgl::_delete_vec(path);
 	rgl::_delete_vec(host);
@@ -158,11 +158,10 @@ bool WSENetworkContext::http_post_request(const rgl::string &url, rgl::string &r
 		}
 
 		WinHttpCloseHandle(request);
-		rgl::_delete_vec(data);
 	}
 
-	WinHttpCloseHandle(connect);
-	WinHttpCloseHandle(session);
+	if (connect) WinHttpCloseHandle(connect);
+	if (session) WinHttpCloseHandle(session);
 	rgl::_delete_vec(userAgent);
 	rgl::_delete_vec(path);
 	rgl::_delete_vec(host);
@@ -411,6 +410,7 @@ void WSENetworkContext::ReceiveRemoteScript(wb::network_buffer *nbuf, int player
 	wb::operation_manager mgr;
 	__int64 params[16];
 	int num_params = nbuf->extract_int32(5);
+	if (num_params > 16) num_params = 16;
 
 	for (int i = 0; i < num_params; ++i)
 	{
@@ -425,6 +425,7 @@ void WSENetworkContext::ReceiveRemoteScript(wb::network_buffer *nbuf, int player
 		mgr.operations[i].opcode = nbuf->extract_uint32(12);
 		mgr.operations[i].opcode |= nbuf->extract_uint32(2) << 30;
 		mgr.operations[i].num_operands = nbuf->extract_int32(5);
+		if (mgr.operations[i].num_operands > 16) mgr.operations[i].num_operands = 16;
 
 		for (int j = 0; j < mgr.operations[i].num_operands; ++j)
 		{
@@ -599,6 +600,9 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 			int team_no = nbuf->extract_int32(warband->network_manager.num_bits_team, -1);
 			int troop_no = nbuf->extract_int32(warband->network_manager.num_bits_troop, -1);
 
+			if (player_no < 0 || player_no >= NUM_NETWORK_PLAYERS)
+				return false;
+
 			if (seq > cur_seq)
 			{
 				wb::network_player *player = &warband->multiplayer_data.players[player_no];
@@ -760,6 +764,10 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 		{
 			int player_no = nbuf->extract_int32(warband->network_manager.num_bits_player, -1);
 			int skin_no = nbuf->extract_int32(m_num_bits_skin);
+
+			if (player_no < 0 || player_no >= NUM_NETWORK_PLAYERS)
+				return false;
+
 			wb::network_player *player = &warband->multiplayer_data.players[player_no];
 
 			if (seq > cur_seq && player->is_active())
@@ -771,6 +779,10 @@ bool WSENetworkContext::OnClientNetworkMessageReceived(int type, int player_no, 
 	case PlayerStopControllingAgentMessage:
 		{
 			int player_no = nbuf->extract_int32(warband->network_manager.num_bits_player, -1);
+
+			if (player_no < 0 || player_no >= NUM_NETWORK_PLAYERS)
+				return false;
+
 			wb::network_player *player = &warband->multiplayer_data.players[player_no];
 
 			if (seq > cur_seq && player->is_active())

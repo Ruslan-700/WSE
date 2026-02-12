@@ -4,6 +4,10 @@
 #include "basics.h"
 #include "simple_trigger.h"
 
+#define itk_damage_mask 0xFF
+#define itk_damage_type_mask 0x3
+#define itk_damage_type_shift 8
+
 namespace wb
 {
 	enum item_property : unsigned __int64

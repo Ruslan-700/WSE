@@ -90,7 +90,7 @@ void AddPointLight(WSEMissionOperationsContext *context)
 	rgl::light *light = rgl::_new<rgl::light>();
 	light->type = rgl::lt_point;
 	light->flicker_magnitude = flicker_magnitude_int / 100.0f;
-	light->flicker_interval = flicker_magnitude_int / 100.0f;
+	light->flicker_interval = flicker_interval_int / 100.0f;
 	light->diffuse_color = warband->cur_game->cur_color;
 	light->specular_color = light->diffuse_color;
 	light->local_position = warband->cur_game->cur_local_position;
@@ -154,7 +154,7 @@ void AddPointLightToEntity(WSEMissionOperationsContext *context)
 		rgl::light *light = rgl::_new<rgl::light>();
 		light->type = rgl::lt_point;
 		light->flicker_magnitude = flicker_magnitude_int / 100.0f;
-		light->flicker_interval = flicker_magnitude_int / 100.0f;
+		light->flicker_interval = flicker_interval_int / 100.0f;
 		light->diffuse_color = warband->cur_game->cur_color;
 		light->specular_color = light->diffuse_color;
 		light->local_position = warband->cur_game->cur_local_position;

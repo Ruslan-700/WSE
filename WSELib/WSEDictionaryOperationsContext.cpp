@@ -116,7 +116,7 @@ void DictToUrlEncodedJson(WSEDictionaryOperationsContext *context)
 {
 	int sreg, id;
 
-	context->ExtractValue(sreg);
+	context->ExtractRegister(sreg);
 	context->ExtractValue(id);
 
 	WSEDictionary *dict = context->GetDictionary(id);
@@ -201,8 +201,8 @@ void DictGetStr(WSEDictionaryOperationsContext *context)
 {
 	int sreg, id;
 	std::string key, def;
-	
-	context->ExtractValue(sreg);
+
+	context->ExtractRegister(sreg);
 	context->ExtractValue(id);
 	context->ExtractString(key);
 	context->ExtractString(def);
@@ -232,7 +232,7 @@ void DictGetPos(WSEDictionaryOperationsContext *context)
 	std::string key;
 	rgl::matrix  defPos;
 
-	context->ExtractValue(preg);
+	context->ExtractRegister(preg);
 	context->ExtractValue(id);
 	context->ExtractString(key);
 
@@ -295,7 +295,7 @@ void DictGetKeyByIterator(WSEDictionaryOperationsContext *context)
 {
 	int sreg, id, iterator;
 
-	context->ExtractValue(sreg);
+	context->ExtractRegister(sreg);
 	context->ExtractValue(id);
 	context->ExtractValue(iterator);
 

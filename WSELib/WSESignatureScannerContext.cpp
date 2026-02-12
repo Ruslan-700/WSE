@@ -14,10 +14,12 @@ void WSESignatureScannerContext::OnLoad()
 	do {
 		if (TargetId == entry.th32ProcessID){
 			CloseHandle(handle);
+			handle = NULL;
 			TargetProcess = OpenProcess(PROCESS_ALL_ACCESS, false, TargetId);
 			break;
 		}
 	} while (Process32Next(handle, &entry));
+	if (handle) CloseHandle(handle);
 
 	HANDLE hmodule = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, TargetId);
 	MODULEENTRY32 mEntry;
@@ -27,10 +29,12 @@ void WSESignatureScannerContext::OnLoad()
 	do {
 		if (!strcmp(mEntry.szModule, entry.szExeFile)) {
 			CloseHandle(hmodule);
+			hmodule = NULL;
 			mod = { (DWORD)mEntry.hModule, mEntry.modBaseSize };
 			break;
 		}
 	} while (Module32Next(hmodule, &mEntry));
+	if (hmodule) CloseHandle(hmodule);
 
 	FindRglAddresses();
 	FindWbAddresses();
@@ -51,17 +55,18 @@ bool WSESignatureScannerContext::MemoryCompare(const BYTE* bData, const BYTE* bM
 char * WSESignatureScannerContext::HexDumpStr(const char *src, size_t size)
 {
 	static const char hex[] = "0123456789ABCDEF";
-	char *result = (char *)malloc((size > 0) ? size * 3 : 1),
-		*p = result;
+	static char result[256];
+	char *p = result;
 
-	if (result) {
-		while (size-- > 0) {
-			*p++ = hex[(*src >> 4) & 0x0f];
-			*p++ = hex[*src++ & 0x0f];
-			*p++ = ' ';
-		}
-		p[(p > result) ? -1 : 0] = 0;
+	size_t maxSize = (sizeof(result) - 1) / 3;
+	if (size > maxSize) size = maxSize;
+
+	while (size-- > 0) {
+		*p++ = hex[(*src >> 4) & 0x0f];
+		*p++ = hex[*src++ & 0x0f];
+		*p++ = ' ';
 	}
+	p[(p > result) ? -1 : 0] = 0;
 
 	return result;
 }
@@ -74,7 +79,9 @@ DWORD WSESignatureScannerContext::FindSignature(const char* sig, const char* mas
 	ReadProcessMemory(TargetProcess, (LPVOID)mod.dwBase, data, mod.dwSize, &bytesRead);
 
 	int address = NULL;
-	for (DWORD i = 0; i < mod.dwSize; i++)
+	DWORD maskLen = (DWORD)strlen(mask);
+	if (maskLen > mod.dwSize) { delete[] data; return NULL; }
+	for (DWORD i = 0; i < mod.dwSize - maskLen; i++)
 	{
 		if (MemoryCompare((const BYTE*)(data + i), (const BYTE*)sig, mask)) {
 			WSE->Log.Info("Address for signature %s %s: %p", HexDumpStr(sig, strlen(mask)), mask, mod.dwBase + i);

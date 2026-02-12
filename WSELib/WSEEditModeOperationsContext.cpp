@@ -88,10 +88,23 @@ void EditModeSetHighlightedMissionObject(WSEEditModeOperationsContext *context)
 
 	wb::game *game = warband->cur_game;
 
-	if (!game->edit_mode_active || game->edit_mode_highlighted_mission_object_no == mission_object_no)
+	if (!game->edit_mode_active)
 		return;
 
-	game->edit_mode_highlighted_mission_object_no = mission_object_no;
+	int index = -1;
+	for (int i = 0; i < game->edit_mode_selected_mission_object_nos.size(); ++i)
+	{
+		if (game->edit_mode_selected_mission_object_nos[i] == mission_object_no)
+		{
+			index = i;
+			break;
+		}
+	}
+
+	if (game->edit_mode_highlighted_mission_object_no == index)
+		return;
+
+	game->edit_mode_highlighted_mission_object_no = index;
 	game->edit_mode_selection_changed = true;
 }
 

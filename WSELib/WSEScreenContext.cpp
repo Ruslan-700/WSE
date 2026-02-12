@@ -32,7 +32,7 @@ void WSEScreenContext::Message(unsigned int color, std::string format, ...)
 	warband->window_manager.display_message(buffer, color, false);
 #elif defined WARBAND_DEDICATED
 	buffer[chars_written++] = '\n';
-	buffer[chars_written] = '0';
+	buffer[chars_written] = '\0';
 
 	DWORD dummy;
 

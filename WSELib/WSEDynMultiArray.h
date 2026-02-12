@@ -416,7 +416,7 @@ protected:
 			std::vector<void*> *subDim = (std::vector<void*> *)dimPtr;
 
 			for (int i = 0; i < dimSizes[dimIndex]; i++){
-				deleteSubDimension(subDim, dimIndex + 1);
+				deleteSubDimension((*subDim)[i], dimIndex + 1);
 			}
 			delete subDim;
 		}

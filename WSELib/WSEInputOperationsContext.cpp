@@ -47,7 +47,7 @@ bool GameKeyClicked(WSEInputOperationsContext *context)
 	return (bypass_console_check || !warband->cur_game || !warband->cur_game->console_mode) && warband->game_key_manager.is_key_clicked(game_key_no);
 }
 
-int GameKeyGetKey(WSECoreOperationsContext *context)
+int GameKeyGetKey(WSEInputOperationsContext *context)
 {
 	int game_key_no;
 

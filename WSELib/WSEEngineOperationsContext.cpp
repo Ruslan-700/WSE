@@ -105,7 +105,7 @@ void SetShaderParamMatrix(WSEEngineOperationsContext *context)
 #endif
 }
 */
-void UpdateMaterial(WSECoreOperationsContext *context)
+void UpdateMaterial(WSEEngineOperationsContext *context)
 {
 #if defined WARBAND
 	rgl::string m1n, m2n;
