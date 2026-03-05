@@ -83,6 +83,8 @@ meta_mesh *meta_mesh::create_copy() const
 
 void meta_mesh::set_mesh_vertex_anim_frame_time(const float &time)
 {
+	deformMode = 0;
+
 	for (int i = 0; i < this->num_lods; ++i)
 	{
 		this->lods[i].set_mesh_vertex_anim_frame_time(time);
@@ -107,19 +109,10 @@ void meta_mesh::create_vertex_anim_morph(const float &time)
 
 float meta_mesh::get_mesh_vertex_anim_frame_time()
 {
-	float next_vertex_anim_frame_time = 0.0f;
+	if (num_lods > 0 && lods[0].meshes.size() > 0)
+		return lods[0].meshes[0]->next_vertex_anim_frame_time;
 
-	for (int i = 0; i < lods[0].meshes.size(); ++i)
-	{
-		float temp_next_vertex_anim_frame_time = lods[0].meshes[i]->next_vertex_anim_frame_time;
-		if (temp_next_vertex_anim_frame_time > 0.0f)
-		{
-			next_vertex_anim_frame_time = temp_next_vertex_anim_frame_time;
-			break;
-		}
-	}
-
-	return next_vertex_anim_frame_time;
+	return 0.0f;
 }
 
 void meta_mesh::start_deform_animation(int mode, float startFrame, float endFrame, float duration)
@@ -195,7 +188,13 @@ void meta_mesh::deform_move()
 			}
 		}
 
-		set_mesh_vertex_anim_frame_time(timePoint);
+		for (int i = 0; i < this->num_lods; ++i)
+		{
+			for (int j = 0; j < lods[i].meshes.size(); ++j)
+			{
+				lods[i].meshes[j]->next_vertex_anim_frame_time = timePoint;
+			}
+		}
 	}
 }
 
