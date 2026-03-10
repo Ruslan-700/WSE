@@ -895,4 +895,8 @@ void WSEAgentOperationsContext::OnLoad()
 	RegisterOperation("agent_set_default_rider_rotation_angles", nullptr, Both, WSE2, 1, 1,
 		"Sets <0>'s default rider rotation angles.",
 		"agent_no");
+
+	RegisterOperation("agent_ai_set_can_aim", nullptr, Both, WSE2, 2, 2,
+		"Enables or disables <0>'s ranged aiming (ballistic arc computation) for ai. When disabled, ranged agents look straight at the target instead of aiming upward.",
+		"agent_no", "value");
 }
