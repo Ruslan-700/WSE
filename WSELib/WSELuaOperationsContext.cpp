@@ -559,11 +559,10 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 			{
 #if defined WARBAND
 				warband->window_manager.display_message(lua_tostring(luaState, -1), 0xFFFF5555, 0);
-				lua_pop(luaState, 1);
 #else
+				lua_pushvalue(luaState, -1);
 				printLastLuaError(this->luaState, NULL, GetStdHandle(STD_OUTPUT_HANDLE));
 #endif
-
 				printLastLuaError(this->luaState, NULL, dt->hFile);
 			}
 
