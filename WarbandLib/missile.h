@@ -11,7 +11,7 @@ namespace wb
 	enum missile_hit_type
 	{
 		mht_none = 0,
-		mht_scene_remove = 1,
+		mht_remove = 1,
 		mht_scene = 2,
 		mht_agent = 3,
 		mht_mission_object = 4,

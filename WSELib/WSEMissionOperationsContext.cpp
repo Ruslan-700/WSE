@@ -629,7 +629,7 @@ void MissileRemoveOnHit(WSEMissionOperationsContext *context)
 
 		if (missile->shooter_agent_no == agent_no && (missile->hit_type == wb::mht_mission_object || missile->hit_type == wb::mht_scene))
 		{
-			missile->hit_type = wb::mht_scene_remove;
+			missile->hit_type = wb::mht_remove;
 
 			if (missile->entity)
 				missile->entity->visible = false;
@@ -735,6 +735,23 @@ void SetShowCrosshair(WSENetworkOperationsContext *context)
 	context->ExtractBoolean(value);
 
 	WSE->Mission.m_show_xhair = value;
+}
+
+void MissileRemove(WSEMissionOperationsContext *context)
+{
+	int missile_no;
+
+	context->ExtractMissileNo(missile_no);
+
+	wb::missile *missile = &warband->cur_mission->missiles[missile_no];
+
+	if (!missile)
+		return;
+
+	missile->hit_type = wb::mht_remove;
+
+	if (missile->entity)
+		missile->entity->visible = false;
 }
 
 WSEMissionOperationsContext::WSEMissionOperationsContext() : WSEOperationContext("mission", 3600, 3699)
@@ -884,4 +901,8 @@ void WSEMissionOperationsContext::OnLoad()
 	RegisterOperation("shift_entry_point", nullptr, Both, WSE2, 1, 1,
 		"Shift <0> same way game does to spawn visitors",
 		"entry_no");
+
+	RegisterOperation("missile_remove", MissileRemove, Both, None, 1, 1,
+		"Removes <0> from the mission",
+		"missile_no");
 }
