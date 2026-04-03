@@ -60,3 +60,9 @@ ti_on_agent_end_reloading = -106.0 #can only be used in module_mission_templates
 ti_on_scene_prop_is_deforming = -108.0 #can only be used in module_scene_props triggers
 # Trigger Param 1: prop instance no
 # Trigger Param 2: remaining deform time (1/1000th of second)
+
+ti_on_agent_footstep_sound_played  = -113.0 #can only be used in module_mission_templates triggers
+# Trigger Param 1: agent no
+# Trigger Param 2: sound no
+# Trigger Param 3: is custom sound
+# Trigger Result: if set, rewrite sound no

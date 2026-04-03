@@ -61,6 +61,11 @@ namespace wb
 		ti_on_agent_end_reloading             = -106, //WSE
 		ti_on_shield_penetrated               = -107, //WSE
 		ti_on_scene_prop_is_deforming         = -108, //WSE
+		ti_on_agent_fill_collision_capsule    = -109, //WSE
+		ti_on_agent_fill_movement_capsule     = -110, //WSE
+		ti_on_agent_block_crushed             = -111, //WSE
+		ti_on_agent_routed                    = -112, //WSE
+		ti_on_agent_footstep_sound_played     = -113, //WSE
 		ti_once                               = 100000000,
 	};
 

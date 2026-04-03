@@ -1120,6 +1120,18 @@ void WSEMissionContext::OnAgentSetupSoundSample(wb::agent *agent, int type, bool
 		}
 	}
 
+	warband->basic_game.trigger_param_1 = agent->no;
+	warband->basic_game.trigger_param_2 = soundNo;
+	warband->basic_game.trigger_param_3 = customSound;
+	warband->basic_game.trigger_result = -2;
+	warband->mission_templates[warband->cur_mission->cur_mission_template_no].triggers.execute(wb::ti_on_agent_footstep_sound_played);
+
+	if (warband->basic_game.trigger_result >= -1)
+	{
+		soundNo = warband->basic_game.trigger_result;
+		customSound = true;
+	}
+
 	if (soundNo == -1)
 		return;
 
