@@ -1128,7 +1128,7 @@ void WSEMissionContext::OnAgentSetupSoundSample(wb::agent *agent, int type, bool
 
 	if (warband->basic_game.trigger_result >= -1)
 	{
-		soundNo = warband->basic_game.trigger_result;
+		soundNo = (int)warband->basic_game.trigger_result;
 		customSound = true;
 	}
 
