@@ -145,7 +145,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		warband->script_error_occurred = 0;
 	}
 
-	if (WSE->LuaOperations.OnOperationMgrExecute(operation_manager, num_parameters, parameters))
+	if (WSE->LuaOperations.OnOperationMgrExecute(operation_manager, num_parameters, parameters, success))
 	{
 		while (operation_no < num_operations)
 		{

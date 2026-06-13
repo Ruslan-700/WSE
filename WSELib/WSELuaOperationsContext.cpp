@@ -184,7 +184,7 @@ bool opCall(WSELuaOperationsContext *context)
 	lua_pushcfunction(L, traceback);
 	lua_insert(L, stackSize - numArgs + 1);
 
-	context->lua_call_cfResults.push_back(true);
+	context->game_fail_stack.push_back(true);
 
 	if (lua_pcall(L, numArgs, LUA_MULTRET, stackSize - numArgs + 1))
 	{
@@ -193,8 +193,8 @@ bool opCall(WSELuaOperationsContext *context)
 
 	lua_remove(L, stackSize - numArgs + 1);
 
-	bool cf = context->lua_call_cfResults.back();
-	context->lua_call_cfResults.pop_back();
+	bool cf = context->game_fail_stack.back();
+	context->game_fail_stack.pop_back();
 
 	//gPrintf("lua_call top2: %i", lua_gettop(L));
 	return cf;
@@ -789,7 +789,7 @@ void *WSELuaOperationsContext::OnOperationJumptableExecute(wb::operation *operat
 	return NULL;
 }
 
-bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *operation_manager, int& num_parameters, __int64* parameters)
+bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *operation_manager, int& num_parameters, __int64* parameters, bool& success)
 {
 	//WSE->Log.Info("check %s", operation_manager->id.c_str());
 	auto hook = this->operationMgrHookLuaRefs.find(operation_manager->id);
@@ -806,8 +806,12 @@ bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *opera
 	for (int i = 0; i < num_parameters; i++)
 		lua_pushinteger(luaState, (lua_Integer)parameters[i]);
 
+	//For game.fail()
+	game_fail_stack.push_back(true);
+
 	if (lua_pcall(luaState, num_parameters, LUA_MULTRET, 0))
 	{
+		game_fail_stack.pop_back();
 		printLastLuaError(luaState);
 		return true;
 	}
@@ -817,13 +821,18 @@ bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *opera
 	if (nResults > 0)
 	{
 		if (lua_type(luaState, 1 + oldTop) == LUA_TBOOLEAN)
+		{
+			//Hook returned a bool, may block script execution
 			cont = lua_toboolean(luaState, 1 + oldTop) != 0;
+			if (!cont) success = WSE->LuaOperations.game_fail_stack.back();
+		}
 		else
 		{
 			if (nResults > MAX_NUM_STATEMENT_BLOCK_PARAMS)
 				gPrint("too many return values");
 			else
 			{
+				//Overwrite script parameters
 				if (num_parameters > nResults)
 					memset(parameters + nResults, 0, (MAX_NUM_STATEMENT_BLOCK_PARAMS - nResults) * sizeof(__int64));
 
@@ -841,6 +850,7 @@ bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *opera
 		}
 	}
 
+	game_fail_stack.pop_back();
 	lua_settop(luaState, oldTop);
 	return cont;
 }

@@ -1134,7 +1134,11 @@ int lc_hookScript(lua_State *L)
 REG(fail)
 int lc_fail(lua_State *L)
 {
-	WSE->LuaOperations.lua_call_cfResults.back() = false;
+	if (WSE->LuaOperations.game_fail_stack.empty())
+	{
+		luaL_error(L, "this can only be used during lua_call or script hook");
+	}
+	WSE->LuaOperations.game_fail_stack.back() = false;
 	return 0;
 }
 
