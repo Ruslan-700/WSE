@@ -1,5 +1,8 @@
 # Changelog
 
+## v4.11.9
+- Lua: Make game.fail() work with game.hookScript(), update documentation.
+
 ## v4.11.8
 - Added `agent_set_trigger_disabled`, `agent_is_trigger_disabled` operations.
 
