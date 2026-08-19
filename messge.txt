@@ -1,0 +1,15 @@
+Subject: Small WSE Lua API patch: read-only access to module-root TXT files
+Hi,
+I prepared a small patch against Ruslan-700/WSE It adds this Lua API:
+    local contents, err, err_code = game.readModuleTextFile("troops.txt")
+The motivation is to let Lua code inspect Module System compiler output at runtime for build compatibility checks and for diagnosing incomplete or mixed-version module installations. And detect if mods have been tampered with
+
+The API intentionally has a narrow boundary:
+- read-only access to the currently loaded module root;
+- a single ASCII basename ending in .txt only;
+- no absolute paths, subdirectories or traversal;
+- Windows device names, directories and reparse points are rejected;
+- a 256 MiB per-file limit;
+- exact on-disk bytes are returned as a Lua string;
+- failures return nil, an error message and a Win32 error code.
+
