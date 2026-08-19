@@ -273,10 +273,9 @@ char* sandbox_path(const char* _path, int is_read_only)
 	std::string root;
 	const char* root_dir;
 
-	bool using_storage = false;
-	if (str_starts_with(path, STORAGE, true))
+	bool using_storage = str_starts_with(path, STORAGE, true);
+	if (using_storage)
 	{
-		using_storage = true;
 		root = WSE->LuaOperations.CreateStorageDir();
 		path += strlen(STORAGE);
 		if (str_starts_with(path, "\\")) path++;
@@ -307,9 +306,9 @@ char* sandbox_path(const char* _path, int is_read_only)
 
 		if (path[i] == '.')
 			points++;
-		else if (path[i] != '/' && path[i] != '\\' && path[i] != '0')
+		else if (path[i] != '/' && path[i] != '\\' && path[i] != '\0')
 			others++;
-		else // '/' or '\\' or '0'
+		else // '/' or '\\' or '\0'
 		{
 			if (path[i] == '/') path[i] = '\\'; //we only want backslash
 
@@ -330,7 +329,7 @@ char* sandbox_path(const char* _path, int is_read_only)
 					{
 						if (is_read_only)
 						{
-							//Allow to read all game files
+							//Allow to read all game files (Warband/Modules/Native/lua/)
 							if (curLevel < -3) ok = false;
 						}
 						else
