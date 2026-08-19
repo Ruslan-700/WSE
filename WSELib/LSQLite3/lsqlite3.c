@@ -130,9 +130,9 @@ static const char *sqlite_bu_meta   = ":sqlite3:bu";
 static const char *sqlite_ctx_meta  = ":sqlite3:ctx";
 static int sqlite_ctx_meta_ref;
 
-static str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
+static sandbox_path_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
 
-void lsqlite3_set_sandboxed_path_callback(str_callback callback)
+void lsqlite3_set_sandboxed_path_callback(sandbox_path_callback callback)
 {
 	get_sandboxed_path = callback;
 }
@@ -2158,7 +2158,7 @@ static int lsqlite_open(lua_State *L) {
     const char *filename = luaL_checkstring(L, 1);
     int flags = luaL_optinteger(L, 2, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE);
 	
-	char* safe_path = get_sandboxed_path(filename); /*wse mod*/
+	char* safe_path = get_sandboxed_path(filename, 0); /*wse mod*/
 	int res = lsqlite_do_open(L, safe_path, flags);
 	free(safe_path);
 	

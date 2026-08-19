@@ -331,7 +331,7 @@ static const char *searchpath (lua_State *L, const char *name,
     lua_remove(L, -2);  /* remove path template */
 
     /* wse mod */
-		char *safePath = L->get_sandboxed_path(filename);
+		char *safePath = L->get_sandboxed_path(filename, 1);
 
 		if (safePath && readable(safePath))  /* does file exist and is readable? */
 		{

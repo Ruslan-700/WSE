@@ -701,7 +701,7 @@ struct lua_State {
   GCRef env;		/* Thread environment (table of globals). */
   void *cframe;		/* End of C stack frame chain. */
   MSize stacksize;	/* True stack size (incl. LJ_STACK_EXTRA). */
-  str_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
+  sandbox_path_callback get_sandboxed_path; /* wse mod. Restrict IO to allowed folders. May return NULL */
 };
 
 #define G(L)			(mref(L->glref, global_State))

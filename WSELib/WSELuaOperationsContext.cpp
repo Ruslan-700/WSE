@@ -261,7 +261,7 @@ bool opTest(WSELuaOperationsContext *context)
 //This is a callback for luaJIT
 //We try to restrict all IO to user or storage dir with this middleman.
 #define STORAGE "%storage%"
-char* sandbox_path(const char* _path)
+char* sandbox_path(const char* _path, int is_read_only)
 {
 	if (_path == NULL)
 		return NULL;
@@ -297,7 +297,7 @@ char* sandbox_path(const char* _path)
 	*/
 	size_t pathLen = strlen(path);
 	size_t i = 0;
-	while (i < pathLen)
+	while (i <= pathLen)
 	{
 		if (path[i] == ':' || path[i] == '!')
 		{
@@ -307,9 +307,9 @@ char* sandbox_path(const char* _path)
 
 		if (path[i] == '.')
 			points++;
-		else if (path[i] != '/' && path[i] != '\\')
+		else if (path[i] != '/' && path[i] != '\\' && path[i] != '0')
 			others++;
-		else // '/' or '\\'
+		else // '/' or '\\' or '0'
 		{
 			if (path[i] == '/') path[i] = '\\'; //we only want backslash
 
@@ -318,10 +318,32 @@ char* sandbox_path(const char* _path)
 			else if (points >= 2)
 			{
 				curLevel--;
-				if ((curLevel < 0 && !using_storage) || (curLevel < -1)) //We allow to go back once when using %storage%, in order to access other modules.
+				if (curLevel < 0)
 				{
-					free(path_orig);
-					return NULL;
+					bool ok = true;
+					if (using_storage)
+					{
+						//Allow to go back once when using %storage%, in order to access other modules.
+						if (curLevel < -1) ok = false; 
+					}
+					else
+					{
+						if (is_read_only)
+						{
+							//Allow to read all game files
+							if (curLevel < -3) ok = false;
+						}
+						else
+						{
+							if (curLevel < 0) ok = false;
+						}
+					}
+
+					if (!ok)
+					{
+						free(path_orig);
+						return NULL;
+					}
 				}
 			}
 
@@ -332,18 +354,7 @@ char* sandbox_path(const char* _path)
 		i++;
 	}
 
-	// Process final path segment (trailing ".." without separator)
-	if (others)
-		curLevel++;
-	else if (points >= 2)
-	{
-		curLevel--;
-		if ((curLevel < 0 && !using_storage) || (curLevel < -1))
-		{
-			free(path_orig);
-			return NULL;
-		}
-	}
+
 	//Path looks safe...
 
 	//we skip leading ".\" so we dont have rootDir\.\path
