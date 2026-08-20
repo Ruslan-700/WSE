@@ -163,6 +163,9 @@ bool str_starts_with(const char* str, const char* s, bool case_insensitive)
 {
 	do
 	{
+		if (*s == '\0') return true;
+		if (*str == '\0') return false;
+
 		if (case_insensitive)
 		{
 			if (tolower(*str) != tolower(*s)) return false;
@@ -172,10 +175,7 @@ bool str_starts_with(const char* str, const char* s, bool case_insensitive)
 		}
 
 		s++;
-		if (*s == '\0') return true;
-
 		str++;
-		if (*str == '\0') return false;
 	} 
 	while (true);
 }

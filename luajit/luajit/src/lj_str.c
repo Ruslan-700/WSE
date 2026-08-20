@@ -372,7 +372,10 @@ void LJ_FASTCALL lj_str_init(lua_State *L)
 
 FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
 {
-	char *safePath = L->get_sandboxed_path(filename);
+	int is_read_only = 0;
+	if (!strcmp(mode, "r") || !strcmp(mode, "rb")) is_read_only = 1;
+
+	char *safePath = L->get_sandboxed_path(filename, is_read_only);
 	if (!safePath)
 	{
 		return NULL;
