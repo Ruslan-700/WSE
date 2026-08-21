@@ -372,8 +372,9 @@ void LJ_FASTCALL lj_str_init(lua_State *L)
 
 FILE *fopenInUserDir(lua_State *L, const char *filename, const char *mode)
 {
-	int is_read_only = 0;
-	if (!strcmp(mode, "r") || !strcmp(mode, "rb")) is_read_only = 1;
+	/* Anything starting with 'r' and without '+' cannot write, including
+	** modes such as "rt" and "rbS" that an exact comparison would miss. */
+	int is_read_only = (mode[0] == 'r' && strchr(mode, '+') == NULL);
 
 	char *safePath = L->get_sandboxed_path(filename, is_read_only);
 	if (!safePath)

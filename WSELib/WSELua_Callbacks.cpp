@@ -953,7 +953,6 @@ int lc_playersIt(lua_State *L)
 	return lPushIterator(L, it);
 }
 
-char* sandbox_path(const char* _path, int is_read_only);
 GREG(lsdir)
 int lc_lsdir(lua_State *L)
 {

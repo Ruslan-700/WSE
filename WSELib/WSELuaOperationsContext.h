@@ -39,6 +39,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		std::vector<bool> game_fail_stack; //Stack for use with game.fail()
 		int luaContext = 0;
 		std::string user_dir;    // <M&B>\Modules\<Module>\lua
+		std::string game_dir;    // <M&B>\  - read anchor for the IO sandbox
 
 	public:
 		WSELuaOperationsContext();

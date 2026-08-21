@@ -387,7 +387,19 @@ LJLIB_CF(loadfile)
 	// 		  mode ? strdata(mode) : NULL);
         
   /*wse mod*/
-  char *path = L->get_sandboxed_path(fname ? strdata(fname) : NULL, 1);
+  /* A NULL path means stdin to luaL_loadfilex. That is what a rejected path
+  ** used to turn into, so both cases are reported as a load failure here. */
+  char *path = NULL;
+
+  if (fname != NULL)
+    path = L->get_sandboxed_path(strdata(fname), 1);
+
+  if (path == NULL) {
+    lua_pushfstring(L, "cannot open %s: no file name, or outside the allowed directories",
+		    fname ? strdata(fname) : "?");
+    return load_aux(L, LUA_ERRFILE, 3);
+  }
+
   status = luaL_loadfilex(L, path, mode ? strdata(mode) : NULL);
   free(path);
 
@@ -455,11 +467,17 @@ LJLIB_CF(dofile)
   setnilV(L->top);
   L->top = L->base+1;
   /* wse mod */
-  char *path;
-  if (fname)
-	  path = L->get_sandboxed_path(strdata(fname), 1);
-  else
-	  path = NULL;
+  /* See loadfile: never let a NULL path reach luaL_loadfile as "read stdin". */
+  char *path = NULL;
+
+  if (fname != NULL)
+    path = L->get_sandboxed_path(strdata(fname), 1);
+
+  if (path == NULL) {
+    lua_pushfstring(L, "cannot open %s: no file name, or outside the allowed directories",
+		    fname ? strdata(fname) : "?");
+    lua_error(L);
+  }
 
   int res = luaL_loadfile(L, path);
   free(path);

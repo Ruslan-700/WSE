@@ -1561,10 +1561,15 @@
 						</li>
 						<li>
 							<p>
-								Restrict dofile, loadfile and all IO operations to the lua directory. Read-only access to game files via <span class="keyword">..</span> syntax. 
+								Restrict dofile, loadfile and all IO operations to the lua directory.
+								<b>Reading</b> may leave it via <span class="keyword">..</span>, up to the Warband directory - anything below it is readable, nothing above it is.
 								<pre class="code">
-									local f, err = io.open("../../../rgl_log.txt", "r")
+									local f, err = io.open("../../../rgl_log.txt", "r")   -- ok, Warband dir
+									local f, err = io.open("../../../../secrets.txt", "r") -- nil, too far up
 								</pre>
+								Writing (<span class="keyword">w</span>, <span class="keyword">a</span>, <span class="keyword">r+</span>, os.remove, os.rename, mkdir, rmdir) stays inside the lua directory, so <span class="keyword">..</span> is rejected there.
+								If a module is installed from the Steam Workshop it lives outside the Warband directory; its own folder is readable as well.<br>
+								Every rejected path simply yields <span class="keyword">nil</span> - check the second return value.
 								<p>
 									Access storage folder by prefixing <span class="keyword">%storage%</span>	
 									<p><pre class="code">
