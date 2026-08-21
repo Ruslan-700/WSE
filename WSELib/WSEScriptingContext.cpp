@@ -77,8 +77,22 @@ void WSEScriptingContext::OnLoad()
 	WSE->Hooks.HookFunction(this, wb::addresses::operation_Execute_entry, OperationExecuteHook);
 }
 
+// Reusable local variable frames, one per level of script nesting. Grown on demand and
+// kept until the library unloads: the high water mark is the deepest nesting reached,
+// which is exactly how many frames the old code had live at once anyway.
+static std::vector<__int64 *> s_local_variable_frames;
+static int s_num_local_variable_frames = 0;
+
 void WSEScriptingContext::OnUnload()
 {
+	// The library can be unloaded and loaded again inside a running game, so the
+	// frame pool is released here rather than left for process exit.
+	for (size_t i = 0; i < s_local_variable_frames.size(); ++i)
+		delete[] s_local_variable_frames[i];
+
+	s_local_variable_frames.clear();
+	s_num_local_variable_frames = 0;
+
 	for (int i = 0; i < WSE_MAX_NUM_OPERATIONS; ++i)
 	{
 		delete m_descriptors[i];
@@ -117,7 +131,21 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	
 	WSEScriptingLoopManager loop_manager;
 	int cur_block = -1;
-	__int64 *local_variables = new __int64[MAX_NUM_LOCAL_VARIABLES];
+
+	// Local variable frames are pooled instead of heap allocated per call. At
+	// MAX_NUM_LOCAL_VARIABLES this was an 8 KB new/delete pair on every script, every
+	// trigger condition block and every presentation - tens of millions per round - and
+	// it dominated the cost of short scripts.
+	//
+	// Frames are keyed by an own nesting counter, not by the caller's depth:
+	// ExecuteStatementBlock is re-entered both through call_script (depth + 1) and
+	// through operations that fire a trigger, which starts again at depth 0. Using depth
+	// would alias those two onto one frame. The VM is single threaded, like
+	// m_cur_statement_block next to it.
+	if (s_num_local_variable_frames >= (int)s_local_variable_frames.size())
+		s_local_variable_frames.push_back(new __int64[MAX_NUM_LOCAL_VARIABLES]);
+
+	__int64 *local_variables = s_local_variable_frames[s_num_local_variable_frames++];
 
 	if (m_local_variables_zero_initialization)
 		memset(local_variables, 0, MAX_NUM_LOCAL_VARIABLES * sizeof(__int64));
@@ -321,7 +349,7 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	}
 
 	WSE->Profiling.StopProfilingBlock(depth);
-	delete[] local_variables;
+	s_num_local_variable_frames--;
 	m_cur_statement_block = nullptr;
 	return success;
 }

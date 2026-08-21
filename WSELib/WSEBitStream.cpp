@@ -8,11 +8,20 @@ WSEBitStream::WSEBitStream()
 	m_buffer = 0;
 	m_mask_table[0] = 0;
 	m_delta_last = 0;
+	m_fileBufferPos = 0;
 
 	for (int i = 0; i < 32; ++i)
 	{
 		m_mask_table[i + 1] = m_mask_table[i] | (1 << i);
 	}
+}
+
+WSEBitStream::~WSEBitStream()
+{
+	// Close() is the normal path and flushes already; this only covers a stream that
+	// is torn down without it, so a capture never loses its tail.
+	if (m_stream.is_open())
+		FlushFileBuffer();
 }
 
 bool WSEBitStream::Open(const char *path)
@@ -34,12 +43,23 @@ unsigned __int64 WSEBitStream::Length()
 void WSEBitStream::Close()
 {
 	Commit(true);
+	FlushFileBuffer();
 	m_stream.close();
 }
 
 void WSEBitStream::Flush()
 {
+	FlushFileBuffer();
 	m_stream.flush();
+}
+
+void WSEBitStream::FlushFileBuffer()
+{
+	if (m_fileBufferPos)
+	{
+		m_stream.write(m_fileBuffer, m_fileBufferPos);
+		m_fileBufferPos = 0;
+	}
 }
 
 void WSEBitStream::Commit(bool force)
@@ -47,7 +67,11 @@ void WSEBitStream::Commit(bool force)
 	if (m_cursor == 0 || (m_cursor != 32 && !force))
 		return;
 
-	m_stream.write((char *)&m_buffer, 4);
+	if (m_fileBufferPos > WSE_BIT_STREAM_BUFFER_SIZE - 4)
+		FlushFileBuffer();
+
+	memcpy(&m_fileBuffer[m_fileBufferPos], &m_buffer, 4);
+	m_fileBufferPos += 4;
 	m_total += 32 - m_cursor;
 	m_cursor = 0;
 	m_buffer = 0;
