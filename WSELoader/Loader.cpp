@@ -225,12 +225,7 @@ void Loader::Process(const CString &cmdLine)
 	__cpuid(cpuInfo, 1);
 
 	if (!((cpuInfo[3] >> 26) & 0x1))
-	{
-		if (type == 2)
-			Write(MF_ERROR | MF_QUIT, L"WSE for dedicated servers cannot be run without SSE2 support.");
-		else
-			dllName += "NoSSE";
-	}
+		Write(MF_ERROR | MF_QUIT, L"WSE requires a CPU with SSE2 support.");
 
 	if (type == 0 || type == 1)
 	{

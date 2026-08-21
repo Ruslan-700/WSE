@@ -19,7 +19,6 @@ msbuild WarbandScriptEnhancer.sln /p:Configuration=Release /p:Platform=Win32
 - `Release` / `Debug` — Vanilla Warband 1.174
 - `ReleaseSteam` / `DebugSteam` — Steam edition (different memory addresses)
 - `ReleaseDedicated` / `DebugDedicated` — Dedicated server (server-only ops)
-- `ReleaseNoSSE` / `ReleaseSteamNoSSE` — No SSE for older CPUs
 
 **Project dependency order:** `luajit` → `WSELib` → `WSELoader`. `WSEProfiler` is standalone C#/.NET (WinForms). `luaLanes` and `WarbandLib` are independent.
 
