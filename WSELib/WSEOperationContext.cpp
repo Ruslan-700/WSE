@@ -108,7 +108,10 @@ void WSEOperationContext::ExtractBoolean(bool &value, bool def)
 void WSEOperationContext::ExtractFixedPoint(float &value, float def)
 {
 	if (!HasMoreOperands())
+	{
 		value = def;
+		return;
+	}
 
 	value = GetNextOperand() / (float)warband->basic_game.fixed_point_multiplier;
 }
