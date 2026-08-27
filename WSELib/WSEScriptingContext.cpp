@@ -79,8 +79,10 @@ void WSEScriptingContext::OnLoad()
 
 // Reusable local variable frames, one per level of script nesting. Grown on demand and
 // kept until the library unloads: the high water mark is the deepest nesting reached,
-// which is exactly how many frames the old code had live at once anyway.
+// which is exactly how many frames the old code had live at once anyway. The loop stacks
+// are pooled in lockstep with them and share the same counter.
 static std::vector<__int64 *> s_local_variable_frames;
+static std::vector<WSEScriptingLoopManager *> s_loop_manager_frames;
 static int s_num_local_variable_frames = 0;
 
 void WSEScriptingContext::OnUnload()
@@ -90,7 +92,11 @@ void WSEScriptingContext::OnUnload()
 	for (size_t i = 0; i < s_local_variable_frames.size(); ++i)
 		delete[] s_local_variable_frames[i];
 
+	for (size_t i = 0; i < s_loop_manager_frames.size(); ++i)
+		delete s_loop_manager_frames[i];
+
 	s_local_variable_frames.clear();
+	s_loop_manager_frames.clear();
 	s_num_local_variable_frames = 0;
 
 	for (int i = 0; i < WSE_MAX_NUM_OPERATIONS; ++i)
@@ -129,7 +135,6 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 		num_parameters = MAX_NUM_STATEMENT_BLOCK_PARAMS;
 	}
 	
-	WSEScriptingLoopManager loop_manager;
 	int cur_block = -1;
 
 	// Local variable frames are pooled instead of heap allocated per call. At
@@ -142,10 +147,24 @@ bool WSEScriptingContext::ExecuteStatementBlock(wb::operation_manager *operation
 	// through operations that fire a trigger, which starts again at depth 0. Using depth
 	// would alias those two onto one frame. The VM is single threaded, like
 	// m_cur_statement_block next to it.
+	//
+	// The loop stack is pooled alongside them for a different reason. WSEScriptingLoopManager
+	// is MAX_NUM_NESTED_LOOPS WSEScriptingLoop entries and each carries two std::map
+	// iterators whose default constructor is not trivial, so declaring one here ran 256
+	// constructors on every call - including the overwhelming majority of blocks that
+	// never open a loop - and pushed this frame past a page, which makes the compiler
+	// emit a stack probe per call. Reuse is safe: Clear() below resets the loop count,
+	// and the only members that survive a reset are the two dict iterators, which
+	// StartLoop writes immediately after AddLoop and nothing reads before that.
 	if (s_num_local_variable_frames >= (int)s_local_variable_frames.size())
+	{
 		s_local_variable_frames.push_back(new __int64[MAX_NUM_LOCAL_VARIABLES]);
+		s_loop_manager_frames.push_back(new WSEScriptingLoopManager());
+	}
 
-	__int64 *local_variables = s_local_variable_frames[s_num_local_variable_frames++];
+	int frame_no = s_num_local_variable_frames++;
+	__int64 *local_variables = s_local_variable_frames[frame_no];
+	WSEScriptingLoopManager &loop_manager = *s_loop_manager_frames[frame_no];
 
 	if (m_local_variables_zero_initialization)
 		memset(local_variables, 0, MAX_NUM_LOCAL_VARIABLES * sizeof(__int64));

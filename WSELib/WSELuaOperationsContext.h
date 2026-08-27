@@ -34,7 +34,14 @@ class WSELuaOperationsContext : public WSEOperationContext
 		std::vector<gameConstTable> gameConstTables;
 		std::unordered_map<std::string, int> gvarMap;
 		int operationHookLuaRefs[WSE_MAX_NUM_OPERATIONS];
-		std::unordered_map<rgl::string, int> operationMgrHookLuaRefs; //hookScript
+		// game.hookScript() callbacks, keyed by the block they are bound to rather than by
+		// its printable name. The name key meant hashing the whole string - "Script [123]
+		// game_get_skill_modifier_for_troop" and longer - before every statement block the
+		// VM executed, whether or not the module used Lua at all. Only scripts can be
+		// hooked and script blocks live inside warband->script_manager.scripts, which is
+		// read once at module load and is not rebuilt by the runtime add_trigger paths, so
+		// these pointers stay valid for as long as an entry does.
+		std::unordered_map<wb::operation_manager *, int> operationMgrHookLuaRefs; //hookScript
 		std::chrono::steady_clock::time_point tStart;
 		std::vector<bool> game_fail_stack; //Stack for use with game.fail()
 		int luaContext = 0;

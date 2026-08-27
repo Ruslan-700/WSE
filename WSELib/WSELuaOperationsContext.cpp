@@ -689,23 +689,25 @@ void WSELuaOperationsContext::hookOperation(lua_State *L, int opcode, int lRef)
 
 void WSELuaOperationsContext::hookScript(lua_State *L, int script_no, int lRef)
 {
-	std::stringstream ss;
-	ss << "Script [" << script_no << "] ";
+	// lc_hookScript already rejects an out of range script no; this guards the direct
+	// callers a future binding might add.
+	if (script_no < 0 || script_no >= warband->script_manager.num_scripts)
+		return;
 
-	rgl::string id = ss.str().c_str();
-	id += warband->script_manager.scripts[script_no].id;
+	// The block is stored by value inside wb::script, so this address is stable for as
+	// long as the scripts array is.
+	wb::operation_manager *block = &warband->script_manager.scripts[script_no].operations;
+	auto hook = this->operationMgrHookLuaRefs.find(block);
 
-	//WSE->Log.Info("hook %d, %d, %s", script_no, lRef, id.c_str());
-
-	if (this->operationMgrHookLuaRefs.find(id) != this->operationMgrHookLuaRefs.end())
+	if (hook != this->operationMgrHookLuaRefs.end())
 	{
-		luaL_unref(L, LUA_REGISTRYINDEX, this->operationMgrHookLuaRefs[id]);
-		this->operationMgrHookLuaRefs.erase(id);
+		luaL_unref(L, LUA_REGISTRYINDEX, hook->second);
+		this->operationMgrHookLuaRefs.erase(hook);
 	}
 
 	if (lRef == LUA_NOREF) return;
 
-	this->operationMgrHookLuaRefs[id] = lRef;
+	this->operationMgrHookLuaRefs[block] = lRef;
 }
 
 bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
@@ -816,10 +818,13 @@ void *WSELuaOperationsContext::OnOperationJumptableExecute(wb::operation *operat
 
 bool WSELuaOperationsContext::OnOperationMgrExecute(wb::operation_manager *operation_manager, int& num_parameters, __int64* parameters, bool& success)
 {
-	//WSE->Log.Info("check %s", operation_manager->id.c_str());
-	auto hook = this->operationMgrHookLuaRefs.find(operation_manager->id);
+	// Nothing hooked at all is the overwhelmingly common case, and find() would still
+	// hash the key before discovering that. This makes it free for every module that
+	// does not call game.hookScript().
+	if (this->operationMgrHookLuaRefs.empty()) return true;
+
+	auto hook = this->operationMgrHookLuaRefs.find(operation_manager);
 	if (hook == this->operationMgrHookLuaRefs.end()) return true;
-	//WSE->Log.Info("found %s", operation_manager->id.c_str());
 
 	int ref = hook->second;
 	if (ref == LUA_NOREF) return true;
