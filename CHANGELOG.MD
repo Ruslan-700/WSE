@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.12.0
+- Pooled script local variable frames and loop stack.
+- Profiler bitstream stages writes in a 64 KB buffer instead of calling write every four bytes.
+- Lua: Anchor the IO sandbox to the game directory. Allow read access to all game files.
+- Lua: Key hookScript callbacks by block instead of by its printable name.
+
 ## v4.11.9
 - Lua: Make game.fail() work with game.hookScript(), update documentation.
 
