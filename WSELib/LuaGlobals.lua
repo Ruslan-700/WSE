@@ -601,8 +601,12 @@ function game.pos.new(obj)
         --user might forget to put origin components into o
         --dont ask how i know
         if not newObj.o then
-        	if newObj.x or newObj.y or newObj.z then
-        		newObj.o = {x = newObj.x, y = newObj.y, z = newObj.z}
+        	if newObj.x or newObj.y or newObj.z or newObj[1] or newObj[2] or newObj[3] then
+        		newObj.o = {
+        			x = newObj.x or newObj[1],
+        			y = newObj.y or newObj[2],
+        			z = newObj.z or newObj[3]
+        		}
         	end
         end
 
