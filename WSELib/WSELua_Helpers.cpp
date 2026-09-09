@@ -152,22 +152,22 @@ size_t countChar(const std::string &s, char c)
 	return std::count(s.begin(), s.end(), c);
 }
 
-bool str_starts_with(const char* str, const char* s, bool case_insensitive)
+bool str_starts_with(const char* str, const char* start, bool case_insensitive)
 {
 	do
 	{
-		if (*s == '\0') return true;
+		if (*start == '\0') return true;
 		if (*str == '\0') return false;
 
 		if (case_insensitive)
 		{
-			if (tolower(*str) != tolower(*s)) return false;
+			if (tolower(*str) != tolower(*start)) return false;
 		}
 		else{
-			if (*str != *s) return false;
+			if (*str != *start) return false;
 		}
 
-		s++;
+		start++;
 		str++;
 	} 
 	while (true);
