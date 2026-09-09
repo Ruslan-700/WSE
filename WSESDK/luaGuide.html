@@ -1093,9 +1093,9 @@
 										f = vector3.new({y = 1}) <span class="comment">--forwards/y axis</span>
 										u = vector3.new({z = 1})  <span class="comment">--up/z axis</span>
 										function getRot(self) <span class="comment">--returns vector3.new({z = yaw, x = pitch, y = roll})</span>
-										function rotX(self, angle, [global]) <span class="comment">--rotate around local x axis, angle in degrees. If global!=nil use global x axis</span>
-										function rotY(self, angle, [global]) <span class="comment">--rotate around local y axis, angle in degrees. If global!=nil use global y axis</span>
-										function rotZ(self, angle, [global]) <span class="comment">--rotate around local z axis, angle in degrees. If global!=nil use global z axis</span>
+										function rotX(self, angle, [global]) <span class="comment">--rotate around local x axis, angle in degrees. If global~=nil use global x axis</span>
+										function rotY(self, angle, [global]) <span class="comment">--rotate around local y axis, angle in degrees. If global~=nil use global y axis</span>
+										function rotZ(self, angle, [global]) <span class="comment">--rotate around local z axis, angle in degrees. If global~=nil use global z axis</span>
 										function rotate(self, rotVec3) <span class="comment">--rotate around all axis, zxy order, angle in degrees</span>
 										function rotate_around_axis(self, axis, angle) <span class="comment">--rotate around arbitrary axis (vector3), angle in degrees</span>
 									</pre>
