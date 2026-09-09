@@ -509,7 +509,7 @@ void WSELuaOperationsContext::OnUnload()
 void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	WSEOperationContext::OnEvent(sender, evt, data);
-	
+
 	if (!luaStateIsReady) return;
 
 	if (evt == WSEEvent::OnFrame)
@@ -634,7 +634,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			if (lua_pcall(luaState, 0, 0, 0))
+			lua_pushnumber(luaState, *((int*)data));
+			if (lua_pcall(luaState, 1, 0, 0))
 			{
 				printLastLuaError(luaState);
 			}
@@ -655,7 +656,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			if (lua_pcall(luaState, 0, 0, 0))
+			lua_pushnumber(luaState, *((int*)data));
+			if (lua_pcall(luaState, 1, 0, 0))
 			{
 				printLastLuaError(luaState);
 			}
@@ -713,7 +715,7 @@ void WSELuaOperationsContext::hookScript(lua_State *L, int script_no, int lRef)
 bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
 {
 	setRetVal = false;
-	
+
 	int oldTop = lua_gettop(luaState);
 	lua_rawgeti(luaState, LUA_REGISTRYINDEX, lRef);
 
@@ -748,7 +750,7 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 
 	if (nResults == 0)
 		return true;
-	
+
 	if (nResults == 2)
 	{
 		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN) //cf
