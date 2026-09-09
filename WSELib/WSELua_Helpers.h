@@ -1,7 +1,6 @@
 #pragma once
 
 #include "WSE.h"
-#include <fstream>
 #include <algorithm>
 
 enum lTypeF
@@ -33,8 +32,6 @@ void gPrintf(const char *format, ...);
 void gPrintf(const std::string &format, ...);
 int traceback(lua_State *L);
 void printLastLuaError(lua_State *L, const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
-
-bool fileExists(const std::string& name);
 
 void removeChar(std::string &str, char c);
 void delBlank(std::string &str);

@@ -828,6 +828,43 @@ void StrStoreSkillDesc(WSEStringOperationsContext *context)
 	warband->basic_game.string_registers[sreg] = warband->skills[skill_no].description;
 }
 
+void StrStoreSavegameMD5(WSEStringOperationsContext *context)
+{
+#if defined WARBAND
+	int sreg, save_slot;
+	MD5Hash hash;
+
+	context->ExtractRegister(sreg);
+	context->ExtractValue(save_slot);
+
+	warband->basic_game.string_registers[sreg].clear(); //if no success...
+
+	char path[MAX_PATH];
+	sprintf_s(path, MAX_PATH, "%ssg%02d.sav", context->GetSavegameDir().c_str(), save_slot);
+
+	if (fileExists(path))
+	{
+		std::ifstream f(path, std::ios::binary | std::ios::ate);
+		
+		if (f.is_open())
+		{
+			std::streamsize fileSize = f.tellg();
+			f.seekg(0, std::ios::beg);
+
+			char* buffer = (char*)malloc((size_t)fileSize);
+
+			if (f.read(buffer, fileSize)) {
+				if (context->MD5((byte*)buffer, (size_t)fileSize, hash))
+				{
+					warband->basic_game.string_registers[sreg] = hash;
+				}
+			}
+			free(buffer);
+		}
+	}
+#endif
+}
+
 WSEStringOperationsContext::WSEStringOperationsContext() : WSEOperationContext("string", 4200, 4299)
 {
 }
@@ -1033,6 +1070,10 @@ void WSEStringOperationsContext::OnLoad()
 	RegisterOperation("str_store_skill_desc", StrStoreSkillDesc, Both, None, 2, 2,
 		"Stores the description of <1> into <0>",
 		"string_register", "skill_no");
+
+	RegisterOperation("str_store_savegame_md5", StrStoreSavegameMD5, Client, None, 2, 2,
+		"MD5 hashes the .sav file for <1> and stores it into <0>",
+		"string_register", "save_slot_no");
 }
 
 bool WSEStringOperationsContext::MD5(const byte *buffer, size_t size, MD5Hash out_hash)

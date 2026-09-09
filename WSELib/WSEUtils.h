@@ -49,3 +49,6 @@ std::string join(const std::string &separator, stl::vector<T> values)
 
 	return ss.str();
 }
+
+bool fileExists(const char* name);
+bool fileExists(const std::string& name);

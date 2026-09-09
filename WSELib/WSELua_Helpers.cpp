@@ -1,6 +1,5 @@
 #include <regex>
 #include <string>
-#include <sstream>
 #include <Windows.h>
 #include "WSELib.rc.h"
 #include "WSELua_Helpers.h"
@@ -105,12 +104,6 @@ void printLastLuaError(lua_State *L, const char *fileName, HANDLE hFile)
 	}
 
 	lua_pop(L, 1);
-}
-
-bool fileExists(const std::string& name)
-{
-	std::ifstream f(name.c_str());
-	return f.good();
 }
 
 void removeChar(std::string &str, char c)
