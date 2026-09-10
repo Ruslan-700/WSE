@@ -829,7 +829,9 @@ static bool path_is_under(const std::string &path, const std::string &root)
 
 	if (rootLen == 0) return false;
 
-	if (str_starts_with(path.c_str(), root.c_str())) return true;
+	//Windows paths are case-insensitive, and the two sides come from different
+	//sources (the module path from the game, the game dir from the loaded image).
+	if (str_starts_with(path.c_str(), root.c_str(), true)) return true;
 
 	return path.length() == rootLen - 1 &&
 		   _strnicmp(path.c_str(), root.c_str(), rootLen - 1) == 0 &&
@@ -879,6 +881,11 @@ char* sandbox_path(const char* _path, int is_read_only)
 		using_save = true;
 
 		root = WSE->LuaOperations.save_dir;
+
+		//Without a savegame dir there is no boundary to check against - parent_dir("")
+		//would resolve to the root of the current drive.
+		if (root.empty())
+			return NULL;
 
 		path += strlen(SAVEGAME);
 		if (*path == '\\' || *path == '/') path++;

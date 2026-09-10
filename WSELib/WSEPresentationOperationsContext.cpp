@@ -69,6 +69,9 @@ void PresentationSetDuration(WSEPresentationOperationsContext *context)
 		int presentation_no;
 		context->ExtractPresentationNo(presentation_no);
 
+		if (warband->game_screen.open_windows.back() != wb::gwt_tactical)
+			return;
+
 		wb::tactical_window *tactical_window = (wb::tactical_window *)warband->game_screen.game_windows[wb::gwt_tactical];
 
 		for (int i = 0; i < tactical_window->presentations.size(); ++i)

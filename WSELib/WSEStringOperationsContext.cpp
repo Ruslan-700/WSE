@@ -839,29 +839,40 @@ void StrStoreSavegameMD5(WSEStringOperationsContext *context)
 
 	warband->basic_game.string_registers[sreg].clear(); //if no success...
 
+	std::string dir = context->GetSavegameDir();
+
+	if (dir.empty())
+		return;
+
 	char path[MAX_PATH];
-	sprintf_s(path, MAX_PATH, "%ssg%02d.sav", context->GetSavegameDir().c_str(), save_slot);
+	sprintf_s(path, MAX_PATH, "%ssg%02d.sav", dir.c_str(), save_slot);
 
-	if (fileExists(path))
+	std::ifstream f(path, std::ios::binary | std::ios::ate);
+
+	if (!f.is_open())
+		return;
+
+	std::streamsize fileSize = f.tellg();
+
+	if (fileSize <= 0)
+		return;
+
+	f.seekg(0, std::ios::beg);
+
+	//A savegame is tens of megabytes and we are a 32 bit process - the allocation can genuinely fail.
+	std::vector<char> buffer;
+
+	try
 	{
-		std::ifstream f(path, std::ios::binary | std::ios::ate);
-		
-		if (f.is_open())
-		{
-			std::streamsize fileSize = f.tellg();
-			f.seekg(0, std::ios::beg);
-
-			char* buffer = (char*)malloc((size_t)fileSize);
-
-			if (f.read(buffer, fileSize)) {
-				if (context->MD5((byte*)buffer, (size_t)fileSize, hash))
-				{
-					warband->basic_game.string_registers[sreg] = hash;
-				}
-			}
-			free(buffer);
-		}
+		buffer.resize((size_t)fileSize);
 	}
+	catch (const std::bad_alloc &)
+	{
+		return;
+	}
+
+	if (f.read(&buffer[0], fileSize) && context->MD5((byte*)&buffer[0], buffer.size(), hash))
+		warband->basic_game.string_registers[sreg] = hash;
 #endif
 }
 

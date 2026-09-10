@@ -98,7 +98,7 @@ printTable = table.print
 
 function table.merge(target, source, recursive)
     for k,v in pairs(source) do
-        if not target[k] then
+        if target[k] == nil then
             target[k] = v
         else
             if recursive and type(v) == "table" and type(target[k]) == "table" then
@@ -148,7 +148,7 @@ end
 ------------access to module operations------------
 game.mt = {
 	__index = function(t, k)
-		if #k <= 6 then
+		if type(k) == "string" and #k <= 6 then
 			--the vast majority of operation names are longer than 6 chars so this shouldnt slow things down much
 			--longest reg name is e.g. reg127
 			local i
@@ -168,7 +168,7 @@ game.mt = {
 	end,
 
 	__newindex = function(t, k, v)
-		if #k <= 6 then
+		if type(k) == "string" and #k <= 6 then
 			local i
 			i = string.match(k, "^reg(%d+)$")
 			if i then game.setReg(0, tonumber(i), v); return end
@@ -402,7 +402,8 @@ function vector3.new(obj)
 	return setmetatable(newObj, vector3.mt)
 end
 
---standard basis vector
+--standard basis vectors. These are shared - treat them as read only,
+--mutating one breaks every global rotation.
 vector3.ex = vector3.new({x=1})
 vector3.ey = vector3.new({y=1})
 vector3.ez = vector3.new({z=1})
@@ -601,20 +602,25 @@ function game.pos.new(obj)
         --user might forget to put origin components into o
         --dont ask how i know
         if not newObj.o then
-        	if newObj.x or newObj.y or newObj.z or newObj[1] or newObj[2] or newObj[3] then
-        		newObj.o = {
-        			x = newObj.x or newObj[1],
-        			y = newObj.y or newObj[2],
-        			z = newObj.z or newObj[3]
-        		}
-        	end
+            if newObj.x or newObj.y or newObj.z or newObj[1] or newObj[2] or newObj[3] then
+                newObj.o = {
+                    x = newObj.x or newObj[1],
+                    y = newObj.y or newObj[2],
+                    z = newObj.z or newObj[3]
+                }
+
+                --the components now live in o, leaving copies behind would let them go stale
+                newObj.x, newObj.y, newObj.z = nil, nil, nil
+                newObj[1], newObj[2], newObj[3] = nil, nil, nil
+            end
         end
 
         --lets do the same for rot while were here
         if not newObj.rot then
-        	if newObj.s or newObj.f or newObj.u then
-        		newObj.rot = {s = newObj.s, f = newObj.f, u = newObj.u}
-        	end
+            if newObj.s or newObj.f or newObj.u then
+                newObj.rot = {s = newObj.s, f = newObj.f, u = newObj.u}
+                newObj.s, newObj.f, newObj.u = nil, nil, nil
+            end
         end
     else
         newObj = {}

@@ -1170,7 +1170,7 @@ int lc__print(lua_State *L)
 	return 0;
 }
 
-GREG(log_rgl)
+GREG2(log_rgl, _log) //_log is the legacy name, dont break user code
 int lc_log_rgl(lua_State *L)
 {
 	checkLArgs(L, 1, 1, lStr);

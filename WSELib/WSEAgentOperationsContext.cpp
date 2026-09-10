@@ -658,6 +658,10 @@ void WSEAgentOperationsContext::OnLoad()
 		"Sets <0>'s channel <2> animation progress to <1>",
 		"agent_no", "value_fixed_point", "channel_no");
 
+	DefineOperation(1748, "agent_set_scripted_destination_no_attack", WSE2Extended, 2, 4,
+		"Same as (agent_set_scripted_destination), but the <0> will not attack his enemies. Set <3> to 1 to save resources",
+		"agent_no", "position_register_no", "auto_set_z_to_ground_level", "no_rethink");
+
 	DefineOperation(1756, "agent_get_attached_scene_prop", Lhs | WSE2Extended, 2, 3,
 		"Stores scene prop instance which is attached to the <1>, or -1 if there isn't any into <0>. (<2>: 0-3)",
 		"destination", "agent_no", "attached_prop_index");

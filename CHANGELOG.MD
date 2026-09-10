@@ -1,5 +1,18 @@
 # Changelog
 
+## v4.12.1
+- Extend presentation_set_duration so we can close other presentations.
+- wse_settings.ini - fill in missing options so users can find them.
+- Fix bug when no header_path was set.
+- Add `operations edit_mode_get_mode`, `edit_mode_window_open`, `str_store_savegame_md5`.
+- Lua:
+  - add game.pos<n>, game.reg<n>, game.s<n>
+  - game.op: filter incorrect lhs operations
+  - nSave, OnLoadSave receive slot no
+  - allow r/w to savegame directory
+  - rename _log to log_rgl
+  - various improvements to game.pos, vector3
+
 ## v4.12.0
 - Pooled script local variable frames and loop stack.
 - Profiler bitstream stages writes in a 64 KB buffer instead of calling write every four bytes.
