@@ -694,7 +694,7 @@
 
 <body id="bd">
 	<div>
-		<div style="font-size: 11px">version from 19.08.2026, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
+		<div style="font-size: 11px">version from 10.09.2026, written by <span onclick="var a=document.getElementById('bd');a.style.transition='filter 60s linear';a.style.filter='blur(0.9px)';">AgentSmith</span></div>
 		<div style="right: 5px; top: 5px; position: fixed;">
 			<button id="btnThemeSwitch" onclick="cycleTheme()">Light</button>
 			<button onclick="expand_all()">Expand all</button>
@@ -1681,16 +1681,38 @@
 			<p style="margin-left: 20px;"><em>Some of these are ripped out of larger files without testing, so be careful.</em></p>
 			
 			<div class="content_block">
-				<div class="content_block_caption">Native Sample Mod</div>
+				<div class="content_block_caption">Native Demo Mod</div>
 				<p>
 					I made this singleplayer mod for the Native module, to get people started.<br>
 					It showcases a lot of techniques like hot reloading, using event_mgr, presentations, working with positions, world map triggers, most of the stuff mentioned in this documentation.<br>
 					I tried my best commenting everything.<br>
 					There is some fun toys, the scene tools can even be useful for map makers.<br>
 					<a href="https://github.com/kumpuu/Warband-Lua-Examples/tree/master/singleplayer/native_sample_mod/lua">Github</a><br>
-					<br>
-					<img id="height_map_preview" style="max-width: 50em; max-height: 50em;"><br>
-					Can you recognize this map? This was made with the mod.
+					
+					<div id="demo_mod_yt_root">
+						<script>
+							var yts = [
+								["cOHDmapyTwU", "Youtube Preview"],
+							];
+
+							var root = document.getElementById("demo_mod_yt_root");
+							for (let yt of yts){
+								let div = document.createElement("div");
+
+									let inp = document.createElement("input");
+									inp.setAttribute('type', 'button');
+									inp.setAttribute('value', yt[1]);
+
+								inp.onclick = function(){
+									div.innerHTML = '<iframe width="800" height="450" src="https://jeffreyca.github.io/yt-embed-wrapper/embed.html?v=' + yt[0] +'" title="' + yt[1] + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+									div.innerHTML  += '<a style="margin: 1em" href="https://www.youtube.com/watch?v=' + yt[0] +'" target="_blank" rel="noopener noreferrer">Youtube</a>'
+								}
+
+								div.appendChild(inp);
+								root.appendChild(div);
+							}
+						</script>
+					</div>
 				</p>
 			</div>
 
@@ -2212,13 +2234,13 @@
 					<div id="oliveran_yt_root" class="padl20">
 						<script>
 							var yts = [
-								["https://www.youtube.com/embed/Z5kRdFGdOKY", "Melee AI - Version 0.1 - Blocking and attacking basics"],
-								["https://www.youtube.com/embed/QpL6k8UV4ZA", "Melee AI - Version 0.2 - Footwork and AI feinting"],
-								["https://www.youtube.com/embed/X9XICIGK5yY", "Melee AI 0.2 - Footwork&Feinting - Bot v Bot"],
-								["https://www.youtube.com/embed/7O9hFlkLSNA", "Melee AI 0.3 - Kickin' butt"],
-								["https://www.youtube.com/embed/tgyhKRcFVL8", "Melee AI 0.3 - Kickin' butt - Bot v Bot"],
-								["https://www.youtube.com/embed/ppcOawQ7z1Q", "Melee AI 0.4 - Positioning, target switching"],
-								["https://www.youtube.com/embed/VJyeI1iHoRk", "Archery AI 0.1 - Aiming at different body positions"]
+								["Z5kRdFGdOKY", "Melee AI - Version 0.1 - Blocking and attacking basics"],
+								["QpL6k8UV4ZA", "Melee AI - Version 0.2 - Footwork and AI feinting"],
+								["X9XICIGK5yY", "Melee AI 0.2 - Footwork&Feinting - Bot v Bot"],
+								["7O9hFlkLSNA", "Melee AI 0.3 - Kickin' butt"],
+								["tgyhKRcFVL8", "Melee AI 0.3 - Kickin' butt - Bot v Bot"],
+								["ppcOawQ7z1Q", "Melee AI 0.4 - Positioning, target switching"],
+								["VJyeI1iHoRk", "Archery AI 0.1 - Aiming at different body positions"]
 							];
 
 							var root = document.getElementById("oliveran_yt_root");
@@ -2230,7 +2252,8 @@
 									inp.setAttribute('value', yt[1]);
 
 								inp.onclick = function(){
-									div.innerHTML = '<iframe width="800" height="450" src="' + yt[0] +'" title="' + yt[1] + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+									div.innerHTML = '<iframe width="800" height="450" src="https://jeffreyca.github.io/yt-embed-wrapper/embed.html?v=' + yt[0] +'" title="' + yt[1] + '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>'
+									div.innerHTML  += '<a style="margin: 1em" href="https://www.youtube.com/watch?v=' + yt[0] +'" target="_blank" rel="noopener noreferrer">Youtube</a>'
 								}
 
 								div.appendChild(inp);
