@@ -57,6 +57,38 @@ bool PresentationActivate(WSEPresentationOperationsContext *context)
 #endif
 }
 
+void PresentationSetDuration(WSEPresentationOperationsContext *context)
+{
+#if defined WARBAND
+	wb::presentation_container* prsnt = NULL;
+	int duration;
+	context->ExtractValue(duration);
+
+	if (context->HasMoreOperands())
+	{
+		int presentation_no;
+		context->ExtractPresentationNo(presentation_no);
+
+		wb::tactical_window *tactical_window = (wb::tactical_window *)warband->game_screen.game_windows[wb::gwt_tactical];
+
+		for (int i = 0; i < tactical_window->presentations.size(); ++i)
+		{
+			if (tactical_window->presentations[i]->presentation_no == presentation_no)
+			{
+				prsnt = tactical_window->presentations[i];
+				break;
+			}
+		}
+	}
+	else
+	{
+		prsnt = warband->cur_presentation;
+	}
+
+	if (prsnt) prsnt->duration = ((float)duration) / 100.0f;
+#endif
+}
+
 void OverlayButtonSetType(WSEPresentationOperationsContext *context)
 {
 #if defined WARBAND
@@ -178,4 +210,8 @@ void WSEPresentationOperationsContext::OnLoad()
 	RegisterOperation("overlay_item_set_text", nullptr, Client, WSE2, 3, 3,
 		"Changes the <0>'s <1>'s <2>. Items are indexed from 0",
 		"overlay_no", "item_no", "text");
+
+	ReplaceOperation(902, "presentation_set_duration", PresentationSetDuration, Client, None, 1, 2,
+		"Set remaining duration. If <1> is not used, set for the active presentation.",
+		"duration-in-1/100-seconds", "presentation_id");
 }

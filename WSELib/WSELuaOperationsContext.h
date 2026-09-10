@@ -47,6 +47,7 @@ class WSELuaOperationsContext : public WSEOperationContext
 		int luaContext = 0;
 		std::string user_dir;    // <M&B>\Modules\<Module>\lua
 		std::string game_dir;    // <M&B>\  - read anchor for the IO sandbox
+		std::string save_dir;    // Documents\Mount&Blade Warband Savegames\
 
 	public:
 		WSELuaOperationsContext();

@@ -797,10 +797,7 @@ void WSEScriptingContext::DumpOperationsHeader()
 	if (!WSE->SettingsIni.Bool("operations", "auto_generate_header", false))
 		return;
 
-	std::string path = WSE->GetPath() + "header_operations_addon.py";
-
-	if (WSE->SettingsIni.HasKey("operations", "header_path"))
-		path = WSE->SettingsIni.String("operations", "header_path");
+	std::string path = WSE->SettingsIni.String("operations", "header_path", WSE->GetPath());
 
 	if (path.length() && path[path.length() - 1] != '\\')
 		path.push_back('\\');

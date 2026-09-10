@@ -1170,8 +1170,8 @@ int lc__print(lua_State *L)
 	return 0;
 }
 
-GREG(_log)
-int lc__log(lua_State *L)
+GREG(log_rgl)
+int lc_log_rgl(lua_State *L)
 {
 	checkLArgs(L, 1, 1, lStr);
 

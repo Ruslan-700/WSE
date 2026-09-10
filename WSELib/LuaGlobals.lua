@@ -1,55 +1,77 @@
 bit = require "bit"
 
 ------------helpers------------
-function tableShallowCopy(t, copyMetatable)
+function table.copy_shallow(t, copyMetatable)
 	local t2 = {}
 	for k,v in pairs(t) do
 		t2[k] = v
 	end
 
 	if copyMetatable and getmetatable(t) then
-		setmetatable(t2, tableShallowCopy(getmetatable(t)))
+		setmetatable(t2, table.copy_shallow(getmetatable(t)))
 	end
 
 	return t2
 end
+tableShallowCopy = table.copy_shallow --legacy names, dont break user code
 
-function tableRecursiveCopy(t, copyMetatables)
+function table.copy_recursive(t, copyMetatables)
 	local t2 = {}
 	for k,v in pairs(t) do
 		if type(v) == "table" then
-			t2[k] = tableRecursiveCopy(v, copyMetatables)
+			t2[k] = table.copy_recursive(v, copyMetatables)
 		else
 			t2[k] = v
 		end
 	end
 
 	if copyMetatables and getmetatable(t) then
-		setmetatable(t2, tableRecursiveCopy(getmetatable(t), copyMetatables))
+		setmetatable(t2, table.copy_recursive(getmetatable(t), copyMetatables))
 	end
 
 	return t2
 end
+tableRecursiveCopy = table.copy_recursive
 
-function print(...)
-	local s = ""
-	for i = 1, select("#", ...) do
-		s = s .. tostring(select(i, ...)) .. "     "
-	end
-	s = s .. "\n"
-
-	_print(s)
+--Find first key that has val
+function table.find(t, val)
+    for k, v in pairs(t) do
+        if v == val then
+            return k
+        end
+    end
 end
 
-function printf(format, ...)
-    _print(string.format(format, ...))
+function table.filter(t, filter)
+    local res = {}
+
+    for k, v in pairs(t) do
+        if filter(k, v, t) then
+            res[k] = v
+        end
+    end
+
+    return res
 end
+
+function table.make(_table, ...)
+    local curTable = _table
+
+    for i = 1, select("#", ...) do
+        local curKey = select(i, ...)
+        if not curTable[curKey] then curTable[curKey] = {} end
+        curTable = curTable[curKey]
+    end
+
+    return curTable
+end
+make = table.make
 
 local function _format(v)
     if type(v) == "string" then return "'" .. v .. "'" else return tostring(v) end
 end
 
-function printTable(t, prefix, seen)
+function table.print(t, prefix, seen)
     prefix = prefix or ""
     seen = seen or {}
     seen[t] = true
@@ -72,25 +94,50 @@ function printTable(t, prefix, seen)
 
     seen[t] = nil
 end
+printTable = table.print
 
-function make(_table, ...)
-    local curTable = _table
-
-    for i = 1, select("#", ...) do
-        local curKey = select(i, ...)
-        if not curTable[curKey] then curTable[curKey] = {} end
-        curTable = curTable[curKey]
+function table.merge(target, source, recursive)
+    for k,v in pairs(source) do
+        if not target[k] then
+            target[k] = v
+        else
+            if recursive and type(v) == "table" and type(target[k]) == "table" then
+                table.merge(target[k], v, recursive)
+            end
+        end
     end
-
-    return curTable
 end
 
-function starts_with(str, start)
+function string.starts_with(str, start)
     return str:sub(1, #start) == start
 end
+starts_with = string.starts_with
  
-function ends_with(str, ending)
+function string.ends_with(str, ending)
     return ending == "" or str:sub(-#ending) == ending
+end
+ends_with = string.ends_with
+
+function string.get_matches(str, pattern)
+    local res = {}
+    for match in str:gmatch(pattern) do
+        table.insert(res, match)
+    end
+    return res
+end
+
+function print(...)
+	local s = ""
+	for i = 1, select("#", ...) do
+		s = s .. tostring(select(i, ...)) .. "     "
+	end
+	s = s .. "\n"
+
+	_print(s)
+end
+
+function printf(format, ...)
+    _print(string.format(format, ...))
 end
 
 function round(num, numDecimalPlaces)
@@ -100,18 +147,56 @@ end
 
 ------------access to module operations------------
 game.mt = {
-	__index = function(table, key)
-		return function(...)
-			return game.execOperation(key,...)
+	__index = function(t, k)
+		if #k <= 6 then
+			--the vast majority of operation names are longer than 6 chars so this shouldnt slow things down much
+			--longest reg name is e.g. reg127
+			local i
+			i = string.match(k, "^reg(%d+)$")
+			if i then return game.getReg(0, tonumber(i)) end
+
+			i = string.match(k, "^s(%d+)$")
+			if i then return game.getReg(1, tonumber(i)) end
+
+			i = string.match(k, "^pos(%d+)$")
+			if i then return game.getReg(2, tonumber(i)) end
 		end
-	end
+			
+		return function(...)
+			return game.execOperation(k,...)
+		end
+	end,
+
+	__newindex = function(t, k, v)
+		if #k <= 6 then
+			local i
+			i = string.match(k, "^reg(%d+)$")
+			if i then game.setReg(0, tonumber(i), v); return end
+
+			i = string.match(k, "^s(%d+)$")
+			if i then game.setReg(1, tonumber(i), v); return end
+
+			i = string.match(k, "^pos(%d+)$")
+			if i then game.setReg(2, tonumber(i), v); return end
+		end
+
+		rawset(t, k, v)
+	end,
 }
 setmetatable(game, game.mt)
+
+local game_op_exclude = {
+	--These are incorrectly listed as lhs
+	prop_instance_get_position = true,
+	prop_instance_get_starting_position = true,
+	prop_instance_get_scale = true,
+	prop_instance_get_animation_target_position = true
+}
 
 game.op = {}
 if game.const and game.const.operations then
 	for k, v in pairs(game.const.operations) do
-		if not starts_with(k, "val_") then
+		if not starts_with(k, "val_") and not game_op_exclude[k] then
 			local ok, flags = pcall(game.getOperationFlags, k)
 
 			if ok and (bit.band(flags, 0x1) ~= 0) then
@@ -133,21 +218,21 @@ end
 
 ------------registers, gvar------------
 game.regMt = {
-	__index = function(table, key)
-		return game.getReg(table.typeId, key)
+	__index = function(t, k)
+		return game.getReg(t.typeId, k)
 	end,
 
-	__newindex = function(table, key, value)
-		game.setReg(table.typeId, key, value)
+	__newindex = function(t, k, v)
+		game.setReg(t.typeId, k, v)
 	end
 }
 game.gvarMt = {
-	__index = function(table, key)
-		return game.getGvar(key)
+	__index = function(t, k)
+		return game.getGvar(k)
 	end,
 
-	__newindex = function(table, key, value)
-		game.setGvar(key, value)
+	__newindex = function(t, k, v)
+		game.setGvar(k, v)
 	end
 }
 
@@ -158,10 +243,10 @@ game.gvar = setmetatable({}, game.gvarMt)
 
 ------------game constants------------
 game.const.mt = {
-	__index = function(table, key)
-		for k, v in pairs(table) do
-			if type(v) == "table" and v[key] then
-				return v[key]
+	__index = function(t, k)
+		for _, v in pairs(t) do
+			if type(v) == "table" and v[k] then
+				return v[k]
 			end
 		end
 	end
@@ -302,6 +387,7 @@ vector3.mt =
 		return lhs.x == rhs.x and lhs.y == rhs.y and lhs.z == rhs.z
 	end,
 }
+
 function vector3.new(obj)
 	local newObj
 	if obj then
@@ -315,6 +401,11 @@ function vector3.new(obj)
   
 	return setmetatable(newObj, vector3.mt)
 end
+
+--standard basis vector
+vector3.ex = vector3.new({x=1})
+vector3.ey = vector3.new({y=1})
+vector3.ez = vector3.new({z=1})
 
 ------------rotation------------
 game.rotation = {}
@@ -352,44 +443,67 @@ game.rotation.prototype =
 		return vector3.new({z = yaw, x = pitch, y = roll})
 	end,
 
-	rotX = function(self, angle)
-		local cos = math.cos(math.rad(angle))
-		local sin = math.sin(math.rad(angle))
+	rotX = function(self, angle, global)
+		if global then
+			self:rotate_around_axis(vector3.ex, angle)
+		else
+			local cos = math.cos(math.rad(angle))
+			local sin = math.sin(math.rad(angle))
 
-		local bOld = vector3.new(self.f)
-		local cOld = vector3.new(self.u)
+			local bOld = vector3.new(self.f)
+			local cOld = vector3.new(self.u)
 
-		self.f = cOld * sin + bOld * cos
-		self.u = cOld * cos - bOld * sin --
+			self.f = cOld * sin + bOld * cos
+			self.u = cOld * cos - bOld * sin
+		end
 	end,
 
-	rotY = function(self, angle)
-		local cos = math.cos(math.rad(angle))
-		local sin = math.sin(math.rad(angle))
+	rotY = function(self, angle, global)
+		if global then
+			self:rotate_around_axis(vector3.ey, angle)
+		else
+			local cos = math.cos(math.rad(angle))
+			local sin = math.sin(math.rad(angle))
 
-		local aOld = vector3.new(self.s)
-		local cOld = vector3.new(self.u)
+			local aOld = vector3.new(self.s)
+			local cOld = vector3.new(self.u)
 
-		self.s = aOld * cos - cOld * sin --
-		self.u = aOld * sin + cOld * cos
+			self.s = aOld * cos - cOld * sin
+			self.u = aOld * sin + cOld * cos
+		end
 	end,
 
-	rotZ = function(self, angle)
-		local cos = math.cos(math.rad(angle))
-		local sin = math.sin(math.rad(angle))
+	rotZ = function(self, angle, global)
+		if global then
+			self:rotate_around_axis(vector3.ez, angle)
+		else
+			local cos = math.cos(math.rad(angle))
+			local sin = math.sin(math.rad(angle))
 
-		local aOld = vector3.new(self.s)
-		local bOld = vector3.new(self.f)
+			local aOld = vector3.new(self.s)
+			local bOld = vector3.new(self.f)
 
-		self.s = bOld * sin + aOld * cos
-		self.f = bOld * cos - aOld * sin
+			self.s = bOld * sin + aOld * cos
+			self.f = bOld * cos - aOld * sin
+		end
 	end,
 
 	rotate = function(self, rotVec3)
 		if rotVec3.z then self:rotZ(rotVec3.z) end
 		if rotVec3.x then self:rotX(rotVec3.x) end
 		if rotVec3.y then self:rotY(rotVec3.y) end
-	end
+	end,
+
+	rotate_around_axis = function(self, axis, angle)
+		local cos = math.cos(math.rad(angle))
+		local sin = math.sin(math.rad(angle))
+		axis = axis:unit()
+
+		--Rodrigues' Rotation Formula
+		self.s = self.s*cos + axis:cross(self.s)*sin + axis*(axis:dot(self.s)*(1-cos))
+		self.f = self.f*cos + axis:cross(self.f)*sin + axis*(axis:dot(self.f)*(1-cos))
+		self.u = self.u*cos + axis:cross(self.u)*sin + axis*(axis:dot(self.u)*(1-cos))
+	end,
 }
 game.rotation.mt = 
 {
@@ -398,15 +512,15 @@ game.rotation.mt =
 function game.rotation.new(obj)
     local newObj
     if obj then
-        newObj = tableRecursiveCopy(obj)
+        newObj = table.copy_recursive(obj)
     else
         newObj = {}
     end
 
     local function merge(a, b)
-      for key,val in pairs(b) do
-        if not a[key] then
-          a[key] = val
+      for k,v in pairs(b) do
+        if not a[k] then
+          a[k] = v
         end
       end
 
@@ -482,7 +596,26 @@ game.pos.mt =
 function game.pos.new(obj)
     local newObj
     if obj then
-        newObj = tableRecursiveCopy(obj)
+        newObj = table.copy_recursive(obj)
+
+        --user might forget to put origin components into o
+        --dont ask how i know
+        if not newObj.o then
+        	if newObj.x or newObj.y or newObj.z or newObj[1] or newObj[2] or newObj[3] then
+        		newObj.o = {
+        			x = newObj.x or newObj[1],
+        			y = newObj.y or newObj[2],
+        			z = newObj.z or newObj[3]
+        		}
+        	end
+        end
+
+        --lets do the same for rot while were here
+        if not newObj.rot then
+        	if newObj.s or newObj.f or newObj.u then
+        		newObj.rot = {s = newObj.s, f = newObj.f, u = newObj.u}
+        	end
+        end
     else
         newObj = {}
     end

@@ -517,6 +517,13 @@ std::string WSEOperationContext::CreateFile(const std::string &file, const std::
 	return path;
 }
 
+std::string WSEOperationContext::GetSavegameDir()
+{
+	char path[MAX_PATH];
+	SHGetFolderPathA(NULL, CSIDL_PERSONAL, NULL, 0, path); //engine uses this exact function call
+	return std::string(path) + "\\Mount&Blade Warband Savegames\\" + std::string(warband->cur_module_name.c_str()) + '\\';
+}
+
 std::string WSEOperationContext::CreateScreenshot(const std::string &file, const std::string &extension)
 {
 	char buffer[MAX_PATH];

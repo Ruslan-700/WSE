@@ -1,7 +1,6 @@
 #pragma once
 
 #include "WSE.h"
-#include <fstream>
 #include <algorithm>
 
 enum lTypeF
@@ -34,8 +33,6 @@ void gPrintf(const std::string &format, ...);
 int traceback(lua_State *L);
 void printLastLuaError(lua_State *L, const char *fileName = NULL, HANDLE hFile = INVALID_HANDLE_VALUE);
 
-bool fileExists(const std::string& name);
-
 void removeChar(std::string &str, char c);
 void delBlank(std::string &str);
 void discardComment(std::string &str);
@@ -44,7 +41,7 @@ void split(const std::string &s, char delim, bool skipEmpty, Out result);
 std::vector<std::string> split(const std::string &s, char delim, bool skipEmpty);
 size_t countChar(const std::string &s, char c);
 
-bool str_starts_with(const char* str, const char* s, bool case_insensitive = false);
+bool str_starts_with(const char* str, const char* start, bool case_insensitive = false);
 char* sandbox_path(const char* path, int is_read_only);
 void setOperandToLocalVar(__int64 &operand, int localsIndex);
 int checkLArgs(lua_State *L, int minCount, int maxCount, ...);

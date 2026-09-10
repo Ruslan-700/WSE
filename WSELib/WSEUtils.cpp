@@ -1,4 +1,5 @@
 #include "WSEUtils.h"
+#include <fstream>
 
 std::string &trim(std::string &str, const std::string &chars)
 {
@@ -214,4 +215,15 @@ std::string replaceString(std::string subject, std::string const & search, std::
 		pos += replace.length();
 	}
 	return subject;
+}
+
+bool fileExists(const char* name)
+{
+	std::ifstream f(name);
+	return f.good();
+}
+
+bool fileExists(const std::string& name)
+{
+	return fileExists(name.c_str());
 }

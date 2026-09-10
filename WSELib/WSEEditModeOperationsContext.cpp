@@ -125,6 +125,20 @@ bool EditModeInEditObjectsMode(WSEEditModeOperationsContext *context)
 	return game->edit_mode_active && game->edit_mode_mode == 0;
 }
 
+int EditModeGetMode(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = warband->cur_game;
+
+	return game->edit_mode_mode;
+}
+
+bool EditModeWindowOpen(WSEEditModeOperationsContext *context)
+{
+	wb::game *game = warband->cur_game;
+
+	return game->edit_mode_dialog_open != 0;
+}
+
 WSEEditModeOperationsContext::WSEEditModeOperationsContext() : WSEOperationContext("edit_mode", 4600, 4699)
 {
 }
@@ -156,9 +170,16 @@ void WSEEditModeOperationsContext::OnLoad()
 		"prop_instance_no");
 
 	RegisterOperation("edit_mode_set_enabled", EditModeSetEnabled, Client, None, 1, 1,
-		"Enables or disables edit mode",
+		"Enables or disables edit mode. This is equivalent to enabling it in the launcher.",
 		"value");
 
 	RegisterOperation("edit_mode_in_edit_objects_mode", EditModeInEditObjectsMode, Client, Cf, 0, 0,
 		"Fails if the game is not in edit objects mode");
+
+	RegisterOperation("edit_mode_get_mode", EditModeGetMode, Client, Lhs, 1, 1,
+		"Modes: 0=Objects, 1=Ground Texture, 2=Ground Elevate, 3=Ground Color, 4=Edit AI Mesh, 5=Edit Weather",
+		"destination");
+
+	RegisterOperation("edit_mode_window_open", EditModeWindowOpen, Client, Cf, 0, 0,
+		"Fails if the scene edit window is not open. This is the little window that appears when you press Ctrl+E while edit mode is enabled.");
 }

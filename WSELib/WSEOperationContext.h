@@ -65,6 +65,7 @@ public:
 	void WindowsAPIError(std::string message, ...) const;
 	std::string CreateStorageDir();
 	std::string CreateFile(const std::string &file, const std::string &extension);
+	std::string GetSavegameDir();
 	std::string CreateScreenshot(const std::string &file, const std::string &extension);
 	int getOpcodeRangeCur();
 

@@ -1,5 +1,6 @@
 #include <regex>
 #include <Windows.h>
+#include <ShlObj.h>
 
 #include "WSE.h"
 #include "WSEScriptingContext.h"
@@ -251,170 +252,12 @@ bool opTest(WSELuaOperationsContext *context)
 	return lua_toboolean(context->luaState, index) != 0;
 }
 
-/************************/
 
 
 /***********************/
-/* init main lua state */
+/*  Context Functions  */
 /***********************/
 
-//This is a callback for luaJIT
-//We try to restrict all IO to user or storage dir with this middleman.
-#define STORAGE "%storage%"
-
-/*
-Canonicalises a path: resolves "." and "..", collapses separators and turns
-'/' into a backslash. Symbolic links, junctions and 8.3 short names are NOT
-resolved - this removes textual escapes only.
-*/
-static bool canonical_path(const std::string &in, std::string &out)
-{
-	char buffer[MAX_PATH];
-	DWORD len = GetFullPathNameA(in.c_str(), MAX_PATH, buffer, NULL);
-
-	if (len == 0 || len >= MAX_PATH)
-		return false;
-
-	out = buffer;
-	return true;
-}
-
-//Same, but guarantees a trailing backslash so the result can be used as a prefix.
-static bool canonical_dir(const std::string &in, std::string &out)
-{
-	if (!canonical_path(in, out))
-		return false;
-
-	if (out.empty() || out[out.length() - 1] != '\\')
-		out += '\\';
-
-	return true;
-}
-
-static std::string parent_dir(const std::string &dir)
-{
-	std::string s = dir;
-
-	while (s.length() > 1 && (s[s.length() - 1] == '\\' || s[s.length() - 1] == '/'))
-		s.erase(s.length() - 1);
-
-	size_t pos = s.find_last_of("\\/");
-
-	if (pos == std::string::npos)
-		return s + "\\";
-
-	return s.substr(0, pos + 1);
-}
-
-//The Warband directory, taken from the running executable rather than assumed.
-static bool resolve_game_dir(std::string &out)
-{
-	char buffer[MAX_PATH];
-
-	if (GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0)
-		return false;
-
-	char *filePart = strrchr(buffer, '\\');
-
-	if (filePart == NULL)
-		return false;
-
-	*(filePart + 1) = '\0';
-
-	return canonical_dir(buffer, out);
-}
-
-//root always ends with a backslash; the path may also be that directory itself.
-static bool path_is_under(const std::string &path, const std::string &root)
-{
-	size_t rootLen = root.length();
-
-	if (rootLen == 0)
-		return false;
-
-	if (path.length() >= rootLen && _strnicmp(path.c_str(), root.c_str(), rootLen) == 0)
-		return true;
-
-	return path.length() == rootLen - 1 && _strnicmp(path.c_str(), root.c_str(), rootLen - 1) == 0;
-}
-
-char* sandbox_path(const char* _path, int is_read_only)
-{
-	if (_path == NULL)
-		return NULL;
-
-	/*
-	A ':' can only come from a drive letter or an alternate data stream, a '!'
-	from an archive path. Neither belongs in a path relative to the module.
-	*/
-	if (strchr(_path, ':') != NULL || strchr(_path, '!') != NULL)
-		return NULL;
-
-	//Pick root_dir. Magic prefix %storage% will access storage dir
-	const char* path = _path;
-	std::string root;
-	std::string boundary;
-
-	bool using_storage = str_starts_with(path, STORAGE, true);
-
-	if (using_storage)
-	{
-		root = WSE->LuaOperations.CreateStorageDir();
-		path += strlen(STORAGE);
-
-		if (*path == '\\' || *path == '/')
-			path++;
-
-		//We allow to go back once when using %storage%, in order to access other modules.
-		boundary = parent_dir(root);
-	}
-	else
-	{
-		root = WSE->LuaOperations.user_dir;
-		boundary = root;
-	}
-
-	/*
-	Resolve the path first, then check where it landed. The previous version
-	counted ".." segments and allowed a fixed number of them, which assumed the
-	module always sits three levels below the Warband directory - not true for a
-	module installed from the Steam Workshop, and easy to get wrong elsewhere.
-	*/
-	std::string full;
-	std::string allowed;
-
-	if (!canonical_path(root + path, full) || !canonical_dir(boundary, allowed))
-		return NULL;
-
-	bool ok = path_is_under(full, allowed);
-
-	if (!ok && is_read_only && !using_storage)
-	{
-		/*
-		Reading is additionally allowed below the Warband directory, and below
-		the current module - a module installed from the Steam Workshop lives
-		outside the Warband directory.
-		*/
-		if (path_is_under(full, WSE->LuaOperations.game_dir))
-			ok = true;
-		else if (canonical_dir(parent_dir(WSE->LuaOperations.user_dir), allowed) && path_is_under(full, allowed))
-			ok = true;
-	}
-
-	if (!ok)
-		return NULL;
-
-	return _strdup(full.c_str());
-}
-
-//Lanes will create entirely new lua states, we have to properly initialize those
-void initLaneState(lua_State *L)
-{
-	lua_set_sandboxed_path_callback(L, sandbox_path);
-	register_wse_require_loader(L); 
-	initLGameTable(L);
-}
-/***************************/
 WSELuaOperationsContext::WSELuaOperationsContext() : WSEOperationContext("lua", 5100, 5199)
 {
 	this->tStart = std::chrono::steady_clock::now();
@@ -509,7 +352,7 @@ void WSELuaOperationsContext::OnUnload()
 void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *data)
 {
 	WSEOperationContext::OnEvent(sender, evt, data);
-	
+
 	if (!luaStateIsReady) return;
 
 	if (evt == WSEEvent::OnFrame)
@@ -634,7 +477,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			if (lua_pcall(luaState, 0, 0, 0))
+			lua_pushnumber(luaState, *((int*)data));
+			if (lua_pcall(luaState, 1, 0, 0))
 			{
 				printLastLuaError(luaState);
 			}
@@ -655,7 +499,8 @@ void WSELuaOperationsContext::OnEvent(WSEContext *sender, WSEEvent evt, void *da
 
 		if (lua_type(luaState, -1) == LUA_TFUNCTION)
 		{
-			if (lua_pcall(luaState, 0, 0, 0))
+			lua_pushnumber(luaState, *((int*)data));
+			if (lua_pcall(luaState, 1, 0, 0))
 			{
 				printLastLuaError(luaState);
 			}
@@ -713,7 +558,7 @@ void WSELuaOperationsContext::hookScript(lua_State *L, int script_no, int lRef)
 bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int *operand_types, __int64 *operand_values, bool *continue_loop, bool &setRetVal, long long &retVal)
 {
 	setRetVal = false;
-	
+
 	int oldTop = lua_gettop(luaState);
 	lua_rawgeti(luaState, LUA_REGISTRYINDEX, lRef);
 
@@ -748,7 +593,7 @@ bool WSELuaOperationsContext::OnOperationExecute(int lRef, int num_operands, int
 
 	if (nResults == 0)
 		return true;
-	
+
 	if (nResults == 2)
 	{
 		if (lua_type(luaState, 2 + oldTop) == LUA_TBOOLEAN) //cf
@@ -907,6 +752,192 @@ void WSELuaOperationsContext::OnPostWorldTriggers()
 	{
 		lua_pop(luaState, 2);
 	}
+}
+
+
+
+/***********************/
+/*   File Sandboxing   */
+/***********************/
+
+/*
+Canonicalises a path: resolves "." and "..", collapses separators and turns
+'/' into a backslash. Symbolic links, junctions and 8.3 short names are NOT
+resolved - this removes textual escapes only.
+*/
+static bool canonical_path(const std::string &in, std::string &out)
+{
+	char buffer[MAX_PATH];
+	DWORD len = GetFullPathNameA(in.c_str(), MAX_PATH, buffer, NULL);
+
+	if (len == 0 || len >= MAX_PATH)
+		return false;
+
+	out = buffer;
+	return true;
+}
+
+//Same, but guarantees a trailing backslash so the result can be used as a prefix.
+static bool canonical_dir(const std::string &in, std::string &out)
+{
+	if (!canonical_path(in, out))
+		return false;
+
+	if (out.empty() || out[out.length() - 1] != '\\')
+		out += '\\';
+
+	return true;
+}
+
+static std::string parent_dir(const std::string &dir)
+{
+	std::string s = dir;
+
+	while (s.length() > 1 && (s[s.length() - 1] == '\\' || s[s.length() - 1] == '/'))
+		s.erase(s.length() - 1);
+
+	size_t pos = s.find_last_of("\\/");
+
+	if (pos == std::string::npos)
+		return s + "\\";
+
+	return s.substr(0, pos + 1);
+}
+
+//The Warband directory, taken from the running executable rather than assumed.
+static bool resolve_game_dir(std::string &out)
+{
+	char buffer[MAX_PATH];
+
+	if (GetModuleFileNameA(NULL, buffer, MAX_PATH) == 0)
+		return false;
+
+	char *filePart = strrchr(buffer, '\\');
+
+	if (filePart == NULL)
+		return false;
+
+	*(filePart + 1) = '\0';
+
+	return canonical_dir(buffer, out);
+}
+
+//root always ends with a backslash; the path may also be that directory itself.
+static bool path_is_under(const std::string &path, const std::string &root)
+{
+	size_t rootLen = root.length();
+
+	if (rootLen == 0) return false;
+
+	if (str_starts_with(path.c_str(), root.c_str())) return true;
+
+	return path.length() == rootLen - 1 &&
+		   _strnicmp(path.c_str(), root.c_str(), rootLen - 1) == 0 &&
+		   (root[rootLen - 1] == '\\' || root[rootLen - 1] == '/');
+}
+
+#define STORAGE "%storage%"
+#define SAVEGAME "%savegames%"
+
+//This is a callback for luaJIT
+//It acts as a middleman that returns NULL for disallowed paths.
+char* sandbox_path(const char* _path, int is_read_only)
+{
+	if (_path == NULL)
+		return NULL;
+
+	/*
+	A ':' can only come from a drive letter or an alternate data stream, a '!'
+	from an archive path. Neither belongs in a path relative to the module.
+	*/
+	if (strchr(_path, ':') != NULL || strchr(_path, '!') != NULL)
+		return NULL;
+
+	//Pick root_dir. Magic prefix %storage% will access storage dir
+	const char* path = _path;
+	std::string root;
+	std::string boundary;
+
+	bool using_storage = false;
+	bool using_save    = false;
+
+	if (str_starts_with(path, STORAGE, true))
+	{
+		using_storage = true;
+
+		root = WSE->LuaOperations.CreateStorageDir();
+
+		path += strlen(STORAGE);
+		if (*path == '\\' || *path == '/') path++; // %storage%folder/ is same as %storage%/folder/
+
+		//We allow to go back once when using %storage%, in order to access other modules.
+		boundary = parent_dir(root);
+	}
+#if defined WARBAND
+	else if (str_starts_with(path, SAVEGAME, true))
+	{
+		using_save = true;
+
+		root = WSE->LuaOperations.save_dir;
+
+		path += strlen(SAVEGAME);
+		if (*path == '\\' || *path == '/') path++;
+
+		//We allow to go back once when using %savegames%, in order to access other modules.
+		boundary = parent_dir(root);
+	}
+#endif
+	else
+	{
+		root = WSE->LuaOperations.user_dir;
+		boundary = root;
+	}
+
+	/*
+	Resolve the path first, then check where it landed. The previous version
+	counted ".." segments and allowed a fixed number of them, which assumed the
+	module always sits three levels below the Warband directory - not true for a
+	module installed from the Steam Workshop, and easy to get wrong elsewhere.
+	*/
+	std::string full;
+	std::string allowed;
+
+	if (!canonical_path(root + path, full) || !canonical_dir(boundary, allowed))
+		return NULL;
+
+	bool ok = path_is_under(full, allowed);
+
+	if (!ok && is_read_only && !using_storage && !using_save)
+	{
+		/*
+		Reading is additionally allowed below the Warband directory, and below
+		the current module - a module installed from the Steam Workshop lives
+		outside the Warband directory.
+		*/
+		if (path_is_under(full, WSE->LuaOperations.game_dir))
+			ok = true;
+		else if (canonical_dir(parent_dir(WSE->LuaOperations.user_dir), allowed) && path_is_under(full, allowed))
+			ok = true;
+	}
+
+	if (!ok)
+		return NULL;
+
+	return _strdup(full.c_str());
+}
+
+
+
+/***********************/
+/* Init Main Lua State */
+/***********************/
+
+//Lanes will create entirely new lua states, we have to properly initialize those
+void initLaneState(lua_State *L)
+{
+	lua_set_sandboxed_path_callback(L, sandbox_path);
+	register_wse_require_loader(L);
+	initLGameTable(L);
 }
 
 void WSELuaOperationsContext::applyFlagListToOperationMap(std::unordered_map<std::string, std::vector<std::string>*> &flagLists, std::string listName, unsigned short flag, std::string opFile)
@@ -1135,6 +1166,8 @@ void WSELuaOperationsContext::initLua()
 	*/
 	if (!resolve_game_dir(game_dir))
 		game_dir = WSE->GetPath();
+	
+	save_dir = GetSavegameDir();
 
 	/** Lets go **/
 	luaState = luaL_newstate();
