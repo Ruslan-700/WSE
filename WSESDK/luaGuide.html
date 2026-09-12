@@ -794,6 +794,9 @@
 					 Delete any bad lines, but make sure any opcodes you need & the lists at the end (<span class='keyword'>lhs_operations = [...], etc</span>) are intact.
 					</span>
 				</li>
+				<li>
+					If you are developing in WSE2, make sure to set <span class="keyword">[General] bSuppressScriptErrors = false   bSuppressWarnings = false   bEditMode = true</span>. Otherwise you won't see error messages.
+				</li>
 			</ul>
 			<p class="padl20">WSE/LUA uses a modified version of LuaJIT 2.1.0, which is based on and ABI compatible to Lua 5.1</p>
 			<p class="padl20">
@@ -1665,7 +1668,7 @@
 							WSE2: <span class="keyword">[General] bLuaDisableGameConstWarnings</span>
 						</li>
 						<li>
-							If you are developing in WSE2, make sure to set <span class="keyword">[General] bSuppressScriptErrors</span> and <span class="keyword">[General] bSuppressWarnings</span> to false.
+							If you are developing in WSE2, make sure to set <span class="keyword">[General] bSuppressScriptErrors = false   bSuppressWarnings = false   bEditMode = true</span>. Otherwise you won't see error messages.
 						</li>
 					</ul>
 				</div>
