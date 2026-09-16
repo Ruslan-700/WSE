@@ -67,32 +67,51 @@ function table.make(_table, ...)
 end
 make = table.make
 
+--Lua tables are tricky. Internally, they can be like arrays with consecutive indices, or like dicts.
+--Using the # operator only works reliably for tables that are in the array state.
+--So they only reliable way of testing emptieness is next
+function table.empty(t)
+    return next(t) == nil
+end
+
 local function _format(v)
     if type(v) == "string" then return "'" .. v .. "'" else return tostring(v) end
 end
 
-function table.print(t, prefix, seen)
+function table.print(t, prefix, max_depth, _depth, _seen)
     prefix = prefix or ""
-    seen = seen or {}
-    seen[t] = true
+    _depth = _depth or 1
+    _seen = _seen or {}
+    _seen[t] = true
 
     for k,v in pairs(t) do
         if type(v) == "table" then
-            if seen[v] then
+            if _seen[v] then
                 print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
-                print(prefix .. "    #Reference to parent table#")
+                print(prefix .. "    #Reference to table#")
                 print(prefix .. "}")   
             else
-                print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
-                printTable(v, prefix .. "    ", seen)
-                print(prefix .. "}")   
+                if table.empty(v) then
+                    --dont waste space for empty table
+                    print(string.format("%s[%s] %s = %s{ }", prefix, type(k), _format(k), tostring(v)))
+                else
+                    if (not max_depth) or _depth < max_depth then
+                        print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
+                        table.print(v, prefix .. "    ", max_depth, _depth+1, _seen)
+                        print(prefix .. "}")   
+                    else
+                        print(string.format("%s[%s] %s = %s{", prefix, type(k), _format(k), tostring(v)))
+                        print(prefix .. "    ...")
+                        print(prefix .. "}")   
+                    end
+                end
             end
         else
             print(string.format("%s[%s] %s = [%s] %s", prefix, type(k), _format(k), type(v), _format(v)))
         end
     end
 
-    seen[t] = nil
+    _seen[t] = nil
 end
 printTable = table.print
 
@@ -193,7 +212,8 @@ local game_op_exclude = {
 	prop_instance_get_animation_target_position = true
 }
 
-game.op = {}
+game.op = {is_default = false}
+
 if game.const and game.const.operations then
 	for k, v in pairs(game.const.operations) do
 		if not starts_with(k, "val_") and not game_op_exclude[k] then
@@ -208,12 +228,15 @@ end
 setmetatable(game.op, game.mt)
 
 function game.op.make_default()
+	if game.op.is_default then return end
+
 	for k, v in pairs(game.op) do
 		if type(v) == "function" then
 			if rawget(game, k) then print("WARNING, overwritting game." .. tostring(k)) end
 			game[k] = v
 		end
 	end
+	rawset(game.op, "is_default", true)
 end
 
 ------------registers, gvar------------
