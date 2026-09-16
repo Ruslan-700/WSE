@@ -1360,6 +1360,43 @@
 							</div>
 						</li>
 						<li>
+							<div>
+								<p>
+									<span class="keyword">game.getString(id [, type] [, raw])</span> returns the text of a module system string, with the language CSV
+									translation applied and tokens such as <span class="keyword">{reg0}</span>, <span class="keyword">{s1}</span> and <span class="keyword">^</span> expanded -
+									exactly what <span class="keyword">str_store_string</span> would put into a string register.
+								</p>
+								<p style="padding-left: 10px;">
+									<span class="keyword">type</span> is 3 for strings (default) and 22 for quick strings. Pass <span class="keyword">raw = true</span> to get the
+									translated text without token expansion. Returns nil-free: an out of range id raises a Lua error.
+								</p>
+								<p style="padding-left: 10px;">
+									This is the only way to read the string table from Lua. <span class="keyword">game.str_store_string(s1, id)</span> does <b>not</b> work:
+									operands passed from Lua carry no operand type tag, so the id is interpreted as a string register number instead.
+								</p>
+								<p style="padding-left: 10px;">Example:</p>
+								<pre class="code">
+									local text = game.getString(game.string.str_my_string)
+									local qtext = game.getString(game.qstring.qstr_my_quick_string, 22)
+								</pre>
+							</div>
+						</li>
+						<li>
+							<div>
+								<p>
+									<span class="keyword">game.getStringId(name [, type])</span> returns the index of the string whose id is <span class="keyword">name</span>, or nil.
+									The name is the full module system id including its prefix, i.e. the key used in game_strings.csv - <span class="keyword">"str_my_string"</span>,
+									not <span class="keyword">"my_string"</span>. <span class="keyword">type</span> is 3 for strings (default) and 22 for quick strings.
+								</p>
+								<p style="padding-left: 10px;">
+									Wrappers are provided: <span class="keyword">game.string.[name]</span> and <span class="keyword">game.qstring.[name]</span>, which cache the lookup.
+									<pre class="code">
+										game.display_message(game.string.str_my_string)
+									</pre>
+								</p>
+							</div>
+						</li>
+						<li>
 							<span class="keyword">game.getCurTemplateNo()</span> returns the index of the current mission template. Note that no template will be loaded at the time main.lua is executed.
 						</li>
 						<li>

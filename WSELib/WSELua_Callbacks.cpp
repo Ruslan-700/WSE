@@ -257,6 +257,95 @@ int lc_getScriptNo(lua_State *L)
 	return 1;
 }
 
+// Lua operands carry no operand type tag (and lua_Integer is 32 bit here, so one
+// cannot be forged either), which makes every numeric operand parse as opt_value.
+// str_store_string therefore always reads a string register from Lua and the
+// strings table is unreachable; these two expose it directly instead.
+static bool lGetStringTable(lua_State *L, int type, wb::game_string *&strings, int &numStrings)
+{
+	if (type == 3)
+	{
+		strings = warband->string_manager.strings;
+		numStrings = warband->string_manager.num_strings;
+	}
+	else if (type == 22)
+	{
+		strings = warband->string_manager.quick_strings;
+		numStrings = warband->string_manager.num_quick_strings;
+	}
+	else
+	{
+		luaL_error(L, "invalid string type %d (3 = string, 22 = quick string)", type);
+		return false;
+	}
+
+	return true;
+}
+
+REG(getString)
+int lc_getString(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 1, 3, lNum, lNum, lBool);
+
+	int value = lua_tointeger(L, 1);
+	int type = numArgs >= 2 ? (int)lua_tointeger(L, 2) : 3;
+	bool raw = numArgs >= 3 && lua_toboolean(L, 3) != 0;
+
+	wb::game_string *strings;
+	int numStrings;
+
+	if (!lGetStringTable(L, type, strings, numStrings))
+		return 0;
+
+	if (value < 0 || value >= numStrings)
+		luaL_error(L, "%s id out of range: %d", type == 3 ? "string" : "quick string", value);
+
+	// get_text() applies the language CSV override, parse_string() expands {reg0},
+	// {s1}, ^ and the rest the way str_store_string would.
+	const rgl::string &text = strings[value].get_text();
+
+	if (raw)
+	{
+		lua_pushstring(L, text.c_str());
+	}
+	else
+	{
+		rgl::string parsed;
+
+		warband->basic_game.parse_string(parsed, text);
+		lua_pushstring(L, parsed.c_str());
+	}
+
+	return 1;
+}
+
+REG(getStringId)
+int lc_getStringId(lua_State *L)
+{
+	int numArgs = checkLArgs(L, 1, 2, lStr, lNum);
+
+	const char *stringId = lua_tostring(L, 1);
+	int type = numArgs >= 2 ? (int)lua_tointeger(L, 2) : 3;
+
+	wb::game_string *strings;
+	int numStrings;
+
+	if (!lGetStringTable(L, type, strings, numStrings))
+		return 0;
+
+	for (int i = 0; i < numStrings; ++i)
+	{
+		if (strings[i].id == stringId)
+		{
+			lua_pushinteger(L, i);
+			return 1;
+		}
+	}
+
+	lua_pushnil(L);
+	return 1;
+}
+
 REG(getCurTemplateNo)
 int lc_getCurTemplateNo(lua_State *L)
 {

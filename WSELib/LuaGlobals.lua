@@ -291,6 +291,35 @@ game.script.mt = {
 }
 setmetatable(game.script, game.script.mt)
 
+------------game.string, game.qstring------------
+game.string = {}
+game.string.mt = {
+  __index = function(self, k)
+	local no = game.getStringId(k)
+	if no then
+		self[k] = no
+		return self[k]
+	else
+		return nil
+	end
+  end
+}
+setmetatable(game.string, game.string.mt)
+
+game.qstring = {}
+game.qstring.mt = {
+  __index = function(self, k)
+	local no = game.getStringId(k, 22)
+	if no then
+		self[k] = no
+		return self[k]
+	else
+		return nil
+	end
+  end
+}
+setmetatable(game.qstring, game.qstring.mt)
+
 ------------vector3------------
 vector3 = {}
 vector3.prototype = 
