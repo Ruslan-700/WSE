@@ -213,4 +213,12 @@ void WSEPlayerOperationsContext::OnLoad()
 	RegisterOperation("player_set_party_id", nullptr, Both, WSE2, 2, 2,
 		"Sets <0>'s party to <1>. For multiplayer campaign mode",
 		"player_no", "party_no");
+
+	RegisterOperation("player_get_anticheat_stat", nullptr, Both, Lhs | WSE2, 3, 3,
+		"Stores anti-cheat statistic acs_* of <1> into <0>. Values marked (fp) are fixed point",
+		"destination", "player_no", "stat_no");
+
+	RegisterOperation("player_anticheat_report", nullptr, Server, WSE2, 2, 2,
+		"Reports a module-side detection for <0> through the anti-cheat pipeline (log, ti_on_cheat_detected, kick). Server only",
+		"player_no", "value");
 }

@@ -1,7 +1,13 @@
 # Changelog
 
+## v4.12.2
+- Lua:
+  - expose the module system string table via getString/getStringId
+  - add table.empty, extend table.print, guard game.op.make_default
+  - update luaguide
+
 ## v4.12.1
-- Extend presentation_set_duration so we can close other presentations.
+- Extend `presentation_set_duration` so we can close other presentations.
 - wse_settings.ini - fill in missing options so users can find them.
 - Fix bug when no header_path was set.
 - Add `operations edit_mode_get_mode`, `edit_mode_window_open`, `str_store_savegame_md5`.
