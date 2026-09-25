@@ -232,6 +232,8 @@ namespace wb
 
 		static unsigned int game_data_ptr;
 
+		static unsigned int rand_seed;
+
 		static unsigned int post_world_triggers;
 		static unsigned int post_world_triggers_exit;
 	};

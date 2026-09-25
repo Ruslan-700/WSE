@@ -52,7 +52,7 @@ float rglClamp(float value, float min, float max)
 
 void rglSrand(int seed)
 {
-	srand(seed);
+	*(unsigned int *)wb::addresses::rand_seed = seed;
 }
 
 float rglRandf()
@@ -72,7 +72,10 @@ float rglRandf(float min, float max)
 
 int rglRand()
 {
-	return rand();
+	unsigned int &seed = *(unsigned int *)wb::addresses::rand_seed;
+
+	seed = seed * 214013 + 2531011;
+	return (seed >> 16) & 0x7FFF;
 }
 
 int rglRand(int max)

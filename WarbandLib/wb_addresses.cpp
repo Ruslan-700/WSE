@@ -292,6 +292,8 @@ unsigned int addresses::write_to_rgl_log_exit = write_to_rgl_log + 5;
 //unsigned int addresses::game_data_ptr = 0x0094F118;
 unsigned int addresses::game_data_ptr = 0x008681C0;
 
+unsigned int addresses::rand_seed = 0x008663A0;
+
 unsigned int addresses::post_world_triggers = 0x005DD084;
 unsigned int addresses::post_world_triggers_exit = post_world_triggers + 10;
 
@@ -516,6 +518,8 @@ unsigned int addresses::agent_AddStun = 0x004B9E30;
 unsigned int addresses::agent_PlaySoundAtPosition = 0x004AA7D0;
 
 unsigned int addresses::game_data_ptr = 0x009463D0;
+
+unsigned int addresses::rand_seed = 0x008663A0;
 
 unsigned int addresses::post_world_triggers = 0x005DD084;
 unsigned int addresses::post_world_triggers_exit = post_world_triggers + 10;
@@ -798,6 +802,8 @@ unsigned int addresses::write_to_rgl_log_exit = write_to_rgl_log + 5;
 
 //unsigned int addresses::game_data_ptr = 0x006D8428;
 unsigned int addresses::game_data_ptr = 0x006E4430;
+
+unsigned int addresses::rand_seed = 0x006E3268;
 
 unsigned int addresses::post_world_triggers = 0;
 unsigned int addresses::post_world_triggers_exit = 0;

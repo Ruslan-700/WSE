@@ -35,40 +35,6 @@ __int64 StoreTriggerParam(WSECoreOperationsContext *context)
 	return WSE->Scripting.GetTriggerParam(index);
 }
 
-void ShuffleRange(WSECoreOperationsContext *context)
-{
-	int reg1, reg2;
-
-	context->ExtractRegister(reg1);
-	context->ExtractRegister(reg2);
-
-	for (int i = reg1; i < reg2; ++i)
-	{
-		int randomRegisterNo = reg1 + rglRand(reg2 - reg1);
-
-		std::swap(warband->basic_game.registers[i], warband->basic_game.registers[randomRegisterNo]);
-	}
-}
-
-int StoreRandom(WSECoreOperationsContext *context)
-{
-	int upper_range;
-
-	context->ExtractValue(upper_range);
-
-	return rglRand(upper_range);
-}
-
-int StoreRandomInRange(WSECoreOperationsContext *context)
-{
-	int range_low, range_high;
-
-	context->ExtractValue(range_low);
-	context->ExtractValue(range_high);
-
-	return range_low + rglRand(range_high - range_low);
-}
-
 __int64 RegisterGet(WSECoreOperationsContext *context)
 {
 	int reg;
@@ -707,18 +673,6 @@ void WSECoreOperationsContext::OnLoad()
 		"Stores <1> into <0>",
 		"destination", "trigger_param_no");
 
-	ReplaceOperation(2134, "shuffle_range", ShuffleRange, Both, Undocumented, 2, 2,
-		"Randomly shuffles a range of <0>..<1",
-		"register_1", "register_2");
-
-	ReplaceOperation(2135, "store_random", StoreRandom, Both, Lhs | Undocumented, 2, 2,
-		"Stores a random value in the range of 0..<1>-1 into <0>",
-		"destination", "upper_range");
-
-	ReplaceOperation(2136, "store_random_in_range", StoreRandomInRange, Both, Lhs | Undocumented, 3, 3,
-		"Stores a random value in the range of <1>..<2>-1 into <0>",
-		"destination", "range_low", "range_high");
-	
 	RegisterOperation("register_get", RegisterGet, Both, Lhs, 2, 2,
 		"Stores the value of register <1> into <0>",
 		"destination", "index");
