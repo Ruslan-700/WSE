@@ -89,6 +89,7 @@ profiler_stop                          = 3041 #(profiler_stop), #Stop the profil
 profiler_is_recording                  = 3042 #(profiler_is_recording), #Fails if profiler isn't recording
 profiler_mark                          = 3043 #(profiler_mark, <string_1>), #Add a marker at this point in time with name <string_1>. Good for analyzing individual parts of a script.
 conversation_screen_auto_update_choice = 3044 #(conversation_screen_auto_update_choice), #Auto update single conversation choice without mouse click. Useful if you need to get text from external scripts. (requires WSE2)
+show_hud                               = 3045 #(show_hud, <value>), #Enables or disables hud
 
 game_key_get_key  = 3100 #(game_key_get_key, <destination>, <game_key_no>), #Stores the key mapped to <game_key_no> into <destination>
 key_released      = 3101 #(key_released, <key>, [<bypass_console_check>]), #Fails if <key> wasn't released in the current frame
@@ -518,8 +519,6 @@ lhs_operations += [
 	agent_get_reload_speed_modifier,
 	agent_get_use_speed_modifier,
 	store_trigger_param,
-	store_random,
-	store_random_in_range,
 	face_keys_get_morph_key,
 	val_shr,
 	store_shr,

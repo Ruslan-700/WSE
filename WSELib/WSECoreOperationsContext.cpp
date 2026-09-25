@@ -624,6 +624,15 @@ void ProfilerMark(WSECoreOperationsContext *context)
 	WSE->Profiling.AddMarker(str);
 }
 
+void ShowHud(WSECoreOperationsContext *context)
+{
+	bool value;
+
+	context->ExtractBoolean(value);
+
+	warband->cur_game->hide_tactical_ui = !value;
+}
+
 WSECoreOperationsContext::WSECoreOperationsContext() : WSEOperationContext("core", 3000, 3099)
 {
 	m_mersenne_twister.seed((int)time(NULL));
@@ -843,4 +852,8 @@ void WSECoreOperationsContext::OnLoad()
 
 	RegisterOperation("conversation_screen_auto_update_choice", nullptr, Client, WSE2, 0, 0,
 		"Auto update single conversation choice without mouse click. Useful if you need to get text from external scripts.");
+
+	RegisterOperation("show_hud", ShowHud, Client, None, 1, 1,
+		"Enables or disables hud",
+		"value");
 }
