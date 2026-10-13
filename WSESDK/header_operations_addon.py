@@ -426,13 +426,14 @@ menu_add_item        = 4801 #(menu_add_item, <menu_no>, <text>, [<conditions_scr
 menu_clear_items     = 4802 #(menu_clear_items, <menu_no>), #Removes all menu items from <menu_no>
 menu_clear_generated = 4803 #(menu_clear_generated), #Removes all dynamic menus
 
-overlay_get_val         = 4900 #(overlay_get_val, <destination>, <overlay_no>), #Stores <overlay_no>'s value into <destination>
-presentation_activate   = 4901 #(presentation_activate, <presentation_no>), #Activates <presentation_no>. Fails if <presentation_no> is not running
-overlay_button_set_type = 4902 #(overlay_button_set_type, <overlay_no>, <toggle_or_not>, <deselectable_or_not>), #Sets <overlay_no>'s <toggle_or_not> and <deselectable_or_not>
-overlay_get_scroll_pos  = 4903 #(overlay_get_scroll_pos, <destination_fixed_point>, <overlay_no>), #Stores <overlay_no>'s scroll pos into <destination_fixed_point>
-overlay_set_scroll_pos  = 4904 #(overlay_set_scroll_pos, <overlay_no>, <value_fixed_point>), #Sets <overlay_no>'s scroll pos <value_fixed_point>
-overlay_enable          = 4905 #(overlay_enable, <overlay_no>, <enable_or_disable>), #Sets <overlay_no>'s <enable_or_disable>
-overlay_item_set_text   = 4906 #(overlay_item_set_text, <overlay_no>, <item_no>, <text>), #Changes the <overlay_no>'s <item_no>'s <text>. Items are indexed from 0 (requires WSE2)
+overlay_get_val                 = 4900 #(overlay_get_val, <destination>, <overlay_no>), #Stores <overlay_no>'s value into <destination>
+presentation_activate           = 4901 #(presentation_activate, <presentation_no>), #Activates <presentation_no>. Fails if <presentation_no> is not running
+overlay_button_set_type         = 4902 #(overlay_button_set_type, <overlay_no>, <toggle_or_not>, <deselectable_or_not>), #Sets <overlay_no>'s <toggle_or_not> and <deselectable_or_not>
+overlay_get_scroll_pos          = 4903 #(overlay_get_scroll_pos, <destination_fixed_point>, <overlay_no>), #Stores <overlay_no>'s scroll pos into <destination_fixed_point>
+overlay_set_scroll_pos          = 4904 #(overlay_set_scroll_pos, <overlay_no>, <value_fixed_point>), #Sets <overlay_no>'s scroll pos <value_fixed_point>
+overlay_enable                  = 4905 #(overlay_enable, <overlay_no>, <enable_or_disable>), #Sets <overlay_no>'s <enable_or_disable>
+overlay_item_set_text           = 4906 #(overlay_item_set_text, <overlay_no>, <item_no>, <text>), #Changes the <overlay_no>'s <item_no>'s <text>. Items are indexed from 0 (requires WSE2)
+start_conversation_presentation = 4907 #(start_conversation_presentation, <presentation_no>), #Opens <presentation_no> over the open conversation window, ending other running ones like start_presentation does in a mission (except prsntf_manual_end_only). Unless it is prsntf_read_only, choices are blocked and the conversation stays where it is (no conditions or consequences run) until the presentation ends. Does nothing if the conversation window is not open (check with conversation_screen_is_active). (requires WSE2)
 
 array_create        = 5000 #(array_create, <destination>, <type_id>, <Dim 0>, [<Dim 1>], [<Dim 2>], [<Dim 3>], [<Dim 4>], [<Dim 5>], [<Dim 6>], [<Dim 7>], [<Dim 8>], [<Dim 9>], [<Dim 10>], [<Dim 11>], [<Dim 12>], [<Dim 13>]), #Creates an array object of <type_id> (0: Integer, 1: String, 2: Position) and stores its ID into <destination>. You can specify up to 14 dimensions, from <Dim 0> to [<Dim 13>]. The array will be initialized by default with 0 / empty string / 0-position.
 array_free          = 5001 #(array_free, <arrayID>), #Frees array with <arrayID>.

@@ -178,6 +178,10 @@ WSEPresentationOperationsContext::WSEPresentationOperationsContext() : WSEOperat
 
 void WSEPresentationOperationsContext::OnLoad()
 {
+	ReplaceOperation(902, "presentation_set_duration", PresentationSetDuration, Client, None, 1, 2,
+		"Set remaining duration. If <1> is not used, set for the active presentation.",
+		"duration-in-1/100-seconds", "presentation_id");
+
 	RegisterOperation("overlay_get_val", OverlayGetValue, Client, Lhs, 2, 2,
 		"Stores <1>'s value into <0>",
 		"destination", "overlay_no");
@@ -214,7 +218,7 @@ void WSEPresentationOperationsContext::OnLoad()
 		"Changes the <0>'s <1>'s <2>. Items are indexed from 0",
 		"overlay_no", "item_no", "text");
 
-	ReplaceOperation(902, "presentation_set_duration", PresentationSetDuration, Client, None, 1, 2,
-		"Set remaining duration. If <1> is not used, set for the active presentation.",
-		"duration-in-1/100-seconds", "presentation_id");
+	RegisterOperation("start_conversation_presentation", nullptr, Client, WSE2, 1, 1,
+		"Opens <0> over the open conversation window, ending other running ones like start_presentation does in a mission (except prsntf_manual_end_only). Unless it is prsntf_read_only, choices are blocked and the conversation stays where it is (no conditions or consequences run) until the presentation ends. Does nothing if the conversation window is not open (check with conversation_screen_is_active).",
+		"presentation_no");
 }
