@@ -382,7 +382,7 @@ namespace wb
 		//float u26;
 		//float u27;
 		int u28; //1166
-		rgl::timer u29; //1166
+		rgl::timer toggle_item_mode_timer;
 		float u30; //1166
 		int u31; //1166
 
