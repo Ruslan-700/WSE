@@ -1,8 +1,8 @@
 # Changelog
 
 ## v4.12.3
-- Added show_hud operation.
-- set_random_seed operation works not only for rand operations, also for all engine rand.
+- Added `show_hud` operation.
+- `set_random_seed` operation works not only for rand operations, also for all engine rand.
 
 ## v4.12.2
 - Lua:

@@ -661,10 +661,11 @@ void MissileGetCurPosition(WSEMissionOperationsContext *context)
 	if (!missile)
 		return;
 
-	if (missile->cur_path == 0)
+	// prev_position is first written by the missile's tick, so inside ti_on_init_missile it still holds the previous pooled missile's value. Take the direction from the path segment the missile is on instead.
+	if (missile->cur_path <= 1)
 		warband->basic_game.position_registers[preg].rot.f = missile->starting_direction;
 	else
-		warband->basic_game.position_registers[preg].rot.f = ((missile->cur_position - missile->prev_position) * 50.0f);
+		warband->basic_game.position_registers[preg].rot.f = missile->get_direction();
 
 	warband->basic_game.position_registers[preg].rot.f.normalize();
 	warband->basic_game.position_registers[preg].rot.u = rgl::vector4(0.0f, 1.0f, 0.0f);
