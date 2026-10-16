@@ -35,7 +35,7 @@ bool WSENetworkContext::http_request(const rgl::string &url, rgl::string &respon
 	HINTERNET connect = NULL;
 	HINTERNET request = NULL;
 	
-	session = WinHttpOpen(userAgent, WINHTTP_ACCESS_TYPE_NO_PROXY, NULL, NULL, 0);
+	session = WinHttpOpen(userAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0); // vanilla: honours the WinHTTP proxy (netsh winhttp)
 
 	if (session)
 		connect = WinHttpConnect(session, host, INTERNET_DEFAULT_PORT, 0);
@@ -115,7 +115,7 @@ bool WSENetworkContext::http_post_request(const rgl::string &url, rgl::string &r
 	HINTERNET connect = NULL;
 	HINTERNET request = NULL;
 
-	session = WinHttpOpen(userAgent, WINHTTP_ACCESS_TYPE_NO_PROXY, NULL, NULL, 0);
+	session = WinHttpOpen(userAgent, WINHTTP_ACCESS_TYPE_DEFAULT_PROXY, WINHTTP_NO_PROXY_NAME, WINHTTP_NO_PROXY_BYPASS, 0); // vanilla: honours the WinHTTP proxy (netsh winhttp)
 
 	if (session)
 		connect = WinHttpConnect(session, host, INTERNET_DEFAULT_PORT, 0);
