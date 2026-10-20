@@ -442,4 +442,8 @@ void WSESiteOperationsContext::OnLoad()
 	RegisterOperation("scene_set_region_detail", SiteSetRegionDetail, Both, None, 2, 2,
 		"Sets <0>'s terrain generator region detail to <1> (0-3)",
 		"scene_no", "value");
+
+	RegisterOperation("scene_set_region_variant", nullptr, Both, WSE2, 2, 2,
+		"Sets <0>'s terrain generator region variant to <1> (0-127). Flora kinds tagged with fkf_variant(<1>) replace the normal flora of their category",
+		"scene_no", "value");
 }

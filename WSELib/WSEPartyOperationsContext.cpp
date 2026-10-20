@@ -169,4 +169,8 @@ void WSEPartyOperationsContext::OnLoad()
 	RegisterOperation("party_is_non_player", nullptr, Both, Cf | WSE2, 1, 1,
 		"Fails if <0> is player. For multiplayer campaign mode",
 		"party_no");
+
+	RegisterOperation("party_get_current_terrain_variant", nullptr, Both, Lhs | WSE2, 2, 2,
+		"Stores the texture variant of the world map face under <1> into <0> (0 = no variant). The face's terrain type in map.txt is terrain_type + 256 * variant; party_get_current_terrain returns terrain_type",
+		"destination", "party_no");
 }

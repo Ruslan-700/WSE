@@ -274,17 +274,18 @@ cur_item_mesh_set_color         = 3811 #(cur_item_mesh_set_color, <mesh_no>, <co
 cur_item_add_mesh_with_material = 3812 #(cur_item_add_mesh_with_material, <mesh_name_string_no>, <material_name_string_no>, [<lod_begin>], [<lod_end>], [<color>]), #Adds another <mesh_name_string_no> to item. Replaces item material to <material_name_string_no>. Sets item color to [<color>]. Only call inside ti_on_init_item in module_items.
 item_set_horse_skeleton_model   = 3813 #(item_set_horse_skeleton_model, <item_kind_no>, <skeleton_model_name>), #Sets <item_kind_no>'s horse <skeleton_model_name>. Use skeleton_model_clean_body_sections and skeleton_model_set_bone_body_section operations to configure sections for new horses skeleton models (requires WSE2)
 
-party_stack_get_experience      = 3900 #(party_stack_get_experience, <destination>, <party_no>, <party_stack_no>), #Stores the experience of <party_no>'s <party_stack_no> into <destination>
-party_stack_get_num_upgradeable = 3901 #(party_stack_get_num_upgradeable, <destination>, <party_no>, <party_stack_no>), #Stores the amount of upgradeable troops in <party_no>'s <party_stack_no> into <destination>
-party_has_flag                  = 3902 #(party_has_flag, <party_no>, <flag>), #Fails if <party_no> doesn't have <flag>
-party_heal_members              = 3903 #(party_heal_members, <party_no>, <troop_no>, <number>), #Heals <number> <troop_no> of <party_no>
-party_switch_stacks             = 3904 #(party_switch_stacks, <party_no>, <party_stack_no_1>, <party_stack_no_2>), #Switches <party_no>'s <party_stack_no_1> and <party_stack_no_2>
-party_stack_upgrade             = 3905 #(party_stack_upgrade, <party_no>, <party_stack_no>, <amount>, <upgrade_path>), #Upgrades <party_no>'s <party_stack_no>'s <amount> of troops (<upgrade_path> can be 0 or 1) (requires WSE2)
-party_stack_set_num_upgradeable = 3906 #(party_stack_set_num_upgradeable, <party_no>, <party_stack_no>, <value>), #Sets <party_no>'s <party_stack_no>'s amount of upgradeable troops to <value>
-party_get_banner_icon           = 3907 #(party_get_banner_icon, <destination>, <party_no>), #Stores <party_no>'s banner icon into <destination>
-party_get_extra_icon            = 3908 #(party_get_extra_icon, <destination>, <party_no>), #Stores <party_no>'s extra icon into <destination>
-party_get_player_id             = 3909 #(party_get_player_id, <destination>, <party_no>), #Stores <party_no>'s player reference into <destination>. For multiplayer campaign mode (requires WSE2)
-party_is_non_player             = 3910 #(party_is_non_player, <party_no>), #Fails if <party_no> is player. For multiplayer campaign mode (requires WSE2)
+party_stack_get_experience        = 3900 #(party_stack_get_experience, <destination>, <party_no>, <party_stack_no>), #Stores the experience of <party_no>'s <party_stack_no> into <destination>
+party_stack_get_num_upgradeable   = 3901 #(party_stack_get_num_upgradeable, <destination>, <party_no>, <party_stack_no>), #Stores the amount of upgradeable troops in <party_no>'s <party_stack_no> into <destination>
+party_has_flag                    = 3902 #(party_has_flag, <party_no>, <flag>), #Fails if <party_no> doesn't have <flag>
+party_heal_members                = 3903 #(party_heal_members, <party_no>, <troop_no>, <number>), #Heals <number> <troop_no> of <party_no>
+party_switch_stacks               = 3904 #(party_switch_stacks, <party_no>, <party_stack_no_1>, <party_stack_no_2>), #Switches <party_no>'s <party_stack_no_1> and <party_stack_no_2>
+party_stack_upgrade               = 3905 #(party_stack_upgrade, <party_no>, <party_stack_no>, <amount>, <upgrade_path>), #Upgrades <party_no>'s <party_stack_no>'s <amount> of troops (<upgrade_path> can be 0 or 1) (requires WSE2)
+party_stack_set_num_upgradeable   = 3906 #(party_stack_set_num_upgradeable, <party_no>, <party_stack_no>, <value>), #Sets <party_no>'s <party_stack_no>'s amount of upgradeable troops to <value>
+party_get_banner_icon             = 3907 #(party_get_banner_icon, <destination>, <party_no>), #Stores <party_no>'s banner icon into <destination>
+party_get_extra_icon              = 3908 #(party_get_extra_icon, <destination>, <party_no>), #Stores <party_no>'s extra icon into <destination>
+party_get_player_id               = 3909 #(party_get_player_id, <destination>, <party_no>), #Stores <party_no>'s player reference into <destination>. For multiplayer campaign mode (requires WSE2)
+party_is_non_player               = 3910 #(party_is_non_player, <party_no>), #Fails if <party_no> is player. For multiplayer campaign mode (requires WSE2)
+party_get_current_terrain_variant = 3911 #(party_get_current_terrain_variant, <destination>, <party_no>), #Stores the texture variant of the world map face under <party_no> into <destination> (0 = no variant). The face's terrain type in map.txt is terrain_type + 256 * variant; party_get_current_terrain returns terrain_type (requires WSE2)
 
 position_get_vector_to_position = 4100 #(position_get_vector_to_position, <destination_fixed_point>, <dest_position_register>, <position_register_1>, <position_register_2>), #Stores the vector from <position_register_1> to <position_register_2> into <dest_position_register> and its length into <destination_fixed_point>
 position_align_to_ground        = 4101 #(position_align_to_ground, <position_register>, [<point_up>], [<set_z_to_ground_level>]), #Aligns <position_register> to the ground (or to the ground normal if [<point_up>] is set)
@@ -387,23 +388,24 @@ fatan2    = 4436 #(fatan2, <destination_fp_register>, <fp_register_1>, <fp_regis
 feval     = 4437 #(feval, <expression_string>), #Evaluates <expression_string>. See EVAL_README.txt in WSESDK for more information
 fadd      = 4438 #(fadd, <destination_fp_register>, <fp_register_1>, <fp_register_2>), #Adds <fp_register_2> to <fp_register_1> and stores the result into <destination_fp_register>
 
-scene_set_flags         = 4500 #(scene_set_flags, <scene_no>, <flags>), #Sets <scene_no>'s flags to <flags>
-scene_set_water_level   = 4501 #(scene_set_water_level, <scene_no>, <water_level_fixed_point>), #Sets <scene_no>'s water level to <water_level_fixed_point>
-scene_set_bounds        = 4502 #(scene_set_bounds, <scene_no>, <min_x_fixed_point>, <min_y_fixed_point>, <max_x_fixed_point>, <max_y_fixed_point>), #Sets <scene_no>'s bounds to (<min_x_fixed_point>, <min_y_fixed_point>) and (<max_x_fixed_point>, <max_y_fixed_point>)
-scene_set_outer_terrain = 4503 #(scene_set_outer_terrain, <scene_no>, <outer_terrain_mesh_name>), #Sets <scene_no>'s outer terrain to <outer_terrain_mesh_name>
-scene_set_terrain_seed  = 4504 #(scene_set_terrain_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator terrain seed to <value>
-scene_set_river_seed    = 4505 #(scene_set_river_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator river seed to <value>
-scene_set_flora_seed    = 4506 #(scene_set_flora_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator flora seed to <value>
-scene_set_deep_water    = 4507 #(scene_set_deep_water, <scene_no>, <value>), #Enables or disables terrain generator deep water for <scene_no>
-scene_set_place_river   = 4508 #(scene_set_place_river, <scene_no>, <value>), #Enables or disables terrain generator river placement for <scene_no>
-scene_set_disable_grass = 4509 #(scene_set_disable_grass, <scene_no>, <value>), #Enables or disables terrain generator grass placement for <scene_no>
-scene_set_valley_size   = 4510 #(scene_set_valley_size, <scene_no>, <value>), #Sets <scene_no>'s terrain generator valley size to <value> (0-127)
-scene_set_hill_height   = 4511 #(scene_set_hill_height, <scene_no>, <value>), #Sets <scene_no>'s terrain generator hill height to <value> (0-127)
-scene_set_ruggedness    = 4512 #(scene_set_ruggedness, <scene_no>, <value>), #Sets <scene_no>'s terrain generator ruggedness to <value> (0-127)
-scene_set_vegetation    = 4513 #(scene_set_vegetation, <scene_no>, <value>), #Sets <scene_no>'s terrain generator vegetation to <value> (0-127)
-scene_set_size          = 4514 #(scene_set_size, <scene_no>, <x>, <y>), #Sets <scene_no>'s terrain generator map size to (<x>, <y>) (0-1023)
-scene_set_region_type   = 4515 #(scene_set_region_type, <scene_no>, <value>), #Sets <scene_no>'s terrain generator region type to <value> (0-15)
-scene_set_region_detail = 4516 #(scene_set_region_detail, <scene_no>, <value>), #Sets <scene_no>'s terrain generator region detail to <value> (0-3)
+scene_set_flags          = 4500 #(scene_set_flags, <scene_no>, <flags>), #Sets <scene_no>'s flags to <flags>
+scene_set_water_level    = 4501 #(scene_set_water_level, <scene_no>, <water_level_fixed_point>), #Sets <scene_no>'s water level to <water_level_fixed_point>
+scene_set_bounds         = 4502 #(scene_set_bounds, <scene_no>, <min_x_fixed_point>, <min_y_fixed_point>, <max_x_fixed_point>, <max_y_fixed_point>), #Sets <scene_no>'s bounds to (<min_x_fixed_point>, <min_y_fixed_point>) and (<max_x_fixed_point>, <max_y_fixed_point>)
+scene_set_outer_terrain  = 4503 #(scene_set_outer_terrain, <scene_no>, <outer_terrain_mesh_name>), #Sets <scene_no>'s outer terrain to <outer_terrain_mesh_name>
+scene_set_terrain_seed   = 4504 #(scene_set_terrain_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator terrain seed to <value>
+scene_set_river_seed     = 4505 #(scene_set_river_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator river seed to <value>
+scene_set_flora_seed     = 4506 #(scene_set_flora_seed, <scene_no>, <value>), #Sets <scene_no>'s terrain generator flora seed to <value>
+scene_set_deep_water     = 4507 #(scene_set_deep_water, <scene_no>, <value>), #Enables or disables terrain generator deep water for <scene_no>
+scene_set_place_river    = 4508 #(scene_set_place_river, <scene_no>, <value>), #Enables or disables terrain generator river placement for <scene_no>
+scene_set_disable_grass  = 4509 #(scene_set_disable_grass, <scene_no>, <value>), #Enables or disables terrain generator grass placement for <scene_no>
+scene_set_valley_size    = 4510 #(scene_set_valley_size, <scene_no>, <value>), #Sets <scene_no>'s terrain generator valley size to <value> (0-127)
+scene_set_hill_height    = 4511 #(scene_set_hill_height, <scene_no>, <value>), #Sets <scene_no>'s terrain generator hill height to <value> (0-127)
+scene_set_ruggedness     = 4512 #(scene_set_ruggedness, <scene_no>, <value>), #Sets <scene_no>'s terrain generator ruggedness to <value> (0-127)
+scene_set_vegetation     = 4513 #(scene_set_vegetation, <scene_no>, <value>), #Sets <scene_no>'s terrain generator vegetation to <value> (0-127)
+scene_set_size           = 4514 #(scene_set_size, <scene_no>, <x>, <y>), #Sets <scene_no>'s terrain generator map size to (<x>, <y>) (0-1023)
+scene_set_region_type    = 4515 #(scene_set_region_type, <scene_no>, <value>), #Sets <scene_no>'s terrain generator region type to <value> (0-15)
+scene_set_region_detail  = 4516 #(scene_set_region_detail, <scene_no>, <value>), #Sets <scene_no>'s terrain generator region detail to <value> (0-3)
+scene_set_region_variant = 4517 #(scene_set_region_variant, <scene_no>, <value>), #Sets <scene_no>'s terrain generator region variant to <value> (0-127). Flora kinds tagged with fkf_variant(<value>) replace the normal flora of their category (requires WSE2)
 
 edit_mode_get_num_selected_prop_instances = 4600 #(edit_mode_get_num_selected_prop_instances, <destination>), #Stores the number of selected prop instances into <destination>
 edit_mode_get_selected_prop_instance      = 4601 #(edit_mode_get_selected_prop_instance, <destination>, <index>), #Stores the <index>th selected prop instance into instance no into <destination>
@@ -593,6 +595,7 @@ lhs_operations += [
 	party_get_banner_icon,
 	party_get_extra_icon,
 	party_get_player_id,
+	party_get_current_terrain_variant,
 	position_get_vector_to_position,
 	position_get_length,
 	get_dot_product_of_positions,
