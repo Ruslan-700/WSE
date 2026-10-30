@@ -446,4 +446,8 @@ void WSESiteOperationsContext::OnLoad()
 	RegisterOperation("scene_set_region_variant", nullptr, Both, WSE2, 2, 2,
 		"Sets <0>'s terrain generator region variant to <1> (0-127). Flora kinds tagged with fkf_variant(<1>) replace the normal flora of their category",
 		"scene_no", "value");
+
+	RegisterOperation("scene_set_height_fog", nullptr, Client, WSE2, 3, 3,
+		"Makes the air thicken towards the ground in the current scene, so mist gathers in hollows while hilltops stand clear. All three are in hundredths: <0> is the world height below which it starts, <1> how far it takes to come on - small is a layer with a visible top, large a gradual haze - and <2> how many times thicker the air gets at the bottom, where 100 is double. A <2> of 0 turns it off. It can only ever thicken the fog set by set_fog_distance, never thin it, so a scene that wants limited visibility keeps it. Needs the effect WSE2 ships",
+		"base_height", "falloff", "strength");
 }
