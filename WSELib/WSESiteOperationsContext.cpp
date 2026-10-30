@@ -449,5 +449,13 @@ void WSESiteOperationsContext::OnLoad()
 
 	RegisterOperation("scene_set_height_fog", nullptr, Client, WSE2, 3, 3,
 		"Makes the air thicken towards the ground in the current scene, so mist gathers in hollows while hilltops stand clear. All three are in hundredths: <0> is the world height below which it starts, <1> how far it takes to come on - small is a layer with a visible top, large a gradual haze - and <2> how many times thicker the air gets at the bottom, where 100 is double. A <2> of 0 turns it off. It can only ever thicken the fog set by set_fog_distance, never thin it, so a scene that wants limited visibility keeps it. Needs the effect WSE2 ships",
-		"base_height", "falloff", "strength");
+		"base_height_fixed_point", "falloff_fixed_point", "strength_fixed_point");
+
+	RegisterOperation("scene_set_water_waves", nullptr, Client, WSE2, 3, 3,
+		"Sets the swell on the water of the current scene, so a village pond can be still while a quest at sea is not. All three are in hundredths: <0> is crest to trough in metres, <1> the distance between crests, and <2> a multiple of the speed water of that length really travels at, so 100 is right. A <0> of 0 is flat calm. Two things depend on the height and are worth telling apart - the surface tilts by about height over length, and that tilt is what makes the wave visible at all, while the water also rises and falls by half the height, which is what decides whether a familiar shoreline still looks like itself. To make a wave more visible on calm water, shorten the length rather than raise the height. Below about 800 there are too few vertices to a wave and it comes out as triangles. Needs the effect WSE2 ships",
+		"height_fixed_point", "length_fixed_point", "speed_fixed_point");
+
+	RegisterOperation("scene_set_flora_wind", nullptr, Client, WSE2, 3, 3,
+		"Sets the wind on the vegetation of the current scene, so a gale in a quest and still air in a village are not the same weather. All three are in hundredths: <0> is how far the top of a plant travels in metres, <1> how far a gust reaches - the distance over which plants lean together instead of each on its own - and <2> how fast the gust crosses the ground in metres a second. A <0> of 0 is still air. The foot of each plant stays put whatever the strength: the engine works out how far up its own plant every vertex sits, so a stem bends rather than the whole bush sliding. Needs the effect WSE2 ships",
+		"strength_fixed_point", "gust_size_fixed_point", "speed_fixed_point");
 }
