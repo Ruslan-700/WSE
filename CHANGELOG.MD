@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.12.4
+- HTTP requests from wse operations now use the system proxy, as vanilla does.
+- Fixed `missile_get_cur_position` operation.
+
 ## v4.12.3
 - Added `show_hud` operation.
 - `set_random_seed` operation works not only for rand operations, also for all engine rand.
